@@ -80,7 +80,12 @@ const Strip: React.FC<{ pos: number; color: string; opacity?: number; dy?: numbe
 // 单个数位盒：本体 strip + 滚动期 2 个错帧残影（速度门控，停稳即摘）
 const DigitReel: React.FC<{ frame: number; i: number; color: string }> = ({ frame, i, color }) => {
   const pos = posAt(frame, i);
-  const speed = Math.abs(pos - posAt(frame - 1, i));
+  // 速度探针夹到 f≥1：posAt 内部用 Math.max(f, 0) 兜负帧，于是 f=0 时 posAt(0) 与
+  // posAt(-1) 相等，后向差分算出速度 0 → 残影门关闭 → 首帧没有残影，而 posAt(0)=0
+  // 又让首帧显示一个静止清晰的 "0"。本 demo 有标题卡、首帧不被人盯所以不痛；
+  // 镜头被硬切进入时那一帧正是观众最先看到的，会读成"数字先亮出来才开始转"。
+  const fp = Math.max(frame, 1);
+  const speed = Math.abs(posAt(fp, i) - posAt(fp - 1, i));
   const gate = interpolate(speed, [0.06, 0.5], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
