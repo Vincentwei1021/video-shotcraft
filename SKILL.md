@@ -177,6 +177,19 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 
 ## 资产使用方式
 
+- **⚠️ Remotion 本体不是 OSS 授权**（`remotion` / `@remotion/cli` 受其自家 license
+  约束），本库的 `template/`、`assets/lib/` 与全部 demo 都建在它上面。公司 repo 出片前
+  先过一遍（以下 as-of 2026-07-25，采购前请以官方页面为准）：
+  免费档 = 个人 / **≤3 名员工的营利组织** / 非营利 / 评估期；责任主体是
+  "the entity that ultimately owns the IP of the Remotion project"（看**成片 IP
+  归属方**的 headcount，不是写代码的人）；团队协作时 "the combined headcount counts"；
+  一个 seat "covers one person who writes Remotion code themselves **or uses agentic
+  coding tools**"——**让 agent 写 Remotion 代码同样占 seat**。付费档 Creators
+  $25/seat/月。
+  来源：[license](https://www.remotion.dev/docs/license) ·
+  [pricing](https://www.remotion.dev/docs/license/pricing) ·
+  [FAQ](https://www.remotion.dev/docs/license-pricing-compliance/faq)
+  本库的**镜头卡本身不受此约束**——配方卡是动效词汇表，可以只读卡、用别的渲染管线执行。
 - `assets/lib/` 组件 **copy 进新项目**后自由修改（不 import 本库）。
   清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、DigitRoll、
   FlashCut、Caption、FlatPanel、VerticalTicker（3D 无限滚动墙）、
