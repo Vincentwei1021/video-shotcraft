@@ -9,12 +9,15 @@
 // 用法：
 //   node capture-template.mjs
 //
-// 前置条件（三条都是硬前提）：
+// 前置条件（四条都是硬前提）：
 //   1. 目标产品在本地跑起来（CONFIG.BASE 可访问）；
 //   2. npm i puppeteer（本脚本唯一依赖）；
 //   3. 【红线】假数据先注入 —— 截图前页面必须已填充"虚构但真实感"的演示数据。
 //      空库/lorem ipsum 截出来的图直接废片；真实客户数据则不能出片。
 //      先做数据注入（seed 脚本 / fixture 环境），确认页面肉眼可看后再跑本脚本。
+//   4. 【两处静默废片】先填 CONFIG.FORCE_REVEAL 与 CONFIG.ASSERT_FONTS。
+//      这两处的共同点是**不报错、只出错素材**：滚动显现的页面截出大面积空白，
+//      webfont 没生效的页面截出 fallback 字体。两者都要等到成片才发现，代价最高。
 //
 // 改造指南：只改下面的 CONFIG。每个 page 条目 = 一个路由；
 // boxes 只记坐标（进 layout.json），cutouts 记坐标 + 存元素 PNG。
@@ -33,6 +36,11 @@ const CONFIG = {
 
   // 截图与 layout.json 的输出目录（相对本脚本所在目录；通常指向
   // Remotion 项目的 public/textures/live，供 staticFile() 引用）
+  //
+  // ⚠ 本脚本是被 copy 进各自项目用的，所以这两个相对路径的落点取决于你把它放在哪。
+  //   落点必须解析到 **Remotion 项目** 的 public/，不能落进被采集站点的静态部署根
+  //   （Cloudflare Pages/Workers、Vercel、Astro/Vite 的 public/ 都是部署根）——
+  //   几十 MB 纹理会跟着下次发布推上生产 CDN。跑之前先 `node -e` 打一下 resolve 结果。
   OUT_DIR: '../../public/textures/live',
   LAYOUT_JSON: '../../src/live-layout.json',
 
@@ -41,6 +49,19 @@ const CONFIG = {
 
   // 每页导航完成后的额外静置毫秒数（等字体/异步数据；见 settle()）
   SETTLE_MS: 600,
+
+  // 强制滚动显现。现代营销页普遍用 IntersectionObserver 在滚动到视口时才显现内容
+  // （`.reveal{opacity:0}` → 加 `.in`）。无头浏览器不滚动，这些元素永远不显现，
+  // 截出来是大面积空白，而脚本一声不响。设为 null 关闭。
+  // selector 按你页面的实际写法改；常见还有 [data-aos]、.animate-on-scroll、.fade-in。
+  FORCE_REVEAL: {
+    selector: '.reveal',
+    shownClass: 'in',
+  },
+
+  // 字体生效断言。列出页面关键字体的**族名**（不是整个 font stack）。
+  // 空数组跳过；填了就在每页 settle 后硬校验，不通过直接抛错——见 assertFonts()。
+  ASSERT_FONTS: [], // 例：['Inter', 'Fraunces']
 
   // 路由清单：每条 = 一个要采集的页面
   PAGES: [
@@ -109,10 +130,80 @@ const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.setViewport(CONFIG.VIEWPORT);
 
+// 强制滚动显现：把 IntersectionObserver 才会加的 class 直接加上，并用 !important
+// 覆盖初始态、暂停动画。必须在截图前做，且要在 settle 的等待之前——显现会触发
+// 布局与字体使用，两者都需要时间落定。
+const forceReveal = async () => {
+  if (!CONFIG.FORCE_REVEAL) return 0;
+  return page.evaluate(({ selector, shownClass }) => {
+    const els = document.querySelectorAll(selector);
+    els.forEach((el) => el.classList.add(shownClass));
+    const style = document.createElement('style');
+    style.textContent =
+      `${selector}{opacity:1!important;transform:none!important;transition:none!important}` +
+      '*{animation-play-state:paused!important}';
+    document.head.appendChild(style);
+    return els.length;
+  }, CONFIG.FORCE_REVEAL);
+};
+
+// 字体生效断言。
+//
+// `document.fonts.ready` 只保证"当前没有待完成的字体加载"，**不保证字体文件被请求过**：
+// <link> 只下载 CSS，字面要等页面上真有元素用到该 family 才发起请求。若此刻还没有元素
+// 用它，ready 立刻 resolve，随后的测量与截图静默落到 fallback 字体上。
+//
+// 也不能用 `document.fonts.check()` 判断 —— 它答的是"能不能用这个 family"，不是
+// "加载了没有 / 生效了没有"，两个方向都实测翻过车：
+//   假阳性：只写了 <link> 谁都没用过时报 true（字体文件根本还没请求）；
+//   假阴性：Google Fonts 的可变字体（如 `opsz 9..144` + `ital`）明明在渲染却报 false。
+//
+// 可靠做法是量宽度：把 family 单独用一次，和一个**必然不存在**的族名比。字体没解析时
+// canvas 会退到默认字体，与不存在的族名测出同一宽度 → 宽度相等即未生效。
+const assertFonts = async () => {
+  if (!CONFIG.ASSERT_FONTS?.length) return;
+  const failed = await page.evaluate(async (families) => {
+    // 先强制用字，否则字体文件可能根本没被请求
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;font-size:64px';
+    probe.textContent = 'AaBbGg0123';
+    document.body.appendChild(probe);
+
+    const bad = [];
+    const c = document.createElement('canvas').getContext('2d');
+    for (const family of families) {
+      probe.style.fontFamily = `'${family}'`;
+      try {
+        await document.fonts.load(`64px '${family}'`);
+      } catch {
+        /* load 失败也走下面的宽度判定，不在这里下结论 */
+      }
+      c.font = `64px '${family}'`;
+      const applied = c.measureText(probe.textContent).width;
+      c.font = "64px '__definitely_no_such_font__'";
+      const fallback = c.measureText(probe.textContent).width;
+      if (Math.abs(applied - fallback) < 0.5) bad.push(family);
+    }
+    probe.remove();
+    return bad;
+  }, CONFIG.ASSERT_FONTS);
+
+  if (failed.length) {
+    throw new Error(
+      `字体未生效：${failed.join(' / ')}\n` +
+        '  素材会用 fallback 字体截出来，而且不会有任何报错。检查页面是否真的引入了该字体，\n' +
+        '  以及 CONFIG.ASSERT_FONTS 里的族名拼写是否与 CSS 一致。',
+    );
+  }
+};
+
 // 等字体加载完再静置片刻——避免截到 FOUT/骨架屏
 const settle = async () => {
+  const revealed = await forceReveal();
+  if (revealed) console.log(`  forceReveal: ${revealed} 个元素`);
   await page.evaluate(() => document.fonts.ready);
   await new Promise((r) => setTimeout(r, CONFIG.SETTLE_MS));
+  await assertFonts();
 };
 
 // 元素 bbox 换算到整页坐标系（fullPage 截图的坐标系）
