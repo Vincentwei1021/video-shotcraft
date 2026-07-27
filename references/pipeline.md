@@ -272,8 +272,10 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 
 **具体操作**（细节与判例见 `references/sound-design.md`）：
 
-1. 读 `references/sound-design.md`，从 `assets/audio/` 复制音效
-   （免费商用授权，来源见 `assets/audio/ATTRIBUTION.md`）。
+1. 读 `references/sound-design.md`，从 `assets/audio/sfx/<类别>/` 复制音效
+   （免费商用授权，来源见 `assets/audio/ATTRIBUTION.md`）。音效按场景分 17
+   个类别目录，先按需要的动作定类别（运镜→transition、落地→impact、
+   打字→text、翻页→paper…），再在类别里挑音色。
 2. **BGM**：用户已指定 → 阶段 0 已做节奏分析，此处只做混音
    （音量压低 ~0.34 给 SFX 留 headroom，interpolate 首尾淡入淡出）。
    未指定 → 按片种选强鼓点、强节奏的电子底（tech-house 类），判据是

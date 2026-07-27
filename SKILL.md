@@ -183,8 +183,10 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   helpers(rand/shake/camera/motion)。FlatPanel 与 helpers/camera 需要
   `three` + `@react-three/fiber` + `@remotion/three` 依赖，其余仅需 remotion。
 - `assets/scripts/capture-template.mjs` 复制后改顶部 CONFIG（BASE/路由/选择器）。
-- `assets/audio/` 音效直接复制使用（免费商用授权，见 audio/ATTRIBUTION.md）；
-  `assets/audio/bgm/` 是节奏感强的 BGM 备选。
+- `assets/audio/` 音效直接复制使用（免费商用授权，见 audio/ATTRIBUTION.md）：
+  `audio/bgm/` 是节奏感强的 BGM 备选；`audio/sfx/<类别>/` 按场景分 17 类
+  （transition impact riser camera ui text paper film light data scifi mech
+  glass fluid crowd counter fire），找音先进类别目录，清单见 sound-design.md。
 - `demos/` 各卡实现源码：多数为自包含灰阶 demo（部分 import
   `demos/_fixtures/Fixtures.tsx` 的假 UI 场景件，个别 import
   `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑。

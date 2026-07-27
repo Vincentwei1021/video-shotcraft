@@ -41,8 +41,10 @@ name: split-flap-title
 - demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
   首次实战须以真实素材回验
 - 声音强依赖：每格停定的机械拍打声是效果的一半，实战必须配——级联
-  停定天然是一串节奏点，assets/audio 现有 typewriter.mp3 / click-camera.mp3
-  可起步，配法纪律见 sound-design.md（同类元素同音，拟音与动作等长）
+  停定天然是一串节奏点，`assets/audio/sfx/ui/switch-click-quick.mp3` 或
+  `sfx/mech/gear-lock-metallic.mp3` 起步（更贴机械翻牌），也可用
+  `sfx/text/typewriter-hit-single.mp3`；配法纪律见 sound-design.md
+  （同类元素同音，拟音与动作等长，连发交替双样本防机枪感）
 - 下沉回弹 6px 是可感下限：肉眼看不出就照可感性判例加大幅度，别调
   曲线不调幅度
 - 一支片翻牌字 ≤1 次：机械宣告腔太抢，重复即贬值（P4 手法去重精神）；
