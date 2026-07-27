@@ -139,7 +139,9 @@ video-shotcraft/
 └── assets/
     ├── lib/                 # 可复制使用的 Remotion 组件
     ├── scripts/             # 页面素材采集脚本
-    └── audio/               # SFX 与授权说明
+    └── audio/               # 音频资产
+        ├── bgm/             # 5 首 BGM 备选
+        └── sfx/<类别>/      # 149 个音效，按场景分 16 类
 ```
 
 完整工作流和实现要求见 [SKILL.md](SKILL.md)、
@@ -151,8 +153,21 @@ video-shotcraft/
 `assets/audio/` 中的音效可按各自授权条件使用，来源与许可信息见
 [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)。
 
+音效按场景/材质分 16 类（`transition` `impact` `riser` `camera` `ui` `text`
+`paper` `film` `light` `data` `scifi` `mech` `glass` `fluid` `crowd` `counter`），
+**找音先定类别再挑音色**；类别索引与逐文件用途见
+[sound-design.md](references/sound-design.md)。
+
 模板内的产品截图为演示素材。对外发布成片前，请替换为目标产品自己的截图，
 并确认其中的数据、客户信息和个人信息是否需要脱敏。
+
+## 📝 更新记录
+
+| 日期 | 更新 |
+|---|---|
+| 2026-07-27 | 音频库重构为 `bgm/` + `sfx/<类别>/` 两层，音效按场景/材质分 16 类；扩充音效库至 149 个（新增纸张/印刷、打字机、书写、放映机胶片、计数器仪表、墨水流体、玻璃碎裂等此前缺失的质感层）；md5 全库去重，补回 7 个音效的原始授权 URL |
+| 2026-07-27 | 画廊卡片支持多类别标签；All 视图改为平铺、按字母排序；补回 GridWaveFlip 与 WireframeDrawOn 源码 |
+| 2026-07-26 | 画廊自动部署到 GitHub Pages；样片 mp4 移出 git 改存 release，仓库瘦身 |
 
 ## 🙏 致谢
 

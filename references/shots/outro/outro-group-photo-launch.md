@@ -28,7 +28,7 @@ name: outro-group-photo-launch
 | 字标 | 字母 delay=42+i·1.8、8f；rule 58→70f 长出、两端 190px 延长线 8f 射出 6f 淡去；字距 62–66f 呼吸；背景页 24f 内 blur 0→14；落定后 sign-off hold 30f | 字标落定 hold 满 1 秒（R1 定案）；outro 不加解说 caption 保持干净（C1 例外项） |
 
 ## 声音
-固定三拍句式：riser-cine 铺进组装（模板片钉在 f945）→ impact-cine 钉字标 stamp（f980，vol 0.55 全片峰值）→ sparkle 点 rule（f1005）。这是模板片定稿后唯一从未改动的段落句式（S2；详见 sound-design 4.3）。
+固定三拍句式：riser-cine 铺进组装（模板片钉在 f945）→ impact-deep-whoosh 钉字标 stamp（f980，vol 0.55 全片峰值）→ sparkle 点 rule（f1005）。这是模板片定稿后唯一从未改动的段落句式（S2；详见 sound-design 4.3）。
 
 ## 已知坑
 - 初版收尾几乎总是偏保守（Q8：安静签名式→合影→发布会三级加码）——起稿就按"像一个产品发布"的规格给足 crane/舞台光/粒子

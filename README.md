@@ -144,7 +144,9 @@ video-shotcraft/
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts
-    └── audio/               # SFX and attribution details
+    └── audio/               # Audio assets
+        ├── bgm/             # 5 BGM options
+        └── sfx/<category>/  # 149 SFX across 16 scene categories
 ```
 
 For the complete workflow and implementation requirements, see [SKILL.md](SKILL.md),
@@ -156,9 +158,22 @@ the [production pipeline](references/pipeline.md), and the
 Audio files under `assets/audio/` may be used according to their respective license terms.
 See [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md) for sources and license details.
 
+SFX are organized into 16 scene/material categories (`transition` `impact` `riser`
+`camera` `ui` `text` `paper` `film` `light` `data` `scifi` `mech` `glass` `fluid`
+`crowd` `counter`) — **pick the category first, then the timbre**. See
+[sound-design.md](references/sound-design.md) for the category index and per-file usage.
+
 Product screenshots bundled with the template are demonstration assets. Replace them with
 screenshots from the target product before publishing, and verify whether any product,
 customer, or personal data needs to be anonymized.
+
+## 📝 Changelog
+
+| Date | Update |
+|---|---|
+| 2026-07-27 | Restructured the audio library into `bgm/` + `sfx/<category>/`, with SFX grouped into 16 scene/material categories; expanded the library to 149 SFX (added previously missing texture layers: paper/print, typewriter, handwriting, film projector, counters/gauges, ink/fluid, glass) ; deduplicated the library by md5 and recovered original license URLs for 7 files |
+| 2026-07-27 | Gallery cards support multi-category tags; flat, alphabetically sorted All view; recovered GridWaveFlip and WireframeDrawOn sources |
+| 2026-07-26 | Gallery auto-deploys to GitHub Pages; preview mp4s moved out of git to a release, slimming the repo |
 
 ## 🙏 Acknowledgements
 

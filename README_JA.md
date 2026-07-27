@@ -145,7 +145,9 @@ video-shotcraft/
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts
-    └── audio/               # SFX and attribution details
+    └── audio/               # 音声アセット
+        ├── bgm/             # BGM 候補 5 曲
+        └── sfx/<カテゴリ>/  # 効果音 149 個、シーン別 16 カテゴリ
 ```
 
 完全なワークフローと実装要件については、[SKILL.md](SKILL.md)、
@@ -157,9 +159,23 @@ video-shotcraft/
 `assets/audio/` にある音声ファイルは、それぞれのライセンス条件に従って使用できます。
 出典とライセンスの詳細については、[ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)を参照してください。
 
+効果音はシーン／素材ごとに 16 カテゴリへ分類されています（`transition` `impact`
+`riser` `camera` `ui` `text` `paper` `film` `light` `data` `scifi` `mech` `glass`
+`fluid` `crowd` `counter`）。**まずカテゴリを決め、次に音色を選ぶ**のが基本です。
+カテゴリ索引とファイルごとの用途は
+[sound-design.md](references/sound-design.md) を参照してください。
+
 テンプレートに含まれる製品スクリーンショットはデモ用アセットです。公開前に
 対象製品のスクリーンショットへ差し替え、製品、顧客、または個人に関するデータを
 匿名化する必要があるか確認してください。
+
+## 📝 更新履歴
+
+| 日付 | 更新内容 |
+|---|---|
+| 2026-07-27 | 音声ライブラリを `bgm/` + `sfx/<カテゴリ>/` の 2 階層に再構成し、効果音をシーン／素材別 16 カテゴリに分類。効果音を 149 個に拡充（紙・印刷、タイプライター、手書き、映写機／フィルム、カウンター／計器、インク／液体、ガラスなど、従来欠けていた質感レイヤーを追加）。md5 による全体重複排除を行い、7 ファイルの元ライセンス URL を復元 |
+| 2026-07-27 | ギャラリーカードが複数カテゴリタグに対応。All ビューをフラット化しアルファベット順に整列。GridWaveFlip と WireframeDrawOn のソースを復元 |
+| 2026-07-26 | ギャラリーを GitHub Pages へ自動デプロイ。プレビュー mp4 を git から release へ移動しリポジトリを軽量化 |
 
 ## 🙏 謝辞
 
