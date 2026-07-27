@@ -187,9 +187,10 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   `audio/bgm/` 是节奏感强的 BGM 备选；`audio/sfx/<类别>/` 149 个音效按场景分 16 类
   （transition impact riser camera ui text paper film light data scifi mech
   glass fluid crowd counter），找音先进类别目录，清单见 sound-design.md。
-  词汇表 sparkle 的目录名是 `light/`（无 `sparkle/`）；`ui/` `glass/` 装的是
-  真实物件质感、不是被 S1 禁的游戏音（禁音色不禁动作）；长样本与轻音素材
-  各有名单需特殊处理（sound-design 4.1）。
+  词汇表 sparkle 的目录名是 `light/`（无 `sparkle/`）；S1 禁音色不禁动作——
+  画面真有点击/开关就该配拟音，但 `ui/` 里一半是合成反馈音（tone/bleep/
+  notification）需逐个试听、不可整目录放行（名单见 sound-design 3.3）；
+  长样本与轻音素材各有名单需特殊处理（sound-design 4.1）。
 - `demos/` 各卡实现源码：多数为自包含灰阶 demo（部分 import
   `demos/_fixtures/Fixtures.tsx` 的假 UI 场景件，个别 import
   `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑。

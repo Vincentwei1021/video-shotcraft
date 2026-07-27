@@ -19,7 +19,7 @@
 
 1. **BGM 先行，定能量骨架。** 一条 BGM 全片铺底，音量包络用 `interpolate` 做首尾淡入淡出（模板片 `[0, 30, TOTAL-50, TOTAL] → [0, 0.34, 0.34, 0]`，即 1s 淡入、1.7s 淡出）。BGM 音量压在 0.34 左右给 SFX 留 headroom。曲子的能量曲线要和分镜表的能量曲线对得上（低开 → 中段推进 → outro 峰值），候选曲必须垫进成片试听——单听曲子无法判断气质（S1）。
 2. **词汇表按"片种"选，不按"事件"选（S1）。** 产品宣传片的 SFX 词汇 = whoosh(运镜) / impact(落地) / riser(铺垫) / sparkle(光效，目录 `light/`) / transition(转场)，禁用游戏音包**音色**（合成器 pluck/bloop、卡通弹跳）。模板片第一版按 UI 事件语义选音（click/drop/confirmation），用户一耳朵判死刑"太像游戏了"。
-   **禁的是音色不是动作**：画面真有点击/开关/碎裂就该配它的拟音（模板片自己用 `click-camera.mp3` 并给了全片最高响度 0.6）；`sfx/ui/` `sfx/glass/` 装的是真实物件质感，不是禁区。判别问句见 aesthetic-rules S1。
+   **禁的是音色不是动作**：画面真有点击/开关/碎裂就该配它的拟音（模板片自己用 `click-camera.mp3` 并给了全片最高响度 0.6）；但 `sfx/ui/` 需逐个试听——里面既有真实开关拟音也有合成反馈音，后者正属本条排除的质感（取舍表见 3.3）；`sfx/glass/` 是真实碎裂材质音。判别问句见 aesthetic-rules S1。
 3. **SFX 逐拍钉帧、声明式表集中管理（S2）。** SFX 是 `{ from, src, volume }[]` 数组，逐条注释对应的画面动作（"hero card: whoosh up on the pop"），渲染时每条包一个 `<Sequence from={s.from}>`。杜绝凭感觉铺音效。
 4. **通用音之外留"贴画面定制"槽位。** 词汇表定稿后，有辨识度的画面动作仍会要专属拟音（打字揭示配键盘声、逐周落入配 pop）——泛用 swoosh 盖不住这些动作（S4）。
 
@@ -147,7 +147,37 @@ find assets/audio -name '*.mp3' -exec md5 -r {} \; | sort | awk '{print $1}' | u
 
 比对的副产品是补回了 7 个基础层文件的原始 URL（见 `ATTRIBUTION.md`），这批原本因批量下载丢 metadata 而无法反查。
 
----
+### 3.3 `ui/` 目录必须逐个试听，不能整目录放行
+
+`ui/` 是全库唯一**内部质感分裂**的类别：既有真实物件拟音，也有合成 UI 反馈音——而后者正是 S1 要排除的东西。看 Mixkit 原名最省事（`tone` / `bleep` / `alert` / `notification` 是合成音的强信号）：
+
+| 文件 | Mixkit 原名 | 质感 |
+|---|---|---|
+| `switch-light` | Light switch sound | ✅ 真实电灯开关 |
+| `switch-tap` | On or off light switch tap | ✅ 真实电灯开关 |
+| `switch-click-quick` | Quick switch click | ✅ 真实开关 |
+| `pop` | （来源待考） | ✅ 模板片定稿用过（周报周列表 6 连发） |
+| `hitech-touch-magnet` | Hi-tech touch with magnet | ⚠️ 磁吸质感，偏合成但有物理感，按片子调性定 |
+| `chime-crystal` | Crystal chime | ⚠️ 水晶风铃，属光效/装饰音而非 UI 反馈，也可归 `light/` 用法 |
+| `pop-electric` | Electric pop | ⚠️ 电子 pop，连发场景可用，单发略合成 |
+| `ui-select-click` | Select click | ⚠️ 界面点击，比下面几个干净 |
+| `ui-click-tone` | Cool interface click tone | ❌ 合成 tone |
+| `ui-confirm-bleep` | High tech bleep confirmation | ❌ 合成 bleep |
+| `ui-confirm-tone` | Confirmation tone | ❌ 合成 tone |
+| `ui-tone-quick` | Digital quick tone | ❌ 合成 tone |
+| `ui-success-soft` | Success software tone | ❌ 合成 tone（"success" 语义正是 S1 判例否掉的那类） |
+| `ui-notify-tech` | Technology notification | ❌ 通知音 |
+| `ui-message-pop` | Message pop alert | ❌ 通知音 |
+| `ui-popup-dry` | Dry pop up notification alert | ❌ 通知音 |
+| `ui-option-select` | Interface option select | ❌ 合成界面音 |
+| `ui-select-modern` | Modern technology select | ❌ 合成界面音 |
+
+用法：
+- ✅ 一档可直接用作交互动作的拟音（`theme-switch-moves` 的开关、`segmented-thumb-hero` 的档位切换）。
+- ⚠️ 一档**必须在成片语境里试听**再决定，别单听。
+- ❌ 一档默认不用于产品宣传片。**例外**：片子刻意要"系统在说话"的叙事（HUD 播报、AI 确认回执、报错演示），此时它是有意的风格选择——按 aesthetic-rules 使用方式，有意违反准则要写进项目说明文档。
+
+同样的逐个试听纪律适用于 `data/` 与 `scifi/`（合成音天然多），只是那两类的用途本就是"数字/科技质感"，不像 `ui/` 会被误当成通用交互拟音。
 
 ## 4. 对齐技巧
 
@@ -155,7 +185,7 @@ find assets/audio -name '*.mp3' -exec md5 -r {} \; | sort | awk '{print $1}' | u
 
 - **声明式中央注册表**：`SFX: { from, src, volume }[]`，每条注释对应的画面动作；渲染层遍历数组，每条包 `<Sequence from={s.from}>`。帧号表与分镜表（`AIFL_SHOTS`）放同一文件对照（S2）。
 - **长样本靠 Sequence 截断，不剪音频文件**：`keyboard.mp3`（19.6s 原素材）按语境给 `durationInFrames` 24f 或 44f；其余统一 90f 让 ≤3s 素材自然播完。音频时长与画面动作严格等长（S4）。**库里 21 个文件长于 5s，必须显式给 `durationInFrames`**，照 90f 默认值会拖到动作结束后还在响（见下表）。
-- **音量分层**：BGM 0.34 打底，SFX 常规区间 0.2–0.6——点击确认 0.6 最响、pop 连发尾音 0.25 最轻，用响度表达"这一拍多重要"（曾出现的 0.14 出自已删除的 v2 pluck 连发串，不属于定稿区间）。**但 0.2–0.6 的前提是素材峰值接近 0dB**：库里 7 个文件本身录得轻，落在这个区间等于听不见，要按下表抬到 0.8–1.0。钉完必看波形/试听，不要只信数字。
+- **音量分层**：BGM 0.34 打底，SFX 常规区间 0.2–0.6——点击确认 0.6 最响、pop 连发尾音 0.25 最轻，用响度表达"这一拍多重要"（曾出现的 0.14 出自已删除的 v2 pluck 连发串，不属于定稿区间）。**但 0.2–0.6 的前提是素材峰值接近 0dB**：`volume` 是乘法系数不是目标音量，库里 7 个本身录得轻的文件（峰值 <-12dB）即便给到 1.0 仍可能被 BGM 盖住——首选换素材或预归一化，必要时可给 >1 的增益（Remotion 支持，但预览会钳到 1.0，须以渲染产物验峰）。名单与三条出路见下。钉完以渲染产物试听，不要只信数字。
 
 #### 需要显式截断的长样本（>5s，21 个）
 
@@ -182,17 +212,34 @@ find assets/audio -name '*.mp3' -exec md5 -r {} \; | sort | awk '{print $1}' | u
 
 判据：**底噪/循环类**（ambience、hum、projector）按镜头时长铺；**动作类**按动作时长截；**带长尾混响的 impact**（`impact-cine-big` `impact-movie-epic` `metal-drop-scifi-small`）让尾音自然衰减，硬截会显得干。
 
-#### 本身录得轻、需要抬音量的文件（峰值 <-12dB，7 个）
+#### 本身录得轻的文件（峰值 <-12dB，7 个）
 
-| 文件 | 峰值 | 建议 volume |
-|---|---|---|
-| `data/data-load-os` | -24.6dB | 0.9–1.0 |
-| `text/pencil-write-short` | -22.7dB | 0.9–1.0 |
-| `text/write-fast` | -20.0dB | 0.85–1.0 |
-| `transition/wing-flutter` | -17.9dB | 0.8–1.0 |
-| `camera/ui-zoom-in` | -14.3dB | 0.8–0.9 |
-| `counter/clock-knob-spin` | -14.0dB | 0.8–0.9 |
-| `counter/clock-tick-single` | -13.9dB | 0.8–0.9 |
+**先算清一件事：`volume` 是乘法系数，不是目标音量。** `volume={1}` 只是"原样播放"——素材本身 -24.6dB，给 1.0 之后还是 -24.6dB。而 BGM 峰值贴近 0dB、按 0.34 铺底约 -9.4dB，所以 `data-load-os` 即便给到上限 1.0 仍比 BGM 低 15dB，**照样被鼓底盖住**。把音量"封顶在 1.0"是无效建议。
+
+| 文件 | 峰值 | 比 BGM(-9.4dB) 低 | 要压过 BGM（约 -6dB）需 |
+|---|---|---|---|
+| `data/data-load-os` | -24.6dB | -15.2dB | ~8.5x |
+| `text/pencil-write-short` | -22.7dB | -13.3dB | ~6.8x |
+| `text/write-fast` | -20.0dB | -10.6dB | ~5.0x |
+| `transition/wing-flutter` | -17.9dB | -8.5dB | ~3.9x |
+| `camera/ui-zoom-in` | -14.3dB | -4.9dB | ~2.6x |
+| `counter/clock-knob-spin` | -14.0dB | -4.6dB | ~2.5x |
+| `counter/clock-tick-single` | -13.9dB | -4.5dB | ~2.5x |
+
+三条出路，按优先级：
+
+1. **换素材（首选）**。同类别里找峰值贴近 0dB 的替代——`data/` 有 12 个别的选择、`counter/` 有 3 个、`text/` 有 12 个。轻音素材抬增益会同时抬底噪，换一个录得好的比救一个省事。
+2. **预归一化**（要保留这个音色时）。用 ffmpeg 归一化后再入库，一次处理干净，钉帧时就能用常规 0.2–0.6 区间：
+   ```bash
+   ffmpeg -i in.mp3 -af "loudnorm=I=-16:TP=-1.5" out.mp3   # 或 -af "volume=8.5"
+   ```
+3. **`volume` 给大于 1 的增益**。Remotion **允许** `volume>1` 并真实放大——本仓库实测：`data-load-os` 给 `volume={4}` 输出 -12.7dB、给 `{16}` 输出 -0.7dB（即 4x≈+12dB、16x≈+24dB，符合 20·log₁₀ 的换算）。校验过 Remotion 源码：`validateMediaProps` 只拦 `volume<0`，不拦 >1；Web Audio 路径把值直接写进 `gainNode.gain`，不做钳制。
+   两个前提必须知道：
+   - **预览会钳到 1.0**，`Math.min(volume, 1)` 只出现在传统 `<audio>.volume` 回退路径（Safari／禁用 Web Audio 时）。也就是说**预览听到的可能比成片轻**，必须以渲染产物为准判断。
+   - **抬增益会一起抬底噪，且可能削波**。渲染后必查峰值，`max_volume` 逼近 0.0dB 就要回退增益或改走第 1/2 条：
+     ```bash
+     ffmpeg -hide_banner -i out.mp4 -af volumedetect -f null /dev/null 2>&1 | grep max_volume
+     ```
 
 反过来：库里多数文件峰值贴近 0dB，给 0.6 就已经是"全片最响那一拍"的量级。新增音效入库时顺手记一下峰值：
 
