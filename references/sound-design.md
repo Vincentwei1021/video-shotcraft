@@ -18,7 +18,8 @@
 **顺序：画面结构基本锁定 → 先铺 BGM 定能量骨架 → 逐拍钉 SFX。**
 
 1. **BGM 先行，定能量骨架。** 一条 BGM 全片铺底，音量包络用 `interpolate` 做首尾淡入淡出（模板片 `[0, 30, TOTAL-50, TOTAL] → [0, 0.34, 0.34, 0]`，即 1s 淡入、1.7s 淡出）。BGM 音量压在 0.34 左右给 SFX 留 headroom。曲子的能量曲线要和分镜表的能量曲线对得上（低开 → 中段推进 → outro 峰值），候选曲必须垫进成片试听——单听曲子无法判断气质（S1）。
-2. **词汇表按"片种"选，不按"事件"选（S1）。** 产品宣传片的 SFX 词汇 = whoosh(运镜) / impact(落地) / riser(铺垫) / sparkle(光效) / transition(转场)，禁用游戏 UI 音包（click/pluck/glass 类 tap 音）。模板片第一版按 UI 事件语义选音（click/drop/confirmation），用户一耳朵判死刑"太像游戏了"。
+2. **词汇表按"片种"选，不按"事件"选（S1）。** 产品宣传片的 SFX 词汇 = whoosh(运镜) / impact(落地) / riser(铺垫) / sparkle(光效，目录 `light/`) / transition(转场)，禁用游戏音包**音色**（合成器 pluck/bloop、卡通弹跳）。模板片第一版按 UI 事件语义选音（click/drop/confirmation），用户一耳朵判死刑"太像游戏了"。
+   **禁的是音色不是动作**：画面真有点击/开关/碎裂就该配它的拟音（模板片自己用 `click-camera.mp3` 并给了全片最高响度 0.6）；`sfx/ui/` `sfx/glass/` 装的是真实物件质感，不是禁区。判别问句见 aesthetic-rules S1。
 3. **SFX 逐拍钉帧、声明式表集中管理（S2）。** SFX 是 `{ from, src, volume }[]` 数组，逐条注释对应的画面动作（"hero card: whoosh up on the pop"），渲染时每条包一个 `<Sequence from={s.from}>`。杜绝凭感觉铺音效。
 4. **通用音之外留"贴画面定制"槽位。** 词汇表定稿后，有辨识度的画面动作仍会要专属拟音（打字揭示配键盘声、逐周落入配 pop）——泛用 swoosh 盖不住这些动作（S4）。
 
@@ -48,7 +49,7 @@ v1→v2 只隔 22 分钟就又被否——说明选曲时根本没在成片语�
 
 | 来源 | 授权 | 适用 | 备注 |
 |---|---|---|---|
-| [Mixkit](https://mixkit.co/) | Mixkit License（免费商用、免署名） | BGM + 电影系 SFX（whoosh/impact/riser/sparkle） | 模板片定稿的 BGM 和 SFX 主力来源；批量下载后 metadata 常被抹掉，**下载时就记录曲名/URL**，否则事后无法反查（模板片 `bgm-tech-house.mp3` 已无法逐曲对回 Mixkit 曲库，商用前需复核） |
+| [Mixkit](https://mixkit.co/) | Mixkit License（免费商用、免署名） | BGM + 电影系 SFX（whoosh/impact/riser/sparkle）+ 各类拟音 | 模板片定稿的 BGM 和 SFX 主力来源；批量下载后 metadata 常被抹掉，**下载时就记录曲名/URL**，否则事后无法反查（模板片 `bgm-tech-house.mp3` 已无法逐曲对回 Mixkit 曲库，商用前需复核） |
 | [incompetech](https://incompetech.com/)（Kevin MacLeod） | CC-BY 4.0（需署名） | BGM，曲库大、按情绪筛选 | 模板片 v1/v2 出处；注意 CC-BY 的署名义务 |
 | [Kenney](https://kenney.nl/assets)（音包） | CC0 | 游戏类项目 | **产品宣传片禁用**（S1）——模板片引入后被整批删除，仅列此供授权档案参考 |
 
@@ -64,7 +65,15 @@ assets/audio/
   sfx/<类别>/       149 个  按场景/材质分 16 类
 ```
 
-**找音先定类别，再挑音色**——按要配的画面动作查下表，进对应目录试听：
+**找音先定类别，再挑音色**——按要配的画面动作查下表，进对应目录试听。
+
+S1 词汇表的五个词到目录的对应关系（**`sparkle` 的目录名是 `light/`，库里没有 `sparkle/` 目录**）：
+
+| 词汇表 | whoosh | impact | riser | sparkle | transition |
+|---|---|---|---|---|---|
+| 目录 | `transition/` | `impact/` | `riser/` | **`light/`** | `transition/` |
+
+whoosh 与 transition 同在 `transition/`（运镜与转场的音色本就重叠）；其余 11 个类别是词汇表之外的**拟音层**（S4 的"贴画面定制"槽位）。
 
 | 类别 | 数量 | 装什么 | 什么时候进这个目录 |
 |---|---|---|---|
@@ -145,8 +154,51 @@ find assets/audio -name '*.mp3' -exec md5 -r {} \; | sort | awk '{print $1}' | u
 ### 4.1 钉帧方法
 
 - **声明式中央注册表**：`SFX: { from, src, volume }[]`，每条注释对应的画面动作；渲染层遍历数组，每条包 `<Sequence from={s.from}>`。帧号表与分镜表（`AIFL_SHOTS`）放同一文件对照（S2）。
-- **长样本靠 Sequence 截断，不剪音频文件**：`keyboard.mp3`（19.6s 原素材）按语境给 `durationInFrames` 24f 或 44f；其余统一 90f 让 ≤3s 素材自然播完。音频时长与画面动作严格等长（S4）。
-- **音量分层**：BGM 0.34 打底，SFX 0.2–0.6 分层——点击确认 0.6 最响、pop 连发尾音 0.25 最轻，用响度表达"这一拍多重要"（曾出现的 0.14 出自已删除的 v2 pluck 连发串，不属于定稿区间）。
+- **长样本靠 Sequence 截断，不剪音频文件**：`keyboard.mp3`（19.6s 原素材）按语境给 `durationInFrames` 24f 或 44f；其余统一 90f 让 ≤3s 素材自然播完。音频时长与画面动作严格等长（S4）。**库里 21 个文件长于 5s，必须显式给 `durationInFrames`**，照 90f 默认值会拖到动作结束后还在响（见下表）。
+- **音量分层**：BGM 0.34 打底，SFX 常规区间 0.2–0.6——点击确认 0.6 最响、pop 连发尾音 0.25 最轻，用响度表达"这一拍多重要"（曾出现的 0.14 出自已删除的 v2 pluck 连发串，不属于定稿区间）。**但 0.2–0.6 的前提是素材峰值接近 0dB**：库里 7 个文件本身录得轻，落在这个区间等于听不见，要按下表抬到 0.8–1.0。钉完必看波形/试听，不要只信数字。
+
+#### 需要显式截断的长样本（>5s，21 个）
+
+| 文件 | 时长 | 用法 |
+|---|---|---|
+| `scifi/scifi-computer-ambience` | 23.5s | 底噪，整段铺一个镜头 |
+| `film/projector-spin-antique` | 21.7s | 底噪/循环，按段落截 |
+| `text/keyboard` | 19.6s | 打字段落，模板片截 24f / 44f |
+| `text/write-blackboard` | 13.9s | 描线段落，按笔画时长截 |
+| `mech/mech-robotic-futuristic` | 9.6s | 组装/形变全程 |
+| `camera/camera-autofocus` | 9.6s | 对焦，一般只用前 10–20f |
+| `paper/paper-book-browse-fast` | 9.3s | 连续翻页，按页数截 |
+| `scifi/space-intro-futuristic` | 8.1s | 开场铺垫 |
+| `light/light-spell` | 8.0s | 点亮全程 |
+| `impact/impact-cine-big` | 7.9s | 落地，含长尾混响，截尾会显得干 |
+| `scifi/tech-hum-futuristic` | 6.0s | 底噪 |
+| `transition/wing-flutter` `swoosh-slow` `wind-pass-vibrate` | 5.0–5.7s | 运镜，贴运镜时长 |
+| `paper/paper-wind-blow` | 5.5s | 纸张飞散全程 |
+| `mech/metal-drop-scifi-small` | 5.5s | 落定，含尾音 |
+| `light/light-aura` `light-transition-magic` | 5.1–5.5s | 光效余韵 |
+| `impact/impact-movie-epic` | 5.1s | 落地，含长尾 |
+| `data/power-up-electronic` | 5.0s | 启动/点亮全程 |
+| `crowd/applause-rhythmic-loop` | 5.0s | 可循环掌声 |
+
+判据：**底噪/循环类**（ambience、hum、projector）按镜头时长铺；**动作类**按动作时长截；**带长尾混响的 impact**（`impact-cine-big` `impact-movie-epic` `metal-drop-scifi-small`）让尾音自然衰减，硬截会显得干。
+
+#### 本身录得轻、需要抬音量的文件（峰值 <-12dB，7 个）
+
+| 文件 | 峰值 | 建议 volume |
+|---|---|---|
+| `data/data-load-os` | -24.6dB | 0.9–1.0 |
+| `text/pencil-write-short` | -22.7dB | 0.9–1.0 |
+| `text/write-fast` | -20.0dB | 0.85–1.0 |
+| `transition/wing-flutter` | -17.9dB | 0.8–1.0 |
+| `camera/ui-zoom-in` | -14.3dB | 0.8–0.9 |
+| `counter/clock-knob-spin` | -14.0dB | 0.8–0.9 |
+| `counter/clock-tick-single` | -13.9dB | 0.8–0.9 |
+
+反过来：库里多数文件峰值贴近 0dB，给 0.6 就已经是"全片最响那一拍"的量级。新增音效入库时顺手记一下峰值：
+
+```bash
+ffmpeg -hide_banner -i <file>.mp3 -af volumedetect -f null /dev/null 2>&1 | grep max_volume
+```
 
 ### 4.2 变调与防机枪感
 
