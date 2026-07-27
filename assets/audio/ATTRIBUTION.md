@@ -32,30 +32,17 @@
 | `air-zoom-vacuum.mp3` | Air zoom vacuum | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2608/2608-preview.mp3 |
 | `bass-hit-futuristic.mp3` | Futuristic bass hit | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2303/2303-preview.mp3 |
 | `bass-hit-short.mp3` | Short bass hit | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2299/2299-preview.mp3 |
-| `bass-transition-pulse.mp3` | Pulsating bass transition | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2295/2295-preview.mp3 |
 | `camera-shutter-hard.mp3` | Camera shutter hard click | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/1430/1430-preview.mp3 |
-| `drum-hit-trailer.mp3` | Cinematic mystery trailer drum hit | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/546/546-preview.mp3 |
-| `drum-impact-subtle.mp3` | Deep cinematic subtle drum impact | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/549/549-preview.mp3 |
-| `drum-roll-tension.mp3` | Tension and suspense drum roll | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/577/577-preview.mp3 |
 | `glitch-electric-small.mp3` | Small electric glitch | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2595/2595-preview.mp3 |
 | `glitch-static.mp3` | Glitch static | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/1457/1457-preview.mp3 |
-| `glitch-text-intro.mp3` | Intro text glitch | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2950/2950-preview.mp3 |
 | `heartbeat-single.mp3` | Human single heart beat | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/490/490-preview.mp3 |
 | `impact-deep-whoosh.mp3` | Cinematic whoosh deep impact | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/1143/1143-preview.mp3 |
 | `impact-epic-trailer.mp3` | Movie trailer epic impact | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2908/2908-preview.mp3 |
-| `impact-movie-intro.mp3` | Movie impact intro presentation | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2902/2902-preview.mp3 |
 | `impact-zoom-quick.mp3` | Quick zoom impact | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/772/772-preview.mp3 |
-| `reverse-impact.mp3` | Reverse cinematic impact trailer | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/784/784-preview.mp3 |
-| `riser-drama.mp3` | Cinematic drama riser | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/632/632-preview.mp3 |
-| `riser-synth.mp3` | Cinematic synth riser | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/645/645-preview.mp3 |
-| `riser-tech-choir.mp3` | Tech choir cinematic riser | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/794/794-preview.mp3 |
-| `riser-trailer.mp3` | Cinematic trailer riser | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/790/790-preview.mp3 |
 | `shimmer-sparkle-sweep.mp3` | Sweeping sparkle presentation intro | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2633/2633-preview.mp3 |
-| `sub-bass-knock.mp3` | Knocking sub bass | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2300/2300-preview.mp3 |
 | `sweep-fast-small.mp3` | Fast small sweep transition | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/166/166-preview.mp3 |
 | `sweep-metal-quick.mp3` | Quick metal transition sweep | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/2639/2639-preview.mp3 |
 | `sweep-scifi-fast.mp3` | Fast sci fi transition sweep | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/3114/3114-preview.mp3 |
-| `tick-percussion.mp3` | Percussion tick-tock timer | Mixkit SFX Free License | https://assets.mixkit.co/active_storage/sfx/1047/1047-preview.mp3 |
 
 ## bgm/（BGM 备选，Mixkit Stock Music Free License 免署名可商用）
 
