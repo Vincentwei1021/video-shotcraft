@@ -17,8 +17,6 @@
 
 **An agent skill for crafting cinematic product videos: 104 shot recipe cards · 161 styles · 161 motion previews · a production-ready template**
 
-### 🖼️ [**Browse all 161 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
-
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
 </div>
@@ -27,8 +25,9 @@
 motion-design studio: point it at your product and it storyboards, animates, and
 sound-designs a cinematic promo, marketing, launch, or demo video with
 [Remotion](https://www.remotion.dev/) — real page captures, 2.5D camera moves,
-beat-synced cuts, and film-grade SFX included. See every shot in action in the
-**[🖼️ live Gallery](https://vincentwei1021.github.io/video-shotcraft/)**.
+beat-synced cuts, and film-grade SFX included.
+
+🖼️ [**Browse all 161 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 ## 🎬 Showcase
 
