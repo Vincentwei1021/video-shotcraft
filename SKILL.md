@@ -126,6 +126,8 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
    用户已选好音乐 → 开工前先做节奏分析（librosa 网格拟合求真实
    BPM/相位 + 带通找鼓点重音），时间线用拍号 `beatF(n)` 写，渲后从
    成片抽音轨回测切点误差 ≤3f。方法论见 `references/music-beat-sync.md`。
+   配了 BGM 的片子终渲固定交付两版：带 BGM 版 + 无 BGM 版（保留 SFX），
+   靠 `bgm` inputProp 从同一时间线渲出，方便用户后期自配音乐。
 
 6. **用镜头卡动效必须先解析 Gallery 索引并读准确的 demo 实现代码。**
    先用 `gallery/api/library.json` 校验卡名与 `style-key`，再按卡片文档的

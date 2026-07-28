@@ -282,6 +282,8 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    未指定 → 按片种选强鼓点、强节奏的电子底（tech-house 类），判据是
    "典型的产品宣传视频"气质而不是"好听"；候选曲必须垫进成片试听，
    单听曲子选型不可靠；`assets/audio/bgm/` 有节奏感强的备选。
+   BGM 的 `<Audio>` 用布尔 inputProp（如 `bgm`，默认 `true`）单独包住，
+   与 SFX 解耦——终渲要从同一时间线出带 BGM / 无 BGM 两版成片。
 3. **SFX 用电影系词汇按镜头语言选**：运镜=whoosh、落地=impact、
    铺垫=riser、光效=sparkle（目录 `light/`）、转场=transition；
    禁用游戏音包**音色**（合成器 pluck/bloop、卡通弹跳一耳朵出戏）。
@@ -358,11 +360,16 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    全部切点误差 ≤3f 才算过。
 6. 审查报告的修复项回到阶段 3/5/6 小循环：方案或分镜偏差回阶段 3，画面实现
    问题回阶段 5，声音问题回阶段 6；直到 checklist 通过后终渲出片。
+7. **双版本终渲**：配了 BGM 的片子固定交付两版——带 BGM 版和无 BGM 版
+   （保留 SFX）。无 BGM 版靠阶段 6 预留的 `bgm` inputProp 从同一时间线
+   渲出（`npx remotion render … --props='{"bgm":false}'`），不另建工程、
+   不用 ffmpeg 后期抽轨。命名区分（如 `promo.mp4` / `promo-nobgm.mp4`），
+   无 BGM 版方便用户后期自配音乐或平台配乐。
 
 **产出**：独立审查报告（final-review + aesthetic-rules checklist + 帧号证据）
-+ 终渲成片。
++ 终渲成片（带 BGM / 无 BGM 两版）。
 
-**交付物**：审查报告 + 成片。
+**交付物**：审查报告 + 成片两版（带 BGM + 无 BGM）。
 
 **常见坑**：
 
