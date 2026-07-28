@@ -339,9 +339,16 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 **具体操作**：
 
 1. 全片渲染最新版，ffmpeg 抽全部关键帧（每镜头至少：入场中、
-   动作峰值、落定后三帧）。
+   动作峰值、落定后三帧）。配了 BGM 的片子在此处就渲出两版——带 BGM 版
+   和无 BGM 版（保留 SFX），无 BGM 版靠阶段 6 预留的 `bgm` inputProp
+   从同一时间线渲出：写一个 `props-nobgm.json`（内容 `{"bgm":false}`）
+   然后 `npx remotion render … --props=props-nobgm.json`（跨平台可靠；
+   macOS/Linux 也可内联 `--props='{"bgm":false}'`，Windows shell 会剥掉
+   内联 JSON 的双引号，必须走文件）。不另建工程、不用 ffmpeg 后期抽轨。
+   命名区分（如 `promo.mp4` / `promo-nobgm.mp4`）。
 2. **独立终检（必做）**：派一个干净上下文的 subagent 做第三方审查。
-   不给它制作过程中的辩解、修改历史或“应该通过”的暗示，只提供：最新版成片、
+   不给它制作过程中的辩解、修改历史或“应该通过”的暗示，只提供：最新版成片
+   （配 BGM 的片子含两版，供 A8 校验）、
    抽出的关键帧、创作模式、产品简报、需求到执行决策表、确认或记录的视觉方向/tokens、styleframe 或跳过理由、
    功能到镜头映射、
    Gallery 卡名与具体变体、`library.json` 中对应记录、卡片文档定位到的准确
@@ -360,10 +367,7 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    全部切点误差 ≤3f 才算过。
 6. 审查报告的修复项回到阶段 3/5/6 小循环：方案或分镜偏差回阶段 3，画面实现
    问题回阶段 5，声音问题回阶段 6；直到 checklist 通过后终渲出片。
-7. **双版本终渲**：配了 BGM 的片子固定交付两版——带 BGM 版和无 BGM 版
-   （保留 SFX）。无 BGM 版靠阶段 6 预留的 `bgm` inputProp 从同一时间线
-   渲出（`npx remotion render … --props='{"bgm":false}'`），不另建工程、
-   不用 ffmpeg 后期抽轨。命名区分（如 `promo.mp4` / `promo-nobgm.mp4`），
+   终渲重复步骤 1 的双版本渲染——配 BGM 的片子交付带 BGM / 无 BGM 两版，
    无 BGM 版方便用户后期自配音乐或平台配乐。
 
 **产出**：独立审查报告（final-review + aesthetic-rules checklist + 帧号证据）

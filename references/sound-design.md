@@ -17,7 +17,7 @@
 
 **顺序：画面结构基本锁定 → 先铺 BGM 定能量骨架 → 逐拍钉 SFX。**
 
-1. **BGM 先行，定能量骨架。** 一条 BGM 全片铺底，音量包络用 `interpolate` 做首尾淡入淡出（模板片 `[0, 30, TOTAL-50, TOTAL] → [0, 0.34, 0.34, 0]`，即 1s 淡入、1.7s 淡出）。BGM 音量压在 0.34 左右给 SFX 留 headroom。曲子的能量曲线要和分镜表的能量曲线对得上（低开 → 中段推进 → outro 峰值），候选曲必须垫进成片试听——单听曲子无法判断气质（S1）。BGM 的 `<Audio>` 用布尔 inputProp（如 `bgm`，默认 `true`）包住挂载，SFX 不受该开关影响——配了 BGM 的片子终渲交付固定出两版成片，无 BGM 版用 `npx remotion render … --props='{"bgm":false}'` 从同一时间线渲出。
+1. **BGM 先行，定能量骨架。** 一条 BGM 全片铺底，音量包络用 `interpolate` 做首尾淡入淡出（模板片 `[0, 30, TOTAL-50, TOTAL] → [0, 0.34, 0.34, 0]`，即 1s 淡入、1.7s 淡出）。BGM 音量压在 0.34 左右给 SFX 留 headroom。曲子的能量曲线要和分镜表的能量曲线对得上（低开 → 中段推进 → outro 峰值），候选曲必须垫进成片试听——单听曲子无法判断气质（S1）。BGM 的 `<Audio>` 用布尔 inputProp（如 `bgm`，默认 `true`）包住挂载，SFX 不受该开关影响——配了 BGM 的片子终渲交付固定出两版成片，无 BGM 版从同一时间线渲出：`npx remotion render … --props=props-nobgm.json`（文件内容 `{"bgm":false}`；Windows shell 会剥掉内联 JSON 的双引号，走文件最稳，macOS/Linux 也可内联 `--props='{"bgm":false}'`）。
 2. **词汇表按"片种"选，不按"事件"选（S1）。** 产品宣传片的 SFX 词汇 = whoosh(运镜) / impact(落地) / riser(铺垫) / sparkle(光效，目录 `light/`) / transition(转场)，禁用游戏音包**音色**（合成器 pluck/bloop、卡通弹跳）。模板片第一版按 UI 事件语义选音（click/drop/confirmation），用户一耳朵判死刑"太像游戏了"。
    **禁的是音色不是动作**：画面真有点击/开关/碎裂就该配它的拟音（模板片自己用 `click-camera.mp3` 并给了全片最高响度 0.6）；但 `sfx/ui/` 需逐个试听——里面既有真实开关拟音也有合成反馈音，后者正属本条排除的质感（取舍表见 3.3）；`sfx/glass/` 是真实碎裂材质音。判别问句见 aesthetic-rules S1。
 3. **SFX 逐拍钉帧、声明式表集中管理（S2）。** SFX 是 `{ from, src, volume }[]` 数组，逐条注释对应的画面动作（"hero card: whoosh up on the pop"），渲染时每条包一个 `<Sequence from={s.from}>`。杜绝凭感觉铺音效。

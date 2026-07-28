@@ -87,6 +87,7 @@
 - SFX 用电影系词汇（whoosh/impact/riser/sparkle/transition），
   禁游戏 UI 音色；结尾固定句式 riser→impact→sparkle
 - 复现片若加了 BGM，终渲固定交付两版：带 BGM 版 + 无 BGM 版（保留 SFX），
-  BGM `<Audio>` 用 `bgm` inputProp 包住，从同一时间线
-  `--props='{"bgm":false}'` 渲出无 BGM 版
+  BGM `<Audio>` 用 `bgm` inputProp 包住，从同一时间线渲出无 BGM 版：
+  `--props=props-nobgm.json`（内容 `{"bgm":false}`；Windows 内联 JSON
+  会被 shell 剥引号，走文件）
 - 确定性渲染：无 Math.random/Date.now，一切伪随机用固定种子
