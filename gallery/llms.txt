@@ -146,6 +146,6 @@ Each shot recipe card documents a motion technique: purpose, energy level, sugge
 - [edit-hook-moves](https://vincentwei1021.github.io/video-shotcraft/library.html#edit-hook-moves): An editorial hook: a short logo-button stinger that interrupts the ending with a 12-frame easter egg.
 - [neon-triple-marquee](https://vincentwei1021.github.io/video-shotcraft/library.html#neon-triple-marquee): Three rows of outlined neon giants scroll in opposite directions across the full screen, lighting up in turn on a one-third phase offset.
 - [outro-group-photo-launch](https://vincentwei1021.github.io/video-shotcraft/library.html#outro-group-photo-launch): Elements from the film assemble around the wordmark as a crane settle, stage light, and gold dust create a launch-event finale.
-- [ui-strip-away-outro](https://vincentwei1021.github.io/video-shotcraft/library.html#ui-strip-away-outro): After Publish is clicked the editor UI evaporates layer by layer from the edges inward, leaving one button to slide center, grow, and hand off to the wordmark.
+- [ui-strip-away-outro](https://vincentwei1021.github.io/video-shotcraft/library.html#ui-strip-away-outro): After Publish is clicked, the editor UI evaporates layer by layer from the edges inward, leaving one button to slide center, grow, and hand off to the wordmark.
 - [ui-to-brand-morph](https://vincentwei1021.github.io/video-shotcraft/library.html#ui-to-brand-morph): Two UI-to-brand morphs: an icon flips flat and blooms into a logo mark, and an input field contracts into a capsule as glyphs assemble the logo.
 
