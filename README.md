@@ -12,7 +12,12 @@
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+
 **An agent skill for crafting cinematic product videos: 104 shot recipe cards · 161 styles · 161 motion previews · a production-ready template**
+
+### 🖼️ [**Browse all 161 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -22,7 +27,8 @@
 motion-design studio: point it at your product and it storyboards, animates, and
 sound-designs a cinematic promo, marketing, launch, or demo video with
 [Remotion](https://www.remotion.dev/) — real page captures, 2.5D camera moves,
-beat-synced cuts, and film-grade SFX included.
+beat-synced cuts, and film-grade SFX included. See every shot in action in the
+**[🖼️ live Gallery](https://vincentwei1021.github.io/video-shotcraft/)**.
 
 ## 🎬 Showcase
 

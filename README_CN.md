@@ -12,7 +12,12 @@
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-在线样片-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+
 **让 agent 帮你制作电影感产品视频的 skill：104 张镜头配方卡 · 161 个样式 · 161 条动态样片 · 已验收成片模板**
+
+### 🖼️ [**在线 Gallery：浏览全部 161 条动态样片 »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -21,7 +26,8 @@
 **video-shotcraft** 是一个把 Claude Code / Codex 变成动效工作室的 AI agent skill：
 把你的产品交给它，它会用 [Remotion](https://www.remotion.dev/) 完成分镜、动画
 和声音设计，产出一支电影感的宣传片 / 营销视频 / 发布视频 / 功能演示——
-真实页面截图、2.5D 运镜、节奏卡点和电影级 SFX 全部包含。
+真实页面截图、2.5D 运镜、节奏卡点和电影级 SFX 全部包含。所有镜头效果都可以在
+**[🖼️ 在线 Gallery](https://vincentwei1021.github.io/video-shotcraft/)** 直接预览。
 
 ## 🎬 效果预览
 

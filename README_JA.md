@@ -12,7 +12,12 @@
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
+
 **映画のような製品動画を制作するためのエージェントスキル：104 種類のショットレシピカード · 161 種類のスタイル · 161 本のモーションプレビュー · 実制作に対応したテンプレート**
+
+### 🖼️ [**ライブ Gallery で 161 本のモーションプレビューをすべて見る »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -22,7 +27,8 @@
 変える AI エージェントスキルです。製品を指定するだけで、ストーリーボード、アニメーション、
 サウンドデザインを行い、[Remotion](https://www.remotion.dev/) を使って映画のようなプロモーション、
 マーケティング、ローンチ、デモ動画を制作します。実際のページキャプチャ、2.5D カメラワーク、
-ビートに同期したカット、映画品質の SFX も含まれます。
+ビートに同期したカット、映画品質の SFX も含まれます。すべてのショットは
+**[🖼️ ライブ Gallery](https://vincentwei1021.github.io/video-shotcraft/)** でプレビューできます。
 
 ## 🎬 ショーケース
 
