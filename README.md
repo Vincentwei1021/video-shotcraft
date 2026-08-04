@@ -11,6 +11,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
+[![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
 
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
@@ -202,12 +203,6 @@ Special thanks to:
   Vlambeer's screenshake talks, classic animation timing) inform several cards.
 - **Claude Code** — this library itself was built, iterated, and QA'd with an
   AI coding agent, using the same workflow the skill teaches.
-
-## 🌏 Mirror
-
-For faster access from mainland China, this repo is also hosted on AtomGit:
-[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
-(read-only mirror, auto-synced; GitHub remains the primary home).
 
 ## ⭐ Star history
 

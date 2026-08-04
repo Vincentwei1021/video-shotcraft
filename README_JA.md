@@ -11,6 +11,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
+[![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
 
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
@@ -204,12 +205,6 @@ Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、Loom** のプロ�
   （Vlambeer のスクリーンシェイクに関する講演、古典的なアニメーションのタイミングなど）。
 - **Claude Code** — このライブラリ自体も、スキルが教えるものと同じワークフローを使い、
   AI コーディングエージェントによって構築、反復改善、QA されました。
-
-## 🌏 ミラー
-
-中国本土からのアクセス向けに、AtomGit 上のミラーリポジトリも利用できます：
-[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
-（読み取り専用ミラー、自動同期。GitHub がプライマリです）。
 
 ## ⭐ Star 履歴
 

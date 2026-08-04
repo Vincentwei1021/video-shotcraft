@@ -11,6 +11,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
 [![Gallery](https://img.shields.io/badge/Gallery-在线样片-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
+[![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
 
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
@@ -195,12 +196,6 @@ Pitch、Miro、Superhuman、Loom** 等产品的宣传片。镜头卡记录的是
   经典动画时序原则），多张镜头卡受其启发。
 - **Claude Code** —— 本库自身的构建、迭代与验收全程由 AI coding agent
   完成，用的正是这个 skill 所传授的工作流。
-
-## 🌏 镜像
-
-国内访问可使用 AtomGit 托管的镜像仓库：
-[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
-（只读镜像，自动同步；GitHub 仍为主仓库）。
 
 ## ⭐ Star 历史
 
