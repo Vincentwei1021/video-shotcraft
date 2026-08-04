@@ -205,6 +205,12 @@ Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、Loom** のプロ�
 - **Claude Code** — このライブラリ自体も、スキルが教えるものと同じワークフローを使い、
   AI コーディングエージェントによって構築、反復改善、QA されました。
 
+## 🌏 ミラー
+
+中国本土からのアクセス向けに、AtomGit 上のミラーリポジトリも利用できます：
+[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
+（読み取り専用ミラー、自動同期。GitHub がプライマリです）。
+
 ## ⭐ Star 履歴
 
 <a href="https://www.star-history.com/?repos=Vincentwei1021%2Fvideo-shotcraft&type=date&legend=top-left">

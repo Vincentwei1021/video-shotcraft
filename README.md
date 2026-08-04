@@ -203,6 +203,12 @@ Special thanks to:
 - **Claude Code** — this library itself was built, iterated, and QA'd with an
   AI coding agent, using the same workflow the skill teaches.
 
+## 🌏 Mirror
+
+For faster access from mainland China, this repo is also hosted on AtomGit:
+[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
+(read-only mirror, auto-synced; GitHub remains the primary home).
+
 ## ⭐ Star history
 
 <a href="https://www.star-history.com/?repos=Vincentwei1021%2Fvideo-shotcraft&type=date&legend=top-left">

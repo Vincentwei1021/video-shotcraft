@@ -196,6 +196,12 @@ Pitch、Miro、Superhuman、Loom** 等产品的宣传片。镜头卡记录的是
 - **Claude Code** —— 本库自身的构建、迭代与验收全程由 AI coding agent
   完成，用的正是这个 skill 所传授的工作流。
 
+## 🌏 镜像
+
+国内访问可使用 AtomGit 托管的镜像仓库：
+[atomgit.com/VincentWei/video-shotcraft](https://atomgit.com/VincentWei/video-shotcraft)
+（只读镜像，自动同步；GitHub 仍为主仓库）。
+
 ## ⭐ Star 历史
 
 <a href="https://www.star-history.com/?repos=Vincentwei1021%2Fvideo-shotcraft&type=date&legend=top-left">
