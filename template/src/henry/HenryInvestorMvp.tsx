@@ -1,4 +1,4 @@
-import {AbsoluteFill, Sequence} from 'remotion';
+import {AbsoluteFill, Sequence, staticFile} from 'remotion';
 import timelineJson from './timeline.json';
 import type {HenryInvestorProps, HenryTimelineEntry} from './types';
 import {Opening} from './scenes/Opening';
@@ -9,7 +9,7 @@ import {Verdict} from './scenes/Verdict';
 const timeline = timelineJson as HenryTimelineEntry[];
 
 const imageAt = (slideImages: string[], index: number) =>
-  slideImages[index] ?? slideImages[slideImages.length - 1] ?? slideImages[0];
+  staticFile(slideImages[index] ?? slideImages[slideImages.length - 1] ?? slideImages[0]);
 
 export const HenryInvestorMvp: React.FC<HenryInvestorProps> = (props) => {
   return (

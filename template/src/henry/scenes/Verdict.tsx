@@ -52,9 +52,11 @@ export const Verdict: React.FC<VerdictProps> = ({
             <div style={{fontSize: 31, lineHeight: 1.5, fontWeight: 580}}>{nextDiligence}</div>
           </div>
 
-          <Sequence from={30} durationInFrames={240}>
-            <RiskPanel risks={risks} />
-          </Sequence>
+          <div>
+            <Sequence layout="none" from={30} durationInFrames={240}>
+              <RiskPanel risks={risks} />
+            </Sequence>
+          </div>
         </div>
 
         <div style={{marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 18, color: 'rgba(255,255,255,0.58)', letterSpacing: 1.5}}>

@@ -19,8 +19,9 @@ const ThesisCard: React.FC<{index: number; point: string}> = ({index, point}) =>
   return (
     <div
       style={{
-        width: 485,
-        minHeight: 292,
+        width: '100%',
+        height: 390,
+        boxSizing: 'border-box',
         padding: '40px 42px',
         borderRadius: 28,
         border: '1px solid rgba(255,255,255,0.16)',
@@ -34,7 +35,7 @@ const ThesisCard: React.FC<{index: number; point: string}> = ({index, point}) =>
         <div style={{fontSize: 22, letterSpacing: 3, fontWeight: 700, color: '#8ce6d4'}}>THESIS {String(index + 1).padStart(2, '0')}</div>
         <div style={{fontSize: 52, fontWeight: 760, color: 'rgba(255,255,255,0.14)'}}>0{index + 1}</div>
       </div>
-      <div style={{fontSize: 35, lineHeight: 1.48, fontWeight: 580, color: '#f2f1eb'}}>{point}</div>
+      <div style={{fontSize: 32, lineHeight: 1.46, fontWeight: 580, color: '#f2f1eb'}}>{point}</div>
     </div>
   );
 };
@@ -56,9 +57,11 @@ export const Thesis: React.FC<ThesisProps> = ({thesisPoints, slideImage, duratio
 
       <div style={{position: 'absolute', left: 112, right: 112, top: 282, display: 'flex', gap: 38}}>
         {thesisPoints.map((point, index) => (
-          <Sequence key={point} from={index * 48} durationInFrames={durationInFrames - index * 48}>
-            <ThesisCard index={index} point={point} />
-          </Sequence>
+          <div key={point} style={{flex: 1, minWidth: 0}}>
+            <Sequence layout="none" from={index * 48} durationInFrames={durationInFrames - index * 48}>
+              <ThesisCard index={index} point={point} />
+            </Sequence>
+          </div>
         ))}
       </div>
 
