@@ -1,0 +1,22 @@
+[
+  {
+    "id": "opening",
+    "from": 0,
+    "duration": 180
+  },
+  {
+    "id": "problem",
+    "from": 180,
+    "duration": 270
+  },
+  {
+    "id": "thesis",
+    "from": 450,
+    "duration": 450
+  },
+  {
+    "id": "verdict",
+    "from": 900,
+    "duration": 300
+  }
+]
