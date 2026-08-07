@@ -85,6 +85,11 @@ jobs:
       - name: Demo components compile (tsc strict)
         run: |
           cd template && npm ci
+          # 8 demos import @remotion/motion-blur, which the template
+          # deliberately doesn't ship. Install it transiently, pinned to the
+          # template's remotion version — a bare latest install nests a second
+          # remotion copy and trips checkMultipleRemotionVersions.
+          npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
           # demos/ live outside template/, so give tsc a module-resolution
           # root at the repo top via a transient symlink
           cd .. && ln -s template/node_modules node_modules
