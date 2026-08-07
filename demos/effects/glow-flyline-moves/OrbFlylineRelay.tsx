@@ -5,7 +5,7 @@
 // (opacity→1 + 描边亮白脉冲) 且邻近光斑同帧涨亮一拍（组合共振证明点）；
 // 线二 B→C 接力，C 亮起收束。光斑 95–120f out-sine 减速收敛，
 // 全部动画 f120 前结束，末 35f 真静止。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
 
 // 库内标准伪随机（帧确定）
@@ -82,8 +82,9 @@ const surge = (frame: number, at: number) => {
 const Flyline: React.FC<{
   frame: number;
   start: number; // 生长起始帧
+  haloId: string; // 光头径向渐变 ID（父组件按实例生成）
   p0: Pt; p1: Pt; p2: Pt; p3: Pt;
-}> = ({ frame, start, p0, p1, p2, p3 }) => {
+}> = ({ frame, start, haloId, p0, p1, p2, p3 }) => {
   const DUR = 24;      // 生长
   const HOLD = 4;      // 到达后停一拍
   const FADE = 14;     // 消散（线性，帧时间解耦）
@@ -136,7 +137,7 @@ const Flyline: React.FC<{
       {/* 亮点头领跑：仅生长期挂载 */}
       {growing && (
         <g>
-          <circle cx={head.x} cy={head.y} r={34} fill="url(#orbHeadHalo)" />
+          <circle cx={head.x} cy={head.y} r={34} fill={`url(#${haloId})`} />
           <circle cx={head.x} cy={head.y} r={8} fill="#ffffff" />
         </g>
       )}
@@ -193,6 +194,8 @@ const DarkCard: React.FC<{
 
 export const OrbFlylineRelay: React.FC = () => {
   const frame = useCurrentFrame();
+  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const haloId = `orbHeadHalo-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   // 光斑有效时间：0–95f 匀速漂移，95–120f out-sine 减速收敛，f≥120 恒定 → 末 35f 真静止
   const t =
@@ -254,14 +257,14 @@ export const OrbFlylineRelay: React.FC = () => {
         style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
       >
         <defs>
-          <radialGradient id="orbHeadHalo">
+          <radialGradient id={haloId}>
             <stop offset="0%" stopColor="rgba(255,255,255,0.55)" />
             <stop offset="55%" stopColor="rgba(255,255,255,0.22)" />
             <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </radialGradient>
         </defs>
-        <Flyline frame={frame} start={18} {...L1} />
-        <Flyline frame={frame} start={52} {...L2} />
+        <Flyline frame={frame} start={18} haloId={haloId} {...L1} />
+        <Flyline frame={frame} start={52} haloId={haloId} {...L2} />
       </svg>
     </AbsoluteFill>
   );

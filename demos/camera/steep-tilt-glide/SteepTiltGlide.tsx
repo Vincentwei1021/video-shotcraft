@@ -6,7 +6,7 @@
 // perspective / perspectiveOrigin / rotateY / rotateZ 全程一个常数不动，
 // 动的只有页面自身沿其 3D 平面横向（局部 X 轴）的滑移 translateX。
 // v4 的悬空贴落（FloatWrap 同形软影）保留。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
 
 const FONT = 'Helvetica, Arial, sans-serif';
@@ -38,22 +38,26 @@ const liftOf = (t: number, land: number, H = 230) => {
 };
 
 /* ClickUp 彩色小 logo（双 V 叠形近似） */
-const CULogo: React.FC<{ size: number }> = ({ size }) => (
-  <svg width={size} height={size} viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="cu1" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stopColor="#8930fd" />
-        <stop offset="1" stopColor="#49ccf9" />
-      </linearGradient>
-      <linearGradient id="cu2" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stopColor="#ff02f0" />
-        <stop offset="1" stopColor="#ffc800" />
-      </linearGradient>
-    </defs>
-    <path d="M 14 62 L 50 30 L 86 62" fill="none" stroke="url(#cu1)" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M 22 84 L 50 62 L 78 84" fill="none" stroke="url(#cu2)" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const CULogo: React.FC<{ size: number }> = ({ size }) => {
+  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id={`cu1-${uid}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#8930fd" />
+          <stop offset="1" stopColor="#49ccf9" />
+        </linearGradient>
+        <linearGradient id={`cu2-${uid}`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ff02f0" />
+          <stop offset="1" stopColor="#ffc800" />
+        </linearGradient>
+      </defs>
+      <path d="M 14 62 L 50 30 L 86 62" fill="none" stroke={`url(#cu1-${uid})`} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M 22 84 L 50 62 L 78 84" fill="none" stroke={`url(#cu2-${uid})`} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
 /* Dropbox 蓝四菱形 glyph（原片 f45/f60 主区圆角灰砖里的图标） */
 const DropboxGlyph: React.FC<{ size: number }> = ({ size }) => (

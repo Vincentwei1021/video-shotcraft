@@ -3,7 +3,7 @@
 // "打"过去(22f, out-cubic 生长)，亮点头部领跑、亮头暗尾拖尾；到达帧目标卡
 // 3px+ ink 描边脉冲 + 加深脉冲(白底禁提亮)。随后第二条线接力打到上中卡。
 // 收尾真静止：全部动画在 f86 前结束，之后所有元素冻结。
-import React from 'react';
+import React, { useId } from 'react';
 import { useCurrentFrame, interpolate, Easing } from 'remotion';
 import { FakeDashboard } from '../../_fixtures/Fixtures';
 
@@ -29,8 +29,9 @@ const CARD_TM = { x: 808, y: 108, w: 524, h: 454, cx: 1070, cy: 335 }; // 上中
 const Flyline: React.FC<{
   frame: number;
   start: number; // 生长起始帧
+  haloId: string; // 光头径向渐变 ID（父组件按实例生成）
   p0: Pt; p1: Pt; p2: Pt; p3: Pt;
-}> = ({ frame, start, p0, p1, p2, p3 }) => {
+}> = ({ frame, start, haloId, p0, p1, p2, p3 }) => {
   const DUR = 22;
   if (frame < start) return null;
   const e = interpolate(frame, [start, start + DUR], [0, 1], {
@@ -82,7 +83,7 @@ const Flyline: React.FC<{
       {/* 光头：仅生长期挂载，摘罩即真静止 */}
       {growing && (
         <g>
-          <circle cx={head.x} cy={head.y} r={26} fill="url(#headHalo)" />
+          <circle cx={head.x} cy={head.y} r={26} fill={`url(#${haloId})`} />
           <circle cx={head.x} cy={head.y} r={9} fill="#ffffff" stroke="#2f2f2f" strokeWidth={3} />
         </g>
       )}
@@ -125,6 +126,8 @@ const CardPulse: React.FC<{
 
 export const FlylineArc: React.FC = () => {
   const frame = useCurrentFrame();
+  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const haloId = `headHalo-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   // 时间轴：线1 生长 10–32f → 卡RB脉冲 32–50f；线2 生长 46–68f → 卡TM脉冲 68–86f
   // f86 后全静止（140f 总长 → 静止 54f ≥ 35f）
@@ -142,7 +145,7 @@ export const FlylineArc: React.FC = () => {
         style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
       >
         <defs>
-          <radialGradient id="headHalo">
+          <radialGradient id={haloId}>
             <stop offset="0%" stopColor="rgba(0,0,0,0.38)" />
             <stop offset="55%" stopColor="rgba(0,0,0,0.18)" />
             <stop offset="100%" stopColor="rgba(0,0,0,0)" />
@@ -150,8 +153,8 @@ export const FlylineArc: React.FC = () => {
         </defs>
         <CardPulse frame={frame} at={32} rect={CARD_RB} />
         <CardPulse frame={frame} at={68} rect={CARD_TM} />
-        <Flyline frame={frame} start={10} {...L1} />
-        <Flyline frame={frame} start={46} {...L2} />
+        <Flyline frame={frame} start={10} haloId={haloId} {...L1} />
+        <Flyline frame={frame} start={46} haloId={haloId} {...L2} />
       </svg>
     </div>
   );

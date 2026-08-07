@@ -6,7 +6,7 @@
 //    原片是单个湍流烟雾环——边缘破碎起絮、环身明暗斑块交错、粉紫为主
 //    顶部偏奶桃色、出现后减速外扩且全程缓慢长大、衰减极慢（片尾仍在，
 //    弥散变淡而非熄灭）、中心无水面光。用 feTurbulence+位移贴图模拟。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 
 const mulberry32 = (a: number) => () => {
@@ -134,6 +134,9 @@ const UiCard: React.FC<{ seed: number; title: string }> = ({ seed, title }) => (
 // 粉紫为主、顶部奶桃色；出现后减速外扩且全程缓慢长大；衰减极慢——
 // 片尾仍清晰可见（弥散变淡而非熄灭）；中心无水面光、背景纯黑。
 const SmokeRing: React.FC<{ frame: number }> = ({ frame }) => {
+  // 滤镜/渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  // hooks 必须在条件 return 之前调用
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const t = frame - RING_T0;
   if (t < 0) return null;
   // 半径：小出现→减速外扩，之后仍缓慢长大（原片全程未停）
@@ -151,22 +154,22 @@ const SmokeRing: React.FC<{ frame: number }> = ({ frame }) => {
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
         <defs>
           {/* 破碎絮状边缘：分形噪声位移主体（octaves=4 → 更细的絮丝） */}
-          <filter id="smokeA" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id={`smokeA-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
             <feTurbulence type="fractalNoise" baseFrequency="0.013 0.016" numOctaves={4} seed={11} result="n" />
             <feDisplacementMap in="SourceGraphic" in2="n" scale={disp} xChannelSelector="R" yChannelSelector="G" />
           </filter>
           {/* 第二组噪声（不同种子）：亮斑错位层 */}
-          <filter id="smokeB" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id={`smokeB-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
             <feTurbulence type="fractalNoise" baseFrequency="0.021 0.018" numOctaves={4} seed={37} result="n" />
             <feDisplacementMap in="SourceGraphic" in2="n" scale={disp * 0.85} xChannelSelector="R" yChannelSelector="G" />
           </filter>
           {/* 第三组噪声：暗斑洞隙层（压出环身明暗交错的黑斑） */}
-          <filter id="smokeC" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id={`smokeC-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
             <feTurbulence type="fractalNoise" baseFrequency="0.019 0.023" numOctaves={3} seed={73} result="n" />
             <feDisplacementMap in="SourceGraphic" in2="n" scale={disp * 1.1} xChannelSelector="R" yChannelSelector="G" />
           </filter>
           {/* 顶部奶桃色、下部粉紫的环身渐变（降饱和，对照原片灰粉调） */}
-          <linearGradient id="ringGrad" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`ringGrad-${uid}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="hsla(28 45% 78% / 0.85)" />
             <stop offset="35%" stopColor="hsla(315 45% 74% / 0.85)" />
             <stop offset="100%" stopColor="hsla(276 42% 66% / 0.85)" />
@@ -174,19 +177,19 @@ const SmokeRing: React.FC<{ frame: number }> = ({ frame }) => {
         </defs>
         <g transform={`rotate(${rot} 960 540)`} opacity={op}>
           {/* 外圈弥散柔光 */}
-          <g style={{ filter: 'url(#smokeA)' }}>
+          <g style={{ filter: `url(#smokeA-${uid})` }}>
             <circle cx={960} cy={540} r={R} fill="none" stroke="hsla(295 40% 68% / 0.26)" strokeWidth={w * 1.9} style={{ filter: 'blur(22px)' }} />
           </g>
           {/* 环身主体（湍流位移 → 破碎絮状边缘；blur 收小保留湍流纹理） */}
-          <g style={{ filter: 'url(#smokeA)' }}>
-            <circle cx={960} cy={540} r={R} fill="none" stroke="url(#ringGrad)" strokeWidth={w} style={{ filter: 'blur(9px)' }} opacity={0.85} />
+          <g style={{ filter: `url(#smokeA-${uid})` }}>
+            <circle cx={960} cy={540} r={R} fill="none" stroke={`url(#ringGrad-${uid})`} strokeWidth={w} style={{ filter: 'blur(9px)' }} opacity={0.85} />
           </g>
           {/* 亮斑层：另一组噪声错位叠加 */}
-          <g style={{ filter: 'url(#smokeB)' }}>
+          <g style={{ filter: `url(#smokeB-${uid})` }}>
             <circle cx={960} cy={540} r={R * 0.99} fill="none" stroke="hsla(310 60% 86% / 0.6)" strokeWidth={w * 0.45} style={{ filter: 'blur(6px)' }} />
           </g>
           {/* 暗斑洞隙：第三组噪声轻压环身 → 明暗斑块交错（轻微，勿成迷彩） */}
-          <g style={{ filter: 'url(#smokeC)' }}>
+          <g style={{ filter: `url(#smokeC-${uid})` }}>
             <circle cx={960} cy={540} r={R * 1.005} fill="none" stroke="hsla(262 40% 10% / 0.32)" strokeWidth={w * 0.4} style={{ filter: 'blur(7px)' }} />
           </g>
         </g>
@@ -266,6 +269,8 @@ const lerpPose = (a: Pose, b: Pose, t: number): Pose => {
 
 export const CardFlockTumble: React.FC = () => {
   const frame = useCurrentFrame();
+  // 渐变 ID 按实例生成，多实例同场不串引
+  const gradId = `strokeGrad-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   // STRONGER 巨字
   const st = frame - TEXT_T0;
@@ -352,7 +357,7 @@ export const CardFlockTumble: React.FC = () => {
             }}
           >
             <defs>
-              <linearGradient id="strokeGrad" x1="0" y1="0" x2="1" y2="0">
+              <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor="#ffe14d" />
                 <stop offset="30%" stopColor="#ff5ad0" />
                 <stop offset="60%" stopColor="#b46bff" />
@@ -369,7 +374,7 @@ export const CardFlockTumble: React.FC = () => {
               fontSize={352}
               letterSpacing={2}
               fill="none"
-              stroke="url(#strokeGrad)"
+              stroke={`url(#${gradId})`}
               strokeWidth={4.5}
             >
               STRONGER

@@ -1,6 +1,7 @@
 // freeze-annotate 定格标注（轮 G）——真实卡片流运动中定格，
 // 马克笔琥珀圈注（feTurbulence 手绘抖动）圈住目标卡 + 箭头点题，解冻继续。
 // remap：0–45 流动 → 45–100 定格（斜率0）→ 100–135 解冻（1.4x 补偿）。
+import { useId } from 'react';
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import layout from '../../_textures/live-layout.json';
 
@@ -14,6 +15,8 @@ const AMBER = '#b45309';
 
 export const FreezeAnnotateReal: React.FC = () => {
   const frame = useCurrentFrame();
+  // 滤镜 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const roughId = `rough-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const src = interpolate(frame, [0, 45, 100, 135], [0, 45, 45, 94], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
   });
@@ -46,7 +49,7 @@ export const FreezeAnnotateReal: React.FC = () => {
       </div>
       <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: fade }}>
         <defs>
-          <filter id="rough">
+          <filter id={roughId}>
             <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="n" />
             <feDisplacementMap in="SourceGraphic" in2="n" scale="7" />
           </filter>
@@ -56,13 +59,13 @@ export const FreezeAnnotateReal: React.FC = () => {
           fill="none" stroke={AMBER} strokeWidth={8} strokeLinecap="round"
           strokeDasharray={C} strokeDashoffset={C * (1 - draw)}
           transform={`rotate(-6 ${targetX} 560)`}
-          filter="url(#rough)"
+          filter={`url(#${roughId})`}
         />
         <path
           d={`M ${targetX + 330} 190 Q ${targetX + 220} 240 ${targetX + 140} 320`}
           fill="none" stroke={AMBER} strokeWidth={8} strokeLinecap="round"
           strokeDasharray={420} strokeDashoffset={420 * (1 - arrowDraw)}
-          filter="url(#rough)"
+          filter={`url(#${roughId})`}
         />
       </svg>
     </AbsoluteFill>

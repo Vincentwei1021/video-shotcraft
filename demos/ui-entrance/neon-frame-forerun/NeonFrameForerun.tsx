@@ -3,7 +3,7 @@
 // 同形软影，随页面点亮进程同步先后贴合（FloatWrap 模式，对标截图③：
 // tab/组件悬空带错位影 → ④全部贴合）。v2 已有：强透视直角框左缘中点
 // 两头奔画、面板原地由暗转亮、背景霓虹管框群中亮尾熄。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 
 const easeFall = Easing.bezier(0.5, 0.05, 0.6, 1); // 加速下落、末端软着陆
@@ -148,6 +148,8 @@ const BG_FRAMES: BgFrame[] = Array.from({ length: 18 }).map(() => ({
 
 export const NeonFrameForerun: React.FC = () => {
   const frame = useCurrentFrame();
+  // 滤镜/渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // 主框描画：左缘中点向两头奔跑，26 帧成型（截图①→②）
   const trace = interpolate(frame, [2, 28], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
@@ -190,7 +192,7 @@ export const NeonFrameForerun: React.FC = () => {
       {/* 背景霓虹管框群 */}
       <svg width={1920} height={1080} style={{ position: 'absolute' }}>
         <defs>
-          <filter id="bgblur" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id={`bgblur-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
             <feGaussianBlur stdDeviation={7} />
           </filter>
         </defs>
@@ -200,7 +202,7 @@ export const NeonFrameForerun: React.FC = () => {
           return (
             <g key={i} transform={`translate(${b.x} ${b.y}) skewY(${b.skew * 0.4}) skewX(${b.skew})`}>
               <rect width={b.w} height={b.h} rx={4} fill="none"
-                stroke={b.hue} strokeWidth={7} filter="url(#bgblur)" opacity={op * 0.8} />
+                stroke={b.hue} strokeWidth={7} filter={`url(#bgblur-${uid})`} opacity={op * 0.8} />
               <rect width={b.w} height={b.h} rx={4} fill="none"
                 stroke={b.hue} strokeWidth={2} opacity={op} />
             </g>
@@ -234,29 +236,29 @@ export const NeonFrameForerun: React.FC = () => {
           <svg width={PW + 80} height={PH + 80} viewBox={`-40 -40 ${PW + 80} ${PH + 80}`}
             style={{ position: 'absolute', left: -40, top: -40 }}>
             <defs>
-              <linearGradient id="mainfg" gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={PW} y2={PH}>
+              <linearGradient id={`mainfg-${uid}`} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={PW} y2={PH}>
                 <stop offset="0%" stopColor="#c07af5" />
                 <stop offset="38%" stopColor="#e58bd8" />
                 <stop offset="72%" stopColor="#f0b06a" />
                 <stop offset="100%" stopColor="#e8925c" />
               </linearGradient>
-              <filter id="fblur" x="-40%" y="-40%" width="180%" height="180%">
+              <filter id={`fblur-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation={10} />
               </filter>
-              <filter id="fblur2" x="-40%" y="-40%" width="180%" height="180%">
+              <filter id={`fblur2-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation={3} />
               </filter>
             </defs>
             {[1, -1].map((dir) => (
               <g key={dir}>
                 {/* 糊辉光层：一直保留 */}
-                <path d={FRAME_D} pathLength={PL} fill="none" stroke="url(#mainfg)"
-                  strokeWidth={14} strokeLinecap="butt" filter="url(#fblur)"
+                <path d={FRAME_D} pathLength={PL} fill="none" stroke={`url(#mainfg-${uid})`}
+                  strokeWidth={14} strokeLinecap="butt" filter={`url(#fblur-${uid})`}
                   strokeDasharray={`${headP} ${PL}`}
                   strokeDashoffset={dir === 1 ? 0 : -(PL - headP)}
                   opacity={0.6 * rimGlow} />
                 {/* 亮芯细线：面板亮起后淡出并入 rim */}
-                <path d={FRAME_D} pathLength={PL} fill="none" stroke="url(#mainfg)"
+                <path d={FRAME_D} pathLength={PL} fill="none" stroke={`url(#mainfg-${uid})`}
                   strokeWidth={3.5} strokeLinecap="butt"
                   strokeDasharray={`${headP} ${PL}`}
                   strokeDashoffset={dir === 1 ? 0 : -(PL - headP)}
@@ -264,7 +266,7 @@ export const NeonFrameForerun: React.FC = () => {
                 {/* 奔跑亮头 */}
                 {trace < 1 && (
                   <path d={FRAME_D} pathLength={PL} fill="none" stroke="#ffffff"
-                    strokeWidth={6} strokeLinecap="round" filter="url(#fblur2)"
+                    strokeWidth={6} strokeLinecap="round" filter={`url(#fblur2-${uid})`}
                     strokeDasharray={`8 ${PL}`}
                     strokeDashoffset={dir === 1 ? -(Math.max(0, headP - 8)) : -(PL - headP)}
                     opacity={0.95} />

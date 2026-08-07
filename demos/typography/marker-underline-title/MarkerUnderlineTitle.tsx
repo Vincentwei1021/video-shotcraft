@@ -1,7 +1,7 @@
 // marker-underline-title —— 白底大标题落定后，斜体 "new" 下方一道
 // 马克笔下划线从左到右描画（粗细变化/端头圆润/微歪/边缘毛糙）。
 // 对标 notion-ai.mp4 2.3–3.6s。与库内 draw-svg-trace 撞车，本版做马克笔质感。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 
 const mulberry32 = (a: number) => () => {
@@ -35,6 +35,8 @@ const buildStroke = (len: number, seed: number) => {
 
 export const MarkerUnderlineTitle: React.FC = () => {
   const frame = useCurrentFrame();
+  // clipPath ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const revealId = `reveal-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const LEN = 252;
 
   // 标题落定：整块从下方 30px 弹入（ease-out），24 帧内完成
@@ -70,12 +72,12 @@ export const MarkerUnderlineTitle: React.FC = () => {
               style={{ position: 'absolute', left: -12, bottom: -20, overflow: 'visible' }}
             >
               <defs>
-                <clipPath id="reveal">
+                <clipPath id={revealId}>
                   <rect x={0} y={-20} width={drawE * (LEN + 6)} height={60} />
                 </clipPath>
               </defs>
               {draw > 0 && (
-                <path d={path} fill="#111111" clipPath="url(#reveal)" />
+                <path d={path} fill="#111111" clipPath={`url(#${revealId})`} />
               )}
             </svg>
           </span>

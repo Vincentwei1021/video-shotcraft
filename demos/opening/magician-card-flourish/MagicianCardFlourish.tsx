@@ -9,7 +9,7 @@
 // ③ 弹射出场：slow-in → burst → decelerating arc（起飞先慢速蓄力挤出，
 //    急加速弹射，弧线段整体减速抵达中心硬定格）。
 // v5 其余保留：中心极远飞出+13 圈自旋+94% 定格+sheen 扫光。总长 141 帧。
-import React from 'react';
+import React, { useId } from 'react';
 import { useCurrentFrame, interpolate, Easing } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { G } from '../../_fixtures/Fixtures';
@@ -84,6 +84,9 @@ const CardBack: React.FC = () => (
 // ⑤ 背景纯黑，光束边缘干净锐利（真实衍射，无宽糊外层）。
 // 时长 0.5s：渐亮（f0–4）→ 全芒微闪（f4–10）→ 坍缩（f10–15）。
 const SpawnFlash: React.FC<{ f: number }> = ({ f }) => {
+  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  // hooks 必须在条件 return 之前调用
+  const SPIKE_ID = `mcf-needle-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   if (f > FLASH_END) return null;
   const grow = interpolate(f, [0, 2.5], [0.2, 1], {
     extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
@@ -101,7 +104,6 @@ const SpawnFlash: React.FC<{ f: number }> = ({ f }) => {
   const rot = interpolate(f, [0, FLASH_END], [0, 90], { extrapolateRight: 'clamp', easing: Easing.inOut(Easing.quad) });
   // 针状光束：极细楔形（根部窄、尖端归零）+ 亮度指数渐隐——对照参考图
   // v9（批次 18）：用户意见"开场光点的光芒要旋转90度"——整体转 90°：长轴 -38°→52°（陡斜近竖贯），短轴 52°→142°
-  const SPIKE_ID = 'mcf-needle';
   const needle = (deg: number, len: number, w0: number, op: number) => (
     <g key={`${deg}-${len}`} transform={`rotate(${deg})`} opacity={op}>
       <path d={`M 0 ${-w0 / 2} L ${len} 0 L 0 ${w0 / 2} Z`} fill={`url(#${SPIKE_ID})`} />
