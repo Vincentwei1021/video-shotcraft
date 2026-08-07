@@ -33,5 +33,5 @@ name: counter-confetti
 - 配 SFX：计数段 tick 渐密 + BURST 拍 pop/confetti + 到位拍 impact——三层缺一情绪都塌（对照 sound-design.md counter 类）
 
 ## 参考实现
-demos/data/counter-confetti/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/data/counter-confetti/
+（CounterConfetti.tsx）

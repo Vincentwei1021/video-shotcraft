@@ -56,5 +56,5 @@ name: product-card-progressive-assemble
   两个变量即可；其余全是中性灰阶
 
 ## 参考实现
-demos/ui-entrance/product-card-progressive-assemble/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/product-card-progressive-assemble/
+（ProductCardProgressiveAssemble.tsx）

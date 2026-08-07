@@ -61,5 +61,5 @@ morph 要让观众相信这一直是**同一个东西**在改变形状。等点�
   填充的 0.14 透明度也几乎不可见，浅色主题需要重配饱和度与描边宽度
 
 ## 参考实现
-demos/ui-entrance/svg-shape-morph/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/svg-shape-morph/
+（SvgShapeMorph.tsx）

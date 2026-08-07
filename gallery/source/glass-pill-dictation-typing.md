@@ -53,5 +53,5 @@ name: glass-pill-dictation-typing
   否则匀速打字的节奏和定宽比例都要重调
 
 ## 参考实现
-demos/interaction/glass-pill-dictation-typing/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/interaction/glass-pill-dictation-typing/
+（GlassPillDictationTyping.tsx）

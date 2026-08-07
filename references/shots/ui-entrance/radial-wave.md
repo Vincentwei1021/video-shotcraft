@@ -45,5 +45,5 @@ name: radial-wave
   背景 `#0a0b10` 是发光的前提，白底上这套亮度脉冲基本看不见
 
 ## 参考实现
-demos/ui-entrance/radial-wave/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/radial-wave/
+（RadialWave.tsx）

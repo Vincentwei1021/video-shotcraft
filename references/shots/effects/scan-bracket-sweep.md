@@ -44,5 +44,5 @@ name: scan-bracket-sweep
 - INK 是唯一的颜色变量（括号 + 光带 + 拖尾共用），换肤只改它
 
 ## 参考实现
-demos/effects/scan-bracket-sweep/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/effects/scan-bracket-sweep/
+（ScanBracketSweep.tsx）

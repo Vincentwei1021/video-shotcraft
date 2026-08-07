@@ -33,5 +33,5 @@ name: quad-split-parallel-scenes
 - 四格同时打字/同时弹入是最常见的退化写法——检查方式：逐帧过一遍，任何一帧不应有两个象限同时发生"重事件"
 
 ## 参考实现
-demos/rhythm/quad-split-parallel-scenes/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/rhythm/quad-split-parallel-scenes/
+（QuadSplitParallelScenes.tsx）

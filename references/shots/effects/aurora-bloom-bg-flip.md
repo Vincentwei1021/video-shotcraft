@@ -49,5 +49,5 @@ name: aurora-bloom-bg-flip
   否则 seek 到任意帧时颜色不确定
 
 ## 参考实现
-demos/effects/aurora-bloom-bg-flip/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/effects/aurora-bloom-bg-flip/
+（AuroraBloomBgFlip.tsx）

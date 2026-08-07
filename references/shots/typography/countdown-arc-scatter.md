@@ -64,5 +64,5 @@ name: countdown-arc-scatter
   会糊成一声，配法纪律见 sound-design.md
 
 ## 参考实现
-demos/typography/countdown-arc-scatter/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/typography/countdown-arc-scatter/
+（CountdownArcScatter.tsx）

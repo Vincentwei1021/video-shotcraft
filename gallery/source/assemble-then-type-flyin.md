@@ -53,5 +53,5 @@ name: assemble-then-type-flyin
   解释顺序，这张靠"先骨架后文字"的两段式解释顺序，两者不要混用
 
 ## 参考实现
-demos/effects/assemble-then-type-flyin/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/effects/assemble-then-type-flyin/
+（AssembleThenTypeFlyin.tsx）

@@ -33,5 +33,5 @@ name: gradient-transition
 - 三段各自独立可拆用：只要 linear 段（0–0.4 重归一化到 0–1）就是一张"角度扫过"的极简底
 
 ## 参考实现
-demos/transition/gradient-transition/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/transition/gradient-transition/
+（GradientTransition.tsx）

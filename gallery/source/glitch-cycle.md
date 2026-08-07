@@ -58,5 +58,5 @@ name: glitch-cycle
   **循环播报**（乱→定→乱→定）；同片只留一个，两个并置读作同一手法用了两遍
 
 ## 参考实现
-demos/typography/glitch-cycle/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/typography/glitch-cycle/
+（GlitchCycle.tsx）

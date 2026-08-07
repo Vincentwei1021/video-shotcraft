@@ -34,5 +34,5 @@ name: hatch-depth
 - 微颤用全局 t 驱动（`sin(t*30)`），改动画总时长 dur 会改变颤动频率，需重新目检
 
 ## 参考实现
-demos/data/hatch-depth/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/data/hatch-depth/
+（HatchDepth.tsx）

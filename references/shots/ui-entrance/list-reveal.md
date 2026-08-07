@@ -49,5 +49,5 @@ name: list-reveal
   `#161a26` 属深色主题，浅色界面下描边和阴影都要重调
 
 ## 参考实现
-demos/ui-entrance/list-reveal/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/list-reveal/
+（ListReveal.tsx）

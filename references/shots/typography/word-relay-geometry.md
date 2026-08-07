@@ -67,5 +67,5 @@ name: word-relay-geometry
   单独一记重音，配法纪律见 sound-design.md
 
 ## 参考实现
-demos/typography/word-relay-geometry/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/typography/word-relay-geometry/
+（WordRelayGeometry.tsx）

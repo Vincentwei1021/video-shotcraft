@@ -55,5 +55,5 @@ name: avatar-bracket-carousel
   头像更换而重排——但换成中文句子时要确认槽两侧的字宽变化不会让槽偏离画面中心
 
 ## 参考实现
-demos/ui-entrance/avatar-bracket-carousel/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/avatar-bracket-carousel/
+（AvatarBracketCarousel.tsx）

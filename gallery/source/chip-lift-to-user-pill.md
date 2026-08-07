@@ -54,5 +54,5 @@ name: chip-lift-to-user-pill
   （间隔 0.062 × 字符数必须留在 g 的 1.0 以内）
 
 ## 参考实现
-demos/interaction/chip-lift-to-user-pill/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/interaction/chip-lift-to-user-pill/
+（ChipLiftToUserPill.tsx）

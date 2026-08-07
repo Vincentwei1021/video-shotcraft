@@ -33,5 +33,5 @@ name: logo-shrink-wordmark-lockup
 - 收尾后无循环回位设计，作 outro 最后一镜使用；需要循环时在 t=1 后接 1s 静帧
 
 ## 参考实现
-demos/outro/logo-shrink-wordmark-lockup/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/outro/logo-shrink-wordmark-lockup/
+（LogoShrinkWordmarkLockup.tsx）

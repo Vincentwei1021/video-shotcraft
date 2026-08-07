@@ -51,5 +51,5 @@ name: picker-carousel-feature-cycle
   字长变化会影响居中观感——单行超过 300px 就要缩字号而不是换行
 
 ## 参考实现
-demos/interaction/picker-carousel-feature-cycle/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/interaction/picker-carousel-feature-cycle/
+（PickerCarouselFeatureCycle.tsx）

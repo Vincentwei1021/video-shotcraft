@@ -53,5 +53,5 @@ name: blur-slide
   也应该共存（主角用重手法，其余标题全用本卡）
 
 ## 参考实现
-demos/typography/blur-slide/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/typography/blur-slide/
+（BlurSlide.tsx）

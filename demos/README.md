@@ -18,35 +18,27 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
 个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
 `npm i @remotion/motion-blur`。
 
-## MotionLab 模板 demo（effect.js）
+## Motion 系 demo（2026-08 并入的 48 张卡）
 
-48 张新卡（2026-08 并入）的参考实现是 `demos/<类别>/<卡名>/effect.js`——
-**自包含**的 MotionLab 动效模板：文件内置最小运行时（E 缓动表 / lerp / seg /
-确定性 rand），浏览器 `<script>` 直接引入即可，无外部依赖。
+这批卡的参考实现与其他 demo 同为原生 Remotion .tsx 组件，用法一致：
+copy 进项目注册 Composition 即可。差异只有两点：
 
-每个文件是 IIFE + 三态导出：CommonJS（`module.exports`）、浏览器全局
-（`window.MotionLabEffects['<effect-id>']`，多文件共存不冲突）。
+- 共享依赖是 `_fixtures/Motion.tsx`（不是 Fixtures.tsx）：E 缓动表 / seg /
+  lerp / 确定性 rand / useT / DesignStage。copy demo 时一并带上并改 import 路径。
+- 画面用 `<DesignStage>` 的 480×270 设计坐标作画、等比放大到合成分辨率；
+  卡片参数表数值都在此坐标系下标定，改合成分辨率不需要动参数。
+  个别文字密集的 demo 用 `raster="zoom"`（布局期放大，小字号字形按目标尺寸
+  光栅化，更清晰）；默认 transform scale 是合成期放大，两者 API 相同。
 
-与 Remotion 对接（区别于本目录其他 .tsx demo）：
+每个组件同时 `export const <卡名大写蛇形>_DURATION`（30fps 帧数），注册
+Composition 时直接用：
 
 ```tsx
-import { useCurrentFrame, useVideoConfig } from 'remotion';
-const { effect, MotionLab } = require('.../demos/typography/blur-slide/effect.js');
-
-const Demo: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  const ref = useRef<HTMLDivElement>(null);
-  const renderRef = useRef<((t: number) => void) | null>(null);
-  useEffect(() => {
-    if (ref.current) renderRef.current = effect.setup(ref.current, MotionLab);
-  }, []);
-  useEffect(() => {
-    renderRef.current?.(frame / durationInFrames);
-  }, [frame]);
-  return <div ref={ref} style={{ position: 'relative', width: 480, height: 270, overflow: 'hidden' }} />;
-};
+import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
+<Composition id="BlurSlide" component={BlurSlide}
+  durationInFrames={BLUR_SLIDE_DURATION} fps={30} width={1920} height={1080} />
 ```
 
-`stageEl` 是 480×270 基准的相对定位容器（内部按比例 scale 适配）。
-动画全部由归一化 t 驱动、无内部状态与真随机，满足确定性渲染要求。
+动画全部由归一化 t（useT()）驱动的纯函数计算，无内部状态与真随机，
+逐帧确定性渲染。每个组件都经过与原样片 mp4 的全帧 SSIM 比对验收
+（mean≥0.97 / min≥0.93 或有注释说明的编码噪声豁免）。

@@ -34,5 +34,5 @@ name: cursor-flyover
 - 停留段完全静止，1080p 大屏下会显得"卡住"——可给 world 加 ±0.5px 的呼吸位移（确定性 sin），但幅度别过 1px
 
 ## 参考实现
-demos/camera/cursor-flyover/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/camera/cursor-flyover/
+（CursorFlyover.tsx）

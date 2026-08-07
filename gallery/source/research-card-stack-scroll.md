@@ -53,5 +53,5 @@ name: research-card-stack-scroll
   改浅后 `brightness(0.75)` 的深度衰减几乎看不出来，需要改用 opacity 或灰度衰减
 
 ## 参考实现
-demos/ui-entrance/research-card-stack-scroll/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/research-card-stack-scroll/
+（ResearchCardStackScroll.tsx）

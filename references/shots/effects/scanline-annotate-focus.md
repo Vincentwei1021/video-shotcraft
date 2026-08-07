@@ -49,5 +49,5 @@ name: scanline-annotate-focus
 - ACCENT（`#9fb6e8`）与 `A_RGB` 是同一个色的两种写法，换肤要同改两处
 
 ## 参考实现
-demos/effects/scanline-annotate-focus/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/effects/scanline-annotate-focus/
+（ScanlineAnnotateFocus.tsx）

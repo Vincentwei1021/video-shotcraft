@@ -33,5 +33,5 @@ name: terminal-3d
 - 第三窗打字 0.81 起步，输出到 0.955 + settle——TYPE 表后移时留 ≥0.04 尾量，否则末行没进完就切黑
 
 ## 参考实现
-demos/camera/terminal-3d/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/camera/terminal-3d/
+（Terminal3D.tsx）

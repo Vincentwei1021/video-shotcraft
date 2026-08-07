@@ -54,5 +54,5 @@ chip 降到 18% 而**位置绝不移动**：一旦重排，观众会以为页面
   本卡选中后**上移收窄让位给结果**；同一片子里两者不要连用
 
 ## 参考实现
-demos/interaction/chip-grid-single-select-blackout/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/interaction/chip-grid-single-select-blackout/
+（ChipGridSingleSelectBlackout.tsx）

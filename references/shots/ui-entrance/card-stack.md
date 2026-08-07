@@ -48,5 +48,5 @@ name: card-stack
 - 展开后没有收尾动作，末帧停在扇面终态。要接下一镜就在 0.8 之后切，别让扇面白停太久
 
 ## 参考实现
-demos/ui-entrance/card-stack/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/card-stack/
+（CardStack.tsx）

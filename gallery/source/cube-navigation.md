@@ -33,5 +33,5 @@ name: cube-navigation
 - 明暗 `max(0, z2)` 有意让背光面全暗——若想要环境光补一点，改成 `0.15 + 0.85*lit` 而不是提 brightness 下限
 
 ## 参考实现
-demos/transition/cube-navigation/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/transition/cube-navigation/
+（CubeNavigation.tsx）

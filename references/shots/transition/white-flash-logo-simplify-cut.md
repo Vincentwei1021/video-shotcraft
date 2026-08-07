@@ -33,5 +33,5 @@ name: white-flash-logo-simplify-cut
 - mix-blend-mode:screen 的柔光层在白底上不可见属预期，别在冲白后调它
 
 ## 参考实现
-demos/transition/white-flash-logo-simplify-cut/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/transition/white-flash-logo-simplify-cut/
+（WhiteFlashLogoSimplifyCut.tsx）

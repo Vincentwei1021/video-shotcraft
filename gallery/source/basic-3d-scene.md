@@ -33,5 +33,5 @@ name: basic-3d-scene
 - OVERVIEW 后无返程，作段落收尾用；要循环回 STEP01 就在末尾加一段 fly back（cam 再 lerp 回 poses[0]）
 
 ## 参考实现
-demos/camera/basic-3d-scene/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/camera/basic-3d-scene/
+（Basic3DScene.tsx）

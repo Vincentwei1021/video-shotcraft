@@ -46,5 +46,5 @@ name: radial-ripple-phone-chips
   换项目品牌色只改这一个变量即可换肤
 
 ## 参考实现
-demos/effects/radial-ripple-phone-chips/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/effects/radial-ripple-phone-chips/
+（RadialRipplePhoneChips.tsx）

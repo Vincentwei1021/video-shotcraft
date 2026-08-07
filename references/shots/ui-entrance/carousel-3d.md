@@ -58,5 +58,5 @@ name: carousel-3d
   rgba(0,0,0,.5)` 的投影会显脏，需要重配
 
 ## 参考实现
-demos/ui-entrance/carousel-3d/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/carousel-3d/
+（Carousel3D.tsx）

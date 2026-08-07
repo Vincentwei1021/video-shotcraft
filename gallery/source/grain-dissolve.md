@@ -34,5 +34,5 @@ name: grain-dissolve
 - 选区框撤场（0.55–0.64）必须早于凝聚完成（0.71）——框留到凝固后会读作"还没选完"，语义反了
 
 ## 参考实现
-demos/outro/grain-dissolve/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/outro/grain-dissolve/
+（GrainDissolve.tsx）

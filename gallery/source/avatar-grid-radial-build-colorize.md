@@ -34,5 +34,5 @@ name: avatar-grid-radial-build-colorize
 - 标题/图例 z-index 在卡片之上但无底板，若换更密的网格需给中央区加半透明底垫保证可读
 
 ## 参考实现
-demos/data/avatar-grid-radial-build-colorize/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/data/avatar-grid-radial-build-colorize/
+（AvatarGridRadialBuildColorize.tsx）

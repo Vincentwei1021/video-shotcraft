@@ -34,5 +34,5 @@ name: fracture
 - 用作转场时建议只取 t=0.7–1 的飞散段倒放/正放各半，两侧素材分别贴在瓦片面上需另做纹理映射
 
 ## 参考实现
-demos/opening/fracture/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/opening/fracture/
+（Fracture.tsx）

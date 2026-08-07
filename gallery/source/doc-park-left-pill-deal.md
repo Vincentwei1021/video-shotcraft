@@ -56,5 +56,5 @@ name: doc-park-left-pill-deal
   是有意的联动（字幕永远填满到下一张之前），但调参时要意识到不是独立参数
 
 ## 参考实现
-demos/ui-entrance/doc-park-left-pill-deal/effect.js
-（MotionLab 模板：确定性 render(t)，t∈[0,1]；接 Remotion 时 t = frame/durationInFrames，DOM 结构可直接移植）
+demos/ui-entrance/doc-park-left-pill-deal/
+（DocParkLeftPillDeal.tsx）
