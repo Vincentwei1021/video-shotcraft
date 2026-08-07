@@ -196,6 +196,8 @@ and Loom**. The cards document motion techniques (timing, easing, choreography)
 re-implemented from scratch; no footage, artwork, or brand assets from these
 films are included in this repository. All trademarks belong to their respective
 owners, and none of these companies are affiliated with or endorse this project.
+Per-batch sourcing notes for the 48 cards added in 2026-08 live in
+[references/shots/ATTRIBUTION.md](references/shots/ATTRIBUTION.md).
 
 Special thanks to:
 

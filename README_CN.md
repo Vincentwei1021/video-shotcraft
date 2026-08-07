@@ -186,7 +186,8 @@ video-shotcraft/
 Pitch、Miro、Superhuman、Loom** 等产品的宣传片。镜头卡记录的是从零重新
 实现的动效技法（时序、缓动、编排）；仓库中不包含上述影片的任何素材、
 画面或品牌资产。所有商标归各自所有者所有，上述公司与本项目无关联、
-亦未对本项目背书。
+亦未对本项目背书。2026-08 新增 48 张卡的逐批次来源说明见
+[references/shots/ATTRIBUTION.md](references/shots/ATTRIBUTION.md)。
 
 特别感谢：
 

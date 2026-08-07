@@ -25,10 +25,12 @@ jobs:
         run: |
           python3 gallery/sync-from-cards.py
           python3 gallery/build-seo.py
-          # sync bumps updatedAt (and build-seo the sitemap lastmod) when a
-          # source copy differs from its card — those are real drift, keep them.
-          # A clean tree modulo nothing means committed artifacts match cards.
-          if ! git diff --exit-code -- gallery; then
+          # git status --porcelain (not diff --exit-code): a brand-new card's
+          # regenerated source copy is UNTRACKED, which diff can't see — that's
+          # exactly the "added a card, forgot to commit the copy" mistake this
+          # gate exists to catch.
+          if [ -n "$(git status --porcelain -- gallery)" ]; then
+            git status --porcelain -- gallery
             echo '::error::gallery artifacts drift from cards — run' \
                  'sync-from-cards.py + build-seo.py and commit the result'
             exit 1

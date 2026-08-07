@@ -197,6 +197,8 @@ Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、Loom** のプロ�
 （タイミング、イージング、振り付け）を記載しています。これらの動画の映像、アートワーク、
 ブランドアセットはリポジトリに含まれません。すべての商標は各所有者に帰属し、
 各社は本プロジェクトと提携しておらず、また本プロジェクトを推奨していません。
+2026-08 に追加した 48 枚のカードのバッチ別ソース情報は
+[references/shots/ATTRIBUTION.md](references/shots/ATTRIBUTION.md) を参照してください。
 
 特に以下のプロジェクトとコミュニティに感謝します。
 
