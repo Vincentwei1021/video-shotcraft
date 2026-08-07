@@ -1,0 +1,102 @@
+name: PR checks
+
+# Catches problems BEFORE merge that deploy-pages.yml would only surface after:
+# generated artifacts (gallery/source, library.json, library.html, sitemap,
+# llms.txt) drifting from the shot cards, and library.json referencing preview
+# MP4s that don't exist on the gallery-media release.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'references/shots/**'
+      - 'gallery/**'
+      - 'demos/**'
+      - '.github/workflows/pr-checks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generated artifacts are in sync with cards
+        run: |
+          python3 gallery/sync-from-cards.py
+          python3 gallery/build-seo.py
+          # git status --porcelain (not diff --exit-code): a brand-new card's
+          # regenerated source copy is UNTRACKED, which diff can't see — that's
+          # exactly the "added a card, forgot to commit the copy" mistake this
+          # gate exists to catch.
+          if [ -n "$(git status --porcelain -- gallery)" ]; then
+            git status --porcelain -- gallery
+            echo '::error::gallery artifacts drift from cards — run' \
+                 'sync-from-cards.py + build-seo.py and commit the result'
+            exit 1
+          fi
+
+      - name: Every library.json preview exists on the gallery-media release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view gallery-media --repo "$GITHUB_REPOSITORY" \
+            --json assets --jq '.assets[].name' | sort > /tmp/release-assets.txt
+          python3 - <<'EOF'
+          import json, re, sys
+          lib = json.load(open('gallery/api/library.json'))
+          assets = set(open('/tmp/release-assets.txt').read().split())
+          missing, malformed = [], []
+          # app.js interpolates these URLs into innerHTML without escaping,
+          # so gate the exact shape here: same-origin relative ./media/ path
+          # only — no absolute/protocol-relative URLs, no quotes/angle brackets
+          CANONICAL = re.compile(r'^\./media/[a-z0-9-]+\.(mp4|gif)(\?v=\d+)?$')
+          for card in lib['cards']:
+              for style in card['styles']:
+                  media = style.get('media')
+                  url = media.get('url') if isinstance(media, dict) else media
+                  if not url:
+                      continue
+                  if not CANONICAL.match(url):
+                      malformed.append(f"{card['name']}/{style['key']}: {url}")
+                      continue
+                  name = url.split('?')[0].rstrip('/').split('/')[-1]
+                  if name not in assets:
+                      missing.append(f"{card['name']}/{style['key']}: {name}")
+          if malformed:
+              print('::error::non-canonical media URLs (must be ./media/<name>.mp4?v=N):')
+              print(*malformed, sep='\n  ')
+              sys.exit(1)
+          if missing:
+              print('::error::previews missing from the gallery-media release:')
+              print(*missing, sep='\n  ')
+              sys.exit(1)
+          print(f"all previews present on release "
+                f"({len(lib['cards'])} cards checked)")
+          EOF
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: template/package-lock.json
+
+      - name: Demo components compile (tsc strict)
+        run: |
+          cd template && npm ci
+          # 8 demos import @remotion/motion-blur, which the template
+          # deliberately doesn't ship. Install it transiently, pinned to the
+          # template's remotion version — a bare latest install nests a second
+          # remotion copy and trips checkMultipleRemotionVersions.
+          npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
+          # demos/ live outside template/, so give tsc a module-resolution
+          # root at the repo top via a transient symlink
+          cd .. && ln -s template/node_modules node_modules
+          find demos -name '*.tsx' | sed 's|^|./|' > /tmp/demo-files.txt
+          echo "checking $(wc -l < /tmp/demo-files.txt | tr -d ' ') tsx files"
+          ./node_modules/.bin/tsc --noEmit --strict --skipLibCheck \
+            --esModuleInterop --jsx react-jsx --target es2022 \
+            --module esnext --moduleResolution bundler --lib dom,es2022 \
+            --resolveJsonModule \
+            $(cat /tmp/demo-files.txt)

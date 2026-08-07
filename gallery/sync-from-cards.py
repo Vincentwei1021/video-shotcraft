@@ -124,6 +124,10 @@ def main():
     LIB.write_text(json.dumps(lib, ensure_ascii=False) + '\n', encoding='utf-8')
     print(f"synced {len(lib['cards'])} cards ({lib['stats']['styleCount']} styles, "
           f"{lib['stats']['previewCount']} previews); missing card files: {missing or 'none'}")
+    if missing:
+        # 卡的 md 已删但 library.json 还留着条目 = Gallery 会渲染一张
+        # source 链接指向虚空的卡；硬失败让删卡 PR 在 CI 就暴露
+        raise SystemExit(f'orphan library.json entries (card md deleted): {missing}')
 
 
 if __name__ == '__main__':

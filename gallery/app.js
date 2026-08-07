@@ -149,13 +149,13 @@ function mediaMarkup(style, cardIndex) {
   if (style.media.type === 'gif') {
     return `
       <figure class="preview">
-        <img class="lazy-media" data-src="${style.media.url}" alt="${title}" loading="lazy">
+        <img class="lazy-media" data-src="${escapeHtml(style.media.url)}" alt="${title}" loading="lazy">
       </figure>`;
   }
 
   return `
     <figure class="preview">
-      <video class="lazy-media" data-src="${style.media.url}" muted loop playsinline preload="none"
+      <video class="lazy-media" data-src="${escapeHtml(style.media.url)}" muted loop playsinline preload="none"
         aria-label="${title}" data-key="${cardIndex}"></video>
       <button class="video-expand" type="button" aria-label="${escapeHtml(text('fullscreen'))} ${title}"
         data-expand-key="${cardIndex}" title="${escapeHtml(text('fullscreen'))}">

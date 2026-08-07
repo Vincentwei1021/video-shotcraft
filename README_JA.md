@@ -9,14 +9,13 @@
 <h1>video-shotcraft</h1>
 
 [![GitHub stars](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/network/members)
-[![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 [![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
+[![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
-**映画のような製品動画を制作するためのエージェントスキル：104 種類のショットレシピカード · 161 種類のスタイル · 161 本のモーションプレビュー · 実制作に対応したテンプレート**
+**映画のような製品動画を制作するためのエージェントスキル：152 種類のショットレシピカード · 209 種類のスタイル · 209 本のモーションプレビュー · 実制作に対応したテンプレート**
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -28,7 +27,21 @@
 マーケティング、ローンチ、デモ動画を制作します。実際のページキャプチャ、2.5D カメラワーク、
 ビートに同期したカット、映画品質の SFX も含まれます。
 
-🖼️ [**ライブ Gallery で 161 本のモーションプレビューをすべて見る »**](https://vincentwei1021.github.io/video-shotcraft/)
+🖼️ [**ライブ Gallery で 209 本のモーションプレビューをすべて見る »**](https://vincentwei1021.github.io/video-shotcraft/)
+
+## ✨ 最新情報
+
+- **ショットレシピカード 48 枚を新規追加**——ライブラリは 104 枚から
+  **152 カード / 209 プレビュー**に拡充。209 候補から参照映像との
+  フレーム単位比較レビューを 8 ラウンド重ねて厳選し、既存カテゴリに統合：
+  完全なレシピカード + ネイティブ Remotion コンポーネント
+  （`demos/<カテゴリ>/<カード名>/<Component>.tsx`、正規化された進行度 t で
+  駆動する決定論的レンダリング）+ モーションプレビュー。すべてテンプレート化済み
+  （ニュートラルなプレースホルダー文言 + 差し替え可能な `ACCENT` カラー変数）。
+- **音声ライブラリ再構成**——`bgm/` + `sfx/<カテゴリ>/` の 2 階層、
+  149 個の効果音を 16 カテゴリに分類、md5 重複排除とライセンス URL 復元。
+- **Gallery 強化**——複数カテゴリタグ、フラットな All ビュー、
+  GitHub Pages への自動デプロイ（プレビュー mp4 は release 配信）。
 
 ## 🎬 ショーケース
 
@@ -122,8 +135,8 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 
 | 内容 | 説明 |
 | --- | --- |
-| 104 種類のショットレシピカード | 目的、エネルギー、推奨時間、パラメータ、実装上の注意点、既知の落とし穴 |
-| 161 本のモーションプレビュー | 161 種類のスタイルを網羅し、オンライン Gallery で検索と絞り込みが可能 |
+| 152 種類のショットレシピカード | 目的、エネルギー、推奨時間、パラメータ、実装上の注意点、既知の落とし穴 |
+| 209 本のモーションプレビュー | 209 種類のスタイルを網羅し、オンライン Gallery で検索と絞り込みが可能 |
 | Remotion 実装 | 各カードの実際のイージングとタイミングパラメータを含む、調整済みの TSX デモ |
 | 完全な動画テンプレート | 検証済みの 36.2 秒、1920×1080、30fps、10 ショットの製品プロモーション |
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
@@ -140,7 +153,7 @@ video-shotcraft/
 ├── SKILL.md                 # Agent entry point and core production rules
 ├── references/
 │   ├── pipeline.md          # End-to-end production workflow
-│   ├── shots/               # 104 shot recipe cards
+│   ├── shots/               # 152 shot recipe cards
 │   ├── sequences/           # Reusable full-video structures and sequence patterns
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
@@ -175,14 +188,6 @@ video-shotcraft/
 対象製品のスクリーンショットへ差し替え、製品、顧客、または個人に関するデータを
 匿名化する必要があるか確認してください。
 
-## 📝 更新履歴
-
-| 日付 | 更新内容 |
-|---|---|
-| 2026-07-27 | 音声ライブラリを `bgm/` + `sfx/<カテゴリ>/` の 2 階層に再構成し、効果音をシーン／素材別 16 カテゴリに分類。効果音を 149 個に拡充（紙・印刷、タイプライター、手書き、映写機／フィルム、カウンター／計器、インク／液体、ガラスなど、従来欠けていた質感レイヤーを追加）。md5 による全体重複排除を行い、7 ファイルの元ライセンス URL を復元 |
-| 2026-07-27 | ギャラリーカードが複数カテゴリタグに対応。All ビューをフラット化しアルファベット順に整列。GridWaveFlip と WireframeDrawOn のソースを復元 |
-| 2026-07-26 | ギャラリーを GitHub Pages へ自動デプロイ。プレビュー mp4 を git から release へ移動しリポジトリを軽量化 |
-
 ## 🙏 謝辞
 
 このライブラリの多くのショットレシピは、優れた公式製品動画のモーション表現を
@@ -192,6 +197,8 @@ Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、Loom** のプロ�
 （タイミング、イージング、振り付け）を記載しています。これらの動画の映像、アートワーク、
 ブランドアセットはリポジトリに含まれません。すべての商標は各所有者に帰属し、
 各社は本プロジェクトと提携しておらず、また本プロジェクトを推奨していません。
+2026-08 に追加した 48 枚のカードのバッチ別ソース情報は
+[references/shots/ATTRIBUTION.md](references/shots/ATTRIBUTION.md) を参照してください。
 
 特に以下のプロジェクトとコミュニティに感謝します。
 

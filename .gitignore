@@ -6,9 +6,16 @@ assets/images/
 # 样片 mp4 存 gallery-media release，不进 git（poster 小图仍在 git）；
 # 本地预览用 gallery/fetch-media.sh 拉取
 gallery/media/*.mp4
+# 本地教程视频
+/video-shotcraft教程.mp4
 .DS_Store
 .synapse/
 __pycache__/
 CLAUDE.md
 AGENT.md
 PRODUCT.md
+/shots/
+
+# motion-lab 本地研究/渲染农场（动效已转换为正式镜头卡，此目录不进库）
+/motion-lab/
+.playwright-mcp/
