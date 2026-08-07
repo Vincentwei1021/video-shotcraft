@@ -1,2 +1,5 @@
 node_modules/
 out/qa/
+private/props.json
+public/private/
+out/private/

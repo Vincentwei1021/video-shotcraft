@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "remotion studio src/index.ts",
     "render": "remotion render src/index.ts AiflPromo out/promo.mp4",
-    "still": "remotion still src/index.ts AiflPromo"
+    "still": "remotion still src/index.ts AiflPromo",
+    "validate:henry": "node scripts/validate-henry.mjs",
+    "typecheck": "tsc --noEmit",
+    "dev:henry": "remotion studio src/index.ts",
+    "still:henry": "remotion still src/index.ts HenryInvestorMvp out/private/f600.png --frame=600 --props=private/props.json",
+    "render:henry": "remotion render src/index.ts HenryInvestorMvp out/private/henry-investor-mvp.mp4 --props=private/props.json --concurrency=1"
   },
   "dependencies": {
     "@remotion/cli": "4.0.484",
