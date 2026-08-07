@@ -17,5 +17,5 @@ PRODUCT.md
 /shots/
 
 # motion-lab 本地研究/渲染农场（动效已转换为正式镜头卡，此目录不进库）
-motion-lab/
+/motion-lab/
 .playwright-mcp/

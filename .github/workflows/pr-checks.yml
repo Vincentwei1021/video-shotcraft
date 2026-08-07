@@ -10,6 +10,7 @@ on:
     paths:
       - 'references/shots/**'
       - 'gallery/**'
+      - 'demos/**'
       - '.github/workflows/pr-checks.yml'
 
 permissions:
@@ -43,19 +44,30 @@ jobs:
           gh release view gallery-media --repo "$GITHUB_REPOSITORY" \
             --json assets --jq '.assets[].name' | sort > /tmp/release-assets.txt
           python3 - <<'EOF'
-          import json, sys
+          import json, re, sys
           lib = json.load(open('gallery/api/library.json'))
           assets = set(open('/tmp/release-assets.txt').read().split())
-          missing = []
+          missing, malformed = [], []
+          # app.js interpolates these URLs into innerHTML without escaping,
+          # so gate the exact shape here: same-origin relative ./media/ path
+          # only — no absolute/protocol-relative URLs, no quotes/angle brackets
+          CANONICAL = re.compile(r'^\./media/[a-z0-9-]+\.(mp4|gif)(\?v=\d+)?$')
           for card in lib['cards']:
               for style in card['styles']:
                   media = style.get('media')
                   url = media.get('url') if isinstance(media, dict) else media
                   if not url:
                       continue
+                  if not CANONICAL.match(url):
+                      malformed.append(f"{card['name']}/{style['key']}: {url}")
+                      continue
                   name = url.split('?')[0].rstrip('/').split('/')[-1]
                   if name not in assets:
                       missing.append(f"{card['name']}/{style['key']}: {name}")
+          if malformed:
+              print('::error::non-canonical media URLs (must be ./media/<name>.mp4?v=N):')
+              print(*malformed, sep='\n  ')
+              sys.exit(1)
           if missing:
               print('::error::previews missing from the gallery-media release:')
               print(*missing, sep='\n  ')
@@ -63,3 +75,23 @@ jobs:
           print(f"all previews present on release "
                 f"({len(lib['cards'])} cards checked)")
           EOF
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: template/package-lock.json
+
+      - name: Demo components compile (tsc strict)
+        run: |
+          cd template && npm ci
+          # demos/ live outside template/, so give tsc a module-resolution
+          # root at the repo top via a transient symlink
+          cd .. && ln -s template/node_modules node_modules
+          find demos -name '*.tsx' | sed 's|^|./|' > /tmp/demo-files.txt
+          echo "checking $(wc -l < /tmp/demo-files.txt | tr -d ' ') tsx files"
+          ./node_modules/.bin/tsc --noEmit --strict --skipLibCheck \
+            --esModuleInterop --jsx react-jsx --target es2022 \
+            --module esnext --moduleResolution bundler --lib dom,es2022 \
+            --resolveJsonModule \
+            $(cat /tmp/demo-files.txt)
