@@ -1,10 +1,18 @@
 # Henry Investor Video MVP Acceptance
 
-Status: **PASS**
+Status: **LIMITED GO**
 
-Date: 2026-08-07
+Date: 2026-08-08
 
 Branch: `henry/mvp-20260807`
+
+## Decision and licensing gate
+
+- **Technical acceptance:** GO for the existing local render. The composition, private-fixture controls, validation, and measured media output satisfy the technical MVP checks recorded below.
+- **Organizational or commercial use:** NO-GO until the user or organization separately confirms that its intended use satisfies the then-current Remotion licensing terms and that any required license is in place.
+- **Confirmation status:** Not verified. This review does not assert the user's or organization's eligibility, team size, intended-use category, subscription, purchase, or other compliance with Remotion terms.
+- **Gate owner:** The user or organization must make and record that determination before organizational distribution, commercial use, or reuse in an automated video-creation system.
+- Official reference checked on 2026-08-08: [Remotion licensing and pricing](https://www.remotion.dev/). The official terms control and may change after this report.
 
 ## Source integrity and privacy
 
@@ -55,6 +63,7 @@ ffprobe -v error -select_streams v:0 \
 test -s out/private/f600.png
 npm run validate:henry
 npm run typecheck
+npm audit
 ```
 
 Privacy and integrity checks completed successfully:
@@ -66,10 +75,34 @@ git ls-files | rg 'props\.json|public/private|out/private|source\.pptx|slide-[0-
 git check-ignore template/private/props.json template/public/private/slide-01.png template/out/private/henry-investor-mvp.mp4
 ```
 
+## Dependency audit and execution boundary
+
+`npm audit fix --package-lock-only` was applied after an isolated simulation proved that it would not change any direct dependency or Remotion version. The resulting lockfile-only changes are:
+
+| Package | Before | After | Dependency class |
+| --- | --- | --- | --- |
+| `fast-uri` | 3.1.3 | 3.1.5 | Transitive |
+| `postcss` | 8.5.19 | 8.5.26 | Transitive/peer |
+| `nanoid` | 3.3.16 | 3.3.17 | Transitive |
+
+Direct dependency declarations are unchanged, and `@remotion/cli` plus `remotion` remain pinned at 4.0.484. Before the lockfile-only fix, `npm audit` reported:
+
+- High: `fast-uri` host-confusion advisories `GHSA-v2hh-gcrm-f6hx` and `GHSA-7p8r-x3mc-p8w7`.
+- Moderate: `postcss` attacker-controlled `sourceMappingURL` file-read advisory `GHSA-fxqj-rqcc-2cmp`.
+
+After the fix and a clean `npm ci`, `npm audit` reports 0 remaining advisories (0 low, 0 moderate, 0 high, 0 critical) as of 2026-08-08. This is a point-in-time result and does not replace future audit runs.
+
+The technical acceptance assumes a **localhost and trusted-input boundary**:
+
+- Remotion Studio and render commands are run locally and are not exposed to a LAN, public network, or untrusted browser clients.
+- `private/props.json`, private slide images, and all asset paths come from authorized, trusted local sources; attacker-controlled props, slides, CSS, source maps, or remote assets are outside the accepted scope.
+- If the Studio server is network-exposed, inputs become untrusted, or the workflow is moved into a shared/automated service, this acceptance no longer applies and a separate security and licensing review is required.
+- Clearing the current advisories reduces known dependency risk but does not make untrusted input or network exposure safe by itself.
+
 ## Limitations
 
 - This local MVP has no narration, music, or sound design; the AAC stream is silent.
 - Real copy and slide images remain local ignored inputs, so another machine needs separately authorized private fixtures to reproduce the real render.
 - Investment statements are bounded to the supplied deck and were not independently re-verified as part of video production.
 - Dense source-slide text is used as supporting visual texture; the overlaid investment summary is the intended primary reading layer.
-- `npm install` reports two existing audit findings in the pinned upstream dependency tree (one moderate, one high); dependencies were not upgraded in this scoped MVP.
+- Organizational or commercial use remains gated on separate Remotion-license confirmation; no such confirmation is asserted here.
