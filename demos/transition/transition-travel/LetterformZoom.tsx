@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { FakeDashboard, G } from '../../_fixtures/Fixtures';
 
@@ -25,6 +25,8 @@ const titleFont: React.CSSProperties = {
 
 export const LetterformZoom: React.FC = () => {
   const frame = useCurrentFrame();
+  // mask ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const cutId = `lfz-cut-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   // 0–25f 建立 hold；25–85f 推进。慢起 bezier 叠指数尺度 = 前段慢、后段陡
   const t = interpolate(frame, [25, 85], [0, 1], {
@@ -91,7 +93,7 @@ export const LetterformZoom: React.FC = () => {
             style={{ position: 'absolute', inset: 0, display: 'block' }}
           >
             <defs>
-              <mask id="lfz-cut">
+              <mask id={cutId}>
                 <rect width={1920} height={1080} fill="#fff" />
                 <text
                   x={960}
@@ -104,7 +106,7 @@ export const LetterformZoom: React.FC = () => {
                 </text>
               </mask>
             </defs>
-            <rect width={1920} height={1080} fill={G.bg} mask="url(#lfz-cut)" />
+            <rect width={1920} height={1080} fill={G.bg} mask={`url(#${cutId})`} />
             {/* 字缘细描边：让"洞"的轮廓在米灰上读得清 */}
             <text
               x={960}

@@ -7,7 +7,7 @@
 // 105f 起逐帧完全相同，真静止 ≥35f。
 // 关键帧：0–35 完全静止(boil off) → 35–105 沸腾(boil on, seed 每 3 帧一换)
 // → 105 摘罩 → 105–140 真静止(boil off)。
-import React from 'react';
+import React, { useId } from 'react';
 import { useCurrentFrame, interpolate } from 'remotion';
 import { G, TitleBlock } from '../../_fixtures/Fixtures';
 
@@ -39,6 +39,8 @@ const CornerTag: React.FC<{ text: string; opacity: number }> = ({ text, opacity 
 
 export const LineBoil: React.FC = () => {
   const f = useCurrentFrame();
+  // 滤镜 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const boilId = `boil-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const boiling = f >= BOIL_START && f < BOIL_END;
   // seed 每 3 帧阶梯换 → 8~10Hz 的手绘颤动感；帧确定，无随机源
   const seed = Math.floor(f / 3);
@@ -57,7 +59,7 @@ export const LineBoil: React.FC = () => {
       {boiling && (
         <svg width={0} height={0} style={{ position: 'absolute' }}>
           <defs>
-            <filter id="boil" x="-15%" y="-15%" width="130%" height="130%">
+            <filter id={boilId} x="-15%" y="-15%" width="130%" height="130%">
               <feTurbulence
                 type="fractalNoise"
                 baseFrequency={0.015}
@@ -92,7 +94,7 @@ export const LineBoil: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           gap: 56,
-          filter: boiling ? 'url(#boil)' : undefined,
+          filter: boiling ? `url(#${boilId})` : undefined,
         }}
       >
         <div

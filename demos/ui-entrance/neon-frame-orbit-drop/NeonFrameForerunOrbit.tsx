@@ -4,7 +4,7 @@
 // （同帧起落、同帧贴合，同形软影同步收敛）。判例：整体登场镜=同时贴合，
 // 错峰是巡礼镜的语法。其余全部保留：同款霓虹渐变框+灰面板+背景霓虹管
 // 框群；镜头视角 rotateY 从左侧(+38°) 连续弧线旋到右侧(-26°)。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 
 const easeFall = Easing.bezier(0.5, 0.05, 0.6, 1); // 加速下落、末端软着陆
@@ -149,6 +149,8 @@ const BG_FRAMES: BgFrame[] = Array.from({ length: 18 }).map(() => ({
 
 export const NeonFrameForerunOrbit: React.FC = () => {
   const frame = useCurrentFrame();
+  // 滤镜/渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // 开场快速描框（同款左缘中点两头奔画，14 帧成型——样式与 v3 一致）
   const trace = interpolate(frame, [0, 14], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
@@ -191,7 +193,7 @@ export const NeonFrameForerunOrbit: React.FC = () => {
       {/* 背景霓虹管框群（同款） */}
       <svg width={1920} height={1080} style={{ position: 'absolute' }}>
         <defs>
-          <filter id="obgblur" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id={`obgblur-${uid}`} x="-60%" y="-60%" width="220%" height="220%">
             <feGaussianBlur stdDeviation={7} />
           </filter>
         </defs>
@@ -201,7 +203,7 @@ export const NeonFrameForerunOrbit: React.FC = () => {
           return (
             <g key={i} transform={`translate(${b.x} ${b.y}) skewY(${b.skew * 0.4}) skewX(${b.skew})`}>
               <rect width={b.w} height={b.h} rx={4} fill="none"
-                stroke={b.hue} strokeWidth={7} filter="url(#obgblur)" opacity={op * 0.8} />
+                stroke={b.hue} strokeWidth={7} filter={`url(#obgblur-${uid})`} opacity={op * 0.8} />
               <rect width={b.w} height={b.h} rx={4} fill="none"
                 stroke={b.hue} strokeWidth={2} opacity={op} />
             </g>
@@ -231,34 +233,34 @@ export const NeonFrameForerunOrbit: React.FC = () => {
           <svg width={PW + 80} height={PH + 80} viewBox={`-40 -40 ${PW + 80} ${PH + 80}`}
             style={{ position: 'absolute', left: -40, top: -40 }}>
             <defs>
-              <linearGradient id="omainfg" gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={PW} y2={PH}>
+              <linearGradient id={`omainfg-${uid}`} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={PW} y2={PH}>
                 <stop offset="0%" stopColor="#c07af5" />
                 <stop offset="38%" stopColor="#e58bd8" />
                 <stop offset="72%" stopColor="#f0b06a" />
                 <stop offset="100%" stopColor="#e8925c" />
               </linearGradient>
-              <filter id="ofblur" x="-40%" y="-40%" width="180%" height="180%">
+              <filter id={`ofblur-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation={10} />
               </filter>
-              <filter id="ofblur2" x="-40%" y="-40%" width="180%" height="180%">
+              <filter id={`ofblur2-${uid}`} x="-40%" y="-40%" width="180%" height="180%">
                 <feGaussianBlur stdDeviation={3} />
               </filter>
             </defs>
             {[1, -1].map((dir) => (
               <g key={dir}>
-                <path d={FRAME_D} pathLength={PL} fill="none" stroke="url(#omainfg)"
-                  strokeWidth={14} strokeLinecap="butt" filter="url(#ofblur)"
+                <path d={FRAME_D} pathLength={PL} fill="none" stroke={`url(#omainfg-${uid})`}
+                  strokeWidth={14} strokeLinecap="butt" filter={`url(#ofblur-${uid})`}
                   strokeDasharray={`${headP} ${PL}`}
                   strokeDashoffset={dir === 1 ? 0 : -(PL - headP)}
                   opacity={0.6 * rimGlow} />
-                <path d={FRAME_D} pathLength={PL} fill="none" stroke="url(#omainfg)"
+                <path d={FRAME_D} pathLength={PL} fill="none" stroke={`url(#omainfg-${uid})`}
                   strokeWidth={3.5} strokeLinecap="butt"
                   strokeDasharray={`${headP} ${PL}`}
                   strokeDashoffset={dir === 1 ? 0 : -(PL - headP)}
                   opacity={0.95 * frameLine} />
                 {trace < 1 && (
                   <path d={FRAME_D} pathLength={PL} fill="none" stroke="#ffffff"
-                    strokeWidth={6} strokeLinecap="round" filter="url(#ofblur2)"
+                    strokeWidth={6} strokeLinecap="round" filter={`url(#ofblur2-${uid})`}
                     strokeDasharray={`8 ${PL}`}
                     strokeDashoffset={dir === 1 ? -(Math.max(0, headP - 8)) : -(PL - headP)}
                     opacity={0.95} />

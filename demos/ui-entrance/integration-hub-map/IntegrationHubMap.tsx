@@ -12,7 +12,7 @@
 //    循环流动，直到片尾不停。
 // 运动结构对照截图：S1 近景正视可读 → S2 翻转中+拉远+泛光起 →
 // S3/S4 侧棱白热爆发+图标浮现 → S5/S6 新页转正、光管连入 → S7/S8 稳定输送。
-import React from 'react';
+import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 
 const mulberry32 = (a: number) => () => {
@@ -244,6 +244,8 @@ const RECTS = Array.from({ length: 9 }, (_, i) => ({
 
 export const IntegrationHubMap: React.FC = () => {
   const frame = useCurrentFrame();
+  // 滤镜/渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
 
   // --- 相机/面板轨迹：近景正视旧页 → 整体翻转 180°（翻到背面=新页）+ 拉远落定 ---
   const zoom = interpolate(frame, [0, 14, 58, 96], [2.05, 1.95, 1.1, 1.0], {
@@ -328,7 +330,7 @@ export const IntegrationHubMap: React.FC = () => {
             const [x1, y1] = [nums[0], nums[1]];
             const [x2, y2] = [nums[nums.length - 2], nums[nums.length - 1]];
             return (
-              <linearGradient key={i} id={`rainbow-${i}`} gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
+              <linearGradient key={i} id={`rainbow-${uid}-${i}`} gradientUnits="userSpaceOnUse" x1={x1} y1={y1} x2={x2} y2={y2}>
                 <stop offset="0%" stopColor="#ffe14d" />
                 <stop offset="28%" stopColor="#ff8a5a" />
                 <stop offset="52%" stopColor="#ff5ad0" />
@@ -339,7 +341,7 @@ export const IntegrationHubMap: React.FC = () => {
           })}
           {/* userSpaceOnUse：纯水平/垂直直线管的 bbox 为零，百分比滤镜区域会
               坍缩成 0 导致整条管不渲染（github/salesforce/dropbox 三管消失） */}
-          <filter id="pipeGlow" filterUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
+          <filter id={`pipeGlow-${uid}`} filterUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
             <feGaussianBlur stdDeviation="8" result="b" />
             <feMerge>
               <feMergeNode in="b" />
@@ -363,11 +365,11 @@ export const IntegrationHubMap: React.FC = () => {
             extrapolateRight: 'clamp',
           });
           return (
-            <g key={i} filter="url(#pipeGlow)">
+            <g key={i} filter={`url(#pipeGlow-${uid})`}>
               <path
                 d={p.path}
                 fill="none"
-                stroke={`url(#rainbow-${i})`}
+                stroke={`url(#rainbow-${uid}-${i})`}
                 strokeWidth={17}
                 strokeLinecap="round"
                 strokeDasharray={`${dashOn} ${p.len + 60}`}
