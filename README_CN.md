@@ -16,7 +16,7 @@
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
-**让 agent 帮你制作电影感产品视频的 skill：152 张镜头配方卡 · 161 个样式 · 209 条动态样片 · 已验收成片模板**
+**让 agent 帮你制作电影感产品视频的 skill：152 张镜头配方卡 · 209 个样式 · 209 条动态样片 · 已验收成片模板**
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -33,8 +33,8 @@
 
 - **新增 48 张镜头配方卡**——卡库从 104 张扩充到 **152 卡 / 209 条样片**。
   由 209 个候选动效经八轮与参考片逐帧比对评审收敛而来，按既有类别并入
-  Gallery：完整配方卡 + 调校好的 `render(t)` 模板源码
-  （`demos/<类别>/<卡名>/effect.js`，与 Remotion `useCurrentFrame` 同构）
+  Gallery：完整配方卡 + 原生 Remotion 组件
+  （`demos/<类别>/<卡名>/<组件>.tsx`，归一化进度 t 驱动、逐帧确定性）
   + 动态样片。全部模板化：中性占位文案 + 单一可替换 `ACCENT` 强调色变量。
 - **音频库重构**——`bgm/` + `sfx/<类别>/` 两层结构，149 个音效按场景/材质
   分 16 类，md5 去重并补回授权 URL。
@@ -130,7 +130,7 @@ agent 会替换成目标产品的截图、文案和品牌信息，复现同等�
 | 内容 | 说明 |
 | --- | --- |
 | 152 张镜头配方卡 | 记录用途、能量、建议时长、参数、实现要点与已知坑 |
-| 209 条动态样片 | 覆盖 161 个样式，可在在线 Gallery 中直接预览、搜索和筛选 |
+| 209 条动态样片 | 覆盖 209 个样式，可在在线 Gallery 中直接预览、搜索和筛选 |
 | Remotion 参考实现 | 每张卡对应经过调校的 TSX demo，包含实际缓动和时序参数 |
 | 完整成片模板 | 36.2 秒、1920×1080、30fps、10 镜头的纸墨琥珀风产品宣传片 |
 | 组件与素材 | 2.5D 页面相机、字幕、闪切、数字滚动、音效和素材采集脚本 |

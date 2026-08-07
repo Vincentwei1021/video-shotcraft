@@ -1,0 +1,63 @@
+name: PR checks
+
+# Catches problems BEFORE merge that deploy-pages.yml would only surface after:
+# generated artifacts (gallery/source, library.json, library.html, sitemap,
+# llms.txt) drifting from the shot cards, and library.json referencing preview
+# MP4s that don't exist on the gallery-media release.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'references/shots/**'
+      - 'gallery/**'
+      - '.github/workflows/pr-checks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generated artifacts are in sync with cards
+        run: |
+          python3 gallery/sync-from-cards.py
+          python3 gallery/build-seo.py
+          # sync bumps updatedAt (and build-seo the sitemap lastmod) when a
+          # source copy differs from its card — those are real drift, keep them.
+          # A clean tree modulo nothing means committed artifacts match cards.
+          if ! git diff --exit-code -- gallery; then
+            echo '::error::gallery artifacts drift from cards — run' \
+                 'sync-from-cards.py + build-seo.py and commit the result'
+            exit 1
+          fi
+
+      - name: Every library.json preview exists on the gallery-media release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view gallery-media --repo "$GITHUB_REPOSITORY" \
+            --json assets --jq '.assets[].name' | sort > /tmp/release-assets.txt
+          python3 - <<'EOF'
+          import json, sys
+          lib = json.load(open('gallery/api/library.json'))
+          assets = set(open('/tmp/release-assets.txt').read().split())
+          missing = []
+          for card in lib['cards']:
+              for style in card['styles']:
+                  media = style.get('media')
+                  url = media.get('url') if isinstance(media, dict) else media
+                  if not url:
+                      continue
+                  name = url.split('?')[0].rstrip('/').split('/')[-1]
+                  if name not in assets:
+                      missing.append(f"{card['name']}/{style['key']}: {name}")
+          if missing:
+              print('::error::previews missing from the gallery-media release:')
+              print(*missing, sep='\n  ')
+              sys.exit(1)
+          print(f"all previews present on release "
+                f"({len(lib['cards'])} cards checked)")
+          EOF

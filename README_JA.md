@@ -15,7 +15,7 @@
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
-**映画のような製品動画を制作するためのエージェントスキル：104 種類のショットレシピカード · 209 種類のスタイル · 209 本のモーションプレビュー · 実制作に対応したテンプレート**
+**映画のような製品動画を制作するためのエージェントスキル：152 種類のショットレシピカード · 209 種類のスタイル · 209 本のモーションプレビュー · 実制作に対応したテンプレート**
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -34,10 +34,10 @@
 - **ショットレシピカード 48 枚を新規追加**——ライブラリは 104 枚から
   **152 カード / 209 プレビュー**に拡充。209 候補から参照映像との
   フレーム単位比較レビューを 8 ラウンド重ねて厳選し、既存カテゴリに統合：
-  完全なレシピカード + 調整済み `render(t)` テンプレートソース
-  （`demos/<カテゴリ>/<カード名>/effect.js`、Remotion の `useCurrentFrame`
-  と同型）+ モーションプレビュー。すべてテンプレート化済み（ニュートラルな
-  プレースホルダー文言 + 差し替え可能な `ACCENT` カラー変数）。
+  完全なレシピカード + ネイティブ Remotion コンポーネント
+  （`demos/<カテゴリ>/<カード名>/<Component>.tsx`、正規化された進行度 t で
+  駆動する決定論的レンダリング）+ モーションプレビュー。すべてテンプレート化済み
+  （ニュートラルなプレースホルダー文言 + 差し替え可能な `ACCENT` カラー変数）。
 - **音声ライブラリ再構成**——`bgm/` + `sfx/<カテゴリ>/` の 2 階層、
   149 個の効果音を 16 カテゴリに分類、md5 重複排除とライセンス URL 復元。
 - **Gallery 強化**——複数カテゴリタグ、フラットな All ビュー、
@@ -135,7 +135,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 
 | 内容 | 説明 |
 | --- | --- |
-| 104 種類のショットレシピカード | 目的、エネルギー、推奨時間、パラメータ、実装上の注意点、既知の落とし穴 |
+| 152 種類のショットレシピカード | 目的、エネルギー、推奨時間、パラメータ、実装上の注意点、既知の落とし穴 |
 | 209 本のモーションプレビュー | 209 種類のスタイルを網羅し、オンライン Gallery で検索と絞り込みが可能 |
 | Remotion 実装 | 各カードの実際のイージングとタイミングパラメータを含む、調整済みの TSX デモ |
 | 完全な動画テンプレート | 検証済みの 36.2 秒、1920×1080、30fps、10 ショットの製品プロモーション |

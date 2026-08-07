@@ -5,7 +5,7 @@
 // 凝固为清晰发光短字标。四角 HUD 括角/圆点与左右中线短划全程常驻。
 // 滤镜链：feTurbulence seed 逐帧 + displacement scale 双向动画，终字同走滤镜再解除。
 // 设计坐标 480×270（DesignStage 等比放大），SVG viewBox 640×360 铺满全幅。
-import React from 'react';
+import React, { useId } from 'react';
 import { E, DesignStage, seg, useT } from '../../_fixtures/Motion';
 
 export const GRAIN_DISSOLVE_DURATION = 60; // 2000ms @30fps
@@ -43,6 +43,11 @@ const Corner: React.FC<{ x: number; y: number; sx: number; sy: number }> = ({ x,
 
 export const GrainDissolve: React.FC = () => {
   const t = useT();
+  // 滤镜/clipPath ID 按实例生成，同一 Composition 放多个实例时互不串引
+  // （useId 的 «:» 在 CSS url() 里非法，清洗成纯字母数字）
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+  const fid = `gd-${uid}`;
+  const cid = `gd-${uid}-clip`;
   const burst = seg(t, 0.13, 0.28, E.outCubic); // 干净字 → 砂化
   const cond = seg(t, 0.60, 0.71, E.inOutCubic); // 整行噪点云 → 短字标噪点云
   const lock = seg(t, 0.68, 0.90, E.outCubic); // 位移衰减凝固
@@ -56,7 +61,7 @@ export const GrainDissolve: React.FC = () => {
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: '#0a0a0c' }}
       >
         <defs>
-          <filter id="gd0" x="-40%" y="-150%" width="180%" height="400%">
+          <filter id={fid} x="-40%" y="-150%" width="180%" height="400%">
             <feTurbulence
               type="fractalNoise"
               baseFrequency={0.9 + burst * 0.4}
@@ -86,10 +91,10 @@ export const GrainDissolve: React.FC = () => {
         </g>
         {/* 选区框：砂化时浮现，凝聚前撤掉 */}
         <g opacity={burst * (1 - seg(t, 0.55, 0.64))}>
-          <clipPath id="gd0-clip">
+          <clipPath id={cid}>
             <rect x={BX} y={BY} width={BW} height={BH} />
           </clipPath>
-          <g clipPath="url(#gd0-clip)">
+          <g clipPath={`url(#${cid})`}>
             {HATCH_XS.map((x) => (
               <line key={x} x1={x} y1={BY + BH} x2={x + BH} y2={BY} stroke="#2c2c31" strokeWidth={1} />
             ))}
@@ -103,7 +108,7 @@ export const GrainDissolve: React.FC = () => {
         {/* 文字组：整行字与终字标同走滤镜链 + 白色辉光 */}
         <g
           style={{
-            filter: `url(#gd0) drop-shadow(0 0 ${4 + glow * 20}px rgba(255,255,255,${Math.max(0, glow) * 0.9}))`,
+            filter: `url(#${fid}) drop-shadow(0 0 ${4 + glow * 20}px rgba(255,255,255,${Math.max(0, glow) * 0.9}))`,
           }}
         >
           <text

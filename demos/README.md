@@ -39,6 +39,10 @@ import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
   durationInFrames={BLUR_SLIDE_DURATION} fps={30} width={1920} height={1080} />
 ```
 
-动画全部由归一化 t（useT()）驱动的纯函数计算，无内部状态与真随机，
-逐帧确定性渲染。每个组件都经过与原样片 mp4 的全帧 SSIM 比对验收
+动画全部由归一化 t（useT()）驱动计算，无真随机，逐帧确定性渲染。
+三个文字密集组件例外（glass-pill-dictation-typing / chip-grid-single-select-blackout /
+pill-chip-slot-cycle-handled）：挂载时用 useLayoutEffect 实测一次文字宽度
+（之后恒定，单次渲染内仍逐帧确定），因此其布局随渲染环境的字体而变——
+跨平台若字体回退不同，宽度会整体漂移；组件内已备兜底估算值，介意的话
+可把实测值写死。每个组件都经过与原样片 mp4 的全帧 SSIM 比对验收
 （mean≥0.97 / min≥0.93 或有注释说明的编码噪声豁免）。
