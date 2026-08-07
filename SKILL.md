@@ -195,7 +195,9 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   长样本与轻音素材各有名单需特殊处理（sound-design 4.1）。
 - `demos/` 各卡实现源码：多数为自包含灰阶 demo（部分 import
   `demos/_fixtures/Fixtures.tsx` 的假 UI 场景件，个别 import
-  `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑。
+  `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑；
+  个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
+  `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
   src/index.ts AiflPromo out/promo.mp4`。
 - `gallery/` 静态画廊：优先直接给用户在线版
