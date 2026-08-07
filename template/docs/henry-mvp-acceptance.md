@@ -1,7 +1,9 @@
 # Henry Investor Video MVP Acceptance
 
-Status: **PASS**  
-Date: 2026-08-07  
+Status: **PASS**
+
+Date: 2026-08-07
+
 Branch: `henry/mvp-20260807`
 
 ## Source integrity and privacy
