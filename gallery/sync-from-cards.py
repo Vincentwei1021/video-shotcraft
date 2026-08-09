@@ -101,6 +101,9 @@ def main():
         card['source'] = f"references/shots/{card['category']}/{card['name']}.md"
         if card['name'] in touched:
             card['updatedAt'] = now
+        # 新卡首次入 library.json 时打 addedAt（NEW 徽标的数据源，之后不再变；
+        # 徽标显示窗口见 app.js 的 NEW_WINDOW_MS）
+        card.setdefault('addedAt', now)
         if len(card.get('styles', [])) == 1:
             card['styles'][0]['description'] = card['summary']
         for style in card.get('styles', []):

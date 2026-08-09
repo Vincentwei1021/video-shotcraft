@@ -69,6 +69,11 @@ const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (character)
 }[character]));
 
 const text = (key) => translations.ui[state.language][key] || key;
+// 入库 14 天内的卡在卡片和分类导航上挂 NEW 徽标（过期自动消失，无需维护）；
+// addedAt 由 sync 脚本在卡首次进 library.json 时写死，之后编辑只动 updatedAt
+const NEW_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+const isNewCard = (card) =>
+  Boolean(card.addedAt) && Date.now() - Date.parse(card.addedAt) < NEW_WINDOW_MS;
 const cardName = (card) => state.language === 'zh'
   ? translations.cardsZh[card.name] || card.name
   : card.name;
@@ -202,7 +207,7 @@ function cardMarkup(card, cardIndex) {
       <div class="card-body">
         <div class="card-title-row">
           <div class="card-title">
-            <h3>${escapeHtml(title)}</h3>
+            <h3>${escapeHtml(title)}${isNewCard(card) ? ' <span class="new-badge">NEW</span>' : ''}</h3>
             ${subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
           </div>
         </div>
@@ -361,9 +366,11 @@ async function loadLibrary({silent = false} = {}) {
 function renderCategoryCounts() {
   if (!state.library) return;
   const counts = {all: state.library.cards.length};
+  const hasNew = {all: state.library.cards.some(isNewCard)};
   state.library.cards.forEach((card) => {
     (card.tags || [card.category]).forEach((tag) => {
       counts[tag] = (counts[tag] || 0) + 1;
+      if (isNewCard(card)) hasNew[tag] = true;
     });
   });
   elements.filters.querySelectorAll('[data-filter]').forEach((button) => {
@@ -375,6 +382,16 @@ function renderCategoryCounts() {
       button.append(badge);
     }
     badge.textContent = counts[key] ?? 0;
+    // NEW 徽标插在文字与计数之间（“all” 恒有新卡时也提示，与卡片徽标同窗口）
+    let newBadge = button.querySelector('.new-badge');
+    if (hasNew[key] && !newBadge) {
+      newBadge = document.createElement('span');
+      newBadge.className = 'new-badge';
+      newBadge.textContent = 'NEW';
+      button.insertBefore(newBadge, badge);
+    } else if (!hasNew[key] && newBadge) {
+      newBadge.remove();
+    }
   });
 }
 

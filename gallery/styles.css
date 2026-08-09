@@ -255,6 +255,24 @@ main {
   opacity: 0.55;
 }
 
+/* NEW 徽标：卡片标题与分类导航共用；入库 60 天内由 app.js 判定挂载 */
+.new-badge {
+  display: inline-block;
+  padding: 0.1em 0.42em;
+  border-radius: 4px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  vertical-align: 0.18em;
+  flex: none;
+}
+.category-link .new-badge { margin-left: auto; }
+.category-link .count { flex: none; }
+.category-link.is-active .new-badge { background: #e5484d; color: #fff; }
+
 .library-main { min-width: 0; }
 
 .intro {
