@@ -16,7 +16,14 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
   （page-waterfall-wall 例外：它写的是 `textures/xxx.png`，放 `public/textures/`）。
 
 个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
-`npm i @remotion/motion-blur`。
+`npm i @remotion/motion-blur`。名单（8 个文件 / 6 张卡）：
+
+- `camera/crash-zoom-punch/CrashZoomReal.tsx`、`CrashImpactReal.tsx`
+- `camera/space-camera-moves/DroneDiveLanding.tsx`
+- `opening/magician-card-flourish/MagicianCardFlourish.tsx`
+- `rhythm/speed-ramp-freeze/SpeedRampReal.tsx`
+- `transition/shot-transitions/WhipPanReal.tsx`、`WhipBrakeReal.tsx`
+- `transition/transition-hidden-cut/InvisibleCut.tsx`
 
 ## Motion 系 demo（2026-08 并入的 48 张卡）
 
