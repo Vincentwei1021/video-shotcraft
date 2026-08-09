@@ -31,6 +31,7 @@ beat-synced cuts, and film-grade SFX included.
 
 ## ✨ What's new
 
+> [!IMPORTANT]
 > ### 🆕 2026-08 · 48 new shot recipe cards
 > The library grows from 104 to **152 cards / 209 previews**. Distilled from
 > 209 candidate motions through eight rounds of frame-by-frame review against
