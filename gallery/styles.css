@@ -258,15 +258,15 @@ main {
 /* NEW 徽标：卡片标题与分类导航共用；入库 60 天内由 app.js 判定挂载 */
 .new-badge {
   display: inline-block;
-  padding: 0.1em 0.42em;
-  border-radius: 4px;
+  padding: 0.08em 0.34em;
+  border-radius: 3px;
   background: #e5484d;
   color: #fff;
-  font-size: 0.62rem;
+  font-size: 0.54rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
-  vertical-align: 0.18em;
+  letter-spacing: 0.05em;
+  line-height: 1.45;
+  vertical-align: 0.22em;
   flex: none;
 }
 .category-link .new-badge { margin-left: auto; }
