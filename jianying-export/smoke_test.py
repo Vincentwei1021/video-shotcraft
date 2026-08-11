@@ -101,6 +101,33 @@ def macify(draft_dir: str) -> dict:
     with open(meta_path, encoding="utf-8") as f:
         meta = json.load(f)
     now_us = int(time.time() * 1_000_000)
+
+    # 素材登记：Mac 版靠 meta 的 draft_materials(type 0) 管理媒体池，缺record
+    # 就会弹"媒体丢失，请重新链接"（实测 2025-08）。按老草稿 schema 补齐。
+    records = []
+    for kind, metetype in (("videos", "video"), ("audios", "music")):
+        for m in content["materials"].get(kind, []):
+            records.append({
+                "create_time": now_us // 1_000_000,
+                "duration": m["duration"],
+                "extra_info": (m.get("material_name") or m.get("name")
+                               or os.path.basename(m["path"])),
+                "file_Path": m["path"],
+                "height": m.get("height", 0),
+                "id": str(uuid.uuid4()),
+                "import_time": now_us // 1_000_000,
+                "import_time_ms": now_us,
+                "item_source": 1,
+                "md5": "",
+                "metetype": metetype,
+                "roughcut_time_range": {"duration": -1, "start": -1},
+                "sub_time_range": {"duration": -1, "start": -1},
+                "type": 0,
+                "width": m.get("width", 0),
+            })
+    for group in meta.get("draft_materials", []):
+        if group.get("type") == 0:
+            group["value"] = records
     fold_path = os.path.join(DRAFT_ROOT, DRAFT_NAME)
     materials_size = sum(os.path.getsize(p) for p in (VIDEO, AUDIO))
     meta.update({
