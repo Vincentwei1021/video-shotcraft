@@ -47,6 +47,31 @@ def _mac_platform() -> dict:
     return platform
 
 
+def _bundle_media(content: dict, draft_dir: str, draft_name: str) -> None:
+    """把所有媒体拷进草稿目录 Resources/ 并改写素材路径。
+
+    剪映 Mac 版是沙盒应用（com.lemon.lvpro），只能访问 ~/Movies（容器软链）
+    和用户经文件选择器授权过的路径；引用草稿目录外的媒体会报"暂无访问权限"
+    （实测 2025-08）。打包进草稿目录一劳永逸，草稿也因此自包含。
+    """
+    res_dir = os.path.join(draft_dir, "Resources")
+    os.makedirs(res_dir, exist_ok=True)
+    final_base = os.path.join(DRAFT_ROOT, draft_name, "Resources")
+    mapping: dict[str, str] = {}
+    used: set[str] = set()
+    for kind in ("videos", "audios"):
+        for m in content["materials"].get(kind, []):
+            src = m["path"]
+            if src not in mapping:
+                name = os.path.basename(src)
+                if name in used:  # 不同目录同名文件防碰撞
+                    name = f"{len(used)}-{name}"
+                used.add(name)
+                shutil.copy2(src, os.path.join(res_dir, name))
+                mapping[src] = os.path.join(final_base, name)
+            m["path"] = mapping[src]
+
+
 def _material_records(content: dict, now_us: int) -> list[dict]:
     """从 draft_content 的 materials 反推 Mac 版媒体池登记记录。"""
     records = []
@@ -75,11 +100,14 @@ def _material_records(content: dict, now_us: int) -> list[dict]:
     return records
 
 
-def macify(draft_dir: str, draft_name: str) -> dict:
+def macify(draft_dir: str, draft_name: str, bundle_media: bool = True) -> dict:
     """把 5.9/Windows 格式草稿补成 Mac 版认识的样子，返回注册所需信息。"""
     content_path = os.path.join(draft_dir, "draft_content.json")
     with open(content_path, encoding="utf-8") as f:
         content = json.load(f)
+
+    if bundle_media:
+        _bundle_media(content, draft_dir, draft_name)
 
     platform = _mac_platform()
     for key in ("platform", "last_modified_platform"):
@@ -117,11 +145,16 @@ def macify(draft_dir: str, draft_name: str) -> dict:
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False)
 
-    # 封面：从第一个视频素材抽首帧（缺封面时草稿列表显示异常）
+    # 封面：从第一个视频素材抽首帧（缺封面时草稿列表显示异常）。
+    # 打包模式下素材路径已指向安装后的最终位置，抽帧要用暂存目录里的副本
     videos = content["materials"].get("videos", [])
     if videos:
+        cover_src = videos[0]["path"]
+        if bundle_media:
+            cover_src = os.path.join(draft_dir, "Resources",
+                                     os.path.basename(cover_src))
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error",
-                        "-i", videos[0]["path"], "-frames:v", "1",
+                        "-i", cover_src, "-frames:v", "1",
                         os.path.join(draft_dir, "draft_cover.jpg")],
                        check=False)
 
