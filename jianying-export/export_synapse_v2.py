@@ -88,18 +88,21 @@ SFX = [  # (文件, 目标拍, 文件内峰值秒, 音量)
 BGM_VOLUME = 0.72
 
 # ---- 字幕样式（近似 BilingualCap：底部居中白底 scrim，中文大英文小）----
+# 剪映 size 单位 ≈ 画布高度百分比（size 15 实测渲 ≈150px @1080p）。
+# 原片：中文 64px（≈6）中心在 y≈915，英文 42px（≈4）中心在 y≈985；
+# transform_y 按半高归一，y = 540·(1 - t)。
 INK = (0.173, 0.173, 0.173)  # #2C2C2C
 ZH_STYLE = dict(
-    style=draft.TextStyle(size=15.0, bold=True, color=INK, align=1),
+    style=draft.TextStyle(size=6.0, bold=True, color=INK, align=1),
     background=draft.TextBackground(color="#FFFFFF", alpha=0.82,
                                     round_radius=0.35),
     clip_settings=draft.ClipSettings(transform_y=-0.70),
 )
 EN_STYLE = dict(
-    style=draft.TextStyle(size=10.0, color=INK, alpha=0.65, align=1),
+    style=draft.TextStyle(size=4.0, color=INK, alpha=0.65, align=1),
     background=draft.TextBackground(color="#FFFFFF", alpha=0.82,
                                     round_radius=0.35),
-    clip_settings=draft.ClipSettings(transform_y=-0.84),
+    clip_settings=draft.ClipSettings(transform_y=-0.825),
 )
 
 
