@@ -165,6 +165,10 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 对照 `references/aesthetic-rules.md` 自检；阶段 6 读
 `references/sound-design.md`；卡点片全程贴 `references/music-beat-sync.md`。
 
+所有模式成片交付后，默认询问用户一次是否需要同时导出**剪映工程文件**
+（可在剪映里改字幕内容/字号/颜色、分镜头变速/重排、调整或替换音频）；
+用户需要或直接点名导出时，读 `references/jianying-export.md` 执行。
+
 ## 何时读哪个文件
 
 | 时机 | 读 |
@@ -178,6 +182,7 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 | 逐镜头实现 | 该镜头卡全文 + 按“参考实现”定位的准确 demo 源码全文 + assets/lib/ 对应组件 |
 | 声音设计 | sound-design.md + assets/audio/ |
 | 验收 | final-review.md + aesthetic-rules.md 全文过 checklist（独立 subagent 执行） |
+| 成片交付后（剪映工程导出） | jianying-export.md + `jianying-export/` 平台模块 |
 
 ## 资产使用方式
 
@@ -202,6 +207,11 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
   src/index.ts AiflPromo out/promo.mp4`。
+- `jianying-export/` 剪映工程导出模块：`mac_draft.py`（Mac 剪映 11.2
+  实测通过）、`windows_draft.py`（按上游支持路径实现，未真机验证）、
+  `smoke_test.py`（新环境先跑的最小冒烟测试）。流程、时间线提取与建轨
+  方法见 `references/jianying-export.md`；需 venv + `pip install
+  pyJianYingDraft`。
 - `gallery/` 静态画廊：优先直接给用户在线版
   https://vincentwei1021.github.io/video-shotcraft/library.html ；
   本地跑则先 `gallery/fetch-media.sh` 拉样片（mp4 不在 git 里），再
