@@ -18,6 +18,7 @@ import json
 import os
 import shutil
 import subprocess
+import time
 
 
 def default_draft_root() -> str:
@@ -41,8 +42,25 @@ def jianying_running() -> bool:
     return "JianyingPro" in out
 
 
+def _validate_draft_name(draft_name: str, root: str) -> str:
+    """校验草稿名并返回目标路径。
+
+    install/uninstall 会对目标路径 rmtree/rename，草稿名含路径分隔符、
+    盘符或 `..` 时会逃逸草稿根目录（任意目录删除），必须拒绝。
+    """
+    if (not draft_name or draft_name in (".", "..")
+            or "/" in draft_name or "\\" in draft_name or ":" in draft_name
+            or os.path.isabs(draft_name)):
+        raise ValueError(
+            f"非法草稿名 {draft_name!r}：不能为空、含路径分隔符或为绝对路径")
+    target = os.path.realpath(os.path.join(root, draft_name))
+    if os.path.dirname(target) != os.path.realpath(root):
+        raise ValueError(f"草稿名 {draft_name!r} 解析后逃逸草稿根目录：{target}")
+    return os.path.join(root, draft_name)
+
+
 def bundle_media(draft_dir: str, draft_name: str, draft_root: str) -> None:
-    """把所有媒体拷进草稿目录 Resources/ 并改写素材路径（含 meta 登记）。"""
+    """把所有媒体拷进草稿目录 Resources/ 并改写素材路径。"""
     content_path = os.path.join(draft_dir, "draft_content.json")
     with open(content_path, encoding="utf-8") as f:
         content = json.load(f)
@@ -70,22 +88,43 @@ def bundle_media(draft_dir: str, draft_name: str, draft_root: str) -> None:
 
 def install(draft_dir: str, draft_name: str, draft_root: str | None = None,
             bundle: bool = True) -> str:
-    """把 pyJianYingDraft 生成的草稿目录装进 Windows 剪映草稿库。"""
+    """把 pyJianYingDraft 生成的草稿目录装进 Windows 剪映草稿库。
+
+    旧草稿改名保留而非直接删除，安装成功后才清理；失败时旧草稿复位、
+    新草稿退回暂存目录。
+    """
     if jianying_running():
         raise RuntimeError("剪映正在运行，请先完全退出再执行")
     root = draft_root or default_draft_root()
+    target = _validate_draft_name(draft_name, root)
     if bundle:
         bundle_media(draft_dir, draft_name, root)
-    target = os.path.join(root, draft_name)
+    old = None
     if os.path.exists(target):
-        shutil.rmtree(target)
-    shutil.move(draft_dir, target)
+        old = f"{target}.replaced-{time.strftime('%Y%m%d-%H%M%S')}"
+        os.rename(target, old)
+    try:
+        shutil.move(draft_dir, target)
+    except BaseException:
+        try:  # 回滚：新草稿退回暂存目录，旧草稿复位
+            if os.path.exists(target):
+                if os.path.exists(draft_dir):
+                    shutil.rmtree(target, ignore_errors=True)
+                else:
+                    shutil.move(target, draft_dir)
+            if old and os.path.exists(old):
+                os.rename(old, target)
+        finally:
+            raise
+    if old:
+        shutil.rmtree(old, ignore_errors=True)
     return target
 
 
 def uninstall(draft_name: str, draft_root: str | None = None) -> None:
     if jianying_running():
         raise RuntimeError("剪映正在运行，请先完全退出再执行")
-    target = os.path.join(draft_root or default_draft_root(), draft_name)
+    target = _validate_draft_name(draft_name,
+                                  draft_root or default_draft_root())
     if os.path.exists(target):
         shutil.rmtree(target)
