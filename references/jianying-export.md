@@ -156,6 +156,11 @@ Mac 版三个坑（mac_draft.py 已全部处理，改模块前必读其 docstrin
 全部媒体（否则弹"媒体丢失"）；沙盒应用只能访问 `~/Movies`，媒体必须打包
 进草稿 `Resources/`（否则"暂无访问权限"）。
 
+Mac 版 platform 需要本机设备指纹（device_id 等），模块自动从草稿库里仍为
+明文的老草稿抄取。**全新机器往往没有明文老草稿，此时 macify 会明确报错
+中止**（无指纹草稿能否被剪映加载未经实测）——按报错提示传 `donor_draft`
+或实验性传 `allow_missing_fingerprint=True`，并把实测结果反馈回模块注释。
+
 Windows 版：`windows_draft.install(draft_dir, DRAFT_NAME)`，无注册表，
 列表不刷新就重启剪映。
 
@@ -172,3 +177,6 @@ Windows 版：`windows_draft.install(draft_dir, DRAFT_NAME)`，无注册表，
    （最小三轨草稿注入），确认打开无"内容已损坏"、无"媒体丢失"再做正片。
 4. 交付时说明：剪映保存后草稿被加密（单向）；想改字幕方案/镜头切分，
    回导出脚本改参数重装。
+5. **隐私**：Mac 版草稿的 platform 字段含本机设备标识（device_id/
+   hard_disk_id/mac_address）。自包含草稿目录**不要直接分发给他人**——
+   对外只交付渲出的成片；确要给别人可编辑工程，在对方机器上重新导出。

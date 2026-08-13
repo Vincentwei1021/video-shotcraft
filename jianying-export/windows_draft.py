@@ -59,6 +59,17 @@ def _validate_draft_name(draft_name: str, root: str) -> str:
     return os.path.join(root, draft_name)
 
 
+def _unique_name(name: str, used: set) -> str:
+    """在 used 集合内生成唯一文件名（循环递增后缀，不会二次碰撞）。"""
+    if name not in used:
+        return name
+    stem, ext = os.path.splitext(name)
+    i = 2
+    while f"{stem}-{i}{ext}" in used:
+        i += 1
+    return f"{stem}-{i}{ext}"
+
+
 def bundle_media(draft_dir: str, draft_name: str, draft_root: str) -> None:
     """把所有媒体拷进草稿目录 Resources/ 并改写素材路径。"""
     content_path = os.path.join(draft_dir, "draft_content.json")
@@ -74,9 +85,7 @@ def bundle_media(draft_dir: str, draft_name: str, draft_root: str) -> None:
         for m in content["materials"].get(kind, []):
             src = m["path"]
             if src not in mapping:
-                name = os.path.basename(src)
-                if name in used:  # 不同目录同名文件防碰撞
-                    name = f"{len(used)}-{name}"
+                name = _unique_name(os.path.basename(src), used)
                 used.add(name)
                 shutil.copy2(src, os.path.join(res_dir, name))
                 mapping[src] = os.path.join(final_base, name)
@@ -122,9 +131,17 @@ def install(draft_dir: str, draft_name: str, draft_root: str | None = None,
 
 
 def uninstall(draft_name: str, draft_root: str | None = None) -> None:
+    """删除指定草稿。先改名为临时目录再删：删除中途失败只留下明确命名的
+    残留，目标名立即可复用，提示手动清理。"""
     if jianying_running():
         raise RuntimeError("剪映正在运行，请先完全退出再执行")
     target = _validate_draft_name(draft_name,
                                   draft_root or default_draft_root())
-    if os.path.exists(target):
-        shutil.rmtree(target)
+    if not os.path.exists(target):
+        return
+    tmp = f"{target}.uninstall-{time.strftime('%Y%m%d-%H%M%S')}"
+    os.rename(target, tmp)
+    try:
+        shutil.rmtree(tmp)
+    except OSError as e:
+        print(f"[warn] 残留目录删除失败，请手动清理：{tmp}（{e}）")

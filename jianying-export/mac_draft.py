@@ -10,6 +10,10 @@ pyJianYingDraft 按 Windows 5.9 格式生成草稿；本模块补齐 Mac 版差�
    否则报"暂无访问权限"。
 
 新版剪映打开明文草稿后会自动升级并加密保存——单向转换，属预期行为。
+
+⚠️ 隐私：生成的草稿 platform 字段含本机设备标识（device_id/hard_disk_id/
+mac_address，从明文老草稿抄取；最小必需字段集未验证）。自包含草稿目录
+**不要直接分发给他人**——对外交付只给渲出的成片，或在接收机器上重新导出。
 """
 
 import json
@@ -70,11 +74,14 @@ def _load_platform(draft_dir: str) -> dict | None:
     return None
 
 
-def _mac_platform(donor_draft: str | None = None) -> dict:
+def _mac_platform(donor_draft: str | None = None,
+                  allow_missing_fingerprint: bool = False) -> dict:
     """取 Mac 平台指纹：显式 donor > 自动扫描草稿库里的明文老草稿。
 
     剪映 6+ 的草稿保存后加密，但更早创建、未再打开过的草稿仍是明文，
-    可从中抄本机 device_id / hard_disk_id。
+    可从中抄本机 device_id / hard_disk_id。全新机器往往没有明文老草稿，
+    而"无指纹草稿能否被剪映加载"未经实测——默认明确失败而不是装完才发现
+    打不开；确要实验无指纹路径，显式传 allow_missing_fingerprint=True。
     """
     if donor_draft:
         platform = _load_platform(donor_draft)
@@ -90,10 +97,27 @@ def _mac_platform(donor_draft: str | None = None) -> dict:
         platform = _load_platform(os.path.join(DRAFT_ROOT, name))
         if platform:
             return platform
-    print("[warn] 草稿库中未找到明文老草稿，platform 将缺少机器指纹"
-          "（device_id 等）——此情形未经实测，若剪映拒载请用 donor_draft "
-          "参数指定一个明文草稿")
+    if not allow_missing_fingerprint:
+        raise RuntimeError(
+            "草稿库中未找到可抄设备指纹的明文老草稿，无指纹草稿未经实测，"
+            "已中止。可选项：① 在剪映里新建任意草稿后立即退出，若其仍为"
+            "明文即可被自动扫描（新版剪映会加密，大概率不行）；② 用 "
+            "donor_draft 参数指定一个明文草稿路径；③ 传 "
+            "allow_missing_fingerprint=True 实验无指纹安装（结果自负）")
+    print("[warn] 实验模式：platform 缺少机器指纹（device_id 等），"
+          "剪映可能拒载")
     return {"os": "mac", "app_version": "5.4.0"}
+
+
+def _unique_name(name: str, used: set) -> str:
+    """在 used 集合内生成唯一文件名（循环递增后缀，不会二次碰撞）。"""
+    if name not in used:
+        return name
+    stem, ext = os.path.splitext(name)
+    i = 2
+    while f"{stem}-{i}{ext}" in used:
+        i += 1
+    return f"{stem}-{i}{ext}"
 
 
 def _bundle_media(content: dict, draft_dir: str, draft_name: str) -> int:
@@ -113,9 +137,7 @@ def _bundle_media(content: dict, draft_dir: str, draft_name: str) -> int:
         for m in content["materials"].get(kind, []):
             src = m["path"]
             if src not in mapping:
-                name = os.path.basename(src)
-                if name in used:  # 不同目录同名文件防碰撞
-                    name = f"{len(used)}-{name}"
+                name = _unique_name(os.path.basename(src), used)
                 used.add(name)
                 shutil.copy2(src, os.path.join(res_dir, name))
                 total_size += os.path.getsize(src)
@@ -155,9 +177,12 @@ def _material_records(content: dict, now_us: int) -> list[dict]:
 
 
 def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
-           donor_draft: str | None = None) -> dict:
+           donor_draft: str | None = None,
+           allow_missing_fingerprint: bool = False) -> dict:
     """把 5.9/Windows 格式草稿补成 Mac 版认识的样子，返回注册所需信息。"""
     _validate_draft_name(draft_name)
+    # 指纹解析放最前：全新机器缺 donor 时在拷贝任何媒体之前就失败
+    platform = _mac_platform(donor_draft, allow_missing_fingerprint)
     content_path = os.path.join(draft_dir, "draft_content.json")
     with open(content_path, encoding="utf-8") as f:
         content = json.load(f)
@@ -166,7 +191,6 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
     if bundle_media:
         bundled_size = _bundle_media(content, draft_dir, draft_name)
 
-    platform = _mac_platform(donor_draft)
     for key in ("platform", "last_modified_platform"):
         content[key] = {**content[key], **platform}
 
@@ -320,15 +344,33 @@ def install(draft_dir: str, draft_name: str, info: dict) -> str:
 
 
 def uninstall(draft_name: str) -> None:
-    """删除指定草稿并从注册表移除（只动该条目，不回滚其他改动）。"""
+    """删除指定草稿并从注册表移除（只动该条目，不回滚其他改动）。
+
+    顺序保证一致性：草稿先改名为临时目录 → 注册表原子更新 → 才真正删除。
+    注册表更新失败则草稿复位；临时目录删除失败只留下明确命名的残留
+    （注册表与剪映视图已一致），提示手动清理。
+    """
     if jianying_running():
         raise RuntimeError("剪映正在运行，请先完全退出（Cmd+Q）再执行")
     target = _validate_draft_name(draft_name)
     with open(ROOT_META, encoding="utf-8") as f:
         root = json.load(f)
     _backup_registry()
-    root["all_draft_store"] = [e for e in root["all_draft_store"]
-                               if e.get("draft_name") != draft_name]
-    _write_json_atomic(ROOT_META, root)
+    tmp = None
     if os.path.exists(target):
-        shutil.rmtree(target)
+        tmp = f"{target}.uninstall-{time.strftime('%Y%m%d-%H%M%S')}"
+        os.rename(target, tmp)
+    try:
+        root["all_draft_store"] = [e for e in root["all_draft_store"]
+                                   if e.get("draft_name") != draft_name]
+        _write_json_atomic(ROOT_META, root)
+    except BaseException:
+        if tmp and os.path.exists(tmp):
+            os.rename(tmp, target)
+        raise
+    if tmp:
+        try:
+            shutil.rmtree(tmp)
+        except OSError as e:
+            print(f"[warn] 注册表已更新，但残留目录删除失败，"
+                  f"请手动清理：{tmp}（{e}）")
