@@ -42,6 +42,12 @@ beat-synced cuts, and film-grade SFX included.
 > motion previews. All de-branded: neutral placeholder copy and a single
 > swappable `ACCENT` color variable.
 
+- **2026-08 · JianYing (CapCut CN) project export** — after final delivery the
+  film can be exported as an editable JianYing draft: the plate is cut per
+  shot (retime/reorder/grade), captions are rebuilt as native text tracks
+  (content/size/color editable), SFX/BGM land on separate audio tracks.
+  Verified on JianYing Pro 11.2 for macOS; see
+  [references/jianying-export.md](references/jianying-export.md).
 - **2026-07 · Audio library restructure** — `bgm/` + `sfx/<category>/` with 149
   SFX across 16 scene/material categories, md5-deduplicated with license URLs
   restored.
@@ -145,6 +151,7 @@ With these three flags, frame renders from the bundled template work.
 | Complete video template | A validated 36.2-second, 1920×1080, 30fps product promo with 10 shots |
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
+| JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
 
 The toolkit primarily targets web and desktop product promos, while individual
 shot cards can also be used in feature demos, brand films, launch videos, and
@@ -161,10 +168,12 @@ video-shotcraft/
 │   ├── sequences/           # Reusable full-video structures and sequence patterns
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
-│   └── sound-design.md      # Sound-design guidance and examples
+│   ├── sound-design.md      # Sound-design guidance and examples
+│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
 ├── demos/                   # Remotion reference implementations (same categories)
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
+├── jianying-export/         # JianYing draft installers (mac tested / win untested)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts

@@ -40,6 +40,12 @@
 > 駆動する決定論的レンダリング）+ モーションプレビュー。すべてテンプレート化済み
 > （ニュートラルなプレースホルダー文言 + 差し替え可能な `ACCENT` カラー変数）。
 
+- **2026-08 · 剪映（CapCut 中国版）プロジェクト書き出し**——完成映像を編集
+  可能な剪映ドラフトとして書き出し：プレートはショット単位に分割（変速・
+  並べ替え・カラー調整可）、字幕はネイティブテキストトラックに再構築
+  （文言・サイズ・色を編集可）、SFX/BGM は独立音声トラック。macOS 版
+  剪映 11.2 で実機検証済み。詳細は
+  [references/jianying-export.md](references/jianying-export.md)。
 - **2026-07 · 音声ライブラリ再構成**——`bgm/` + `sfx/<カテゴリ>/` の 2 階層、
   149 個の効果音を 16 カテゴリに分類、md5 重複排除とライセンス URL 復元。
 - **2026-07 · Gallery 強化**——複数カテゴリタグ、フラットな All ビュー、
@@ -143,6 +149,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 | 完全な動画テンプレート | 検証済みの 36.2 秒、1920×1080、30fps、10 ショットの製品プロモーション |
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
 | 制作手法 | キャプチャ、ビジュアルディレクション、ストーリーボード、サウンドデザイン、ビート同期、最終 QA |
+| 剪映プロジェクト書き出し | 完成映像を剪映（CapCut 中国版）で継続編集——ショット変速・字幕・音声トラックを編集可（macOS 11.2 実機検証済み） |
 
 このツールキットは主に Web およびデスクトップ製品のプロモーションを対象としていますが、
 各ショットカードは機能デモ、ブランド映像、ローンチ動画、
@@ -159,10 +166,12 @@ video-shotcraft/
 │   ├── sequences/           # Reusable full-video structures and sequence patterns
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
-│   └── sound-design.md      # Sound-design guidance and examples
+│   ├── sound-design.md      # Sound-design guidance and examples
+│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
 ├── demos/                   # Remotion reference implementations for shot cards
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
+├── jianying-export/         # JianYing draft installers (mac tested / win untested)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts
