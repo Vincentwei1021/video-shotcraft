@@ -21,6 +21,7 @@ import os
 import shutil
 import subprocess
 import time
+import unicodedata
 import uuid
 
 DRAFT_ROOT = os.path.expanduser(
@@ -109,13 +110,19 @@ def _mac_platform(donor_draft: str | None = None,
     return {"os": "mac", "app_version": "5.4.0"}
 
 
-def _unique_name(name: str, used: set) -> str:
-    """在 used 集合内生成唯一文件名（循环递增后缀，不会二次碰撞）。"""
-    if name not in used:
+def _name_key(name: str) -> str:
+    """文件名占用键：Unicode 规范化 + casefold。macOS APFS / Windows NTFS
+    默认不区分大小写，clip.mp4 与 CLIP.mp4 是同一个文件。"""
+    return unicodedata.normalize("NFC", name).casefold()
+
+
+def _unique_name(name: str, used_keys: set) -> str:
+    """生成占用键唯一的文件名（循环递增后缀，不会二次碰撞）。"""
+    if _name_key(name) not in used_keys:
         return name
     stem, ext = os.path.splitext(name)
     i = 2
-    while f"{stem}-{i}{ext}" in used:
+    while _name_key(f"{stem}-{i}{ext}") in used_keys:
         i += 1
     return f"{stem}-{i}{ext}"
 
@@ -131,14 +138,24 @@ def _bundle_media(content: dict, draft_dir: str, draft_name: str) -> int:
     os.makedirs(res_dir, exist_ok=True)
     final_base = os.path.join(DRAFT_ROOT, draft_name, "Resources")
     mapping: dict[str, str] = {}
-    used: set[str] = set()
+    used_keys: set[str] = set()
     total_size = 0
     for kind in ("videos", "audios"):
         for m in content["materials"].get(kind, []):
             src = m["path"]
+            if src.startswith(final_base + os.sep):
+                # 重试场景：旧版流程可能已把路径改写为最终位置——
+                # 暂存副本还在就视为已打包，否则明确失败
+                local = os.path.join(res_dir, os.path.basename(src))
+                if not os.path.exists(local):
+                    raise FileNotFoundError(
+                        f"素材指向未安装的最终位置且暂存副本缺失：{src}")
+                used_keys.add(_name_key(os.path.basename(src)))
+                total_size += os.path.getsize(local)
+                continue
             if src not in mapping:
-                name = _unique_name(os.path.basename(src), used)
-                used.add(name)
+                name = _unique_name(os.path.basename(src), used_keys)
+                used_keys.add(_name_key(name))
                 shutil.copy2(src, os.path.join(res_dir, name))
                 total_size += os.path.getsize(src)
                 mapping[src] = os.path.join(final_base, name)
@@ -183,9 +200,15 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
     _validate_draft_name(draft_name)
     # 指纹解析放最前：全新机器缺 donor 时在拷贝任何媒体之前就失败
     platform = _mac_platform(donor_draft, allow_missing_fingerprint)
+
+    # 先完整读取并校验全部输入（content + meta），再动磁盘——任何一份 JSON
+    # 损坏都在改写发生前失败，staging 保持原样可直接重试
     content_path = os.path.join(draft_dir, "draft_content.json")
+    meta_path = os.path.join(draft_dir, "draft_meta_info.json")
     with open(content_path, encoding="utf-8") as f:
         content = json.load(f)
+    with open(meta_path, encoding="utf-8") as f:
+        meta = json.load(f)
 
     bundled_size = None
     if bundle_media:
@@ -193,11 +216,6 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
 
     for key in ("platform", "last_modified_platform"):
         content[key] = {**content[key], **platform}
-
-    # Mac 版入口文件名是 draft_info.json；draft_content.json 留着给 Windows 工具
-    for p in (content_path, os.path.join(draft_dir, "draft_info.json")):
-        with open(p, "w", encoding="utf-8") as f:
-            json.dump(content, f, ensure_ascii=False)
 
     now_us = int(time.time() * 1_000_000)
     records = _material_records(content, now_us)
@@ -208,9 +226,6 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
             os.path.getsize(p) for p in {r["file_Path"] for r in records}
             if os.path.exists(p))
 
-    meta_path = os.path.join(draft_dir, "draft_meta_info.json")
-    with open(meta_path, encoding="utf-8") as f:
-        meta = json.load(f)
     fold_path = os.path.join(DRAFT_ROOT, draft_name)
     meta.update({
         "draft_fold_path": fold_path,
@@ -225,8 +240,6 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
     for group in meta.get("draft_materials", []):
         if group.get("type") == 0:
             group["value"] = records
-    with open(meta_path, "w", encoding="utf-8") as f:
-        json.dump(meta, f, ensure_ascii=False)
 
     # 封面：从第一个视频素材抽首帧（缺封面时草稿列表显示异常）。
     # 打包模式下素材路径已指向安装后的最终位置，抽帧要用暂存目录里的副本
@@ -240,6 +253,12 @@ def macify(draft_dir: str, draft_name: str, bundle_media: bool = True,
                         "-i", cover_src, "-frames:v", "1",
                         os.path.join(draft_dir, "draft_cover.jpg")],
                        check=False)
+
+    # 统一原子写盘（走到这里之前的任何失败都不触碰原 JSON）。
+    # Mac 版入口文件名是 draft_info.json；draft_content.json 留着给 Windows 工具
+    _write_json_atomic(content_path, content)
+    _write_json_atomic(os.path.join(draft_dir, "draft_info.json"), content)
+    _write_json_atomic(meta_path, meta)
 
     return {
         "draft_id": meta.get("draft_id") or str(uuid.uuid4()).upper(),
@@ -299,6 +318,15 @@ def _backup_registry() -> str:
     return bak
 
 
+def _trash_dir() -> str:
+    """替换/卸载的待删目录统一放这里。剪映按 <草稿根>/<目录>/draft_info.json
+    识别草稿，嵌套一层不会被扫成幽灵草稿（剪映自身的 .recycle_bin 同款
+    位置）；同一文件系统内 rename 保持原子。"""
+    d = os.path.join(DRAFT_ROOT, ".vs-export-trash")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
 def install(draft_dir: str, draft_name: str, info: dict) -> str:
     """把 macify 过的草稿目录装进草稿库并注册，返回注册表备份路径。
 
@@ -315,10 +343,12 @@ def install(draft_dir: str, draft_name: str, info: dict) -> str:
         root = json.load(f)
     # 2) 备份注册表
     bak = _backup_registry()
-    # 3) 旧草稿改名保留，成功后才清理
+    # 3) 旧草稿移入回收目录保留，成功后才清理
     old = None
     if os.path.exists(target):
-        old = f"{target}.replaced-{time.strftime('%Y%m%d-%H%M%S')}"
+        old = os.path.join(
+            _trash_dir(),
+            f"{draft_name}.replaced-{time.strftime('%Y%m%d-%H%M%S')}")
         os.rename(target, old)
     try:
         shutil.move(draft_dir, target)
@@ -339,7 +369,11 @@ def install(draft_dir: str, draft_name: str, info: dict) -> str:
         finally:
             raise
     if old:
-        shutil.rmtree(old, ignore_errors=True)
+        try:
+            shutil.rmtree(old)
+        except OSError as e:
+            print(f"[warn] 旧草稿副本删除失败（位于回收目录，不影响剪映"
+                  f"显示），请手动清理：{old}（{e}）")
     return bak
 
 
@@ -358,7 +392,9 @@ def uninstall(draft_name: str) -> None:
     _backup_registry()
     tmp = None
     if os.path.exists(target):
-        tmp = f"{target}.uninstall-{time.strftime('%Y%m%d-%H%M%S')}"
+        tmp = os.path.join(
+            _trash_dir(),
+            f"{draft_name}.uninstall-{time.strftime('%Y%m%d-%H%M%S')}")
         os.rename(target, tmp)
     try:
         root["all_draft_store"] = [e for e in root["all_draft_store"]
@@ -372,5 +408,5 @@ def uninstall(draft_name: str) -> None:
         try:
             shutil.rmtree(tmp)
         except OSError as e:
-            print(f"[warn] 注册表已更新，但残留目录删除失败，"
+            print(f"[warn] 注册表已更新，残留在回收目录（不影响剪映显示），"
                   f"请手动清理：{tmp}（{e}）")
