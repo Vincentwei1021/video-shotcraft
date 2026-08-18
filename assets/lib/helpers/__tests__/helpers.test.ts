@@ -139,7 +139,9 @@ describe('dampedSettle', () => {
   });
 
   it('higher damping decays faster at the same point in the cycle', () => {
-    const t = 30;
+    // t=17.3 is far from a sin zero-crossing (at t=30 both terms land near a
+    // node and the comparison is numerically fragile ~1e-16 vs ~1e-22)
+    const t = 17.3;
     const lightly = dampedSettle(t, 0.1, 0.05);
     const heavily = dampedSettle(t, 0.1, 0.5);
     expect(Math.abs(heavily)).toBeLessThan(Math.abs(lightly));
