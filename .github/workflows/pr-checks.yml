@@ -11,12 +11,29 @@ on:
       - 'references/shots/**'
       - 'gallery/**'
       - 'demos/**'
+      - 'assets/lib/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/pr-checks.yml'
 
 permissions:
   contents: read
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Helpers pure functions unit tests
+        run: |
+          npm ci
+          npm test
+
   verify:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,12 @@
+{
+  "name": "video-shotcraft-tests",
+  "private": true,
+  "description": "Unit tests for assets/lib/helpers pure functions",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
