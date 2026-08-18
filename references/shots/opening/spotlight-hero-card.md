@@ -37,4 +37,4 @@ name: spotlight-hero-card
 - 逐卡 glint 闪烁被两次否决（"不需要每个卡片都闪烁一下"，Q4），光效严格只给主角
 
 ## 参考实现
-template/src/aifl/live/SceneOpen.tsx
+demos/opening/spotlight-hero-card/SpotlightHeroCard.tsx（原 template/src/aifl/live/SceneOpen.tsx 82–220 段）

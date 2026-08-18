@@ -34,4 +34,4 @@ name: paper-title-card
 - 重要功能出场前要有引导字卡（C2 判例：文档镜头前应加一句引导，如 "Every project, linked to your weekly report"）——字卡不是装饰，是章节路标
 
 ## 参考实现
-template/src/aifl/PaperTitleCard.tsx
+demos/typography/paper-title-card/PaperTitleCard.tsx（原 template/src/aifl/PaperTitleCard.tsx，参数化：words/sub/subDigits 可换文案）
