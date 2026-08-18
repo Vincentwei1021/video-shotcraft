@@ -100,3 +100,19 @@ jobs:
             --module esnext --moduleResolution bundler --lib dom,es2022 \
             --resolveJsonModule \
             $(cat /tmp/demo-files.txt)
+
+  demo-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: template/package-lock.json
+      - name: Render first frame of every runnable demo
+        run: |
+          cd template && npm ci
+          npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
+          cd ..
+          python3 assets/scripts/smoke-render-demos.py
