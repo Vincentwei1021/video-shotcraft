@@ -36,4 +36,4 @@ name: outro-group-photo-launch
 - outro tagline 与字标下方文案查重（P4 dedupe 判例），同一句话全片只出现一次
 
 ## 参考实现
-template/src/aifl/live/SceneOutroLive.tsx（30f sign-off hold 时长见 template/src/aifl/Main.tsx 时间线）
+demos/outro/outro-group-photo-launch/OutroGroupPhotoLaunch.tsx（原 template/src/aifl/live/SceneOutroLive.tsx；30f sign-off hold 时长见 template/src/aifl/Main.tsx 时间线）
