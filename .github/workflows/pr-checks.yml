@@ -11,6 +11,7 @@ on:
       - 'references/shots/**'
       - 'gallery/**'
       - 'demos/**'
+      - 'assets/lib/**'
       - '.github/workflows/pr-checks.yml'
 
 permissions:
@@ -94,6 +95,16 @@ jobs:
           # root at the repo top via a transient symlink
           cd .. && ln -s template/node_modules node_modules
           find demos -name '*.tsx' | sed 's|^|./|' > /tmp/demo-files.txt
+          # assets/lib components that only need remotion also get compiled.
+          # (three-dependent ones — FlatPanel, helpers/camera — are excluded
+          # because the template doesn't ship three.)
+          for f in assets/lib/ClipCard.tsx assets/lib/Caption.tsx \
+                   assets/lib/DigitRoll.tsx assets/lib/FlashCut.tsx \
+                   assets/lib/PageCam.tsx assets/lib/VerticalTicker.tsx \
+                   assets/lib/helpers/motion.ts assets/lib/helpers/rand.ts \
+                   assets/lib/helpers/shake.ts; do
+            echo "./$f" >> /tmp/demo-files.txt
+          done
           echo "checking $(wc -l < /tmp/demo-files.txt | tr -d ' ') tsx files"
           ./node_modules/.bin/tsc --noEmit --strict --skipLibCheck \
             --esModuleInterop --jsx react-jsx --target es2022 \
