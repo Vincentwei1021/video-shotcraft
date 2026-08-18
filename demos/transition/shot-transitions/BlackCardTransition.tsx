@@ -44,8 +44,8 @@ const Scene: React.FC = () => {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.5, 1),
   });
 
-  // 后镜 B 淡入：64→72
-  const bIn = interpolate(frame, [64, 72], [0, 1], {
+  // 后镜 B 淡入：66→74（字卡 58→66 完全淡出后再交棒）
+  const bIn = interpolate(frame, [66, 74], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
 
@@ -116,8 +116,8 @@ const Scene: React.FC = () => {
         </AbsoluteFill>
       ) : null}
 
-      {/* B 景（64 起淡入） */}
-      {frame >= 64 ? (
+      {/* B 景（66 起淡入） */}
+      {frame >= 66 ? (
         <div style={{ position: 'absolute', opacity: bIn }}>
           <Img
             src={staticFile('textures/live/wbr-full.png')}

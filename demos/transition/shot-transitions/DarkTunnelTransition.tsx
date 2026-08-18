@@ -22,8 +22,9 @@ const Scene: React.FC = () => {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.45, 0, 0.2, 1),
   });
 
-  // 暗场：36→42，不纯黑——保留微渐变 + 两粒尘点，让"still moving"可感
-  const tunnelVis = interpolate(frame, [36, 42], [0, 1], {
+  // 暗场：36→42 从 0→1（进入暗场），42→50 1→0（让 B 景迎入可见）。
+  // 不纯黑——保留微渐变 + 两粒尘点，让"still moving"可感
+  const tunnelVis = interpolate(frame, [36, 42, 50], [0, 1, 0], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.6, 1),
   });
 
@@ -54,7 +55,7 @@ const Scene: React.FC = () => {
       ) : null}
 
       {/* 暗场：微渐变 + 尘点，非纯黑死场 */}
-      {frame >= 36 && frame < 52 ? (
+      {frame >= 36 && frame < 50 ? (
         <AbsoluteFill style={{ opacity: tunnelVis, pointerEvents: 'none' }}>
           <div
             style={{
