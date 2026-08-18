@@ -110,11 +110,19 @@ export const ClipCard: React.FC<{
   const capH = caption ? Math.round(captionSize * 2.6) : 0;
 
   let video: React.ReactNode;
-  if (loopDurationInFrames && loopDurationInFrames > loopCrossfadeInFrames) {
-    // effective step: a startFrom trim shortens the playable media, so loop
-    // layers must restart every `playable - crossfade` frames, not every
-    // `loopDurationInFrames`
-    const step = loopDurationInFrames - startFrom - loopCrossfadeInFrames;
+  // Guard: a startFrom trim that reaches or exceeds the playable media (or any
+  // degenerate step) must NOT loop — falling back to a plain single pass keeps
+  // a visible, audible clip instead of a layer that instantly fades to 0.
+  // step must also be >= crossfade, else >2 layers overlap at once and the
+  // complementary envelopes no longer sum to 1 (visual/audio stack past full).
+  const step = loopDurationInFrames
+    ? loopDurationInFrames - startFrom - loopCrossfadeInFrames
+    : 0;
+  const canLoop =
+    !!loopDurationInFrames &&
+    loopDurationInFrames > loopCrossfadeInFrames &&
+    step >= loopCrossfadeInFrames;
+  if (canLoop) {
     const shotFrames = durationInFrames ?? compDuration;
     const n = Math.max(1, Math.ceil(shotFrames / step));
     video = (
