@@ -29,26 +29,39 @@ import {
 
 const ACCENT = '#4da3ff';
 
+// Each loop layer crossfades BOTH its audio and its opacity at its edges:
+// an incoming fade 0→1 over `fadeIn` frames at the layer start, a steady body,
+// then an outgoing fade 1→0 over `fadeOut` frames ending at `step` — the frame
+// where the NEXT layer starts. Adjacent layers therefore overlap for exactly
+// `crossfade` frames and their envelopes are complementary (sum to 1), so an
+// unmuted loop never stacks two full-volume tracks; visual dissolve and audio
+// crossfade stay in sync since they share the same envelope.
 const LoopLayer: React.FC<{
   src: string;
   size: number;
   muted: boolean;
   startFrom: number;
   fadeIn: number;
-  layerCount: number;
-}> = ({ src, size, muted, startFrom, fadeIn, layerCount }) => {
+  fadeOut: number;
+  step: number;
+}> = ({ src, size, muted, startFrom, fadeIn, fadeOut, step }) => {
   const frame = useCurrentFrame();
-  const opacity =
-    fadeIn > 0
-      ? interpolate(frame, [0, fadeIn], [0, 1], { extrapolateRight: 'clamp' })
-      : 1;
-  // Only the incoming layer fades audio in; the outgoing layer keeps playing
-  // at full volume until the next pass fades in — so layer audio is never
-  // stacked twice at full volume. One un-faded layer is the baseline sound.
-  const volume =
-    !muted && fadeIn > 0
-      ? interpolate(frame, [0, fadeIn], [0, 1], { extrapolateRight: 'clamp' })
-      : 1;
+
+  // envelope(f): 0 at f=0 (unless fadeIn=0 → 1), 1 through the body, 0 at
+  // f=step+fadeOut. Adjacent layers are spaced `step` apart and each fades
+  // out over `fadeOut` into the next one's `fadeIn` window.
+  let envelope: number;
+  if (frame <= fadeIn) {
+    envelope = fadeIn === 0 ? 1 : interpolate(frame, [0, fadeIn], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  } else if (frame <= step) {
+    envelope = 1;
+  } else {
+    envelope = interpolate(frame, [step, step + fadeOut], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  }
+
+  const opacity = Math.max(0, Math.min(1, envelope));
+  const volume = muted ? 1 : opacity;
+
   return (
     <OffthreadVideo
       src={staticFile(src)}
@@ -119,7 +132,8 @@ export const ClipCard: React.FC<{
               muted={muted}
               startFrom={startFrom}
               fadeIn={i === 0 ? 0 : loopCrossfadeInFrames}
-              layerCount={n}
+              fadeOut={loopCrossfadeInFrames}
+              step={step}
             />
           </Sequence>
         ))}
