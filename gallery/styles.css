@@ -324,20 +324,31 @@ main {
   border-radius: 50%;
   background: var(--text);
   color: var(--bg);
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+}
+
+.social-badge-mark svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
 }
 
 .social-badge[data-platform="xiaohongshu"] .social-badge-mark {
   background: #ff2442;
   color: #fff;
-  font-size: 0.48rem;
+}
+
+.social-badge[data-platform="xiaohongshu"] .social-badge-mark svg {
+  width: 17px;
+  height: 17px;
 }
 
 .social-badge[data-platform="douyin"] .social-badge-mark {
-  background: linear-gradient(135deg, #25f4ee 0 46%, #fe2c55 54% 100%);
-  color: #151515;
+  background: #090909;
+  color: #fff;
+}
+
+.social-badge[data-platform="douyin"] .social-badge-mark svg {
+  filter: drop-shadow(-1px 0 #25f4ee) drop-shadow(1px 0 #fe2c55);
 }
 
 .social-badge-name {
