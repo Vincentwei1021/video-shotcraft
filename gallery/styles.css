@@ -285,15 +285,6 @@ main {
   padding: 2rem 0.75rem 0;
 }
 
-.sidebar-social-heading {
-  margin: 0 0 0.25rem;
-  color: var(--faint);
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .social-badge {
   display: flex;
   align-items: center;
@@ -307,6 +298,66 @@ main {
   text-decoration: none;
   box-shadow: 0 2px 9px var(--control-shadow);
   transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.follow-menu { position: relative; }
+
+.follow-trigger {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.follow-chevron {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.follow-platforms {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 12px 32px var(--control-shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.98);
+  transform-origin: bottom center;
+  transition: opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
+}
+
+.follow-platforms::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+  content: '';
+}
+
+.follow-menu:hover .follow-platforms,
+.follow-menu.is-open .follow-platforms {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.follow-menu:hover .follow-chevron,
+.follow-menu.is-open .follow-chevron {
+  transform: rotate(180deg);
 }
 
 .social-badge:hover {
