@@ -209,7 +209,11 @@ main {
 .sidebar {
   position: sticky;
   top: 98px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 98px);
   padding-top: 3.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .sidebar-heading {
@@ -272,6 +276,83 @@ main {
 .category-link .new-badge { margin-left: auto; }
 .category-link .count { flex: none; }
 .category-link.is-active .new-badge { background: #e5484d; color: #fff; }
+
+.sidebar-social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding: 2rem 0.75rem 0;
+}
+
+.sidebar-social-heading {
+  margin: 0 0 0.25rem;
+  color: var(--faint);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.social-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 34px;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: 0 2px 9px var(--control-shadow);
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.social-badge:hover {
+  border-color: var(--faint);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.social-badge-mark {
+  display: inline-grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.social-badge[data-platform="xiaohongshu"] .social-badge-mark {
+  background: #ff2442;
+  color: #fff;
+  font-size: 0.48rem;
+}
+
+.social-badge[data-platform="douyin"] .social-badge-mark {
+  background: linear-gradient(135deg, #25f4ee 0 46%, #fe2c55 54% 100%);
+  color: #151515;
+}
+
+.social-badge-name {
+  font-size: 0.73rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.social-badge-action {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 0.62rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
 
 .library-main { min-width: 0; }
 
@@ -791,6 +872,8 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
     position: sticky;
     top: 66px;
     z-index: 9;
+    display: block;
+    min-height: 0;
     min-width: 0;
     padding: 0.6rem 0;
     background: var(--bg-translucent);
@@ -798,6 +881,7 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
     -webkit-backdrop-filter: blur(14px);
   }
   .sidebar-heading { display: none; }
+  .sidebar-social { display: none; }
   .category-nav {
     flex-direction: row;
     overflow-x: auto;
