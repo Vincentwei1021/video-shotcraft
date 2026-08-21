@@ -226,6 +226,6 @@ Pitch、Miro、Superhuman、Loom** 等产品的宣传片。镜头卡记录的是
 
 <p>
   <a href="https://x.com/VincentWei93"><img alt="在 X 关注 Vincent" src="https://img.shields.io/badge/X-Follow_Me-000000?style=for-the-badge&logo=x&logoColor=white"></a>
-  <a href="https://www.xiaohongshu.com/search_result?keyword=3653216544"><img alt="在小红书关注 Vincent" src="https://img.shields.io/badge/RED-Follow_Me-FF2442?style=for-the-badge&logo=xiaohongshu&logoColor=white"></a>
+  <a href="https://xhslink.cn/m/At9iP2d5C1V"><img alt="在小红书关注 Vincent" src="https://img.shields.io/badge/RED-Follow_Me-FF2442?style=for-the-badge&logo=xiaohongshu&logoColor=white"></a>
   <a href="https://www.douyin.com/user/MS4wLjABAAAAK1pkjBxilk2Oi_9h_vFyD-lTAu9CTlvhmOtkosDvvxg"><img alt="在抖音关注 Vincent" src="https://img.shields.io/badge/Douyin-Follow_Me-000000?style=for-the-badge&logo=tiktok&logoColor=white"></a>
 </p>

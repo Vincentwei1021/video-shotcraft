@@ -239,6 +239,6 @@ Special thanks to:
 
 <p>
   <a href="https://x.com/VincentWei93"><img alt="Follow Vincent on X" src="https://img.shields.io/badge/X-Follow_Me-000000?style=for-the-badge&logo=x&logoColor=white"></a>
-  <a href="https://www.xiaohongshu.com/search_result?keyword=3653216544"><img alt="Follow Vincent on Xiaohongshu" src="https://img.shields.io/badge/RED-Follow_Me-FF2442?style=for-the-badge&logo=xiaohongshu&logoColor=white"></a>
+  <a href="https://xhslink.cn/m/At9iP2d5C1V"><img alt="Follow Vincent on Xiaohongshu" src="https://img.shields.io/badge/RED-Follow_Me-FF2442?style=for-the-badge&logo=xiaohongshu&logoColor=white"></a>
   <a href="https://www.douyin.com/user/MS4wLjABAAAAK1pkjBxilk2Oi_9h_vFyD-lTAu9CTlvhmOtkosDvvxg"><img alt="Follow Vincent on Douyin" src="https://img.shields.io/badge/Douyin-Follow_Me-000000?style=for-the-badge&logo=tiktok&logoColor=white"></a>
 </p>
