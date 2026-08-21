@@ -11,12 +11,30 @@ on:
       - 'references/shots/**'
       - 'gallery/**'
       - 'demos/**'
+      - 'assets/lib/**'
+      - 'assets/scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/pr-checks.yml'
 
 permissions:
   contents: read
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Helpers pure functions unit tests
+        run: |
+          npm ci
+          npm test
+
   verify:
     runs-on: ubuntu-latest
     steps:
@@ -94,6 +112,16 @@ jobs:
           # root at the repo top via a transient symlink
           cd .. && ln -s template/node_modules node_modules
           find demos -name '*.tsx' | sed 's|^|./|' > /tmp/demo-files.txt
+          # assets/lib components that only need remotion also get compiled.
+          # (three-dependent ones — FlatPanel, helpers/camera — are excluded
+          # because the template doesn't ship three.)
+          for f in assets/lib/ClipCard.tsx assets/lib/Caption.tsx \
+                   assets/lib/DigitRoll.tsx assets/lib/FlashCut.tsx \
+                   assets/lib/PageCam.tsx assets/lib/VerticalTicker.tsx \
+                   assets/lib/helpers/motion.ts assets/lib/helpers/rand.ts \
+                   assets/lib/helpers/shake.ts; do
+            echo "./$f" >> /tmp/demo-files.txt
+          done
           echo "checking $(wc -l < /tmp/demo-files.txt | tr -d ' ') tsx files"
           ./node_modules/.bin/tsc --noEmit --strict --skipLibCheck \
             --esModuleInterop --jsx react-jsx --target es2022 \
@@ -115,4 +143,7 @@ jobs:
           cd template && npm ci
           npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
           cd ..
+          # Generated smoke roots import demos outside template/. Make the
+          # template dependencies resolvable from those source directories.
+          ln -s template/node_modules node_modules
           python3 assets/scripts/smoke-render-demos.py

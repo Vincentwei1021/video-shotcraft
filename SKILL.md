@@ -187,7 +187,9 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 ## 资产使用方式
 
 - `assets/lib/` 组件 **copy 进新项目**后自由修改（不 import 本库）。
-  清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、DigitRoll、
+  清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、ClipCard（把外部
+  视频素材 mp4 包成可被镜头卡运镜骨架驱动的"卡片主角"，含 OffthreadVideo
+  交叉淡化循环——素材短于镜头时无缝续播）、DigitRoll、
   FlashCut、Caption、FlatPanel、VerticalTicker（3D 无限滚动墙）、
   helpers(rand/shake/camera/motion)。FlatPanel 与 helpers/camera 需要
   `three` + `@react-three/fiber` + `@remotion/three` 依赖，其余仅需 remotion。
