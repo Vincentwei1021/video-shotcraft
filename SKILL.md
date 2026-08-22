@@ -127,6 +127,8 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
    BPM/相位 + kick/snare/hihat 三分类鼓点定位），网格按瞬态覆盖率
    验收通过后才分镜；时间线用拍号 `beatF(n)` 写，稀疏重音钉真实
    瞬态而非网格插值点，渲后从成片抽音轨回测切点误差 ≤3f。
+   卡拍管的是时机不是幅度——作用于整画面/相机层的节拍冲击视同
+   大 slam，全片 ≤3 处（aesthetic-rules R4），其余拍点动效只动元素层。
    方法论见 `references/music-beat-sync.md`。
    配了 BGM 的片子终渲固定交付两版：带 BGM 版 + 无 BGM 版（保留 SFX），
    靠 `bgm` inputProp 从同一时间线渲出，方便用户后期自配音乐。
