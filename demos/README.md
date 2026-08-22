@@ -9,9 +9,16 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
 
 - `_fixtures/Fixtures.tsx` — 灰阶假 UI 场景件（FakeDashboard/Card/TitleBlock/G 调色板）。
   多数 demo import 它；copy demo 时把 import 路径改成你项目里的位置。
+- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，
+  self-contained，仅依赖 remotion）。给"真实纹理"类 demo（spotlight-hero-card /
+  type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
+  document-typewriter-reveal / outro-group-photo-launch）复用。copy 这些 demo 时
+  一并带上并改 import 路径。
 - `_textures/` — 少数"真实素材版" demo（crash-zoom-punch / depth-layer-moves /
-  speed-ramp-freeze / shot-transitions / page-waterfall-wall）用到的整页截图与
-  `live-layout.json`。这些 demo 里的 `staticFile('textures/live/xxx.png')`
+  speed-ramp-freeze / shot-transitions / page-waterfall-wall 以及本批补全的
+  spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed /
+  list-stack-press / document-typewriter-reveal / outro-group-photo-launch）用到的
+  整页截图与 `live-layout.json`。这些 demo 里的 `staticFile('textures/live/xxx.png')`
   要求把 `_textures/` 下的同名文件复制到你项目的 `public/textures/live/`
   （page-waterfall-wall 例外：它写的是 `textures/xxx.png`，放 `public/textures/`）。
 

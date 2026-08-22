@@ -33,4 +33,4 @@ name: brand-ink-open
 - 开场能量必须低起步：全片能量曲线低开→中段推进→outro 峰值，开场炫技会压死后面的爬升（对照 Q8 的能量曲线要求）
 
 ## 参考实现
-template/src/aifl/live/SceneOpen.tsx（帧 0–83 段）
+demos/typography/brand-ink-open/BrandInkOpen.tsx（原 template/src/aifl/live/SceneOpen.tsx 帧 0–83 段）

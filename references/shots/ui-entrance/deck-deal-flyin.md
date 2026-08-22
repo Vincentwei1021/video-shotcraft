@@ -42,4 +42,4 @@ orbit 拉远+首批发牌钉 whoosh-big（模板片钉在 f308），发牌加速
 - `<Sequence>` 重定基帧号 + CameraMotionBlur 内部 Freeze 会让 PageCam 采样错帧（横向错模糊穿帮）——绝对帧编排的镜头给 PageCam 传 `frame` prop 还原绝对帧（lib 组件已支持）
 
 ## 参考实现
-template/src/aifl/live/SceneFlyIn.tsx
+demos/ui-entrance/deck-deal-flyin/DeckDealFlyin.tsx（原 template/src/aifl/live/SceneFlyIn.tsx 0–113 段）

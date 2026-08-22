@@ -33,4 +33,4 @@ name: row-embed
 - 强调色缝等光效必须裁进承载元素圆角边界内（Q4 判例），光溢出圆角是廉价感典型来源
 
 ## 参考实现
-template/src/aifl/live/SceneDetail.tsx
+demos/ui-entrance/row-embed/RowEmbed.tsx（原 template/src/aifl/live/SceneDetail.tsx）

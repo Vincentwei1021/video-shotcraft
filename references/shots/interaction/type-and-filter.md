@@ -34,4 +34,4 @@ name: type-and-filter
 - 过滤后目标卡若不归位到真实槽位、悬浮在网格上方，读作假（Q9，曾因此近乎整文件重写）
 
 ## 参考实现
-template/src/aifl/live/SceneFlyIn.tsx
+demos/interaction/type-and-filter/TypeAndFilter.tsx（原 template/src/aifl/live/SceneFlyIn.tsx 118–190 段）

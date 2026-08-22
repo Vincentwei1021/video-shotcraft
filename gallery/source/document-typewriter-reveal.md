@@ -38,4 +38,4 @@ name: document-typewriter-reveal
 - 强调色示例（caret/@-mention/内缘线）在模板片中为琥珀色，适配新品牌时统一换成目标品牌强调色
 
 ## 参考实现
-template/src/aifl/live/SceneWbr.tsx（打字音效见 template/src/aifl/Main.tsx SFX 表；模板片中此镜承载的是周报文档场景）
+demos/ui-entrance/document-typewriter-reveal/DocumentTypewriterReveal.tsx（原 template/src/aifl/live/SceneWbr.tsx；打字音效见 template/src/aifl/Main.tsx SFX 表；模板片中此镜承载的是周报文档场景）
