@@ -54,7 +54,9 @@ name: shot-transitions
   参考实现 demos/transition/shot-transitions/PortalWipeV2.tsx
 
 ## 参考实现
-A 式：template/src/aifl/Main.tsx flash-cut 层；
+A 式：template/src/aifl/Main.tsx flash-cut 层（组件 `assets/lib/FlashCut.tsx`）；
+B 式（穿暗场直航）：demos/transition/shot-transitions/DarkTunnelTransition.tsx；
+C 式（虚焦接力）：demos/transition/shot-transitions/FocusHandoffTransition.tsx；
+D 式（黑场字卡）：demos/transition/shot-transitions/BlackCardTransition.tsx；
 E 式（whip 甩镜）：demos/transition/shot-transitions/WhipPanReal.tsx / WhipBrakeReal.tsx；
-F 式（遮罩擦除）：demos/transition/shot-transitions/MaskWipeReal.tsx（纵深款 PortalWipeV2.tsx 同目录）；
-B/C/D 式暂无库内实现，按参数表自行实现。
+F 式（遮罩擦除）：demos/transition/shot-transitions/MaskWipeReal.tsx（纵深款 PortalWipeV2.tsx 同目录）。
