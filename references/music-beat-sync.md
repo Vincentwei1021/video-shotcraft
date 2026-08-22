@@ -144,9 +144,11 @@ Remotion 项目里把网格常量化，一切镜头边界/动效关键帧用 `be
 
 ```ts
 export const FPS = 30;
-export const BEAT0 = 0.2244;   // t0，秒
-export const BEAT_INT = 0.45465; // T，秒
-export const beatT = (n: number) => BEAT0 + n * BEAT_INT;          // 拍→秒
+export const SOURCE_BEAT0 = 0.2244;  // 源音乐分析 t0，秒，与 beat_data.json 一致
+export const BEAT_INT = 0.45465;     // T，秒
+export const OUTPUT_AUDIO_OFFSET_SEC = 0; // 渲后回测确认有输出音轨偏移时填实测值（§5b）
+export const beatT = (n: number) =>
+  SOURCE_BEAT0 + OUTPUT_AUDIO_OFFSET_SEC + n * BEAT_INT;           // 拍→秒
 export const beatF = (n: number) => Math.round(beatT(n) * FPS);    // 拍→帧
 
 export const SHOTS = {
@@ -158,7 +160,8 @@ export const localBeat = (shot: {from: number}, n: number) => beatF(n) - shot.fr
 ```
 
 好处：换曲/换段落时改两个常量全片重排；SFX 钉帧表也写 `beatF(n)`，
-与画面共用同一事实源，永不错位。
+与画面共用同一事实源，永不错位。源分析值与渲染偏移分开记账：
+`SOURCE_BEAT0` 是审计真值永不改，输出偏移只进 `OUTPUT_AUDIO_OFFSET_SEC`。
 
 **锚点绑定规则**（哪些用网格、哪些用真实瞬态）：
 
@@ -179,7 +182,10 @@ export const localBeat = (shot: {from: number}, n: number) => beatF(n) - shot.fr
 - **全画面级冲击有硬上限**（整画面 scale 泵/震屏/闪帧/负片帧等一切
   作用于整画面或相机层的瞬时冲击）：全片 ≤3 处、与 §2b 最强 hit
   清单一一对应、相邻两处间隔 ≥16 拍；节拍泵类连打（riso-beat-pump
-  等）单次 ≤4 拍且全片 ≤1 次，打完接足 hold（各卡标注值是底线）
+  等）单次 ≤4 拍且全片 ≤1 次，打完接足 hold（各卡标注值是底线）。
+  计数单位是**一次手法使用**（一张卡的一次应用 = 一个名额），含
+  多次内部闪帧的卡（连闪/strobe/多刀切串）不逐帧重复计数，其内部
+  结构由各卡自身的参数表与次数上限管辖
 - **卡点动效默认落在主角元素层**（卡片/标题/数字），整画面与相机层
   默认不参与逐拍运动；"每拍一动作"指内容步进（清单逐项/马赛克
   逐格），不是画面幅度脉冲
@@ -218,14 +224,24 @@ ffmpeg -i out/promo.mp4 -vn -acodec pcm_s16le /tmp/render-audio.wav
 
 误差超标的钉点回第 4 步改拍号或帧偏移，重渲再测，直到全表合格。
 
-**系统性同向偏移先查起播滞后，不逐点手改。** 误差表若呈同向等量
-偏移（所有切点一致 +N 帧），根因几乎总是 Remotion `<Audio>` 起播
-滞后（逐片不同，实测 1.3–4f 都有，见 sound-design §4.6），不是节拍
-分析错。诊断：拿 BGM 原文件与渲出音轨做归一化交叉相关量出滞后量。
-修复：把量出的偏移（浮点秒）加进 `BEAT0` 重渲，全片切点一次归位——
-**不要逐锚点手改拍号**；SFX 侧的补偿走 sound-design §4.6 的渲染层
-统一扣除。这类错位的观感危害不止"不准"：冲击画面差 2–3 帧听不出
-是跟着鼓的，合理的卡点动效会被读作无端抖动。
+**系统性同向偏移先查输出音轨偏移，不逐点手改。** 误差表若呈同向
+等量偏移（所有切点一致 +N 帧），根因几乎总是渲染输出链路的音轨
+偏移（AAC encoder priming 等编码/封装环节，48kHz 典型 ≈1.28f，
+机制与实测方法见 sound-design §4.6），不是节拍分析错。诊断：拿
+BGM 原文件与渲出音轨做归一化交叉相关量出偏移量。修复：**输出偏移
+单设常量，不写回源分析值**——`beat_data.json` 里的 t0 是源音乐的
+分析真值和审计基准，混入渲染偏移会在换 codec/重新分析时造成二次
+补偿。代码里分开记账：
+
+```ts
+export const SOURCE_BEAT0 = 0.2244;        // 源音乐分析 t0，与 beat_data.json 一致，永不掺入渲染偏移
+export const OUTPUT_AUDIO_OFFSET_SEC = 0.0427; // 输出音轨偏移，按渲染管线实测（sound-design §4.6）
+export const beatT = (n: number) => SOURCE_BEAT0 + OUTPUT_AUDIO_OFFSET_SEC + n * BEAT_INT;
+```
+
+全片切点随 `beatT` 一次归位，**不要逐锚点手改拍号**；SFX 侧的补偿
+走 sound-design §4.6 的同一常量。这类错位的观感危害不止"不准"：
+冲击画面差 2–3 帧听不出是跟着鼓的，合理的卡点动效会被读作无端抖动。
 
 ## 6. 工具备忘
 
