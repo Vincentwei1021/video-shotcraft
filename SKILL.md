@@ -211,6 +211,13 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
   src/index.ts AiflPromo out/promo.mp4`。
+- **测试（仓库内自动验证，新增 demo/组件后跑）**：
+  - 纯函数单测：`npm test`（仓库根 vitest，覆盖 `assets/lib/helpers` 的
+    mulberry32 / velocityAt / lagged / dampedSettle / handheld，确定性断言）。
+  - demo 渲染冒烟：`python3 assets/scripts/smoke-render-demos.py` 渲染每个
+    带时长导出 demo 的首帧断言不崩（需 `cd template && npm ci` +
+    motion-blur，详见 `demos/README.md` 测试与验证一节）。
+  - CI（`pr-checks.yml`）已自动跑：tsc 严格编译全部 demo + vitest + 冒烟渲染。
 - `jianying-export/` 剪映工程导出模块：`mac_draft.py`（Mac 剪映 11.2
   实测通过）、`windows_draft.py`（按上游支持路径实现，未真机验证）、
   `smoke_test.py`（新环境先跑的最小冒烟测试）。流程、时间线提取与建轨
