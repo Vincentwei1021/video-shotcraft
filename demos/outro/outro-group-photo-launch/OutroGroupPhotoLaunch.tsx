@@ -129,92 +129,94 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
           transformOrigin: '50% 45%',
         }}
       >
-        <PageCam2D src="textures/live/projects-full.png" pageH={PAGE_H} keys={[{ frame: 0, cx: 960, cy: 700, zoom: 0.75 }]} blur={blur}>
-          {/* warm scrim under the flying elements */}
-          <AbsoluteFill style={{ background: 'radial-gradient(1200px 800px at 50% 48%, rgba(250,247,242,0.82), rgba(250,247,242,0.55) 60%, rgba(250,247,242,0.35))', pointerEvents: 'none' }} />
+        {/* blur 只作用背景页：PageCam2D 自闭合，飞入元素放在未过滤的兄弟层
+            （屏幕空间坐标，与 template SceneOutroLive 同构）——放进 children
+            会连"合影元素"一起糊掉，只剩字标清晰 */}
+        <PageCam2D src="textures/live/projects-full.png" pageH={PAGE_H} keys={[{ frame: 0, cx: 960, cy: 700, zoom: 0.75 }]} blur={blur} />
+        {/* warm scrim under the flying elements */}
+        <AbsoluteFill style={{ background: 'radial-gradient(1200px 800px at 50% 48%, rgba(250,247,242,0.82), rgba(250,247,242,0.55) 60%, rgba(250,247,242,0.35))', pointerEvents: 'none' }} />
 
-          {/* group photo: elements fly in from all sides and settle around the wordmark */}
-          <AbsoluteFill style={{ pointerEvents: 'none' }}>
-            {ELS.map((el) => {
-              if (frame < el.cue) return null;
-              const t = interpolate(frame, [el.cue, el.cue + 12], [0, 1], {
-                extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: FLY_EASE,
-              });
-              const opacity = interpolate(frame, [el.cue, el.cue + 3], [0, 1], {
-                extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-              });
-              const x = el.dx * (1 - t);
-              const y = el.dy * (1 - t);
-              const rot = el.rot * (2 - t);
-              const scale = el.scale * (1.12 - 0.12 * t);
-              const air = Math.max(0, 1 - t);
-              const shadow =
-                air > 0.01
-                  ? `0 ${10 + 26 * air}px ${24 + 46 * air}px rgba(30,25,18,${0.16 + 0.1 * air}), 0 2px 6px rgba(30,25,18,.08)`
-                  : '0 10px 24px rgba(30,25,18,.16), 0 2px 6px rgba(30,25,18,.08)';
-              const settledOpacity = opacity * (1 - 0.12 * recede);
-              const saturate = 1 - 0.08 * recede;
-              const texture = el.wbrCrop
-                ? {
-                    background: `#fff url(${staticFile(`textures/live/${el.file}`)}) -576px -173px / 1920px ${WBR_PAGE_H}px no-repeat`,
-                    border: '1px solid oklch(90% .008 82)',
-                  }
-                : null;
-              const linT = interpolate(frame, [el.cue, el.cue + 12], [0, 1], {
-                extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-              });
-              const showGhost = linT > 0.05 && linT < 0.95;
-              const glow = interpolate(frame, [el.cue + 12, el.cue + 18], [0.35, 0], {
-                extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-              });
-              const showGlow = frame >= el.cue + 12 && frame < el.cue + 18;
-              const glowR = el.w * el.scale * 0.5;
+        {/* group photo: elements fly in from all sides and settle around the wordmark */}
+        <AbsoluteFill style={{ pointerEvents: 'none' }}>
+          {ELS.map((el) => {
+            if (frame < el.cue) return null;
+            const t = interpolate(frame, [el.cue, el.cue + 12], [0, 1], {
+              extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: FLY_EASE,
+            });
+            const opacity = interpolate(frame, [el.cue, el.cue + 3], [0, 1], {
+              extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+            });
+            const x = el.dx * (1 - t);
+            const y = el.dy * (1 - t);
+            const rot = el.rot * (2 - t);
+            const scale = el.scale * (1.12 - 0.12 * t);
+            const air = Math.max(0, 1 - t);
+            const shadow =
+              air > 0.01
+                ? `0 ${10 + 26 * air}px ${24 + 46 * air}px rgba(30,25,18,${0.16 + 0.1 * air}), 0 2px 6px rgba(30,25,18,.08)`
+                : '0 10px 24px rgba(30,25,18,.16), 0 2px 6px rgba(30,25,18,.08)';
+            const settledOpacity = opacity * (1 - 0.12 * recede);
+            const saturate = 1 - 0.08 * recede;
+            const texture = el.wbrCrop
+              ? {
+                  background: `#fff url(${staticFile(`textures/live/${el.file}`)}) -576px -173px / 1920px ${WBR_PAGE_H}px no-repeat`,
+                  border: '1px solid oklch(90% .008 82)',
+                }
+              : null;
+            const linT = interpolate(frame, [el.cue, el.cue + 12], [0, 1], {
+              extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+            });
+            const showGhost = linT > 0.05 && linT < 0.95;
+            const glow = interpolate(frame, [el.cue + 12, el.cue + 18], [0.35, 0], {
+              extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+            });
+            const showGlow = frame >= el.cue + 12 && frame < el.cue + 18;
+            const glowR = el.w * el.scale * 0.5;
 
-              return (
-                <div key={el.key}>
-                  {showGhost ? (
-                    <div
-                      style={{
-                        position: 'absolute', left: el.cx - el.w / 2, top: el.cy - el.h / 2,
-                        width: el.w, height: el.h,
-                        transform: `translate(${x + el.dx * 0.08}px, ${y + el.dy * 0.08}px) rotate(${rot}deg) scale(${scale})`,
-                        transformOrigin: 'center center', borderRadius: el.radius, overflow: 'hidden',
-                        opacity: 0.2 * Math.max(0, 1 - linT), filter: 'blur(8px)', ...texture,
-                      }}
-                    >
-                      {el.wbrCrop ? null : (
-                        <Img src={staticFile(`textures/live/${el.file}`)} style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }} />
-                      )}
-                    </div>
-                  ) : null}
+            return (
+              <div key={el.key}>
+                {showGhost ? (
                   <div
                     style={{
                       position: 'absolute', left: el.cx - el.w / 2, top: el.cy - el.h / 2,
                       width: el.w, height: el.h,
-                      transform: `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`,
+                      transform: `translate(${x + el.dx * 0.08}px, ${y + el.dy * 0.08}px) rotate(${rot}deg) scale(${scale})`,
                       transformOrigin: 'center center', borderRadius: el.radius, overflow: 'hidden',
-                      boxShadow: shadow, opacity: settledOpacity, filter: `saturate(${saturate})`, ...texture,
+                      opacity: 0.2 * Math.max(0, 1 - linT), filter: 'blur(8px)', ...texture,
                     }}
                   >
                     {el.wbrCrop ? null : (
                       <Img src={staticFile(`textures/live/${el.file}`)} style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }} />
                     )}
                   </div>
-                  {showGlow ? (
-                    <div
-                      style={{
-                        position: 'absolute', left: el.cx - glowR, top: el.cy - glowR,
-                        width: glowR * 2, height: glowR * 2, borderRadius: '50%',
-                        background: 'radial-gradient(circle, oklch(78% 0.13 70 / 0.9), oklch(78% 0.13 70 / 0) 70%)',
-                        opacity: glow, mixBlendMode: 'multiply',
-                      }}
-                    />
-                  ) : null}
+                ) : null}
+                <div
+                  style={{
+                    position: 'absolute', left: el.cx - el.w / 2, top: el.cy - el.h / 2,
+                    width: el.w, height: el.h,
+                    transform: `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`,
+                    transformOrigin: 'center center', borderRadius: el.radius, overflow: 'hidden',
+                    boxShadow: shadow, opacity: settledOpacity, filter: `saturate(${saturate})`, ...texture,
+                  }}
+                >
+                  {el.wbrCrop ? null : (
+                    <Img src={staticFile(`textures/live/${el.file}`)} style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }} />
+                  )}
                 </div>
-              );
-            })}
-          </AbsoluteFill>
-        </PageCam2D>
+                {showGlow ? (
+                  <div
+                    style={{
+                      position: 'absolute', left: el.cx - glowR, top: el.cy - glowR,
+                      width: glowR * 2, height: glowR * 2, borderRadius: '50%',
+                      background: 'radial-gradient(circle, oklch(78% 0.13 70 / 0.9), oklch(78% 0.13 70 / 0) 70%)',
+                      opacity: glow, mixBlendMode: 'multiply',
+                    }}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </AbsoluteFill>
       </AbsoluteFill>
 
       {/* gold dust drifting up in front of the group photo */}

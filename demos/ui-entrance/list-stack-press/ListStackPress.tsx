@@ -35,43 +35,36 @@ const CAM_KEYS: CamKey2D[] = [
   { frame: 82, cx: 960, cy: 860, zoom: 0.9 },
 ];
 
-// odometer digit column (template DigitRoll 逻辑内联，self-contained)
-// `start` = 该数字开始滚动的 scene frame；组件内部用 frame − start 作为
-// 局部帧，保证每次重挂都从自己的 0 开始（而不是继续读全局帧）。
+// odometer digit column —— 连续里程计，不重挂：`pos` 是数字带上的连续位置
+// （0→5），每张卡落地让 pos 多滚进一格。单格滚动必须短于 12f 落卡间距、
+// 且最后一格在镜头结束前落定——key 重挂从 0 重滚 22f 的写法两条都踩
+// （前一格永远滚不完、尾帧停在 4）。
 const DIGITS = '0123456789';
-const DigitRoll: React.FC<{ value: string; start: number; lineH: number; color: string }> = ({ value, start, lineH, color }) => {
-  const frame = useCurrentFrame();
-  const f = frame - start;
-  return (
-    <span style={{ display: 'inline-flex', overflow: 'hidden', height: lineH, verticalAlign: 'bottom' }}>
-      {value.split('').map((ch, i) => {
-        if (ch < '0' || ch > '9') {
-          return <span key={i} style={{ fontSize: 96, lineHeight: `${lineH}px`, color }}>{ch}</span>;
-        }
-        const target = DIGITS.indexOf(ch);
-        const t = interpolate(f, [i * 4, i * 4 + 22], [0, 1], {
-          extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.25, 0.8, 0.25, 1),
-        });
-        const offset = (10 + target) * t * lineH;
-        return (
-          <span key={i} style={{ display: 'inline-block', height: lineH }}>
-            <span style={{ display: 'block', transform: `translateY(${-offset}px)` }}>
-              {(DIGITS + DIGITS).split('').map((d, j) => (
-                <span key={j} style={{ display: 'block', fontSize: 96, lineHeight: `${lineH}px`, color, fontVariantNumeric: 'tabular-nums' }}>
-                  {d}
-                </span>
-              ))}
-            </span>
+const ROLL_DUR = 8; // 单格滚动帧数，< 12f 落卡间距
+const DigitRoll: React.FC<{ pos: number; lineH: number; color: string }> = ({ pos, lineH, color }) => (
+  <span style={{ display: 'inline-flex', overflow: 'hidden', height: lineH, verticalAlign: 'bottom' }}>
+    <span style={{ display: 'inline-block', height: lineH }}>
+      <span style={{ display: 'block', transform: `translateY(${-pos * lineH}px)` }}>
+        {(DIGITS + DIGITS).split('').map((d, j) => (
+          <span key={j} style={{ display: 'block', fontSize: 96, lineHeight: `${lineH}px`, color, fontVariantNumeric: 'tabular-nums' }}>
+            {d}
           </span>
-        );
-      })}
+        ))}
+      </span>
     </span>
-  );
-};
+  </span>
+);
 
 export const ListStackPress: React.FC = () => {
   const frame = useCurrentFrame();
-  const landedCount = CUES.filter((c) => frame >= c + DUR).length;
+  // 计数器连续位置：每张卡落地（cue+DUR）时向前滚一格，8f 滚定。
+  // 最后一张 f76 落地、f84 滚定，早于 f88 镜头结束。
+  let rollPos = 0;
+  for (const c of CUES) {
+    rollPos += interpolate(frame, [c + DUR, c + DUR + ROLL_DUR], [0, 1], {
+      extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.25, 0.8, 0.25, 1),
+    });
+  }
 
   // 预备拍：计数器 0→6f 从 scale 0.96 微缩回 1 并亮起，视线先引到堆叠区
   const antT = interpolate(frame, [ANTICIPATE_START, ANTICIPATE_END], [0, 1], {
@@ -187,14 +180,7 @@ export const ListStackPress: React.FC = () => {
           Paper Radar
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
-          <DigitRoll
-            key={landedCount}
-            value={String(landedCount)}
-            // 数字从"最后一次落定的那一帧"开始滚, 保证每次重挂都从局部 0 起
-            start={landedCount > 0 ? CUES[landedCount - 1] + DUR : 0}
-            lineH={96 * 1.15}
-            color={AMBER}
-          />
+          <DigitRoll pos={rollPos} lineH={96 * 1.15} color={AMBER} />
         </div>
         <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: '0.12em', color: 'oklch(50% 0.006 82)', marginTop: 4, textTransform: 'uppercase' }}>
           Of 31 Fetched Today
