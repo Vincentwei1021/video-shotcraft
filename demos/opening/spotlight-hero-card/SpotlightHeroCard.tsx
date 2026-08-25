@@ -35,7 +35,7 @@ const CAM_KEYS: CamKey2D[] = [
   { frame: 0, cx: 960, cy: 540, zoom: 0.78, rotX: 0, rotY: 0, rotZ: 0, persp: 1200 },
   { frame: 32, cx: 960, cy: 540, zoom: 0.78, rotX: 0, rotY: 0, rotZ: 0, persp: 1200 },
   { frame: 48, cx: MCX - 30, cy: MCY, zoom: 2.6, rotX: 8, rotY: 34, rotZ: 2, persp: 1200 },
-  { frame: 138, cx: MCX - 30, cy: MCY, zoom: 2.58, rotX: 8, rotY: 34, rotZ: 2, persp: 1200 },
+  { frame: 138, cx: MCX - 30, cy: MCY, zoom: 2.6, rotX: 8, rotY: 34, rotZ: 2, persp: 1200 },
 ];
 const PUSH_EASE = Easing.bezier(0.35, 0, 0.2, 1);
 const POP_EASE = Easing.bezier(0.2, 1.25, 0.3, 1);

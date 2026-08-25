@@ -7,7 +7,7 @@
 // 品牌名/副标/强调色可换成目标品牌。
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
 
-export const BRAND_INK_OPEN_DURATION = 83;
+export const BRAND_INK_OPEN_DURATION = 104;
 
 const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
@@ -40,14 +40,16 @@ export const BrandInkOpen: React.FC = () => {
   const cursorOn = (() => {
     if (frame < kickStart) return false;
     if (frame < kickDone) return true;
-    if (frame > 74) return false;
+    if (frame > 95) return false;
     const b = frame - kickDone;
     return Math.floor(b / 2) % 2 === 0;
   })();
 
-  // --- brand group rests fully-on for ~1s (46 → 76), then dissolves out
-  // (76 → 83): lift + shrink + fade ---
-  const brandOut = interpolate(frame, [76, 83], [0, 1], {
+  // --- brand group rests fully-on for ~1s (wordmark completes ~67f; the last
+  // glyph is done at 10+15*3+12=67), then dissolves out (97 → 104): lift +
+  // shrink + fade. This leaves a clean ~30-frame hold of the COMPLETE title
+  // (67→97), per the card's "完整标题停留 ~30 帧" requirement. ---
+  const brandOut = interpolate(frame, [97, 104], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.5, 1),
   });
   const brandOpacity = 1 - brandOut;

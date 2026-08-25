@@ -129,7 +129,7 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
           transformOrigin: '50% 45%',
         }}
       >
-        <PageCam2D src="textures/live/projects-full.png" pageH={PAGE_H} keys={[{ frame: 0, cx: 960, cy: 700, zoom: 0.75 }]}>
+        <PageCam2D src="textures/live/projects-full.png" pageH={PAGE_H} keys={[{ frame: 0, cx: 960, cy: 700, zoom: 0.75 }]} blur={blur}>
           {/* warm scrim under the flying elements */}
           <AbsoluteFill style={{ background: 'radial-gradient(1200px 800px at 50% 48%, rgba(250,247,242,0.82), rgba(250,247,242,0.55) 60%, rgba(250,247,242,0.35))', pointerEvents: 'none' }} />
 

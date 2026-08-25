@@ -18,10 +18,14 @@ const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 const AMBER = 'oklch(52% 0.115 65)';
 const FILES = ['paper1.png', 'paper2.png', 'paper3.png', 'paper4.png', 'paper5.png'];
 
-const CUES = [0, 12, 24, 36, 48]; // 18–66 落 0 基
+const CUES = [6, 18, 30, 42, 54]; // 首卡前留 6f 给计数器预备拍（anticipation）
 const DUR = 22;
 const FLY_EASE = Easing.bezier(0.45, 0.05, 0.25, 1.12);
 const TILTS = [2, -2, 2, -2, 2];
+
+// 预备拍：计数器先于首卡亮起 + 微缩 (0.96→1)，把视线引到堆叠区（段落级一次）
+const ANTICIPATE_START = 0;
+const ANTICIPATE_END = 6;
 
 const CAM_KEYS: CamKey2D[] = [
   { frame: 0, cx: 960, cy: 270, zoom: 1.35 },
@@ -32,9 +36,12 @@ const CAM_KEYS: CamKey2D[] = [
 ];
 
 // odometer digit column (template DigitRoll 逻辑内联，self-contained)
+// `start` = 该数字开始滚动的 scene frame；组件内部用 frame − start 作为
+// 局部帧，保证每次重挂都从自己的 0 开始（而不是继续读全局帧）。
 const DIGITS = '0123456789';
-const DigitRoll: React.FC<{ value: string; delay: number; lineH: number; color: string }> = ({ value, delay, lineH, color }) => {
+const DigitRoll: React.FC<{ value: string; start: number; lineH: number; color: string }> = ({ value, start, lineH, color }) => {
   const frame = useCurrentFrame();
+  const f = frame - start;
   return (
     <span style={{ display: 'inline-flex', overflow: 'hidden', height: lineH, verticalAlign: 'bottom' }}>
       {value.split('').map((ch, i) => {
@@ -42,7 +49,7 @@ const DigitRoll: React.FC<{ value: string; delay: number; lineH: number; color: 
           return <span key={i} style={{ fontSize: 96, lineHeight: `${lineH}px`, color }}>{ch}</span>;
         }
         const target = DIGITS.indexOf(ch);
-        const t = interpolate(frame, [delay + i * 4, delay + i * 4 + 22], [0, 1], {
+        const t = interpolate(f, [i * 4, i * 4 + 22], [0, 1], {
           extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.25, 0.8, 0.25, 1),
         });
         const offset = (10 + target) * t * lineH;
@@ -65,6 +72,13 @@ const DigitRoll: React.FC<{ value: string; delay: number; lineH: number; color: 
 export const ListStackPress: React.FC = () => {
   const frame = useCurrentFrame();
   const landedCount = CUES.filter((c) => frame >= c + DUR).length;
+
+  // 预备拍：计数器 0→6f 从 scale 0.96 微缩回 1 并亮起，视线先引到堆叠区
+  const antT = interpolate(frame, [ANTICIPATE_START, ANTICIPATE_END], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
+  });
+  const counterScale = 0.96 + 0.04 * antT;
+  const counterOpacity = 0.3 + 0.7 * antT;
 
   // when a *later* card enters, the settled stack gets pressed down 6px then
   // springs back over ~8 frames
@@ -162,12 +176,25 @@ export const ListStackPress: React.FC = () => {
       </PageCam2D>
 
       {/* screen-space counter, top-right — lands one digit per card */}
-      <div style={{ position: 'absolute', top: 70, right: 96, textAlign: 'right', pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute', top: 70, right: 96, textAlign: 'right',
+          pointerEvents: 'none', opacity: counterOpacity,
+          transform: `scale(${counterScale})`, transformOrigin: 'top right',
+        }}
+      >
         <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.16em', color: 'oklch(50% 0.006 82)', textTransform: 'uppercase' }}>
           Paper Radar
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
-          <DigitRoll key={landedCount} value={String(landedCount)} delay={0} lineH={96 * 1.15} color={AMBER} />
+          <DigitRoll
+            key={landedCount}
+            value={String(landedCount)}
+            // 数字从"最后一次落定的那一帧"开始滚, 保证每次重挂都从局部 0 起
+            start={landedCount > 0 ? CUES[landedCount - 1] + DUR : 0}
+            lineH={96 * 1.15}
+            color={AMBER}
+          />
         </div>
         <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: '0.12em', color: 'oklch(50% 0.006 82)', marginTop: 4, textTransform: 'uppercase' }}>
           Of 31 Fetched Today

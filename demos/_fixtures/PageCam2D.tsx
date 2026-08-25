@@ -32,8 +32,9 @@ export const PageCam2D: React.FC<{
   keys: CamKey2D[];
   children?: React.ReactNode;
   bg?: string;
+  blur?: number; // px, 应用到整页（背景页 blur 化景深）
   ease?: (t: number) => number;
-}> = ({ src, pageH, keys, children, bg = '#faf7f2', ease = Easing.bezier(0.33, 0, 0.15, 1) }) => {
+}> = ({ src, pageH, keys, children, bg = '#faf7f2', blur = 0, ease = Easing.bezier(0.33, 0, 0.15, 1) }) => {
   const frame = useCurrentFrame();
   let a = keys[0];
   let b = keys[keys.length - 1];
@@ -73,6 +74,7 @@ export const PageCam2D: React.FC<{
             height: pageH,
             transform: `translate(${960 - cx * zoom}px, ${540 - cy * zoom}px) scale(${zoom})`,
             transformOrigin: '0 0',
+            filter: blur > 0 ? `blur(${blur}px)` : undefined,
           }}
         >
           <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: pageH }} />
@@ -101,6 +103,7 @@ export const PageCam2D: React.FC<{
             transform: `translate(${960 / zoom - cx}px, ${540 / zoom - cy}px) rotateY(${rotY}deg) rotateX(${rotX}deg) rotateZ(${rotZ}deg)`,
             transformOrigin: `${cx}px ${cy}px`,
             transformStyle: 'preserve-3d',
+            filter: blur > 0 ? `blur(${blur}px)` : undefined,
           }}
         >
           <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: pageH }} />
