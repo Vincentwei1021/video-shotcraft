@@ -284,3 +284,74 @@ riser-cine（组装/铺垫段起） → 约 35f 后 impact-deep-whoosh（主体 
 模板片的 SFX 表钉**绝对帧号**，单文件数组便于整表平移（第 2 次重钉一个 diff 完成），但绝对帧意味着零结构复用——任何一个镜头改时长，其后所有条目全部失效。
 
 做法：钉帧写成 `SHOTS.<shot>.from + offset`（相对该镜头起点的偏移；卡点片写 `beatF(n)`，见 music-beat-sync.md）。这样镜头内部节拍不变时，改前面镜头的时长只需分镜表更新一处，SFX 自动跟随——绝大部分重钉可免除。新项目起手即按相对钉帧写，绝不写裸数字帧号。
+
+### 4.6 音画对齐补两项偏移（硬规则）
+
+设计意图是"音源峰值落在目标拍帧上"，从意图到成片隔着两项偏移，都
+不补时会叠加——本仓库实测最重一击晚了 0.27s，明显读作音画不同步；
+卡点片里差 2–3 帧就足以让观众听不出"这一下是跟着鼓的"，合理的卡点
+动效被读作无端抖动（S5 判例）。统一公式（浮点计算，最后一步取整）：
+
+```
+Sequence.from = 目标峰值帧 − 音源峰值滞后帧 − 输出音轨偏移帧
+```
+
+**偏移一：最终输出音轨偏移（逐渲染管线实测）。**
+渲出成片的整条音轨相对视频有一个固定滞后。根因在**输出编码/封装
+链路**，不是 `<Audio>` 或 `Sequence.from` 的行为：AAC 编码器有
+encoder priming（头部垫入的预热样本），48kHz 下典型值 2048 samples
+= 1.28f@30fps。本仓库 AiflPromo 实测 click 滞后 2032 samples、
+impact 2066 samples（≈1.27–1.29f），与 priming 指纹吻合；且渲染品
+（aifl-ref.mp4）音轨的 edit list（elst media time=0）未声明裁剪这段
+垫头，解码后就体现为真实偏移。Remotion 官方跟踪同族问题：
+remotion-dev/remotion#7099。
+
+- **按管线记录，不按"片"**：偏移由 Remotion 版本 + 音频 codec +
+  sample rate + 容器四要素决定，实测值随四要素一起记档；四要素不变
+  可复用，换任何一样必须重测。priming 量级依编码器而异（ffmpeg 内置
+  aac ≈1024、fdk-aac 2048、Apple ≈2112 samples），不能预设常数。
+- promo-ink 时代实测过 **4f**（≈133ms/6400 samples），量级远超
+  priming 所能解释、根因未验证——仅作为"旧常数不可跨管线搬运"的
+  警示数据保留，不作机制陈述。
+
+实测方法（渲后做，同管线量准一次通用）：
+
+```bash
+ffmpeg -i out/promo.mp4 -vn -acodec pcm_s16le /tmp/render-audio.wav
+```
+
+拿 2–3 个尖锐 SFX 的**原文件**对渲出音轨做归一化交叉相关（numpy
+`np.correlate` 即可），峰值位置减去设计帧号就是偏移量；多个探针
+残差一致才算量准，只测一个点可能撞上音源自身的峰值滞后。
+
+**偏移二：音源自身的峰值滞后（逐文件量）。**
+很多素材的能量峰不在文件头（渐强攻击、前置气口），按文件头对齐等于
+晚到。实测例：brush-write 2f、paper-slide 10f、ink-char 深达 24f。
+峰值位置用音频能量包络定位，新音效入库时随 max_volume 一并记录
+（见 4.1；与 music-beat-sync §4 "素材按内部峰值对齐，不按文件头
+对齐"同一条原则）。
+
+渲染层实现——SFX 表保持 §4.1 的 `{ from, src, volume }` schema 不变，
+三项拆分发生在 `from` 的计算表达式里（审计链完整，绝不逐条手改帧号）：
+
+```tsx
+// 本管线实测：Remotion 4.x + AAC 48kHz mp4，2026-08-23，click/impact 双探针交叉相关
+const OUTPUT_AUDIO_OFFSET_F = 1.28;
+const PEAK_F: Record<string, number> = { 'impact-deep-whoosh.mp3': 2 /* 逐文件实测 */ };
+const sfxFrom = (targetPeakF: number, src: string) =>
+  Math.max(0, Math.round(targetPeakF - (PEAK_F[src] ?? 0) - OUTPUT_AUDIO_OFFSET_F));
+// 表内写法：{ from: sfxFrom(SHOTS.outro.from + 35, 'impact-deep-whoosh.mp3'), src: …, volume: 0.55 }
+```
+
+两个边界注意：
+- **durationInFrames 不加偏移**：窗口整体前移后起止点在听感上一起
+  归位；给截断型音效（显式 durationInFrames 裁长样本的）加长窗口，
+  会多播出本该裁掉的内容。
+- `Math.max(0, …)` 兜底意味着片头约 2f 内的钉点无法完成全部补偿，
+  残差记进验收表；片头重音尽量不要设计在前 2 帧。
+
+BGM 侧同理但记账位置不同：源音乐网格常量 `SOURCE_BEAT0` 保持分析
+真值不动，输出偏移单独设常量参与 `beatT` 换算，见 music-beat-sync
+§5b——两处共用同一套交叉相关实测法。
+
+验收：补偿后重渲，对 2–3 个探针重跑交叉相关，残差 ≤0.5f 为合格。

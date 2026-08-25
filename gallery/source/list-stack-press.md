@@ -40,4 +40,4 @@ name: list-stack-press
 - 预备动作幅度必须过肉眼阈值（deck-deal 判例 2026-07-09：小幅度用户完全无感，放大 12 倍才通过）——渲染后自查"不逐帧能否看出蓄力"
 
 ## 参考实现
-template/src/aifl/live/ScenePapers.tsx
+demos/ui-entrance/list-stack-press/ListStackPress.tsx（原 template/src/aifl/live/ScenePapers.tsx）

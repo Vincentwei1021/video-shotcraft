@@ -209,7 +209,11 @@ main {
 .sidebar {
   position: sticky;
   top: 98px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 98px);
   padding-top: 3.5rem;
+  padding-bottom: 1.5rem;
 }
 
 .sidebar-heading {
@@ -272,6 +276,158 @@ main {
 .category-link .new-badge { margin-left: auto; }
 .category-link .count { flex: none; }
 .category-link.is-active .new-badge { background: #e5484d; color: #fff; }
+
+.sidebar-social {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding: 2rem 0.75rem 0;
+}
+
+.social-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 34px;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-translucent);
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: 0 2px 9px var(--control-shadow);
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.follow-menu {
+  position: relative;
+  width: min(100%, 184px);
+  margin-inline: auto;
+}
+
+.sidebar-social > .social-badge {
+  width: min(100%, 184px);
+  margin-inline: auto;
+  justify-content: center;
+}
+
+.follow-trigger {
+  width: 100%;
+  justify-content: center;
+  position: relative;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.follow-chevron {
+  position: absolute;
+  right: 0.7rem;
+  color: var(--faint);
+  font-size: 0.78rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.follow-platforms {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 12px 32px var(--control-shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.98);
+  transform-origin: bottom center;
+  transition: opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
+}
+
+.follow-platforms::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 0.5rem;
+  content: '';
+}
+
+.follow-menu:hover .follow-platforms,
+.follow-menu.is-open .follow-platforms {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.follow-menu:hover .follow-chevron,
+.follow-menu.is-open .follow-chevron {
+  transform: rotate(180deg);
+}
+
+.social-badge:hover {
+  border-color: var(--faint);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+.social-badge-mark {
+  display: inline-grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.social-badge-mark svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+.social-badge[data-platform="xiaohongshu"] .social-badge-mark {
+  background: #ff2442;
+  color: #fff;
+}
+
+.social-badge[data-platform="xiaohongshu"] .social-badge-mark svg {
+  width: 17px;
+  height: 17px;
+}
+
+.social-badge[data-platform="douyin"] .social-badge-mark {
+  background: #090909;
+  color: #fff;
+}
+
+.social-badge[data-platform="douyin"] .social-badge-mark svg {
+  filter: drop-shadow(-1px 0 #25f4ee) drop-shadow(1px 0 #fe2c55);
+}
+
+.social-badge-name {
+  font-size: 0.73rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.social-badge-action {
+  margin-left: auto;
+  color: var(--faint);
+  font-size: 0.62rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
 
 .library-main { min-width: 0; }
 
@@ -791,6 +947,8 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
     position: sticky;
     top: 66px;
     z-index: 9;
+    display: block;
+    min-height: 0;
     min-width: 0;
     padding: 0.6rem 0;
     background: var(--bg-translucent);
@@ -798,6 +956,7 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
     -webkit-backdrop-filter: blur(14px);
   }
   .sidebar-heading { display: none; }
+  .sidebar-social { display: none; }
   .category-nav {
     flex-direction: row;
     overflow-x: auto;

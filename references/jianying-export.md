@@ -69,8 +69,9 @@ def f2us(f): return round(f * 1_000_000 / FPS)   # 帧 → 微秒
 - **字幕表** `(中文, 英文, from帧, to帧)`：抄各镜头字幕组件的实参；
   **相邻镜头同文案合并为一段**（原片的跨镜头延续）。
 - **SFX 表** `(文件, 目标拍, 峰值秒, 音量)`：抄 Root 的钉帧表。剪映按
-  摆放位置播放，**不要带上 Remotion 的 4 帧起播补偿**（那是 Remotion
-  渲染管线的 quirk）：`start_f = beatF(拍) - round(峰值秒 * FPS)`。
+  摆放位置播放，**不要带上 Remotion 侧的输出音轨偏移补偿**（那补的是
+  Remotion 渲染输出链路的编码偏移，见 sound-design §4.6，与剪映播放
+  无关）：`start_f = beatF(拍) - round(峰值秒 * FPS)`。
   长样本的显式截断时长（如 impact 留混响尾）照抄。
 
 **微秒边界铁律**：相邻段的 Timerange 必须"起点/终点各自取整再相减"

@@ -127,6 +127,8 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
    BPM/相位 + kick/snare/hihat 三分类鼓点定位），网格按瞬态覆盖率
    验收通过后才分镜；时间线用拍号 `beatF(n)` 写，稀疏重音钉真实
    瞬态而非网格插值点，渲后从成片抽音轨回测切点误差 ≤3f。
+   卡拍管的是时机不是幅度——作用于整画面/相机层的节拍冲击视同
+   大 slam，全片 ≤3 处（aesthetic-rules R4），其余拍点动效只动元素层。
    方法论见 `references/music-beat-sync.md`。
    配了 BGM 的片子终渲固定交付两版：带 BGM 版 + 无 BGM 版（保留 SFX），
    靠 `bgm` inputProp 从同一时间线渲出，方便用户后期自配音乐。
@@ -187,7 +189,9 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 ## 资产使用方式
 
 - `assets/lib/` 组件 **copy 进新项目**后自由修改（不 import 本库）。
-  清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、DigitRoll、
+  清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、ClipCard（把外部
+  视频素材 mp4 包成可被镜头卡运镜骨架驱动的"卡片主角"，含 OffthreadVideo
+  交叉淡化循环——素材短于镜头时无缝续播）、DigitRoll、
   FlashCut、Caption、FlatPanel、VerticalTicker（3D 无限滚动墙）、
   helpers(rand/shake/camera/motion)。FlatPanel 与 helpers/camera 需要
   `three` + `@react-three/fiber` + `@remotion/three` 依赖，其余仅需 remotion。
@@ -207,6 +211,13 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
   `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
   src/index.ts AiflPromo out/promo.mp4`。
+- **测试（仓库内自动验证，新增 demo/组件后跑）**：
+  - 纯函数单测：`npm test`（仓库根 vitest，覆盖 `assets/lib/helpers` 的
+    mulberry32 / velocityAt / lagged / dampedSettle / handheld，确定性断言）。
+  - demo 渲染冒烟：`python3 assets/scripts/smoke-render-demos.py` 渲染每个
+    带时长导出 demo 的首帧断言不崩（需 `cd template && npm ci` +
+    motion-blur，详见 `demos/README.md` 测试与验证一节）。
+  - CI（`pr-checks.yml`）已自动跑：tsc 严格编译全部 demo + vitest + 冒烟渲染。
 - `jianying-export/` 剪映工程导出模块：`mac_draft.py`（Mac 剪映 11.2
   实测通过）、`windows_draft.py`（按上游支持路径实现，未真机验证）、
   `smoke_test.py`（新环境先跑的最小冒烟测试）。流程、时间线提取与建轨
