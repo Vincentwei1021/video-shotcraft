@@ -1,10 +1,12 @@
 // D 式 黑场字卡（black-card）——前镜收尾淡入黑场，字卡逐词压印出现（paper-title-card
 // 的暗场变体），再交棒后镜。章节级分段 + 呼吸位二合一；一支 30s 片 D 式 ≤2 次。
-// 参考实现（真实纹理）：A 景 = projects-full 项目板（前镜收尾 20f 淡入黑场），
-// 暗底字卡 = "weekly brief, every project linked" 逐词 letterpress（暗底 + 页面底色
-// 浅色字，不用强调色当正文字——浅底字卡才不像报错弹窗），等宽小字副行；后镜 =
-// wbr-full 周报页从黑场淡入 8f 交棒。节拍：0–20 A 淡出 → 20–28 黑场静 → 28–64 字卡
-// 逐词压印 + hold → 64–72 淡入 B 景 → 72–120 B hold。
+// 参考实现（真实纹理）：A 景 = projects-full 项目板（前镜收尾 **8f** 淡入黑场，
+// 符合定义 6–10 帧）；暗底字卡 = "weekly brief, every project linked" 逐词 letterpress
+// （暗底 + 页面底色浅色字，不用强调色当正文字——浅底字卡才不像报错弹窗），等宽小字
+// 副行；完整标题落定后 **hold ~15 帧** 再退场，避免"最后一个字刚出现就淡出"；
+// 后镜 = wbr-full 周报页从黑场淡入 8f 交棒。
+// 节拍：0–8 A 淡出 → 8–20 黑场静 → 20–47 字卡逐词压印 → 47–62 完整标题 hold →
+// 62–70 字卡退场 → 70–78 淡入 B 景 → 78–120 B hold。
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 
 export const BLACKCARD_DUR = 120;
@@ -31,28 +33,29 @@ const WORDS: { text: string; accent?: boolean }[] = [
 const Scene: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // A 景收尾：0→20 淡出到黑场
-  const aOut = interpolate(frame, [0, 20], [1, 0], {
+  // A 景收尾：0→8 淡出到黑场（定义要求 6–10 帧，此处 8）
+  const aOut = interpolate(frame, [0, 8], [1, 0], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.5, 0, 0.4, 1),
   });
 
-  // 字卡：28 起逐词压印（letterpress 配方：scale 大→1 + blur→0）
-  const cardOpacity = interpolate(frame, [24, 32], [0, 1], {
+  // 字卡：20 起逐词压印（delay=20+i·3，最后词 i=6 delay=38 完成 47）
+  const cardOpacity = interpolate(frame, [18, 26], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.2, 0.7, 0.3, 1),
   });
-  const cardOut = interpolate(frame, [58, 66], [0, 1], {
+  // 完整标题 47f 落定，hold 到 62 再退场（保留 ~15 帧完整展示）
+  const cardOut = interpolate(frame, [62, 70], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.5, 1),
   });
 
-  // 后镜 B 淡入：66→74（字卡 58→66 完全淡出后再交棒）
-  const bIn = interpolate(frame, [66, 74], [0, 1], {
+  // 后镜 B 淡入：70→78（字卡 62→70 完全淡出后再交棒）
+  const bIn = interpolate(frame, [70, 78], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
 
   return (
     <AbsoluteFill style={{ backgroundColor: '#0c0c10', overflow: 'hidden' }}>
       {/* A 景 */}
-      {frame < 24 ? (
+      {frame < 14 ? (
         <div style={{ position: 'absolute', opacity: aOut }}>
           <Img
             src={staticFile('textures/live/projects-full.png')}
@@ -61,8 +64,8 @@ const Scene: React.FC = () => {
         </div>
       ) : null}
 
-      {/* 黑场字卡（28–66） */}
-      {frame >= 24 && frame < 70 ? (
+      {/* 黑场字卡（18–74） */}
+      {frame >= 18 && frame < 74 ? (
         <AbsoluteFill
           style={{
             justifyContent: 'center', alignItems: 'center',
@@ -78,7 +81,7 @@ const Scene: React.FC = () => {
               }}
             >
               {WORDS.map((w, i) => {
-                const delay = 28 + i * 4;
+                const delay = 20 + i * 3;
                 const t = interpolate(frame, [delay, delay + 9], [0, 1], {
                   extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.2, 0.75, 0.3, 1),
                 });
@@ -100,14 +103,14 @@ const Scene: React.FC = () => {
             <div
               style={{
                 height: 4, width: 180, margin: '30px auto 0', borderRadius: 2,
-                background: AMBER, transform: `scaleX(${interpolate(frame, [40, 52], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1) })})`,
+                background: AMBER, transform: `scaleX(${interpolate(frame, [32, 44], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1) })})`,
               }}
             />
             <div
               style={{
                 fontFamily: MONO, fontSize: 20, letterSpacing: '0.14em', color: DIM,
                 marginTop: 26, textTransform: 'uppercase',
-                opacity: interpolate(frame, [34, 44], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
+                opacity: interpolate(frame, [26, 36], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }),
               }}
             >
               Weekly Brief · 2026-W28
@@ -116,8 +119,8 @@ const Scene: React.FC = () => {
         </AbsoluteFill>
       ) : null}
 
-      {/* B 景（66 起淡入） */}
-      {frame >= 66 ? (
+      {/* B 景（70 起淡入） */}
+      {frame >= 70 ? (
         <div style={{ position: 'absolute', opacity: bIn }}>
           <Img
             src={staticFile('textures/live/wbr-full.png')}

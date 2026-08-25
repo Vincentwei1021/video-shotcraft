@@ -28,12 +28,16 @@ const Scene: React.FC = () => {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.6, 1),
   });
 
-  // B 景迎面放大入场：42→52，从 scale 0.6 + blur 起步收焦
+  // B 景迎面放大入场：42→52，从 scale 0.6 + blur 起步收焦，同时沿
+  // 与 A 相同的运动轴（X 向右）从右缘滑入——出与入同向、速度连续，
+  // 读作"穿过暗场直航"而不是两景各自动自己的。
   const bIn = interpolate(frame, [42, 52], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
   const bScale = 0.6 + 0.4 * bIn;
   const bBlur = (1 - bIn) * 12;
+  // 从右侧滑入（约半屏起步），随收焦归位到中心——与 A 向右推出同向接续
+  const bShiftX = (1 - bIn) * 960;
 
   // 尘点：确定性 index 派生（渲染必须可复现）
   const DUST = Array.from({ length: 4 }, (_, i) => ({
@@ -76,12 +80,12 @@ const Scene: React.FC = () => {
         </AbsoluteFill>
       ) : null}
 
-      {/* B 景：迎面放大入场 + 收焦 */}
+      {/* B 景：沿 A 的运动轴从右缘滑入 + 迎面放大 + 收焦 */}
       {frame >= 42 ? (
         <div
           style={{
             position: 'absolute', left: 0, top: 0, width: 1920, height: 1080,
-            transform: `scale(${bScale})`, filter: `blur(${bBlur}px)`,
+            transform: `translateX(${bShiftX}px) scale(${bScale})`, filter: `blur(${bBlur}px)`,
             transformOrigin: '50% 45%',
           }}
         >
