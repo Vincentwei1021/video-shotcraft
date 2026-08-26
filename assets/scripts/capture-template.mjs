@@ -1,5 +1,6 @@
-// capture-template.mjs — 把真实产品页面变成宣传片素材的三件套采集脚本模板
-// 通用页面截图管线模板：BASE/输出目录/路由/选择器全部提升为 CONFIG
+// capture-template.mjs — raster fallback 三件套采集模板
+// 仅在 references/html-material-gate.md 记录 A/B 门控失败证据后使用；
+// baseline QA 截图不能因为现成可用就直接进入视频。
 //
 // 产出三件套（宣传片 3D 页面平面的全部素材来源）：
 //   1. 每个路由的全页 2x 截图（deviceScaleFactor: 2，供 3D 场景贴图不糊）

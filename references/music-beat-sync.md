@@ -190,7 +190,7 @@ export const localBeat = (shot: {from: number}, n: number) => beatF(n) - shot.fr
 ### 5b. 渲出成片抽音轨回测
 
 ```bash
-ffmpeg -i out/promo.mp4 -vn -acodec pcm_s16le /tmp/render-audio.wav
+ffmpeg -i out/<work名>.mp4 -vn -acodec pcm_s16le /tmp/render-audio.wav
 ```
 
 对渲出音轨重跑第 1 步的网格拟合（BGM 从视频里量，不从源文件量——
