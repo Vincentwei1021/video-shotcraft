@@ -1,6 +1,6 @@
 ---
 name: video-shotcraft
-description: Create cinematic product videos from shot recipe cards, a validated template, and code/audio assets (Remotion + real page screenshots + 2.5D camera moves + beat-synced cuts + sound design). Use when the user asks to turn a frontend project or webpage into a product video, says "use video-shotcraft to make a video/promo", names the Ink Press template or asks to reproduce its effect, or wants a single shot card's motion. 用镜头配方卡 + 已验收模板 + 代码/音频资产制作电影感产品视频（Remotion + 真实页面截图 + 2.5D 运镜 + 节奏卡点 + 声音设计）。当用户要求"用 video-shotcraft 做视频/宣传片"、把前端项目/网页做成产品视频、点名 Ink Press 模板或要求复刻模板片效果，或要用镜头卡做单个动效镜头时使用。
+description: Create cinematic product videos from shot recipe cards, a validated template, and code/audio assets (Remotion + browser-captured HTML materials + 2.5D camera moves + beat-synced cuts + sound design). Use when the user asks to turn a frontend project or webpage into a product video, says "use video-shotcraft to make a video/promo", names the Ink Press template or asks to reproduce its effect, or wants a single shot card's motion. 用镜头配方卡 + 已验收模板 + 代码/音频资产制作电影感产品视频（Remotion + 浏览器真实 HTML 素材 + 2.5D 运镜 + 节奏卡点 + 声音设计）。当用户要求"用 video-shotcraft 做视频/宣传片"、把前端项目/网页做成产品视频、点名 Ink Press 模板或要求复刻模板片效果，或要用镜头卡做单个动效镜头时使用。
 ---
 
 # video-shotcraft：电影感产品视频制作
@@ -16,7 +16,7 @@ description: Create cinematic product videos from shot recipe cards, a validated
 是否已经明确选择；已经选择时直接执行，不重复询问，也不要改成另一种模式。
 
 1. **直接使用模板**：保持 Ink Press 原有替换流程。读 `template/TEMPLATE.md`，
-   按既有镜头结构替换目标产品的截图、文案和品牌信息。
+   按既有镜头结构替换目标产品的真实浏览器素材、文案和品牌信息。
 2. **自主自由创作**：读 `references/pipeline.md`。Agent 根据用户已有要求和项目
    内容，自主决定视觉方向、镜头映射、分镜、素材和音频，连续推进到成片；不在
    产品简报、styleframe、镜头映射或分镜阶段暂停等待用户确认。
@@ -91,13 +91,22 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 
 ## 核心理念
 
-1. **复刻既有页面必须用真实截图；手搓 UI 限非复刻场景，且质量与表达
-   明确性是硬门槛。** 表现产品真实页面时第一步就起本地 dev server，
-   用无头浏览器截全页 2x 纹理 + 元素级抠图 + layout.json 坐标表。
-   非复刻场景（抽象开场/品牌段/独立展示组件）允许手搓 UI，但达不到
-   出版级质感或观众看不懂它表达什么，就回截图路线。页面数据按风险处理：
-   公开演示数据只有在产品简报明确确认后才可保留；客户、个人、内部、密钥、
-   实时或其他敏感数据必须用虚构或脱敏内容，且在采集前冻结。
+1. **复刻既有页面必须来自浏览器真实渲染，素材默认 HTML-first；截图只作
+   QA 基准和最后兜底。** 最终分镜放行后，逐镜头按
+   `references/html-material-gate.md` 门控：整页展示/页面级运镜优先 B
+   （MHTML 派生的离线整页 HTML）；需要逐元素入场、改文字、拆层或极限推近时
+   优先 A（冻结 DOM 子树）；整页背景与独立元素并存时用 B+A。每个页面状态仍
+   同步采 baseline PNG 做保真对照，但门控通过时不得把它放进成片。只有
+   Canvas/WebGL/video/跨域 iframe、HTML 保真或确定性验收失败等明确原因才允许
+   raster fallback，不能因为截图更熟或更快就降级。非复刻场景（抽象开场/品牌段/
+   页面上不存在的独立展示组件）允许手搓 UI，但质量与表达明确性仍是硬门槛。
+   页面数据按风险处理：公开演示数据只有在产品简报明确确认后才可保留；客户、
+   个人、内部、密钥、实时或其他敏感数据必须用虚构或脱敏内容，且在采集前冻结。
+   **实操走查类镜头（注册/上传/点按/填表/提交等第一人称使用旅程）默认用
+   录屏演绎语言呈现**：journey 旅程式多状态采集 + 合成光标点击动效 + 点击后
+   可见状态反馈 + 按需手写 DOM 驱动动画，方法论与军规见
+   `references/screen-story.md`；原站 JS 动画不可复活，一律"读终点真值、
+   手写过程"，且只在需要动画的地方写。
 
 2. **整支视频的视觉语言必须从产品自身生长，不能另造一套不相干的
    “宣传片皮肤”。** 做 styleframe 前，先从产品/网站的设计系统、源码或
@@ -130,6 +139,8 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
    方法论见 `references/music-beat-sync.md`。
    配了 BGM 的片子终渲固定交付两版：带 BGM 版 + 无 BGM 版（保留 SFX），
    靠 `bgm` inputProp 从同一时间线渲出，方便用户后期自配音乐。
+   成片文件名与工程目录名一致：`out/<work名>.mp4` /
+   `out/<work名>-nobgm.mp4`（如 `youart-promo.mp4`）。
 
 6. **用镜头卡动效必须先解析 Gallery 索引并读准确的 demo 实现代码。**
    先用 `gallery/api/library.json` 校验卡名与 `style-key`，再按卡片文档的
@@ -161,9 +172,19 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 自主自由创作按 `references/pipeline.md` 从阶段 0 连续执行，不逐阶段等待用户确认。
 共同创作先按 `references/guided-free-creation.md` 完成阶段 0–3 的产品理解、视觉方向、
 镜头映射和分镜确认，再从流水线阶段 4 的最终素材采集继续，不得重复提问或重新设计。
+阶段 4 必须完整阅读 `references/html-material-gate.md`，先为每镜头写素材门控决定，
+再采集 A/B；baseline PNG 仅用于 QA，只有带失败证据的 fallback 才能进入成片。
 阶段 2–3 扫 `references/shots/` 各卡 frontmatter 按能量曲线选镜头；阶段 5–7 持续
 对照 `references/aesthetic-rules.md` 自检；阶段 6 读
 `references/sound-design.md`；卡点片全程贴 `references/music-beat-sync.md`。
+
+所有模式终渲通过后，交付物固定含 `out/<work名>-storyboard.md` 分镜脚本文档
+（结构模板与文风规则见 `references/storyboard-doc.md`：脚本主线与功能覆盖引导块、
+“逐镜说明”总章、逐镜「内容/对应功能/素材/动画/选择理由」、选材偏向与舍弃清单、
+每镜一张帧图、陈述句、说人话、不用表格）。**飞书沉淀是默认交付环节**：Markdown
+落盘后，在工作区约定的飞书 wiki 父节点（见工作区 CLAUDE.md「飞书沉淀」）下
+新建子文档，按同文件的飞书原生块映射写入并回读验收；工作区未约定父节点时询问
+一次，用户明确不要才跳过。
 
 所有模式成片交付后，默认询问用户一次是否需要同时导出**剪映工程文件**
 （可在剪映里改字幕内容/字号/颜色、分镜头变速/重排、调整或替换音频）；
@@ -179,19 +200,39 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 | 用户已选 BGM | music-beat-sync.md（先分析再分镜） |
 | 走模板路线 | template/TEMPLATE.md 全文 |
 | 分镜设计 | sequences/ 桥段模板（全片骨架先填空）；shots/ 全部 frontmatter；选中的卡读全文 |
+| 最终页面素材采集 | html-material-gate.md（逐镜头门控 A / B / B+A / raster fallback） |
+| 实操走查镜头（采集与实现） | screen-story.md（journey 多状态采集 + 光标点击编排 + DOM 驱动动画军规） |
 | 逐镜头实现 | 该镜头卡全文 + 按“参考实现”定位的准确 demo 源码全文 + assets/lib/ 对应组件 |
 | 声音设计 | sound-design.md + assets/audio/ |
+| 出片随附分镜脚本文档 | storyboard-doc.md（终渲通过后、交付前写 out/<work名>-storyboard.md） |
 | 验收 | final-review.md + aesthetic-rules.md 全文过 checklist（独立 subagent 执行） |
 | 成片交付后（剪映工程导出） | jianying-export.md + `jianying-export/` 平台模块 |
 
 ## 资产使用方式
 
 - `assets/lib/` 组件 **copy 进新项目**后自由修改（不 import 本库）。
-  清单：PageCam（2.5D 页面相机——一切"真实页面"镜头的地基）、DigitRoll、
+  清单：HtmlPageCam（B 路线离线 HTML 页面相机，真实页面默认地基）、
+  FrozenHtmlFragment（A 路线独立 DOM 层）、PageCam（raster fallback 页面相机）、DigitRoll、
   FlashCut、Caption、FlatPanel、VerticalTicker（3D 无限滚动墙）、
   helpers(rand/shake/camera/motion)。FlatPanel 与 helpers/camera 需要
   `three` + `@react-three/fiber` + `@remotion/three` 依赖，其余仅需 remotion。
-- `assets/scripts/capture-template.mjs` 复制后改顶部 CONFIG（BASE/路由/选择器）。
+- `assets/lib/screen-story/` 录屏演绎组件族（ScreenStage 舞台/Cursor 光标/
+  HtmlSnap 快照渲染器/camera 相机/choreo 编排 DSL/drives 驱动器库），
+  **整目录 copy 到 work 的 `src/film/`**；tokens.ts 是示例调色板，须按目标
+  产品重新蒙皮。用法与军规见 `references/screen-story.md`。
+- `assets/scripts/journey/` 旅程式采集器（browser-daemon 常驻浏览器 +
+  journey 步进 CLI + mailtm 临时邮箱 + verify-replay 离线回放 QA），
+  **目录内容 copy 到 work 的 `scripts/`**；`snap` 产出素材 + rect 元数据
+  + 自动生成 `src/film/materials.gen.ts`。
+- `assets/wallpapers/tahoe-light.jpg` 录屏演绎的**默认桌面壁纸**（macOS Tahoe，
+  用户指定），copy 到 work 的 `public/wallpaper-tahoe.jpg`。
+- 页面素材先读 `references/html-material-gate.md`。B 复制
+  `assets/scripts/capture-html-page.mjs`，A 复制
+  `assets/scripts/capture-dom-fragment.mjs`；两路都用
+  `assets/scripts/verify-html-material.mjs` fail-closed 验收。只有门控明确降级时才复制
+  `assets/scripts/capture-template.mjs` 走截图三件套。镜头卡中泛称“截图/纹理”的
+  旧说明默认解释为“经门控选出的真实页面素材”；只有卡片技术本身依赖像素处理时
+  才强制 raster。
 - `assets/audio/` 音效直接复制使用（免费商用授权，见 audio/ATTRIBUTION.md）：
   `audio/bgm/` 是节奏感强的 BGM 备选；`audio/sfx/<类别>/` 149 个音效按场景分 16 类
   （transition impact riser camera ui text paper film light data scifi mech

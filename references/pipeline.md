@@ -168,31 +168,55 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 自由创作以 Agent 完成一致性检查并记录为放行。此前为 styleframe 采过的少量安全
 截图只能作为方向验证，不得直接替代最终素材。
 
-**目标**：严格按最终分镜拿到全部镜头所需的真实页面素材，包括全页纹理、元素
-切片和坐标表，为 2.5D 运镜与页面空间动画打地基。
+**目标**：严格按最终分镜拿到全部镜头所需的真实页面素材。默认交付可离线、
+可验证的 HTML 素材；截图只作 baseline 和带失败证据的最后兜底。
 
 **具体操作**：
 
-1. 起产品本地 dev server（桌面端产品则用窗口截图工具，同样出三件套）。
-2. 复制 `assets/scripts/capture-template.mjs` 进项目，改 BASE_URL 与选择器，
-   跑一次产出三件套：
-   - **全页 2x 截图**：viewport 1920×1080、`deviceScaleFactor: 2`；截图前
-     `document.fonts.ready` + 600ms settle，实时同步页额外再等 1.5–2s。
-   - **per-element cutout**：按语义选择器逐元素截图；悬浮件用透明底，需要
-     “卡片飞入空板”的镜头则额外截空 backplate。
-   - **layout.json**：记录每个元素在整页坐标系下的 `{x,y,w,h}` bbox 与每页
-     `pageH`，供飞行目标位、遮罩位置和入场区域直接使用。
-3. 支持按页/按元素增量重采。活数据源先按阶段 0 的数据口径冻结、虚构或脱敏，
-   再进行最终采集。
+1. 完整阅读 `html-material-gate.md`，把分镜逐镜拆成素材动作需求，并写
+   `shot-material-plan.md`：每镜标记 B（整页 HTML）、A（冻结子树）、B+A
+   （HTML 页面背景 + 独立 DOM 层）或 raster fallback；fallback 必须记录触发条件
+   和验证证据。不能因为实现方便选择截图。
+   分镜含**实操走查段落**（注册/上传/点按/提交等第一人称使用旅程）时，同时
+   完整阅读 `screen-story.md`：这类镜头的素材按其 journey 旅程式采集（一次登录
+   会话连续采多状态 + 元素 rect 元数据），默认以录屏演绎语言呈现。
+2. 起产品本地 dev server；按分镜到达并冻结页面状态。每个状态先用
+   `assets/scripts/capture-html-page.mjs` 产出 State Bundle：baseline PNG、MHTML、
+   派生离线 HTML、DOMSnapshot、elements、capture metadata 和离线 QA 结果。
+   baseline 只用于视觉真值比较，不进入 Remotion。
+3. **B 路线**：镜头只要求整页展示、页面级推拉/旋转/裁切时，使用通过门控的
+   `state.html` + `HtmlPageCam`。不得为了做一个 crop 再复制不确定的在线页面。
+4. **A 路线**：分镜要求元素独立入场、改文案/数字、重排、透明悬浮或深度特写时，
+   用 `assets/scripts/capture-dom-fragment.mjs` 按 selector 冻结目标子树、computed
+   styles、字体和资源；用 `FrozenHtmlFragment` 按帧驱动内部 DOM。一个镜头同时需要
+   真实页面背景与可编排 hero 时使用 B+A，不把整页截图切成精灵。
+5. **HTML 验收后才可制作**：离线外网请求为 0；关键资源完整；同 viewport
+   `state.html` 对 baseline SSIM ≥0.98；关键 bbox 漂移 ≤1 CSS px；同一 Remotion
+   帧重复渲染像素 hash 一致。A 还须确认伪元素、背景资源、字体和表单当前值均已
+   冻结。未通过时先修采集或改用 A/B 另一条 HTML 路线，最后才允许 raster。
+6. 支持按状态/元素增量重采。活数据源先按阶段 0 的数据口径冻结、虚构或脱敏，
+   再进行最终采集；原始 MHTML 和隐藏 DOM 额外按 html-material-gate 的安全规则扫描。
+7. **登录态实操取证截图如确需进入成片，仍必须高倍率**，与营销页纹理一个标准：整页
+   `deviceScaleFactor: 2`（1920×1080 视口出 3840×2160 图），需要推近特写的
+   区域再叠 `clip.scale: 2` 乘到 4 倍。绝不用 1x——整页证据图是成片里唯一
+   无法用代码重建的像素，1x 会封死 4K 交付和后期 punch-in 的上限；且实操中
+   的过程性状态（提交瞬间、处理中）事后无法重现，采集当时就是唯一机会
+   （tsenta V2 实录教训：40+ 张 1x 取证图成为 4K 版全片短板）。
 
-**产出**：`public/textures/` 全页图、元素切片与空 backplate；`layout.json`；
-可重跑的 capture 脚本。
+**产出**：`shot-material-plan.md`；`materials/<state>/` 原档与 QA、
+`public/materials/<state>/state.html`、A 路线 fragment；可重跑的 capture 脚本；
+只有明确降级镜头才有 `public/textures/` raster。
 
 **常见坑**：
 
 - 在分镜放行前做全量采集：页面状态和素材范围尚未确定，会造成重复采集。
-- 手搓 HTML 复刻既有页面：复刻默认走真实截图；手搓 UI 只用于非复刻场景。
-- 活数据源不锁定，或只截整页不记录 layout 坐标。
+- 把 `page.content()` / outerHTML 当离线素材：会漏 CSS、字体、Shadow DOM 和资源；
+  B 必须从 MHTML 派生，A 必须冻结 computed styles 与资源。
+- baseline 截图通过了就顺手放进视频：baseline 是 QA 真值，不是默认素材。
+- 分镜要求元素拆层却强行用 B：复制 iframe + crop 不是独立元素，改走 A 或 B+A。
+- 活数据源不锁定，或只保存 HTML 不记录 DOM/layout/metadata。
+- 实操取证图按 1x 采集：当时"整页展示够用"，但交付分辨率升级或分镜改成
+  特写时无法补救，一律按上面第 7 条的高倍率标准采。
 
 ---
 
@@ -204,6 +228,11 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 
 **目标**：按帧级时间轴逐镜头落地，每镜头完成即自证质量——
 验收在这个阶段就开始，不留到最后。
+
+**实操走查镜头默认录屏演绎**：凡分镜标记为走查段落的镜头，直接 copy
+`assets/lib/screen-story/` 组件族，按 `screen-story.md` 的编排军规实现
+（合成光标 + 点击状态反馈 + E.soft 柔和相机 + 按需手写 DOM 驱动动画），
+不再用静态素材 + 通用运镜硬撑这类镜头。
 
 **具体操作**：
 
@@ -217,14 +246,16 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    摘罩时机、已知坑的规避写法都在里面）——允许按目标产品做适配性
    改动，但配方卡"已知坑/命门"标注的参数不得降档，质量标准只升不降。
    凭卡名和理解新写＝放弃全部调校积累，实测质感差一档。
-2. **PageCam 是一切"真实页面"镜头的地基**：整页纹理 + 关键帧 2.5D 相机 +
-   页面空间 overlay，children 按页面 CSS px 定位、与 layout.json 共坐标系。
+2. **真实页面镜头按素材门控选地基**：B 用 `HtmlPageCam`；A 用
+   `FrozenHtmlFragment`；B+A 让 fragment 与页面共用 CSS px 坐标；只有明确
+   raster fallback 才用 `PageCam`。不得把已通过 HTML 门控的素材再次栅格化。
 3. **静帧验收（最高频动作）**：每镜头在计划里写死 2 个验收帧号，
    完成即跑 `npx remotion still src/index.ts <Comp> out/qa/<name>.png
    --frame=<N>`，自己肉眼检查构图/穿帮/文字锐度后才算完成。
    静帧产物按迭代版本归档 `out/qa/`，用户贴帧反馈时可直接对号。
 4. **每轮修改后整片渲染**：`npx remotion render src/index.ts <Comp>
-   out/promo.mp4`，再用 `ffmpeg -i out/promo.mp4 -vf "select=eq(n,…)"`
+   out/<work名>.mp4`（成片文件名与工程目录名一致，如 `youart-promo.mp4`），
+   再用 `ffmpeg -i out/<work名>.mp4 -vf "select=eq(n,…)"`
    从成片抽关键帧回看。实际形态是"改哪个镜头就 still 哪几帧，
    然后整片重渲"，成本可接受且杜绝接缝意外。
 5. 像素级自检备小工具：裁剪放大看文字锐度（crop）、两帧像素 diff、
@@ -233,8 +264,8 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    一切伪随机用固定种子（mulberry32/哈希函数，seed 从 index 派生），
    保证逐帧可复现、渲染间零抖动。
 7. 对照 `references/aesthetic-rules.md` 边做边自检（不等阶段 7）：
-   落地要弹的缓动 y1 必须 >1、光效裁进圆角、3D 下文字糊先查
-   栅格化路径（CSS `zoom` 布局级放大，而非 transform scale）而不是调 DoF。
+   落地要弹的缓动 y1 必须 >1、光效裁进圆角；HTML 页面/fragment 特写先确认
+   浏览器按目标倍率重绘，raster fallback 的 3D 文字糊才查高倍纹理与 CSS `zoom`。
 8. 指代含糊的用户反馈（"第一个标题"）先确认对象再动手；改错立即整
    commit revert 重来，不在错误版本上打补丁——每个改动独立 commit
    以便干净回滚。
@@ -254,8 +285,8 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 - 产品宣传片默认不加手持 shake；相机噪声只在明确追求纪实感时用。
 - 装饰性 glint/泛光群发：批量元素入场靠运动本身。单点高质量光效可做，
   群发即廉价。
-- 3D 推进下文字发糊：根因是纹理源分辨率/栅格化路径，先查素材链路
-  （2x 纹理 + CSS zoom + 关键元素 4x 单独截图），别先动相机和景深。
+- 3D 推进下文字发糊：HTML 素材先查 iframe/fragment 是否被低分辨率中间层缓存；
+  raster fallback 才查 2x/4x 纹理与 CSS zoom。两种情况都别先动相机和景深。
 - 飞入动画终点悬空：元素必须落进页面布局的真实槽位（嵌入、归位、
   排进滚动流），悬浮在页面上方不落地会显得假。
 
@@ -345,7 +376,8 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
    然后 `npx remotion render … --props=props-nobgm.json`（跨平台可靠；
    macOS/Linux 也可内联 `--props='{"bgm":false}'`，Windows shell 会剥掉
    内联 JSON 的双引号，必须走文件）。不另建工程、不用 ffmpeg 后期抽轨。
-   命名区分（如 `promo.mp4` / `promo-nobgm.mp4`）。
+   成片文件名与工程目录名一致：`<work名>.mp4` / `<work名>-nobgm.mp4`
+   （如 `youart-promo.mp4` / `youart-promo-nobgm.mp4`）。
 2. **独立终检（必做）**：派一个干净上下文的 subagent 做第三方审查。
    不给它制作过程中的辩解、修改历史或“应该通过”的暗示，只提供：最新版成片
    （配 BGM 的片子含两版，供 A8 校验）、
@@ -373,7 +405,10 @@ tokens、启动方式和数据风险。根据项目证据和用户已有描述�
 **产出**：独立审查报告（final-review + aesthetic-rules checklist + 帧号证据）
 + 终渲成片（带 BGM / 无 BGM 两版）。
 
-**交付物**：审查报告 + 成片两版（带 BGM + 无 BGM）。
+**交付物**：审查报告 + 成片两版（带 BGM + 无 BGM）+ `out/<work名>-storyboard.md`
+分镜脚本文档（模板与文风规则见 `references/storyboard-doc.md`，每镜帧图存
+`out/storyboard/`）+ 飞书 storyboard 子文档（默认环节：在工作区约定的飞书 wiki
+父节点下新建子文档，按 storyboard-doc.md 的原生块映射写入并回读验收）。
 
 交付后默认询问用户一次：是否需要同时导出剪映工程文件（可在剪映里改字幕、
 分镜头变速、换音频）。需要则读 `references/jianying-export.md` 执行。
