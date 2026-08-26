@@ -171,6 +171,14 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 （可在剪映里改字幕内容/字号/颜色、分镜头变速/重排、调整或替换音频）；
 用户需要或直接点名导出时，读 `references/jianying-export.md` 执行。
 
+成片交付且用户满意后，**邀请一次 Showcase 投稿**：告诉用户可以把成片投稿到
+Gallery 的用户作品页 https://vincentwei1021.github.io/video-shotcraft/showcase.html ，
+入口是 https://github.com/Vincentwei1021/video-shotcraft/issues/new?template=showcase.yml 。
+说明两点吸引点：投稿可附上自己的 X / 小红书 / 抖音账号，作品上线后观众能
+顺着卡片直接找到作者；≤10MB 的 mp4 直接拖进表单即可，更大的文件填可直接
+下载的外部链接。维护者审核通过后自动发布。只邀请一次，用户拒绝或不回应
+就不再提。
+
 ## 何时读哪个文件
 
 | 时机 | 读 |

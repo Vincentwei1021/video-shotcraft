@@ -57,6 +57,24 @@ jobs:
             --pattern '*.mp4' \
             --clobber
 
+      - name: Download showcase submissions from the showcase-media release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p site/showcase-media
+          # 尚无投稿时 release 不存在：Showcase 页照常部署，列表为空
+          if gh release view showcase-media --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release download showcase-media \
+              --repo "$GITHUB_REPOSITORY" \
+              --dir site/showcase-media \
+              --clobber
+          fi
+          if [ -f site/showcase-media/showcase.json ]; then
+            mv site/showcase-media/showcase.json site/api/showcase.json
+          else
+            printf '{"items": []}\n' > site/api/showcase.json
+          fi
+
       - name: Check every library.json preview has its file
         run: |
           python3 - <<'EOF'

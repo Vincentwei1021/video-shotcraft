@@ -100,6 +100,7 @@ newest = lib['stats']['newest'][:10]
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     f'  <url><loc>{SITE}/</loc><lastmod>{newest}</lastmod></url>\n'
     f'  <url><loc>{SITE}/library.html</loc><lastmod>{newest}</lastmod></url>\n'
+    f'  <url><loc>{SITE}/showcase.html</loc><lastmod>{newest}</lastmod></url>\n'
     '</urlset>\n', encoding='utf-8')
 
 # 3. llms.txt

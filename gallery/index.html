@@ -152,6 +152,27 @@
       cursor: pointer;
     }
     .language-switch button.is-active { color: var(--text); font-weight: 700; background: rgba(240, 237, 229, 0.1); }
+    .topbar-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .topbar-nav-link {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.38rem 0.95rem;
+      color: var(--muted);
+      background: rgba(14, 14, 12, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: 0.8rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 150ms ease, border-color 150ms ease;
+    }
+    .topbar-nav-link:hover { color: var(--text); border-color: rgba(211, 146, 60, 0.65); }
 
     /* ---- hero ---- */
     .hero {
@@ -383,9 +404,12 @@
       <img class="brand-mark" src="./logo-mark-reverse.svg" alt="" width="24" height="24" aria-hidden="true">
       <span>VIDEO SHOTCRAFT</span>
     </a>
-    <nav class="language-switch" id="languageSwitch" aria-label="Language">
-      <button type="button" data-language="zh" aria-pressed="false">中文</button>
-      <button type="button" data-language="en" aria-pressed="true">EN</button>
+    <nav class="topbar-nav" aria-label="Site">
+      <a class="topbar-nav-link" href="./showcase.html" data-l10n="navShowcase">Showcase</a>
+      <span class="language-switch" id="languageSwitch" role="group" aria-label="Language">
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+      </span>
     </nav>
   </header>
 
@@ -427,6 +451,7 @@
         statSamples: 'motion previews',
         statTemplate: 'ready template',
         footer: 'Apache-2.0 · Built with Remotion · ',
+        navShowcase: 'Showcase',
       },
       zh: {
         kicker: '一个 Claude Code / Codex 的 agent skill',
@@ -439,6 +464,7 @@
         statSamples: '动态样片',
         statTemplate: '现成模板',
         footer: 'Apache-2.0 · 基于 Remotion 构建 · ',
+        navShowcase: '用户作品',
       },
     };
 

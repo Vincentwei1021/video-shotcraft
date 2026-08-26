@@ -1006,3 +1006,96 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
     -webkit-backdrop-filter: none;
   }
 }
+
+/* ---------- showcase page ---------- */
+
+.topbar-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--faint);
+  background: var(--surface-soft);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.topbar-link:hover { color: var(--accent-text); border-color: var(--accent); }
+
+.showcase-intro { align-items: center; }
+.showcase-submit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 750;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.showcase-submit:hover { transform: translateY(-1px); }
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+  align-items: start;
+}
+
+.showcase-cards-used {
+  margin: 0.55rem 0 0;
+  color: var(--faint);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.showcase-cards-used span {
+  margin-right: 0.3rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.64rem;
+}
+
+/* 作者社交账号：可点的是链接，纯 handle（小红书号/抖音号）渲染为文本徽章 */
+.showcase-author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+}
+.author-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 32px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+a.author-chip:hover { color: var(--accent-text); border-color: var(--accent); }
+.author-chip svg { width: 13px; height: 13px; flex-shrink: 0; fill: currentColor; }
+.author-chip[data-platform="xiaohongshu"] svg { width: 16px; height: 16px; }
+
+@media (max-width: 900px) {
+  .showcase-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+  .showcase-grid { grid-template-columns: 1fr; }
+  .topbar-link { padding: 0 0.6rem; font-size: 0.68rem; }
+}

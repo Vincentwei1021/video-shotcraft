@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Community showcase — product videos made with video-shotcraft, an AI agent skill for Claude Code &amp; Codex that crafts cinematic promo videos with Remotion.">
+  <link rel="canonical" href="https://vincentwei1021.github.io/video-shotcraft/showcase.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="video-shotcraft">
+  <meta property="og:title" content="Showcase — videos made with video-shotcraft">
+  <meta property="og:description" content="Product videos the community made with the video-shotcraft agent skill. Submit yours and get featured with your social handles.">
+  <meta property="og:url" content="https://vincentwei1021.github.io/video-shotcraft/showcase.html">
+  <meta property="og:image" content="https://vincentwei1021.github.io/video-shotcraft/og-image.jpg?v=20260726b">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="./logo-mark.svg" type="image/svg+xml">
+  <title>Showcase — videos made with video-shotcraft</title>
+  <script>
+    try {
+      const choice = localStorage.getItem('video-shot-gallery-theme') || 'system';
+      const theme = choice === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : choice;
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.dataset.themeChoice = choice;
+      document.documentElement.style.colorScheme = theme;
+    } catch {}
+  </script>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./showcase.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#showcase" data-i18n="skip">Skip to showcase</a>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="video-shotcraft home" data-i18n-aria-label="brandHome">
+      <img class="brand-mark brand-mark-light" src="./logo-mark.svg" alt="" width="24" height="24" aria-hidden="true">
+      <img class="brand-mark brand-mark-dark" src="./logo-mark-reverse.svg" alt="" width="24" height="24" aria-hidden="true">
+      <span>VIDEO SHOTCRAFT</span>
+    </a>
+    <div class="topbar-actions">
+      <a class="topbar-link" href="./library.html" data-i18n="navLibrary">Shot library</a>
+      <div class="theme-switch" id="themeSwitch" role="group" aria-label="Page theme">
+        <button type="button" data-theme="system" aria-pressed="true">Auto</button>
+        <button type="button" data-theme="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme="dark" aria-pressed="false">Dark</button>
+      </div>
+      <div class="language-switch" id="languageSwitch" role="group" aria-label="Language">
+        <button type="button" data-language="zh" aria-pressed="false">中文</button>
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="showcase-layout">
+    <section class="intro showcase-intro" aria-labelledby="pageTitle">
+      <div class="intro-copy">
+        <h1 id="pageTitle" data-i18n="title">Community Showcase</h1>
+        <p class="intro-description" data-i18n="intro">Product videos the community made with video-shotcraft. Every card links back to its author — submit yours and leave your handles so viewers can find you.</p>
+      </div>
+      <a class="showcase-submit" href="https://github.com/Vincentwei1021/video-shotcraft/issues/new?template=showcase.yml" target="_blank" rel="noreferrer" data-i18n="submitCta">Submit your video</a>
+    </section>
+
+    <section class="showcase-grid" id="showcase" aria-live="polite" aria-busy="true"></section>
+
+    <section class="empty-state" id="emptyState" hidden>
+      <p data-i18n="empty">No submissions yet — be the first one featured here.</p>
+      <a class="showcase-submit" href="https://github.com/Vincentwei1021/video-shotcraft/issues/new?template=showcase.yml" target="_blank" rel="noreferrer" data-i18n="submitCta">Submit your video</a>
+    </section>
+  </main>
+</body>
+</html>

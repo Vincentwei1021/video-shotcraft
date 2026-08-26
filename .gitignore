@@ -6,6 +6,9 @@ assets/images/
 # 样片 mp4 存 gallery-media release，不进 git（poster 小图仍在 git）；
 # 本地预览用 gallery/fetch-media.sh 拉取
 gallery/media/*.mp4
+# Showcase 用户投稿媒体与清单存 showcase-media release，不进 git
+gallery/showcase-media/
+gallery/api/showcase.json
 # 本地教程视频
 /video-shotcraft教程.mp4
 .DS_Store

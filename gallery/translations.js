@@ -71,6 +71,7 @@ window.GALLERY_I18N = {
       themeSystem: '系统',
       themeLight: '浅色',
       themeDark: '深色',
+      navShowcase: '用户作品',
     },
     en: {
       title: 'Shot Recipes & Motion Samples',
@@ -143,6 +144,7 @@ window.GALLERY_I18N = {
       themeSystem: 'Auto',
       themeLight: 'Light',
       themeDark: 'Dark',
+      navShowcase: 'Showcase',
     },
   },
   cardsZh: {

@@ -1,0 +1,57 @@
+# Showcase 投稿发布：给带 `showcase` 标签的 issue 加 `showcase-approved`
+# 标签即触发。视频（issue 附件或外部直链）被规整成 h264 mp4 转存到
+# showcase-media release，release 上的 showcase.json 同步更新，然后
+# workflow_dispatch 触发 deploy-pages 重新部署——投稿媒体不进 git。
+#
+# 下架/改文案：`gh release download showcase-media --pattern showcase.json`
+# 改完 `gh release upload showcase-media showcase.json --clobber`，再手动
+# workflow_dispatch 触发 deploy-pages。
+name: Publish approved showcase submission
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write   # 上传 release 资产
+  issues: write     # 回帖 + 关闭投稿 issue
+  actions: write    # workflow_dispatch 触发 deploy-pages
+
+# 两个投稿同时过审时串行处理，避免 showcase.json 读改写互相覆盖
+concurrency:
+  group: showcase-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.event.label.name == 'showcase-approved' &&
+      contains(github.event.issue.labels.*.name, 'showcase')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+
+      - name: Publish submission
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          # 经 env 传入，避免 issue 正文注入 shell
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          ISSUE_CREATED_AT: ${{ github.event.issue.created_at }}
+          RUN_ID: ${{ github.run_id }}
+        run: python3 .github/scripts/showcase-publish.py
+
+      - name: Report failure on the issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body \
+            "⚠️ 自动发布失败，维护者请查看 [run 日志](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})。常见原因：视频附件/外链无法下载、文件不是可识别的视频、超过 300MB 上限。"
