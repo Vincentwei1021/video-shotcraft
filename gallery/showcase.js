@@ -18,11 +18,11 @@ const SHOWCASE_L10N = {
     fullscreen: 'Fullscreen',
   },
   zh: {
-    documentTitle: 'Showcase 用户作品 | video-shotcraft',
+    documentTitle: '社区作品展示 | video-shotcraft',
     skip: '跳到作品列表',
     brandHome: '回到主页',
     navLibrary: '镜头库',
-    title: '用户作品 Showcase',
+    title: '社区作品展示',
     intro: '社区用 video-shotcraft 做出的产品视频。每张卡片都带作者的社交账号——投稿你的成片，让观众找到你。',
     submitCta: '投稿我的作品',
     empty: '还没有投稿——来做第一个被展示的作品吧。',
