@@ -300,18 +300,21 @@ main {
   margin-inline: auto;
 }
 
+/* 图标统一左对齐成一列：徽章整体居中时标签长短不一，图标会错位 */
 .sidebar-social > .social-badge {
   width: min(100%, 184px);
   margin-inline: auto;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 0.55rem;
 }
 
 .follow-trigger {
   width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 0.55rem;
   position: relative;
   font: inherit;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
 }
 
