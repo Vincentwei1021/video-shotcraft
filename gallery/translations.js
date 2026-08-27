@@ -72,6 +72,7 @@ window.GALLERY_I18N = {
       themeLight: '浅色',
       themeDark: '深色',
       navShowcase: '用户作品',
+      navShowcaseAria: '浏览用户作品 Showcase',
     },
     en: {
       title: 'Shot Recipes & Motion Samples',
@@ -145,6 +146,7 @@ window.GALLERY_I18N = {
       themeLight: 'Light',
       themeDark: 'Dark',
       navShowcase: 'Showcase',
+      navShowcaseAria: 'Browse community showcase videos',
     },
   },
   cardsZh: {

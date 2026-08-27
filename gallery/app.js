@@ -51,7 +51,6 @@ const elements = {
   previewCount: document.querySelector('#previewCount'),
   searchInput: document.querySelector('#searchInput'),
   styleCount: document.querySelector('#styleCount'),
-  syncStatus: document.querySelector('#syncStatus'),
   themeSwitch: document.querySelector('#themeSwitch'),
   toast: document.querySelector('#toast'),
   selectionBar: document.querySelector('#selectionBar'),
@@ -138,7 +137,6 @@ function applyLanguage() {
   });
   applyTheme();
   updateSelectionBar();
-  setSyncStatus('ready', state.hasLoaded ? text('synced') : text('scanning'));
 }
 
 function setFollowMenuOpen(open) {
@@ -332,11 +330,6 @@ function observeMedia() {
   document.querySelectorAll('.lazy-media').forEach((media) => mediaObserver.observe(media));
 }
 
-function setSyncStatus(mode, label) {
-  elements.syncStatus.dataset.state = mode;
-  elements.syncStatus.lastElementChild.textContent = label;
-}
-
 let toastTimer;
 function showToast(message) {
   elements.toast.textContent = message;
@@ -348,7 +341,6 @@ function showToast(message) {
 }
 
 async function loadLibrary({silent = false} = {}) {
-  if (!silent) setSyncStatus('loading', text('scanning'));
   try {
     const response = await fetch(libraryEndpoint, {cache: 'no-store'});
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -362,7 +354,6 @@ async function loadLibrary({silent = false} = {}) {
     elements.styleCount.textContent = library.stats.styleCount;
     elements.previewCount.textContent = library.stats.previewCount;
     renderCategoryCounts();
-    setSyncStatus('ready', text('synced'));
     if (changed) {
       render();
       showToast(text('updated'));
@@ -371,7 +362,6 @@ async function loadLibrary({silent = false} = {}) {
     }
   } catch (error) {
     console.error(error);
-    setSyncStatus('error', text('failed'));
     if (!state.hasLoaded) {
       elements.library.innerHTML = `
         <div class="load-error">

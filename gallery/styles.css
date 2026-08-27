@@ -148,18 +148,12 @@ a { color: inherit; }
 :root[data-theme="dark"] .brand-mark-dark { display: block; }
 
 .topbar-actions,
-.sync-status,
 .language-switch,
 .theme-switch {
   display: flex;
   align-items: center;
 }
 .topbar-actions { gap: 0.55rem; }
-.sync-status { gap: 0.5rem; color: var(--muted); font-size: 0.74rem; }
-.sync-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-.sync-status[data-state="loading"] .sync-indicator { animation: pulse 1s ease-in-out infinite; }
-.sync-status[data-state="error"] { color: var(--danger); }
-.sync-status[data-state="error"] .sync-indicator { background: var(--danger); }
 
 .language-switch,
 .theme-switch {
@@ -926,7 +920,6 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
    rather than covering the "copy selected" button it just acted on */
 .toast.has-selection-bar { bottom: 5.2rem; }
 
-@keyframes pulse { 50% { opacity: 0.35; transform: scale(0.75); } }
 @keyframes shimmer { to { background-position-x: -220%; } }
 
 
@@ -980,7 +973,6 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
   .brand-mark { width: 26px; height: 26px; }
   .topbar-actions { gap: 0.55rem; }
   .theme-switch button { padding-inline: 0.42rem; }
-  .sync-status span:last-child { display: none; }
   .intro { padding: 1.5rem 0 1.5rem; }
   h1 { font-size: 2.15rem; }
   .stats { width: 100%; justify-content: space-between; }

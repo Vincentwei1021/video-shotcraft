@@ -62,7 +62,6 @@
       <span>VIDEO SHOTCRAFT</span>
     </a>
     <div class="topbar-actions">
-      <a class="topbar-link" href="./showcase.html" data-i18n="navShowcase">Showcase</a>
       <div class="theme-switch" id="themeSwitch" role="group" aria-label="Page theme">
         <button type="button" data-theme="system" aria-pressed="true">Auto</button>
         <button type="button" data-theme="light" aria-pressed="false">Light</button>
@@ -71,10 +70,6 @@
       <div class="language-switch" id="languageSwitch" role="group" aria-label="Language">
         <button type="button" data-language="zh" aria-pressed="false">中文</button>
         <button type="button" data-language="en" aria-pressed="true">EN</button>
-      </div>
-      <div class="sync-status" id="syncStatus" aria-live="polite">
-        <span class="sync-indicator" aria-hidden="true"></span>
-        <span>Scanning</span>
       </div>
     </div>
   </header>
@@ -96,6 +91,12 @@
         <button class="category-link" type="button" data-filter="outro"><span data-i18n="catOutro">Outro</span></button>
       </nav>
       <div class="sidebar-social" data-i18n-aria-label="socialLinksLabel" aria-label="Follow the author and star the repository">
+        <a class="social-badge" data-platform="showcase" href="./showcase.html" data-i18n-aria-label="navShowcaseAria" aria-label="Browse community showcase videos">
+          <span class="social-badge-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13a1 1 0 0 0 1.52.86l10.5-6.5a1 1 0 0 0 0-1.72L9.52 4.64A1 1 0 0 0 8 5.5Z"/></svg>
+          </span>
+          <span class="social-badge-name" data-i18n="navShowcase">Showcase</span>
+        </a>
         <div class="follow-menu">
           <button class="social-badge follow-trigger" type="button" aria-expanded="false" aria-controls="followPlatforms">
             <span class="social-badge-mark" aria-hidden="true">
