@@ -32,27 +32,33 @@ beat-synced cuts, and film-grade SFX included.
 ## ✨ What's new
 
 > [!IMPORTANT]
-> ### 🆕 2026-08 · 48 new shot recipe cards
-> The library grows from 104 to **152 cards / 209 previews**. Distilled from
-> 209 candidate motions through eight rounds of frame-by-frame review against
-> reference footage, then folded into the regular Gallery categories with full
-> recipe cards, native Remotion components
-> (`demos/<category>/<name>/<Component>.tsx`, deterministic and driven by the
-> normalized progress `t` — see demos/README.md for the wiring snippet), and
-> motion previews. All de-branded: neutral placeholder copy and a single
-> swappable `ACCENT` color variable.
+> ### 🔥 2026-08 · New in the series: **video-talkcraft**, for narration videos
+> [**video-talkcraft**](https://github.com/Vincentwei1021/video-talkcraft) is the
+> narration-video installment of this series. Hand it a script plus a finished
+> voiceover and every motion beat locks to the voice: word-level timestamps
+> aligned locally (median 20–40 ms per character), **78 motion recipe cards**, a
+> 7-layer anti-slideshow shot system (continuous camera curves, parallax planes,
+> idle/yield lifecycle, breathing environment), plain-cut subtitles, and
+> triple-gate QA. Same recipe-card + Remotion workflow as here, retuned for
+> talking content.
+>
+> 🎙️ [**Project page »**](https://github.com/Vincentwei1021/video-talkcraft) ·
+> 🖼️ [**Browse all 78 narration motion previews »**](https://vincentwei1021.github.io/video-talkcraft/)
 
-- **2026-08 · JianYing (CapCut CN) project export** — after final delivery the
-  film can be exported as an editable JianYing draft: the plate is cut per
+- 🌟 **2026-08 · 48 new shot recipe cards** — the library grows from 104 to
+  **152 cards / 209 previews**. Distilled from 209 candidate motions through
+  eight rounds of frame-by-frame review against reference footage, then folded
+  into the regular Gallery categories with full recipe cards, native Remotion
+  components (`demos/<category>/<name>/<Component>.tsx`, deterministic and
+  driven by the normalized progress `t` — see demos/README.md for the wiring
+  snippet), and motion previews. All de-branded: neutral placeholder copy and a
+  single swappable `ACCENT` color variable.
+- 🎞️ **2026-08 · JianYing (CapCut CN) project export** — after final delivery
+  the film can be exported as an editable JianYing draft: the plate is cut per
   shot (retime/reorder/grade), captions are rebuilt as native text tracks
   (content/size/color editable), SFX/BGM land on separate audio tracks.
   Verified on JianYing Pro 11.2 for macOS; see
   [references/jianying-export.md](references/jianying-export.md).
-- **2026-07 · Audio library restructure** — `bgm/` + `sfx/<category>/` with 149
-  SFX across 16 scene/material categories, md5-deduplicated with license URLs
-  restored.
-- **2026-07 · Gallery upgrades** — multi-category card tags, flat alphabetized
-  All view, auto-deploy to GitHub Pages with preview mp4s served from a release.
 
 ## 🎬 Showcase
 
