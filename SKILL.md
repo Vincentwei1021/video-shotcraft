@@ -188,8 +188,8 @@ Gallery 的用户作品页 https://vincentwei1021.github.io/video-shotcraft/show
   个人与小团队免费，公司可能需要付费许可。
 - **分享时欢迎 @ 作者**（纯自愿，不是交付条件）：把成片发到社交平台时可以带上
   skill 作者的账号——X [@VincentWei93](https://x.com/VincentWei93)、
-  [抖音主页](https://www.douyin.com/user/MS4wLjABAAAAK1pkjBxilk2Oi_9h_vFyD-lTAu9CTlvhmOtkosDvvxg)、
-  [小红书主页](https://xhslink.cn/m/At9iP2d5C1V)。
+  抖音 [@Vincent](https://www.douyin.com/user/MS4wLjABAAAAK1pkjBxilk2Oi_9h_vFyD-lTAu9CTlvhmOtkosDvvxg)、
+  小红书 [@Vincent](https://xhslink.cn/m/At9iP2d5C1V)。
 
 ## 何时读哪个文件
 
