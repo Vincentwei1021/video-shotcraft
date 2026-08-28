@@ -46,6 +46,30 @@ jobs:
             gallery/ site/
           touch site/.nojekyll
 
+      # Pages 给静态资源发 cache-control: max-age=600，部署后十分钟内浏览器
+      # 会拿旧 styles.css / app.js 配新 HTML（实际踩过：侧栏与顶栏样式全崩）。
+      # 按文件内容哈希给资源链接打 ?v=，每个 HTML 版本只引用自己那代资源。
+      - name: Stamp asset URLs for cache busting
+        run: |
+          python3 - <<'EOF'
+          import hashlib, pathlib, re
+          site = pathlib.Path('site')
+          assets = {}
+          for name in ('styles.css', 'app.js', 'showcase.js', 'translations.js'):
+              path = site / name
+              if path.exists():
+                  assets[name] = hashlib.md5(path.read_bytes()).hexdigest()[:8]
+          pattern = re.compile(
+              r'(?P<attr>href|src)="\./(?P<name>' + '|'.join(map(re.escape, assets)) + r')(?:\?v=[^"]*)?"')
+          for html in sorted(site.glob('*.html')):
+              text = html.read_text(encoding='utf-8')
+              stamped, hits = pattern.subn(
+                  lambda m: f'{m["attr"]}="./{m["name"]}?v={assets[m["name"]]}"', text)
+              if hits:
+                  html.write_text(stamped, encoding='utf-8')
+                  print(f'{html.name}: stamped {hits} asset link(s)')
+          EOF
+
       - name: Download motion previews from the gallery-media release
         env:
           GH_TOKEN: ${{ github.token }}
