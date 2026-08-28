@@ -57,8 +57,6 @@ const elements = {
   selectionCount: document.querySelector('#selectionCount'),
   copySelected: document.querySelector('#copySelected'),
   clearSelected: document.querySelector('#clearSelected'),
-  followMenu: document.querySelector('.follow-menu'),
-  followTrigger: document.querySelector('.follow-trigger'),
 };
 
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (character) => ({
@@ -138,24 +136,6 @@ function applyLanguage() {
   applyTheme();
   updateSelectionBar();
 }
-
-function setFollowMenuOpen(open) {
-  elements.followMenu?.classList.toggle('is-open', open);
-  elements.followTrigger?.setAttribute('aria-expanded', String(open));
-}
-
-elements.followMenu?.addEventListener('pointerenter', () => setFollowMenuOpen(true));
-elements.followMenu?.addEventListener('pointerleave', () => setFollowMenuOpen(false));
-elements.followMenu?.addEventListener('focusin', () => setFollowMenuOpen(true));
-elements.followMenu?.addEventListener('focusout', (event) => {
-  if (!elements.followMenu.contains(event.relatedTarget)) setFollowMenuOpen(false);
-});
-elements.followTrigger?.addEventListener('click', () => {
-  setFollowMenuOpen(true);
-});
-document.addEventListener('click', (event) => {
-  if (!elements.followMenu?.contains(event.target)) setFollowMenuOpen(false);
-});
 
 function mediaMarkup(style, cardIndex) {
   const title = escapeHtml(styleName(style));
@@ -598,11 +578,6 @@ elements.clearFilters.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && elements.followTrigger?.getAttribute('aria-expanded') === 'true') {
-    setFollowMenuOpen(false);
-    elements.followTrigger.focus();
-    return;
-  }
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
     elements.searchInput.focus();
