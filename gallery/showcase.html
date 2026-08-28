@@ -39,15 +39,21 @@
     </a>
     <div class="topbar-actions">
       <a class="topbar-link" href="./library.html" data-i18n="navLibrary">Shot library</a>
-      <div class="theme-switch" id="themeSwitch" role="group" aria-label="Page theme">
-        <button type="button" data-theme="system" aria-pressed="true">Auto</button>
-        <button type="button" data-theme="light" aria-pressed="false">Light</button>
-        <button type="button" data-theme="dark" aria-pressed="false">Dark</button>
-      </div>
-      <div class="language-switch" id="languageSwitch" role="group" aria-label="Language">
-        <button type="button" data-language="zh" aria-pressed="false">中文</button>
-        <button type="button" data-language="en" aria-pressed="true">EN</button>
-      </div>
+      <button class="topbar-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode">
+        <span class="topbar-toggle-icon icon-moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
+        </span>
+        <span class="topbar-toggle-icon icon-sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.4 19.6 6 18M18 6l1.6-1.6"/></svg>
+        </span>
+        <span class="topbar-toggle-label" id="themeToggleLabel">Dark</span>
+      </button>
+      <button class="topbar-toggle" id="languageToggle" type="button" aria-label="Switch to Chinese">
+        <span class="topbar-toggle-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4M12 2.8c2.5 2.6 3.8 5.7 3.8 9.2S14.5 18.6 12 21.2c-2.5-2.6-3.8-5.7-3.8-9.2S9.5 5.4 12 2.8Z"/></svg>
+        </span>
+        <span class="topbar-toggle-label" id="languageToggleLabel">中文</span>
+      </button>
     </div>
   </header>
 

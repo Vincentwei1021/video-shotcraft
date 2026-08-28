@@ -16,6 +16,11 @@ const SHOWCASE_L10N = {
     cardsUsed: 'Shot cards',
     by: 'by',
     fullscreen: 'Fullscreen',
+    themeDark: 'Dark',
+    themeLight: 'Light',
+    themeToDark: 'Switch to dark mode',
+    themeToLight: 'Switch to light mode',
+    languageToggle: 'Switch to Chinese',
   },
   zh: {
     documentTitle: '社区作品展示 | video-shotcraft',
@@ -31,6 +36,11 @@ const SHOWCASE_L10N = {
     cardsUsed: '用到的镜头卡',
     by: '作者',
     fullscreen: '全屏播放',
+    themeDark: '深色',
+    themeLight: '浅色',
+    themeToDark: '切换到深色模式',
+    themeToLight: '切换到浅色模式',
+    languageToggle: '切换到英文',
   },
 };
 
@@ -50,8 +60,10 @@ const state = {
 const elements = {
   grid: document.querySelector('#showcase'),
   emptyState: document.querySelector('#emptyState'),
-  languageSwitch: document.querySelector('#languageSwitch'),
-  themeSwitch: document.querySelector('#themeSwitch'),
+  languageToggle: document.querySelector('#languageToggle'),
+  languageToggleLabel: document.querySelector('#languageToggleLabel'),
+  themeToggle: document.querySelector('#themeToggle'),
+  themeToggleLabel: document.querySelector('#themeToggleLabel'),
 };
 
 const text = (key) => SHOWCASE_L10N[state.language][key] || SHOWCASE_L10N.en[key] || key;
@@ -74,11 +86,11 @@ function applyTheme() {
   document.documentElement.dataset.theme = resolved;
   document.documentElement.dataset.themeChoice = state.theme;
   document.documentElement.style.colorScheme = resolved;
-  elements.themeSwitch.querySelectorAll('[data-theme]').forEach((button) => {
-    const active = button.dataset.theme === state.theme;
-    button.classList.toggle('is-active', active);
-    button.setAttribute('aria-pressed', String(active));
-  });
+  // 单键切换，标签写"点了会变成什么"；没点过的用户仍跟随系统（state.theme = system）
+  const next = resolved === 'dark' ? 'light' : 'dark';
+  elements.themeToggle.dataset.next = next;
+  elements.themeToggle.setAttribute('aria-label', text(next === 'dark' ? 'themeToDark' : 'themeToLight'));
+  elements.themeToggleLabel.textContent = text(next === 'dark' ? 'themeDark' : 'themeLight');
 }
 
 function applyLanguage() {
@@ -90,11 +102,8 @@ function applyLanguage() {
   document.querySelectorAll('[data-i18n-aria-label]').forEach((node) => {
     node.setAttribute('aria-label', text(node.dataset.i18nAriaLabel));
   });
-  elements.languageSwitch.querySelectorAll('[data-language]').forEach((button) => {
-    const active = button.dataset.language === state.language;
-    button.classList.toggle('is-active', active);
-    button.setAttribute('aria-pressed', String(active));
-  });
+  elements.languageToggleLabel.textContent = state.language === 'zh' ? 'EN' : '中文';
+  elements.languageToggle.setAttribute('aria-label', text('languageToggle'));
   applyTheme();
 }
 
@@ -234,19 +243,15 @@ elements.grid.addEventListener('click', (event) => {
   if (expand) openFullscreen(expand.dataset.expandKey);
 });
 
-elements.languageSwitch.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-language]');
-  if (!button || button.dataset.language === state.language) return;
-  state.language = button.dataset.language;
+elements.languageToggle.addEventListener('click', () => {
+  state.language = state.language === 'zh' ? 'en' : 'zh';
   try { localStorage.setItem('video-shot-gallery-language', state.language); } catch {}
   applyLanguage();
   render();
 });
 
-elements.themeSwitch.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-theme]');
-  if (!button || button.dataset.theme === state.theme) return;
-  state.theme = button.dataset.theme;
+elements.themeToggle.addEventListener('click', () => {
+  state.theme = elements.themeToggle.dataset.next === 'dark' ? 'dark' : 'light';
   try { localStorage.setItem('video-shot-gallery-theme', state.theme); } catch {}
   applyTheme();
 });

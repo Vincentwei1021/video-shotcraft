@@ -25,6 +25,9 @@
   --skeleton-a: #e4e1da;
   --skeleton-b: #ece9e2;
   --control-shadow: rgba(61, 53, 38, 0.08);
+  /* 顶栏/侧栏控件的三态：静止 --surface，hover 变暖一档，按下再深一档 */
+  --control-hover: #f1ece3;
+  --control-active: #e7e0d3;
   --radius: 14px;
   --shadow: 0 8px 28px rgba(61, 53, 38, 0.06);
   font-family: "Avenir Next", Avenir, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -60,6 +63,8 @@
   --skeleton-a: #292820;
   --skeleton-b: #343229;
   --control-shadow: rgba(0, 0, 0, 0.32);
+  --control-hover: #2b2a24;
+  --control-active: #35332c;
   --shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
 }
 
@@ -147,43 +152,52 @@ a { color: inherit; }
 :root[data-theme="dark"] .brand-mark-light { display: none; }
 :root[data-theme="dark"] .brand-mark-dark { display: block; }
 
-.topbar-actions,
-.language-switch,
-.theme-switch {
+.topbar-actions {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
-.topbar-actions { gap: 0.55rem; }
 
-.language-switch,
-.theme-switch {
-  gap: 2px;
-  padding: 3px;
+/* 主题与语言是同级操作：静止时同色同边框同阴影，只有 hover/按下才分化 */
+.topbar-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 36px;
+  padding: 0 0.85rem;
   border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--surface-soft);
-}
-.language-switch button,
-.theme-switch button {
-  height: 30px;
-  padding: 0 0.65rem;
-  border: 0;
-  border-radius: 6px;
-  /* --muted (4.40:1) misses on --surface-soft; --faint is tuned to clear it */
-  color: var(--faint);
-  background: transparent;
-  font-size: 0.7rem;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.theme-switch button { padding-inline: 0.55rem; }
-.language-switch button.is-active,
-.theme-switch button.is-active {
-  color: var(--text);
+  border-radius: 12px;
   background: var(--surface);
-  box-shadow: 0 1px 4px var(--control-shadow);
-  font-weight: 700;
+  color: var(--text);
+  box-shadow: 0 2px 8px var(--control-shadow);
+  font-size: 0.78rem;
+  font-weight: 650;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
 }
+.topbar-toggle:hover { background: var(--control-hover); border-color: var(--faint); }
+/* 按下再深一档；focus 环由全局 :focus-visible 给，不改变布局 */
+.topbar-toggle:active { background: var(--control-active); }
+
+.topbar-toggle-icon {
+  display: inline-flex;
+  flex: none;
+}
+.topbar-toggle-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* 图标跟随生效主题切换，无需 JS */
+.topbar-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .topbar-toggle .icon-moon { display: none; }
+:root[data-theme="dark"] .topbar-toggle .icon-sun { display: inline-flex; }
 
 main {
   width: min(1560px, calc(100% - 48px));
@@ -274,7 +288,7 @@ main {
 .sidebar-social {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.4rem;
   margin-top: auto;
   padding: 2rem 0.75rem 0;
 }
@@ -282,36 +296,34 @@ main {
 .social-badge {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 34px;
-  padding: 0.3rem 0.45rem;
+  gap: 0.6rem;
+  min-height: 40px;
+  padding: 0.3rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--surface-translucent);
+  background: var(--surface);
   color: var(--text);
   text-decoration: none;
   box-shadow: 0 2px 9px var(--control-shadow);
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
 }
 
 .follow-menu {
   position: relative;
-  width: min(100%, 184px);
+  width: min(100%, 196px);
   margin-inline: auto;
 }
 
 /* 图标统一左对齐成一列：徽章整体居中时标签长短不一，图标会错位 */
 .sidebar-social > .social-badge {
-  width: min(100%, 184px);
+  width: min(100%, 196px);
   margin-inline: auto;
   justify-content: flex-start;
-  padding-left: 0.55rem;
 }
 
 .follow-trigger {
   width: 100%;
   justify-content: flex-start;
-  padding-left: 0.55rem;
   position: relative;
   font: inherit;
   text-align: left;
@@ -320,26 +332,45 @@ main {
 
 .follow-chevron {
   position: absolute;
-  right: 0.7rem;
+  right: 0.75rem;
+  display: inline-flex;
   color: var(--faint);
-  font-size: 0.78rem;
-  line-height: 1;
   transition: transform 160ms ease;
+}
+.follow-chevron svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 展开态触发器反色实心：面板是白卡，触发器必须压得住它 */
+.follow-menu:hover .follow-trigger,
+.follow-menu.is-open .follow-trigger {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.follow-menu:hover .follow-chevron,
+.follow-menu.is-open .follow-chevron {
+  color: inherit;
+  transform: rotate(180deg);
 }
 
 .follow-platforms {
   position: absolute;
   z-index: 20;
   right: 0;
-  bottom: calc(100% + 0.5rem);
+  bottom: calc(100% + 0.6rem);
   left: 0;
-  display: grid;
-  gap: 0.4rem;
-  padding: 0.45rem;
+  padding: 0.55rem 0.45rem 0.4rem;
   border: 1px solid var(--line);
-  border-radius: 1rem;
+  border-radius: 18px;
   background: var(--surface);
-  box-shadow: 0 12px 32px var(--control-shadow);
+  box-shadow: 0 14px 34px var(--control-shadow);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -348,12 +379,29 @@ main {
   transition: opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
 }
 
+/* 指向触发器的小尖角 */
+.follow-platforms::before {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  margin-left: -5.5px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-bottom-right-radius: 3px;
+  background: var(--surface);
+  transform: rotate(45deg);
+  content: '';
+}
+
+/* 指针从触发器移到面板的空隙桥，不然中途 hover 断开面板会收起 */
 .follow-platforms::after {
   position: absolute;
   top: 100%;
   right: 0;
   left: 0;
-  height: 0.5rem;
+  height: 0.6rem;
   content: '';
 }
 
@@ -365,65 +413,94 @@ main {
   transform: translateY(0) scale(1);
 }
 
-.follow-menu:hover .follow-chevron,
-.follow-menu.is-open .follow-chevron {
-  transform: rotate(180deg);
+.follow-platforms-heading {
+  margin: 0.05rem 0 0.35rem;
+  padding-left: 0.6rem;
+  color: var(--faint);
+  font-size: 0.6rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* 面板内是分隔线列表，不是一堆小胶囊 */
+.follow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0 0.55rem;
+  border-radius: 12px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background 140ms ease;
+}
+.follow-row + .follow-row { border-top: 1px solid var(--line); }
+.follow-row:hover { background: var(--surface-soft); }
+
+.follow-mark {
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  flex: none;
+  color: var(--text);
+}
+.follow-mark svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+.follow-row[data-platform="douyin"] .follow-mark svg {
+  filter: drop-shadow(-1px 0 #25f4ee) drop-shadow(1px 0 #fe2c55);
+}
+
+.follow-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .social-badge:hover {
   border-color: var(--faint);
-  background: var(--surface);
-  transform: translateY(-1px);
+  background: var(--control-hover);
 }
 
 .social-badge-mark {
   display: inline-grid;
-  width: 25px;
-  height: 25px;
+  width: 26px;
+  height: 26px;
   place-items: center;
   flex: none;
-  border-radius: 50%;
-  background: var(--text);
-  color: var(--bg);
+  color: inherit;
 }
 
 .social-badge-mark svg {
-  width: 13px;
-  height: 13px;
+  width: 19px;
+  height: 19px;
   fill: currentColor;
 }
 
-.social-badge[data-platform="xiaohongshu"] .social-badge-mark {
-  background: #ff2442;
-  color: #fff;
-}
-
-.social-badge[data-platform="xiaohongshu"] .social-badge-mark svg {
-  width: 17px;
-  height: 17px;
-}
-
-.social-badge[data-platform="douyin"] .social-badge-mark {
-  background: #090909;
-  color: #fff;
-}
-
-.social-badge[data-platform="douyin"] .social-badge-mark svg {
-  filter: drop-shadow(-1px 0 #25f4ee) drop-shadow(1px 0 #fe2c55);
-}
-
 .social-badge-name {
-  font-size: 0.73rem;
+  font-size: 0.8rem;
   font-weight: 750;
   white-space: nowrap;
 }
 
-.social-badge-action {
+/* 外链角标：跳站外/换页的动作给个指向，留在本页的（Star 是外链但语义是收藏）不给 */
+.link-arrow {
   margin-left: auto;
+  display: inline-flex;
   color: var(--faint);
-  font-size: 0.62rem;
-  font-weight: 650;
-  white-space: nowrap;
+}
+.link-arrow svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .library-main { min-width: 0; }
@@ -970,12 +1047,12 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
 @media (max-width: 620px) {
   main { width: min(100% - 24px, 1560px); }
   .topbar { padding: 0 12px; }
-  /* the enlarged desktop wordmark + theme/language switches overflow a
+  /* the enlarged desktop wordmark + theme/language toggles overflow a
      390px bar; the mark stays big, the wordmark gives back its extra size */
   .brand { font-size: 0.72rem; letter-spacing: 0.1em; }
   .brand-mark { width: 26px; height: 26px; }
-  .topbar-actions { gap: 0.55rem; }
-  .theme-switch button { padding-inline: 0.42rem; }
+  .topbar-actions { gap: 0.4rem; }
+  .topbar-toggle { height: 34px; padding-inline: 0.6rem; font-size: 0.72rem; }
   .intro { padding: 1.5rem 0 1.5rem; }
   h1 { font-size: 2.15rem; }
   .stats { width: 100%; justify-content: space-between; }
@@ -1004,23 +1081,25 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
 
 /* ---------- showcase page ---------- */
 
+/* 与顶栏两个 toggle 同一套壳，只是文本色更弱、hover 走强调色 */
 .topbar-link {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  height: 36px;
   padding: 0 0.85rem;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 12px;
   color: var(--faint);
-  background: var(--surface-soft);
-  font-size: 0.74rem;
+  background: var(--surface);
+  box-shadow: 0 2px 8px var(--control-shadow);
+  font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-decoration: none;
   white-space: nowrap;
-  transition: color 150ms ease, border-color 150ms ease;
+  transition: color 150ms ease, border-color 150ms ease, background 140ms ease;
 }
-.topbar-link:hover { color: var(--accent-text); border-color: var(--accent); }
+.topbar-link:hover { color: var(--accent-text); border-color: var(--accent); background: var(--control-hover); }
 
 .showcase-intro { align-items: center; }
 .showcase-submit {

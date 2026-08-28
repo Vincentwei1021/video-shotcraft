@@ -132,26 +132,34 @@
       height: 42px;
       object-fit: contain;
     }
-    .language-switch {
+    /* 单键切换，标签写"点了会变成什么"，与 library/showcase 顶栏同一套交互 */
+    .language-toggle {
       display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       border: 1px solid var(--line);
       border-radius: 999px;
-      overflow: hidden;
+      padding: 0.38rem 0.85rem;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       background: rgba(14, 14, 12, 0.35);
-    }
-    .language-switch button {
-      border: 0;
-      background: transparent;
       color: var(--muted);
       font: inherit;
       font-size: 0.8rem;
-      padding: 0.38rem 0.85rem;
       white-space: nowrap;
       cursor: pointer;
+      transition: color 150ms ease, border-color 150ms ease;
     }
-    .language-switch button.is-active { color: var(--text); font-weight: 700; background: rgba(240, 237, 229, 0.1); }
+    .language-toggle:hover { color: var(--text); border-color: rgba(211, 146, 60, 0.65); }
+    .language-toggle svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
     .topbar-nav {
       display: inline-flex;
       align-items: center;
@@ -406,10 +414,12 @@
     </a>
     <nav class="topbar-nav" aria-label="Site">
       <a class="topbar-nav-link" href="./showcase.html" data-l10n="navShowcase">Showcase</a>
-      <span class="language-switch" id="languageSwitch" role="group" aria-label="Language">
-        <button type="button" data-language="zh" aria-pressed="false">中文</button>
-        <button type="button" data-language="en" aria-pressed="true">EN</button>
-      </span>
+      <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch to Chinese">
+        <span aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4M12 2.8c2.5 2.6 3.8 5.7 3.8 9.2S14.5 18.6 12 21.2c-2.5-2.6-3.8-5.7-3.8-9.2S9.5 5.4 12 2.8Z"/></svg>
+        </span>
+        <span id="languageToggleLabel">中文</span>
+      </button>
     </nav>
   </header>
 
@@ -480,17 +490,13 @@
       document.querySelectorAll('[data-l10n]').forEach((node) => {
         node.innerHTML = t(node.dataset.l10n);
       });
-      document.querySelectorAll('#languageSwitch [data-language]').forEach((button) => {
-        const active = button.dataset.language === state.language;
-        button.classList.toggle('is-active', active);
-        button.setAttribute('aria-pressed', String(active));
-      });
+      document.querySelector('#languageToggleLabel').textContent = state.language === 'zh' ? 'EN' : '中文';
+      document.querySelector('#languageToggle')
+        .setAttribute('aria-label', state.language === 'zh' ? '切换到英文' : 'Switch to Chinese');
     }
 
-    document.querySelector('#languageSwitch').addEventListener('click', (event) => {
-      const button = event.target.closest('[data-language]');
-      if (!button || button.dataset.language === state.language) return;
-      state.language = button.dataset.language;
+    document.querySelector('#languageToggle').addEventListener('click', () => {
+      state.language = state.language === 'zh' ? 'en' : 'zh';
       try { localStorage.setItem('video-shot-gallery-language', state.language); } catch {}
       applyLanguage();
     });
