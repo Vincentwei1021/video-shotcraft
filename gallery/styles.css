@@ -516,7 +516,7 @@ main {
 h1, h2, p { overflow-wrap: anywhere; }
 h1 {
   margin: 0;
-  font-size: clamp(2rem, 3.4vw, 3.4rem);
+  font-size: clamp(1.8rem, 3vw, 3rem);
   line-height: 1.02;
   letter-spacing: -0.045em;
   font-weight: 750;
@@ -1054,7 +1054,7 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
   .topbar-actions { gap: 0.4rem; }
   .topbar-toggle { height: 34px; padding-inline: 0.6rem; font-size: 0.72rem; }
   .intro { padding: 1.5rem 0 1.5rem; }
-  h1 { font-size: 2.15rem; }
+  h1 { font-size: 1.95rem; }
   .stats { width: 100%; justify-content: space-between; }
   .controls { top: 120px; }
   kbd { display: none; }
