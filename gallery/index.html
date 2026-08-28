@@ -151,6 +151,12 @@
       transition: color 150ms ease, border-color 150ms ease;
     }
     .language-toggle:hover { color: var(--text); border-color: rgba(211, 146, 60, 0.65); }
+    /* 图标外壳必须自己是 flex：默认 block 的话 svg 会贴在行高盒顶部，
+       比文字中线高约 2px（线上实测 36.3 vs 38.6） */
+    .language-toggle-icon {
+      display: inline-flex;
+      align-items: center;
+    }
     .language-toggle svg {
       width: 15px;
       height: 15px;
@@ -415,7 +421,7 @@
     <nav class="topbar-nav" aria-label="Site">
       <a class="topbar-nav-link" href="./showcase.html" data-l10n="navShowcase">Showcase</a>
       <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch to Chinese">
-        <span aria-hidden="true">
+        <span class="language-toggle-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4M12 2.8c2.5 2.6 3.8 5.7 3.8 9.2S14.5 18.6 12 21.2c-2.5-2.6-3.8-5.7-3.8-9.2S9.5 5.4 12 2.8Z"/></svg>
         </span>
         <span id="languageToggleLabel">中文</span>
