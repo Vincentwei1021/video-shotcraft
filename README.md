@@ -15,7 +15,7 @@
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
-**An agent skill for crafting cinematic product videos: 152 shot recipe cards · 209 styles · 209 motion previews · a production-ready template**
+**An agent skill for crafting cinematic product videos: 157 shot recipe cards · 214 styles · 214 motion previews · a production-ready template**
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -27,7 +27,7 @@ sound-designs a cinematic promo, marketing, launch, or demo video with
 [Remotion](https://www.remotion.dev/) — real page captures, 2.5D camera moves,
 beat-synced cuts, and film-grade SFX included.
 
-🖼️ [**Browse all 209 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
+🖼️ [**Browse all 214 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 ## ✨ What's new
 
@@ -151,8 +151,8 @@ With these three flags, frame renders from the bundled template work.
 
 | Content | Description |
 | --- | --- |
-| 152 shot recipe cards | Purpose, energy, suggested duration, parameters, implementation notes, and known pitfalls |
-| 209 motion previews | Covering 209 styles; searchable and filterable in the online Gallery |
+| 157 shot recipe cards | Purpose, energy, suggested duration, parameters, implementation notes, and known pitfalls |
+| 214 motion previews | Covering 214 styles; searchable and filterable in the online Gallery |
 | Remotion implementations | Tuned TSX demos containing the actual easing and timing parameters for each card |
 | Complete video template | A validated 36.2-second, 1920×1080, 30fps product promo with 10 shots |
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
@@ -170,7 +170,7 @@ video-shotcraft/
 ├── SKILL.md                 # Agent entry point and core production rules
 ├── references/
 │   ├── pipeline.md          # End-to-end production workflow
-│   ├── shots/               # 152 shot recipe cards in 10 functional categories
+│   ├── shots/               # 157 shot recipe cards in 10 functional categories
 │   ├── sequences/           # Reusable full-video structures and sequence patterns
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
