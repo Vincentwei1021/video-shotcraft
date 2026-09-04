@@ -172,10 +172,12 @@ function itemMarkup(item, index) {
       </div>
       <div class="card-body">
         <div class="card-title">
-          <h3>${escapeHtml(item.title)}</h3>
+          <h3 id="showcase-title-${index}">${escapeHtml(item.title)}</h3>
         </div>
-        <p class="summary">${escapeHtml(item.description)}</p>
-        ${item.cards ? `<p class="showcase-cards-used"><span>${escapeHtml(text('cardsUsed'))}</span> ${escapeHtml(item.cards)}</p>` : ''}
+        <div class="showcase-copy-scroll" tabindex="0" aria-labelledby="showcase-title-${index}">
+          <p class="summary">${escapeHtml(item.description)}</p>
+          ${item.cards ? `<p class="showcase-cards-used"><span>${escapeHtml(text('cardsUsed'))}</span> ${escapeHtml(item.cards)}</p>` : ''}
+        </div>
         ${chips ? `<div class="showcase-author" aria-label="${escapeHtml(text('by'))}">${chips}</div>` : ''}
       </div>
     </article>`;

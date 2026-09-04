@@ -1123,7 +1123,31 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.1rem;
-  align-items: start;
+  align-items: stretch;
+}
+
+/* Every showcase card keeps the same body height. The demo remains the visual
+   anchor, the author row stays reachable, and longer copy scrolls in the
+   middle instead of making one card longer than the rest. */
+.showcase-card .card-body {
+  flex: 0 0 15.5rem;
+  block-size: 15.5rem;
+  min-height: 0;
+}
+.showcase-card .card-title { flex: 0 0 auto; }
+.showcase-copy-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 0.65rem;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+.showcase-card .summary {
+  display: block;
+  min-height: 0;
+  margin: 0;
+  overflow: visible;
+  -webkit-line-clamp: unset;
 }
 
 .showcase-cards-used {
