@@ -52,6 +52,13 @@
   （`demos/<カテゴリ>/<カード名>/<Component>.tsx`、正規化された進行度 t で
   駆動する決定論的レンダリング）+ モーションプレビュー。すべてテンプレート化済み
   （ニュートラルなプレースホルダー文言 + 差し替え可能な `ACCENT` カラー変数）。
+- 🛠️ **2026-09 · モーションワークベンチ**——納品後、skill が CapCut 風のブラウザ
+  ワークベンチを自動で開きます（`node workbench/scripts/open.mjs <project>`）：
+  映像をショット / トランジション / 字幕 / SFX のトラックに分解し、タイトルカードの
+  文言・色・サイズ・位置をスキーマ駆動のインスペクタで編集、クリップの再タイミングや
+  速度変更を行い、Remotion で書き出せます。218 個の demo コンポーネントはドラッグ可能な
+  モーションライブラリとして利用可。video-talkcraft から移植、契約は
+  [references/workbench.md](references/workbench.md)。
 - 🎞️ **2026-08 · 剪映（CapCut 中国版）プロジェクト書き出し**——完成映像を編集
   可能な剪映ドラフトとして書き出し：プレートはショット単位に分割（変速・
   並べ替え・カラー調整可）、字幕はネイティブテキストトラックに再構築
@@ -158,6 +165,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
 | 制作手法 | キャプチャ、ビジュアルディレクション、ストーリーボード、サウンドデザイン、ビート同期、最終 QA |
 | 剪映プロジェクト書き出し | 完成映像を剪映（CapCut 中国版）で継続編集——ショット変速・字幕・音声トラックを編集可（macOS 11.2 実機検証済み） |
+| モーションワークベンチ | 納品後に開くブラウザのタイムラインエディタ：映像をトラックに分解、公開されたショット属性の編集、再タイミング、218 個の demo モーションのドラッグ投入、Remotion 書き出し |
 
 このツールキットは主に Web およびデスクトップ製品のプロモーションを対象としていますが、
 各ショットカードは機能デモ、ブランド映像、ローンチ動画、
@@ -175,11 +183,13 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
-│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   └── workbench.md         # Motion workbench: manifest contract + editability rules
 ├── demos/                   # Remotion reference implementations for shot cards
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
 ├── jianying-export/         # JianYing draft installers (mac tested / win untested)
+├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts

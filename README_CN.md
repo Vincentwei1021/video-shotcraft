@@ -47,6 +47,11 @@
   而来，按既有类别并入 Gallery：完整配方卡 + 原生 Remotion 组件
   （`demos/<类别>/<卡名>/<组件>.tsx`，归一化进度 t 驱动、逐帧确定性）+
   动态样片。全部模板化：中性占位文案 + 单一可替换 `ACCENT` 强调色变量。
+- 🛠️ **2026-09 · 动效工作台**——成片交付后 skill 主动打开一个剪映式的浏览器工作台
+  （`node workbench/scripts/open.mjs <工程>`）：片子拆成镜头 / 转场 / 字幕 / 音效多轨，
+  字卡文案、颜色、字号、位置在 schema 属性面板里逐项调，镜头可挪可变速，改完用
+  Remotion 直接导出；218 个 demo 组件全部可拖入当动效库。移植自 video-talkcraft，
+  接入契约见 [references/workbench.md](references/workbench.md)。
 - 🎞️ **2026-08 · 剪映工程导出**——成片交付后可导出为剪映工程草稿：底片按
   镜头切段（可变速/重排/调色），字幕重建为原生文本轨（文字/字号/颜色可
   编辑），SFX/BGM 独立音轨。Mac 剪映 11.2 实测验收，方法见
@@ -147,6 +152,7 @@ agent 会替换成目标产品的截图、文案和品牌信息，复现同等�
 | 组件与素材 | 2.5D 页面相机、字幕、闪切、数字滚动、音效和素材采集脚本 |
 | 制作方法论 | 从素材采集、风格定调和分镜，到声音设计、节奏卡点与最终验收 |
 | 剪映工程导出 | 成片可装进剪映继续编辑：镜头变速/字幕/音轨全开放（Mac 11.2 实测） |
+| 动效工作台 | 交付后自动打开的浏览器时间线编辑器：成片拆多轨、改镜头开放属性、变速重排、拖入 218 个 demo 动效、Remotion 导出 |
 
 当前主要面向 Web 与桌面产品宣传片，但镜头卡也可以单独用于功能演示、
 品牌短片、发布视频或其他动态设计项目。
@@ -163,11 +169,13 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # 视觉验收准则
 │   ├── music-beat-sync.md   # BGM 节奏分析与卡点方法
 │   ├── sound-design.md      # 声音设计方法与判例
-│   └── jianying-export.md   # 剪映工程导出方法
+│   ├── jianying-export.md   # 剪映工程导出方法
+│   └── workbench.md         # 动效工作台：成片接入契约 + 可编辑性规则
 ├── demos/                   # 镜头卡的 Remotion 参考实现（同类别目录）
 ├── gallery/                 # 在线样片画廊的静态站点
 ├── template/                # 可直接运行的完整成片模板
 ├── jianying-export/         # 剪映草稿安装模块（Mac 实测 / Windows 未验证）
+├── workbench/               # 交付后的动效工作台（Vite + Remotion Player）
 └── assets/
     ├── lib/                 # 可复制使用的 Remotion 组件
     ├── scripts/             # 页面素材采集脚本

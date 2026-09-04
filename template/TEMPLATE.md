@@ -27,11 +27,14 @@
 | 9 | 885–940 | 1.8s | PaperTitleCard.tsx | 字卡④"The whole team, on the same page." | paper-title-card |
 | 10 | 940–1085 | 4.8s | live/SceneOutroLive.tsx | 虚焦 → 元素合影组装 → 铅印字标砸落（riser→impact→sparkle）→ 1s hold | outro-group-photo-launch |
 
-叠加层（全部在 Main.tsx 里声明式管理）：
+叠加层（全部在 Main.tsx 里声明式管理，且全部 `export`——`src/workbench.ts` 清单从这里
+import，动效工作台据此把成片拆成多轨，见 ../references/workbench.md）：
+- **TITLE_CARDS**：四张字卡的文案表（`*词*` = 琥珀斜体强调词，`parseWords` 解析），
+  card2 带副标 + 滚动数字
 - **CAPTIONS**：底部通栏解说字幕 6 条（绝对帧号表），压在功能段上，字卡/outro 段不加
-- **FlashCut**：暖白闪转场 4 处，`from = 切点 − 5`，两侧各 5f 跨骑接缝
+- **FLASH_CUTS / FlashCut**：暖白闪转场 4 处，`from = 切点 − 5`，两侧各 5f 跨骑接缝
 - **SFX 钉帧表**：30+ 条 `{from, src, volume}`，逐条注释对应画面动作；
-  keyboard 长样本按语境用 Sequence duration 截断（24f/44f）
+  keyboard 长样本按语境用 Sequence duration 截断（`sfxDuration`：24f/44f）
 
 ## 二、共用地基组件
 
@@ -69,7 +72,9 @@
      元素切片文件名、卡片数量/槽位循环、文案；
    - 不要动的：缓动曲线、时长配比、hold 帧预算、SFX 钉帧结构——
      这些是质感所在，改了等于重做调校。
-4. **文案**：PaperTitleCard 的 words 数组、CAPTIONS 表、outro 品牌名/tagline。
+4. **文案**：`TITLE_CARDS` 表（字卡，`*词*` 标强调）、CAPTIONS 表、outro 品牌名/tagline。
+   镜头结构变了同步改 `src/workbench.ts`（新镜头加一行 `scene(...)`；字卡照 `title(...)`），
+   然后 `cd ../workbench && npm run parity` 确认拆解无损。
 5. **验收**：每改完一个镜头 `npx remotion still` 出静帧自检（每镜头至少
    入场中/动作峰值/落定后三帧）；全改完整片渲染 + ffmpeg 抽帧回看；
    最后对照 ../references/aesthetic-rules.md 过 checklist。

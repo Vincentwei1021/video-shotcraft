@@ -53,6 +53,13 @@ beat-synced cuts, and film-grade SFX included.
   driven by the normalized progress `t` — see demos/README.md for the wiring
   snippet), and motion previews. All de-branded: neutral placeholder copy and a
   single swappable `ACCENT` color variable.
+- 🛠️ **2026-09 · Motion workbench** — after delivery the skill opens a
+  CapCut-style browser workbench (`node workbench/scripts/open.mjs <project>`):
+  the film is split into shot / transition / caption / SFX tracks, title-card
+  copy, colours, sizes and positions are edited in a schema-driven inspector,
+  clips can be retimed and speed-ramped, then exported with Remotion. All 218
+  demo components are available as a drag-in motion library. Ported from
+  video-talkcraft; contract in [references/workbench.md](references/workbench.md).
 - 🎞️ **2026-08 · JianYing (CapCut CN) project export** — after final delivery
   the film can be exported as an editable JianYing draft: the plate is cut per
   shot (retime/reorder/grade), captions are rebuilt as native text tracks
@@ -158,6 +165,7 @@ With these three flags, frame renders from the bundled template work.
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
 | JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
+| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 218 demo motions, export via Remotion |
 
 The toolkit primarily targets web and desktop product promos, while individual
 shot cards can also be used in feature demos, brand films, launch videos, and
@@ -175,11 +183,13 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
-│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   └── workbench.md         # Motion workbench: manifest contract + editability rules
 ├── demos/                   # Remotion reference implementations (same categories)
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
 ├── jianying-export/         # JianYing draft installers (mac tested / win untested)
+├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts

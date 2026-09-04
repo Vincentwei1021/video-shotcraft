@@ -13,6 +13,8 @@ on:
       - 'demos/**'
       - 'assets/lib/**'
       - 'assets/scripts/**'
+      - 'template/src/**'
+      - 'workbench/**'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/pr-checks.yml'
@@ -128,6 +130,28 @@ jobs:
             --module esnext --moduleResolution bundler --lib dom,es2022 \
             --resolveJsonModule \
             $(cat /tmp/demo-files.txt)
+
+  workbench-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workbench/package-lock.json
+      - name: Workbench type-checks and bundles with all demos linked in
+        run: |
+          cd workbench
+          # prepare hook runs scripts/gen-index.mjs: 218 demos + gallery metadata → static index
+          npm ci
+          npx tsc -b
+          npx vite build
+      - name: Template (incl. workbench manifest) compiles against the workbench toolchain
+        run: |
+          # template/ has no node_modules in CI; borrow the workbench's (same remotion / react pins)
+          ln -s ../workbench/node_modules template/node_modules
+          cd template && ../workbench/node_modules/.bin/tsc --noEmit -p tsconfig.json
 
   demo-smoke:
     runs-on: ubuntu-latest

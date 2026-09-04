@@ -169,7 +169,18 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 
 ### 交付收尾（所有模式共用）
 
-成片交付后，在最后按 1-2-3 依次说这三件事，每件只说一次，用户拒绝或
+成片交付后**先主动打开动效工作台**（不要等用户问）：
+
+```bash
+node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 dev server（5198）→ 浏览器自动导入成片
+```
+
+告知用户地址 http://localhost:5198 并用一句话说明：片子已按镜头 / 转场 / 字幕 / 音效拆成
+多轨，字卡文案、颜色、字号、位置、变速逐项可视化调，改完点「导出成片」。要拆解导入，
+工程须有 `src/workbench.ts` 清单——制作阶段按 `references/workbench.md` §2–3 写好
+（模板路线已自带）。
+
+然后在最后按 1-2-3 依次说这三件事，每件只说一次，用户拒绝或
 不回应就不再提：
 
 1. **发布时推荐（非强制）在简介 @ 一下本 skill 作者**：成片归用户自己所有，
@@ -206,6 +217,8 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
 | 逐镜头实现 | 该镜头卡全文 + 按“参考实现”定位的准确 demo 源码全文 + assets/lib/ 对应组件 |
 | 声音设计 | sound-design.md + assets/audio/ |
 | 验收 | final-review.md + aesthetic-rules.md 全文过 checklist（独立 subagent 执行） |
+| 逐镜头实现时写 `src/workbench.ts` 清单 / 镜头 props+schema | workbench.md §2–3（范例 `template/src/workbench.ts`） |
+| 成片交付后（打开动效工作台） | workbench.md（`node workbench/scripts/open.mjs <工程>`；工作台自身文档 `workbench/README.md`） |
 | 成片交付后（剪映工程导出） | jianying-export.md + `jianying-export/` 平台模块 |
 
 ## 资产使用方式
