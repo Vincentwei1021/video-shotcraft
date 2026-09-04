@@ -23,14 +23,14 @@ node workbench/scripts/open.mjs <成片工程目录>
 
 | 层 | 用户能改什么 | 对动效代码的要求 |
 |---|---|---|
-| **时间与图层**（所有 clip 都有） | 起点 / 时长（超出原长尾帧定格）/ 变速 0.25×–4× / 裁入点 / 不透明度 / 缩放 / 位移 / 换轨 / 隐藏整层 | 组件是 `useCurrentFrame()` 的纯函数、tween 全部 clamp、无 `Date.now`/`Math.random`——本 skill 第 9 条铁律已保证。**现有 218 个 demo 与全部成片镜头无需改动**即可上轨 |
+| **时间与图层**（所有 clip 都有） | 起点 / 时长（超出原长尾帧定格）/ 变速 0.25×–4× / 裁入点 / 不透明度 / 缩放 / 位移 / 换轨 / 隐藏整层 | 组件是 `useCurrentFrame()` 的纯函数、tween 全部 clamp、无 `Date.now`/`Math.random`——本 skill 第 9 条铁律已保证。**现有 demo（218 个里 216 个自动接入，见 §4）与全部成片镜头无需改动**即可上轨 |
 | **内容与样式**（属性面板） | 文案 / 颜色 / 字号 / 位置 / 开关 / 枚举，逐项可视化调 | 组件把语境级参数暴露为**带默认值的 props**，并给出 `schema`（字段列表，见 §3）。demo 里的顶部 `CONFIG` 常量不改就不可调——只能动时间/图层 |
 | **拆解导入**（把成片一键拆成多轨） | 每个镜头 / 转场 / 字幕 / 音效各成一段，单独挪、删、复制 | 成片工程提供 `src/workbench.ts` 清单（§2），时间表与 Main.tsx **同源**，导入后不改任何东西渲出来就是原片 |
 
 这和 talkcraft 的做法一一对应：talkcraft 把 79 张模板卡逐张复制成 `gen/*.tsx`
 （CONFIG → props + schema，「节奏命门」保持 FIXED），成片则靠 `@kbsrc` 符号链接进工程、
 按 `SHOTS`/`SFX_CUES`/`WIPE_TIMES` 表拆解，逐镜参数化靠为每个镜头手写 `kscene-sNN` 卡。
-shotcraft 这边的差别：demo 卡 218 张全部**原样接入**（不做逐张参数化复制，避免维护两份），
+shotcraft 这边的差别：demo 组件 216 个全部**原样接入**（不做逐张参数化复制，避免维护两份），
 成片的逐镜可编辑性由**清单里的 `schema`** 声明——所以「未来的片子能不能逐属性改」
 取决于制作时是否按 §3 写镜头组件，而不是事后改工作台。
 
@@ -98,7 +98,8 @@ schema 字段类型：`text` / `textarea` / `number`（min/max/step/unit）/ `sl
 ## 4. 动效库（demos/）在工作台里的形态
 
 `scripts/gen-index.mjs` 扫 `demos/<类别>/<卡>/<组件>.tsx`，凡导出 `<组件>: React.FC`（无必填
-props）即接入为一张卡，中文名/分类/一句话取自画廊 `library.json` + `translations.js`，
+props）即接入为一张卡（218 个 tsx 里接入 216 个：`ClipCardLooping` 需要真实 mp4 素材、
+`page-waterfall-wall/VerticalTicker` 是辅助组件，两者跳过），中文名/分类/一句话取自画廊 `library.json` + `translations.js`，
 预览用 `gallery/media/<style>.mp4`（先 `gallery/fetch-media.sh` 拉取，否则用 Player 实时循环）。
 时长取值链：demo 导出的 `*_DURATION|*_DUR` → 镜头卡 md「时长:」的 `NNNf` → 文件内
 `const *DUR*` → 缺省 150f；来源写在 `DEMO_MODULES[].durationSource`，clip 上轨后随时可裁。

@@ -57,7 +57,7 @@ beat-synced cuts, and film-grade SFX included.
   CapCut-style browser workbench (`node workbench/scripts/open.mjs <project>`):
   the film is split into shot / transition / caption / SFX tracks, title-card
   copy, colours, sizes and positions are edited in a schema-driven inspector,
-  clips can be retimed and speed-ramped, then exported with Remotion. All 218
+  clips can be retimed and speed-ramped, then exported with Remotion. All 216
   demo components are available as a drag-in motion library. Ported from
   video-talkcraft; contract in [references/workbench.md](references/workbench.md).
 - 🎞️ **2026-08 · JianYing (CapCut CN) project export** — after final delivery
@@ -165,7 +165,7 @@ With these three flags, frame renders from the bundled template work.
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
 | JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
-| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 218 demo motions, export via Remotion |
+| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 216 demo motions, export via Remotion |
 
 The toolkit primarily targets web and desktop product promos, while individual
 shot cards can also be used in feature demos, brand films, launch videos, and
