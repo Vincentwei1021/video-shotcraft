@@ -45,6 +45,7 @@ export const WORKBENCH = {
   fps: 30, width: 1920, height: 1080,
   total: AIFL_TOTAL,                 // 成片总帧数
   background: '#f2eee6',             // Main 最外层 AbsoluteFill 的底色
+  revision: undefined,               // 可选版本号；不给则按清单内容哈希判「是不是同一版成片」
   shots: [                           // 镜头：from/duration 与 <Sequence> 一一对应（绝对帧）
     { id: 'morning', label: 'S1 墨线开场', from: 0, duration: 220, component: SceneOpen },
     { id: 'card1', label: '字卡①', from: 220, duration: 55,
@@ -69,6 +70,10 @@ export const WORKBENCH = {
 不要手抄第二份。范例：`template/src/workbench.ts` + `template/src/aifl/Main.tsx`
 （`AIFL_SHOTS` / `TITLE_CARDS` / `CAPTIONS` / `SFX` / `FLASH_CUTS` / `sfxDuration` 全部 `export`，
 渲染与清单同一份数据）。
+
+**版本判据**：`?import=project` 打开时，存档的 `source` 与 `manifestKey(清单)` 不同才重新导入。key = 名字 + 总帧数 + `revision`，
+未写 `revision` 时用清单内容哈希（时间表 / props / 组件 displayName / 音效表）——改了镜头位置、文案、
+音效或换了组件即视为新版本；旧存档压进撤销栈，⌘Z 可找回。
 
 **分组规则**：同一 `cardId`（或同一 `component` 引用）的单元共用一张「成片单元卡」，
 素材库里只出现一次，可以再拖一份上轨；`label` 是时间轨上的显示名。
@@ -117,12 +122,16 @@ demo 全部 schema 为空（时间/图层可编辑，属性不可编辑）——
 - **Remotion Studio**：`cd workbench && npm run studio`——`Main`（贴工程 JSON）、`ProjImported`
   （刚导入的成片）、`ProjOriginal`（原合成）+ 每张卡一个合成（schema 自动转 Zod，官方 Inspector 调参）。
 - **无损校验**：`npm run parity -- --frames 150,240,470,1000` 渲 `ProjImported` 与 `ProjOriginal`
-  同帧 PNG 逐像素比对（需 python3 + Pillow），差异像素 < 0.1% 视为一致。改过清单或 Main.tsx
-  的时间表后跑一次。
+  同帧 PNG 逐像素比对（需 python3 + Pillow），差异像素 < 0.1% 视为一致。退出码 0 一致 / 1 有差异 /
+  2 无法得出结论（缺 Pillow、比对未执行）——不会假绿。改过清单或 Main.tsx 的时间表后跑一次。
 
 ## 6. 已知边界
 
 - 同轨允许 clip 重叠（层级用多轨表达）；变速为匀速重映射（无曲线变速）。
+- 卡片统一按 30fps 编排（`CARD_FPS`）；工程 fps 不同时，拖卡上轨会按帧率换算时长并反向变速，
+  播放速度不变；时间码 / 片段秒数 / 预览余量都按工程 fps 计。
+- `open.mjs` 只重启自己启动的 dev server（`.dev.pid` + 进程命令行核实）；端口被手动起的 server
+  占着时报错退出，因为 `@proj` 别名在 vite 启动时定死、刷新不会换工程。
 - 音频 clip 导入时截到成片总长（原片里超出合成尾部的 `<Sequence>` 本就被截）。
 - demo 卡需要的灰阶纹理（`textures/live/*.png`）：工程自己带 `public/textures` 时以工程为准，
   否则工作台兜底链接 `demos/_textures`；工程纹理与 demo 纹理同名不同图时 demo 预览会"换皮"。

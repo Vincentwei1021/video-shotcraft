@@ -6,7 +6,7 @@ import { projectDuration, useStore } from "../store";
 import type { PreviewItem } from "../store";
 import { fmtFrames } from "../time";
 import { CARDS } from "../cards/registry";
-import { cardSize, defaultsOf } from "../cards/types";
+import { CARD_FPS, cardSize, defaultsOf } from "../cards/types";
 
 /** 素材库点击预览：占据画面区，循环播放；主工程 Player 保持挂载（display:none） */
 const ItemPreview: React.FC<{ item: NonNullable<PreviewItem>; onClose: () => void }> = ({
@@ -27,7 +27,7 @@ const ItemPreview: React.FC<{ item: NonNullable<PreviewItem>; onClose: () => voi
           durationInFrames={Math.max(2, card.durationInFrames)}
           compositionWidth={width}
           compositionHeight={height}
-          fps={30}
+          fps={CARD_FPS}
           autoPlay
           loop
           controls={false}
@@ -73,10 +73,11 @@ const ItemPreview: React.FC<{ item: NonNullable<PreviewItem>; onClose: () => voi
  *  不能让 frameupdate 波及包含 <Player> 的父组件。 */
 const Transport: React.FC<{
   duration: number;
+  fps: number;
   loop: boolean;
   setLoop: (b: boolean) => void;
   sizeLabel: string;
-}> = ({ duration, loop, setLoop, sizeLabel }) => {
+}> = ({ duration, fps, loop, setLoop, sizeLabel }) => {
   const playhead = useStore((s) => s.playhead);
   const playing = useStore((s) => s.playing);
   const setPlayhead = useStore((s) => s.setPlayhead);
@@ -107,7 +108,7 @@ const Transport: React.FC<{
         {playing ? "⏸" : "▶"}
       </button>
       <span className="timecode">
-        {fmtFrames(playhead)} <span className="dim">/ {fmtFrames(duration)}</span>
+        {fmtFrames(playhead, fps)} <span className="dim">/ {fmtFrames(duration, fps)}</span>
       </span>
       <label className="loop-toggle">
         <input type="checkbox" checked={loop} onChange={(e) => setLoop(e.target.checked)} />
@@ -152,6 +153,7 @@ export const PreviewPanel: React.FC = () => {
       {!previewItem && (
         <Transport
           duration={duration}
+          fps={project.fps}
           loop={loop}
           setLoop={setLoop}
           sizeLabel={`${project.width}×${project.height} · ${project.fps}fps`}

@@ -30,6 +30,7 @@ cd workbench && npm install && npm run dev      # http://localhost:5198
 - **保存**：自动存 localStorage（800ms 防抖），导出/导入工程 JSON，撤销/重做
 - **导出成片**：顶栏「导出成片」→ dev server 内起 Remotion CLI 渲当前工程为 MP4 → `exports/`
 - **Remotion Studio**：`npm run studio`（每张卡 Zod schema 自动生成；`ProjImported` / `ProjOriginal` 对照）
+- **无损校验**：`npm run parity`——退出码 0 一致 / 1 有差异 / 2 无法比对（缺 python3+Pillow），不假绿
 
 ## 接入成片工程
 
@@ -40,8 +41,12 @@ node scripts/open.mjs <dir> --no-open     # 不弹浏览器
 ```
 
 做的事：`ln -sfn <工程>/src proj`、把 `<工程>/public/*` 逐项链接进 `public/`、跑 `gen-index`、
-起 vite（5198，已在跑且换了工程则重启）、打开 `http://localhost:5198/?import=project`
-（存档不是这部片时按清单自动导入；是这部片则保留你的改动）。全部是机器本地符号链接，不进库。
+起 vite（5198）、打开 `http://localhost:5198/?import=project`（存档不是这一版成片时按清单自动导入，
+旧存档进撤销栈；是这一版则保留你的改动）。全部是机器本地符号链接，不进库。
+
+给了工程目录就会重启 dev server（`@proj` 别名在 vite 启动时定死），但只重启本脚本自己起的那个
+（`.dev.pid` + 进程命令行核实，pid 被复用不会误杀）；端口被手动 `npm run dev` 占着时直接报错，
+请先停掉它或加 `--port`。
 
 工程要提供 `src/workbench.ts` 清单才能拆解导入（写法见 references/workbench.md §2，范例
 `template/src/workbench.ts`）；没有清单也能打开，只是素材 tab 没有导入按钮。
@@ -92,6 +97,7 @@ vite.config.ts            Vite + 导出渲染 API（POST /api/export → Remotio
 ## 已知边界
 
 - 同轨允许 clip 重叠（层级用多轨表达）；变速为匀速重映射（无曲线变速）
+- 卡片按 30fps 编排；非 30fps 工程里拖卡上轨会按帧率换算时长 + 反向变速，播放速度不变
 - demo 卡 schema 为空：能裁剪 / 变速 / 定格 / 图层变换，不能改文案颜色——要可调参先把 CONFIG 提成 props
 - 导出走 dev server（`npm run dev` 时可用）。Remotion 静态服务器拒绝服务符号链接，所以导出前
   自动把 `public/` 解引用同步到 `.render-public/`；命令行手动渲染同理：

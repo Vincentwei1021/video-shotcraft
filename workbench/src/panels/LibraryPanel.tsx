@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Player } from "@remotion/player";
 import type { CardDef } from "../cards/types";
-import { cardSize, defaultsOf } from "../cards/types";
+import { CARD_FPS, cardSize, defaultsOf } from "../cards/types";
 import { CARD_LIST } from "../cards/registry";
 import { DEMO_CATEGORIES } from "../cards/demoCards";
 import { MANIFEST } from "../cards/projectCards";
@@ -88,7 +88,7 @@ const LazyCardLoop: React.FC<{ card: CardDef }> = ({ card }) => {
           durationInFrames={Math.max(2, card.durationInFrames)}
           compositionWidth={width}
           compositionHeight={height}
-          fps={30}
+          fps={CARD_FPS}
           autoPlay
           loop
           controls={false}
@@ -184,7 +184,7 @@ export const LibraryPanel: React.FC = () => {
   const CardCell: React.FC<{ card: CardDef }> = ({ card }) => (
     <Cell
       name={card.name}
-      meta={`${(card.durationInFrames / 30).toFixed(1)}s${card.schema.length > 0 ? " · 可调参" : ""}`}
+      meta={`${(card.durationInFrames / CARD_FPS).toFixed(1)}s${card.schema.length > 0 ? " · 可调参" : ""}`}
       title={card.summary}
       onClick={() => setPreview({ kind: "card", cardId: card.id })}
       payload={{ cardId: card.id, label: card.name }}
@@ -286,7 +286,7 @@ export const LibraryPanel: React.FC = () => {
                     <Cell
                       key={card.id}
                       name={card.name}
-                      meta={`${(card.durationInFrames / 30).toFixed(1)}s${card.schema.length ? " · 可调参" : ""}`}
+                      meta={`${(card.durationInFrames / CARD_FPS).toFixed(1)}s${card.schema.length ? " · 可调参" : ""}`}
                       onClick={() => setPreview({ kind: "card", cardId: card.id })}
                       payload={{ cardId: card.id, label: card.name }}
                     >

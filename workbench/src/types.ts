@@ -55,6 +55,6 @@ export const projectEndFrame = (project: ProjectData): number => {
   return end;
 };
 
-/** 工程总时长（帧）：最晚 clip 结束 + 1s 余量，最短 5s（编辑预览用） */
+/** 工程总时长（帧）：最晚 clip 结束 + 1s 余量，最短 5s（编辑预览用；按工程 fps 换算） */
 export const projectDuration = (project: ProjectData): number =>
-  Math.max(150, projectEndFrame(project) + 30);
+  Math.max(5 * project.fps, projectEndFrame(project) + project.fps);

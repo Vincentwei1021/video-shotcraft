@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { ClipData, ProjectData, TrackData } from "./types";
 import { uid } from "./types";
 import { CARDS } from "./cards/registry";
+import { CARD_FPS } from "./cards/types";
 import { demoProject } from "./demoProject";
 import { MANIFEST } from "./cards/projectCards";
 import { manifestKey } from "./cards/manifest";
@@ -26,17 +27,20 @@ const loadSaved = (): ProjectData | null => {
 
 /** 初始工程：
  *  - URL 带 `?import=project`（scripts/open.mjs 交付后打开时加）且已链接成片：
- *    存档不是这部片的就按清单重新导入；是这部片的保留用户改动
+ *    存档不是这一版成片（清单内容哈希不同，见 manifestKey）就按清单重新导入，
+ *    旧存档压进撤销栈（⌘Z 可找回改动）；是这一版的保留用户改动
  *  - 否则读存档；没有存档时用演示工程 */
-const loadInitial = (): ProjectData => {
+const loadInitial = (): { project: ProjectData; past: ProjectData[]; imported: boolean } => {
   const saved = loadSaved();
   const params = new URLSearchParams(window.location.search);
   if (params.get("import") === "project" && MANIFEST) {
     window.history.replaceState(null, "", window.location.pathname);
-    if (saved?.source !== manifestKey(MANIFEST)) return buildProjectFromManifest(MANIFEST);
+    if (saved?.source !== manifestKey(MANIFEST))
+      return { project: buildProjectFromManifest(MANIFEST), past: saved ? [saved] : [], imported: true };
   }
-  return saved ?? demoProject();
+  return { project: saved ?? demoProject(), past: [], imported: false };
 };
+const initial = loadInitial();
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
 
@@ -109,13 +113,13 @@ const mutateProject = (
 };
 
 export const useStore = create<WorkbenchState>((set, get) => ({
-  project: loadInitial(),
+  project: initial.project,
   selectedClipId: null,
   playhead: 0,
   playing: false,
   pxPerFrame: 2,
   previewItem: null,
-  past: [],
+  past: initial.past,
   future: [],
 
   commit: () =>
@@ -210,13 +214,17 @@ export const useStore = create<WorkbenchState>((set, get) => ({
         const track =
           d.tracks.find((t) => t.id === trackId) ?? d.tracks[d.tracks.length - 1];
         if (!track) return;
+        // 卡片按 CARD_FPS（30）编排；工程 fps 不同时按帧率换算时长 + 反向变速，实际播放速度不变。
+        // 媒体卡（音频/视频）是实时素材，不换算
+        const isMedia = card.kind === "audio" || card.kind === "video";
+        const fpsScale = isMedia ? 1 : d.fps / CARD_FPS;
         track.clips.push({
           id: newId,
           cardId,
           start: Math.max(0, Math.round(at ?? s.playhead)),
-          duration: extra?.duration ?? card.durationInFrames,
+          duration: extra?.duration ?? Math.max(2, Math.round(card.durationInFrames * fpsScale)),
           inOffset: 0,
-          speed: 1,
+          speed: fpsScale === 1 ? 1 : 1 / fpsScale,
           opacity: 1,
           scale: 1,
           x: 0,
@@ -334,6 +342,8 @@ window.addEventListener("beforeunload", flushSave);
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") flushSave();
 });
+// 按清单重新导入的工程立即落盘：否则不改任何东西就刷新会退回旧存档
+if (initial.imported) flushSave();
 
 export const resetProject = () => {
   useStore.getState().setProject(demoProject());

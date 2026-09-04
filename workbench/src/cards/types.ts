@@ -62,6 +62,10 @@ export interface CardDef {
   summary?: string;
 }
 
+/** 卡片（demo / 原生卡）统一按 30fps 编排：durationInFrames 与内部时序都以它为准。
+ *  工程 fps 不同时，store.addClip 按帧率换算 clip 时长并反向变速，播放速度不变 */
+export const CARD_FPS = 30;
+
 export const defaultsOf = (card: CardDef): Record<string, unknown> =>
   Object.fromEntries(card.schema.map((f) => [f.key, f.default]));
 

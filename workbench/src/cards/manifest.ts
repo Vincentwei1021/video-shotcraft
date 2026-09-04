@@ -48,6 +48,9 @@ export type WorkbenchManifest = {
   total: number;
   /** 舞台底色（Main 最外层 AbsoluteFill 的 background） */
   background?: string;
+  /** 版本号（可选）。给了就作为「这是不是同一版成片」的判据；不给则按清单内容哈希
+   *  （时间表 / props / 组件 displayName / 音效表），任一处变了都算新版本 */
+  revision?: string;
   shots: ManifestUnit[];
   /** 转场层（闪白 / 光条…） */
   transitions?: ManifestUnit[];
@@ -63,4 +66,33 @@ export type WorkbenchManifest = {
   original?: React.ComponentType<Record<string, unknown>>;
 };
 
-export const manifestKey = (m: WorkbenchManifest) => `${m.name}@${m.total}f`;
+/** FNV-1a 32 位，输出 8 位 hex——够用来判"内容变没变"，不做安全用途 */
+const fnv1a = (s: string) => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+};
+
+/** 清单可序列化部分的规范化串。组件只取显式 displayName（.name 会被 HMR / 压缩改写，
+ *  纳入会让同一版成片在 dev / build 间被误判为新版本、白白丢掉用户改动） */
+const canonical = (m: WorkbenchManifest): string => {
+  const unit = (kind: string, u: ManifestUnit) =>
+    [kind, u.id, u.from, u.duration, u.cardId ?? "", (u.component as { displayName?: string }).displayName ?? "", u.durationProp ?? "", JSON.stringify(u.props ?? {})].join("|");
+  const audio = (kind: string, a: ManifestAudio) => [kind, a.from, a.duration ?? "", a.src, a.volume].join("|");
+  return [
+    m.name, m.fps, m.width, m.height, m.total, m.background ?? "", (m.order ?? []).join(","),
+    ...m.shots.map((u) => unit("shot", u)),
+    ...(m.transitions ?? []).map((u) => unit("transition", u)),
+    ...(m.captions ?? []).map((u) => unit("caption", u)),
+    ...(m.overlays ?? []).map((u) => unit("overlay", u)),
+    ...(m.sfx ?? []).map((a) => audio("sfx", a)),
+    ...(m.bgm ?? []).map((a) => audio("bgm", a)),
+  ].join("\n");
+};
+
+/** 「哪一版成片」的稳定标识：存进 ProjectData.source，`?import=project` 用它判断存档是否过期 */
+export const manifestKey = (m: WorkbenchManifest) =>
+  `${m.name}@${m.total}f#${m.revision ?? fnv1a(canonical(m))}`;

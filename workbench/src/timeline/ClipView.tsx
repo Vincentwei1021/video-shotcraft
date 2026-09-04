@@ -103,8 +103,9 @@ export const ClipView: React.FC<{
     window.addEventListener("pointerup", onUp, { once: true });
   };
 
+  const fps = useStore((s) => s.project.fps);
   const accent = card?.accent ?? "#666";
-  const durSec = (clip.duration / 30).toFixed(1);
+  const durSec = (clip.duration / fps).toFixed(1);
 
   return (
     <div
@@ -121,7 +122,7 @@ export const ClipView: React.FC<{
         <span className="clip-meta">
           {durSec}s
           {clip.speed !== 1 && <em className="badge">{clip.speed}×</em>}
-          {clip.inOffset > 0 && <em className="badge">✂{(clip.inOffset / 30).toFixed(1)}s</em>}
+          {clip.inOffset > 0 && <em className="badge">✂{(clip.inOffset / fps).toFixed(1)}s</em>}
           {clip.opacity < 1 && <em className="badge">{Math.round(clip.opacity * 100)}%</em>}
         </span>
       </div>
