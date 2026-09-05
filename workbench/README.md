@@ -1,5 +1,7 @@
 # ShotCraft Workbench · 动效工作台
 
+> 面向使用者的图文指南（各区域与功能、截图）见 [GUIDE.md](GUIDE.md)；本文是技术说明。
+
 剪映式的成片后期台：多轨时间线 + 素材库（成片单元 / 216 个镜头卡 demo / 音效库 / 背景）+
 schema 属性面板 + Remotion 实时预览 + 一键导出。skill 交付成片后由
 `scripts/open.mjs` 自动打开，用户不用回到代码里改 tsx 就能挪镜头、改文案、换音效、变速、导出。

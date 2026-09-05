@@ -45,6 +45,21 @@ beat-synced cuts, and film-grade SFX included.
 > 🎙️ [**Project page »**](https://github.com/Vincentwei1021/video-talkcraft) ·
 > 🖼️ [**Browse all 78 narration motion previews »**](https://vincentwei1021.github.io/video-talkcraft/)
 
+> [!IMPORTANT]
+> ### 🛠️ 2026-09 · New: the **Motion Workbench** — keep editing the delivered film in your browser
+> After delivery the skill opens a CapCut-style workbench
+> (`node workbench/scripts/open.mjs <project>`). The film is decomposed into
+> shot / transition / caption / SFX tracks exactly as authored; select any shot
+> and edit its copy, font sizes and colours in a schema-driven inspector, move,
+> trim or speed-ramp clips, drag any of the **216 demo motions** in from the
+> library, then export with Remotion. Preview and render are frame-identical
+> (pixel-parity verified).
+>
+> ![Motion Workbench](workbench/docs/overview.png)
+>
+> 🧭 [**Workbench guide — every panel and feature, with screenshots »**](workbench/GUIDE.md) (Chinese) ·
+> 🔌 [**Integration contract »**](references/workbench.md)
+
 - 🌟 **2026-08 · 48 new shot recipe cards** — the library grows from 104 to
   **152 cards / 209 previews**. Distilled from 209 candidate motions through
   eight rounds of frame-by-frame review against reference footage, then folded
@@ -53,13 +68,6 @@ beat-synced cuts, and film-grade SFX included.
   driven by the normalized progress `t` — see demos/README.md for the wiring
   snippet), and motion previews. All de-branded: neutral placeholder copy and a
   single swappable `ACCENT` color variable.
-- 🛠️ **2026-09 · Motion workbench** — after delivery the skill opens a
-  CapCut-style browser workbench (`node workbench/scripts/open.mjs <project>`):
-  the film is split into shot / transition / caption / SFX tracks, title-card
-  copy, colours, sizes and positions are edited in a schema-driven inspector,
-  clips can be retimed and speed-ramped, then exported with Remotion. All 216
-  demo components are available as a drag-in motion library. Ported from
-  video-talkcraft; contract in [references/workbench.md](references/workbench.md).
 - 🎞️ **2026-08 · JianYing (CapCut CN) project export** — after final delivery
   the film can be exported as an editable JianYing draft: the plate is cut per
   shot (retime/reorder/grade), captions are rebuilt as native text tracks

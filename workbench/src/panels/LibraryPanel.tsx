@@ -15,11 +15,11 @@ const TABS = [
   { id: "media", label: "素材" },
   { id: "cards", label: "动效库" },
   { id: "sfx", label: "音效" },
-  { id: "bg", label: "背景" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
 
-/** 不进动效库的分类：成片单元只在素材 tab；媒体 / 背景各有去处 */
+/** 不进动效库的分类：成片单元只在素材 tab；媒体走素材 / 音效 tab；预设幕底卡不进素材库
+ *  （已有工程里的幕底 clip 仍由注册表渲染） */
 const NON_MOTION_CATS = new Set(["成片单元", "音频", "素材", "背景"]);
 
 /** 进入视口才挂载重内容（预览视频 / 实时 Player） */
@@ -133,38 +133,6 @@ const LazyCardLoop: React.FC<{ card: CardDef }> = ({ card }) => {
   );
 };
 
-/** 静态背景卡：组件本身就是纯 CSS 静态底，按画布等比缩放渲染 */
-const StaticCardThumb: React.FC<{ card: CardDef }> = ({ card }) => {
-  const Comp = card.component;
-  const ref = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0);
-  const { width, height } = cardSize(card);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setScale(el.clientWidth / width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [width]);
-  return (
-    <div ref={ref} className="lib-thumb" style={{ position: "relative", overflow: "hidden" }}>
-      {scale > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            width,
-            height,
-            transform: `scale(${scale})`,
-            transformOrigin: "top left",
-          }}
-        >
-          <Comp {...defaultsOf(card)} />
-        </div>
-      )}
-    </div>
-  );
-};
-
 const groupBy = <T,>(items: T[], key: (t: T) => string) => {
   const m = new Map<string, T[]>();
   for (const it of items) {
@@ -263,7 +231,6 @@ export const LibraryPanel: React.FC = () => {
 
   const motionCards = CARD_LIST.filter((c) => !NON_MOTION_CATS.has(c.category));
   const projectCards = CARD_LIST.filter((c) => c.category === "成片单元");
-  const bgCards = CARD_LIST.filter((c) => c.category === "背景");
   const usage = sfxUsage(MANIFEST);
   const projectAudio = MEDIA_ITEMS.filter((m) => m.kind === "audio");
   const projectVisual = MEDIA_ITEMS.filter((m) => m.kind !== "audio");
@@ -368,25 +335,6 @@ export const LibraryPanel: React.FC = () => {
             </Group>
           ))}
 
-        {tab === "bg" && (
-          <>
-            <div className="lib-cat">预设幕底（铺在最下面一条轨）</div>
-            <div className="lib-grid">
-              {bgCards.map((card) => (
-                <Cell
-                  key={card.id}
-                  name={card.name}
-                  meta="静态底 · 可调参"
-                  onClick={() => setPreview({ kind: "card", cardId: card.id })}
-                  payload={{ cardId: card.id, label: card.name }}
-                >
-                  <StaticCardThumb card={card} />
-                </Cell>
-              ))}
-            </div>
-          </>
-        )}
-
         {tab === "sfx" && (
           <>
             {projectAudio.length > 0 && (
@@ -435,7 +383,7 @@ export const LibraryPanel: React.FC = () => {
 
       <div className="lib-foot dim">
         动效 {motionCards.length} 卡（{motionCards.filter((c) => c.schema.length > 0).length} 张可调参）
-        · 音效库 {SFX_LIB.length} · 背景 {bgCards.length}
+        · 音效库 {SFX_LIB.length}
         {PROJ_LINKED && PROJ_HAS_MANIFEST ? ` · 成片单元 ${projectCards.length}` : ""}
         <br />
         点击预览 · 拖拽到时间轨添加

@@ -42,16 +42,23 @@
 > 🎙️ [**项目主页 »**](https://github.com/Vincentwei1021/video-talkcraft) ·
 > 🖼️ [**在线浏览 78 条口播动效样片 »**](https://vincentwei1021.github.io/video-talkcraft/)
 
+> [!IMPORTANT]
+> ### 🛠️ 2026-09 · 新功能：**动效工作台**——成片交付后在浏览器里继续改
+> 交付后 skill 会主动打开一个剪映式的浏览器工作台（`node workbench/scripts/open.mjs <工程>`）：
+> 片子按原始镜头拆成镜头 / 转场 / 字幕 / 音效多轨；选中任意镜头，字标、文案、字号、颜色
+> 在属性面板里逐项改，预览即时跟随；镜头可挪、可裁、可变速；**216 张 demo 动效**从素材库
+> 直接拖上轨；改完用 Remotion 一键导出。预览与渲染逐帧一致（像素级校验）。
+>
+> ![动效工作台](workbench/docs/overview.png)
+>
+> 🧭 [**工作台图文指南：各区域与功能 »**](workbench/GUIDE.md) ·
+> 🔌 [**成片接入契约 »**](references/workbench.md)
+
 - 🌟 **2026-08 · 新增 48 张镜头配方卡**——卡库从 104 张扩充到
   **152 卡 / 209 条样片**。由 209 个候选动效经八轮与参考片逐帧比对评审收敛
   而来，按既有类别并入 Gallery：完整配方卡 + 原生 Remotion 组件
   （`demos/<类别>/<卡名>/<组件>.tsx`，归一化进度 t 驱动、逐帧确定性）+
   动态样片。全部模板化：中性占位文案 + 单一可替换 `ACCENT` 强调色变量。
-- 🛠️ **2026-09 · 动效工作台**——成片交付后 skill 主动打开一个剪映式的浏览器工作台
-  （`node workbench/scripts/open.mjs <工程>`）：片子拆成镜头 / 转场 / 字幕 / 音效多轨，
-  字卡文案、颜色、字号、位置在 schema 属性面板里逐项调，镜头可挪可变速，改完用
-  Remotion 直接导出；216 个 demo 组件全部可拖入当动效库。移植自 video-talkcraft，
-  接入契约见 [references/workbench.md](references/workbench.md)。
 - 🎞️ **2026-08 · 剪映工程导出**——成片交付后可导出为剪映工程草稿：底片按
   镜头切段（可变速/重排/调色），字幕重建为原生文本轨（文字/字号/颜色可
   编辑），SFX/BGM 独立音轨。Mac 剪映 11.2 实测验收，方法见
