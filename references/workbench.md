@@ -66,6 +66,10 @@ export const WORKBENCH = {
 };
 ```
 
+**范例的参数化程度**：模板六个场景 + 字卡 + 解说条全部导出 `*_DEFAULTS`（文案 / 字号 / 色板）并以带默认值
+的 props 读取，清单 schema 直接引用同一对象——属性面板里改的就是屏幕上的值，缓动 / 时值 / 相机键不暴露。
+demo 里的场景常量（`CONFIG` / 顶部 `const`）照这个模式提成 `DEFAULTS + Partial<typeof DEFAULTS>` 即可接入。
+
 **同源原则**：清单里的每张表都从 Main.tsx `import`（`SHOTS` / `CAPTIONS` / `SFX` / 字卡文案表），
 不要手抄第二份。范例：`template/src/workbench.ts` + `template/src/aifl/Main.tsx`
 （`AIFL_SHOTS` / `TITLE_CARDS` / `CAPTIONS` / `SFX` / `FLASH_CUTS` / `sfxDuration` 全部 `export`，

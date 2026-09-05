@@ -40,6 +40,7 @@ import，动效工作台据此把成片拆成多轨，见 ../references/workbenc
 
 | 文件 | 作用 | 关键点 |
 |------|------|--------|
+| live/Scene*.tsx · PaperTitleCard · Caption | 每个场景导出 `*_DEFAULTS`（文案 / 字号 / 色板），并以带默认值的 props 读取；`src/workbench.ts` 的 schema 直接引用同一对象，工作台属性面板里改的就是这些。缓动 / 时值 / 相机键不暴露 | 换产品时优先改 DEFAULTS 而不是散落的字面量；色值是原 oklch 令牌的 sRGB 渲染值（墨 #13110f · 琥珀 #955905 · 灰墨 #65635f · 深琥珀 #ae6700） |
 | live/PageCam.tsx | 2.5D 页面相机——一切"真实页面"镜头的地基 | 整页截图 + 关键帧 `{frame,cx,cy,zoom,rotX/Y/Z,persp}` 插值运镜；children 按页面 CSS px 定位（与 layout.json 同坐标系）；**3D 模式用 CSS `zoom` 做布局级放大**（transform scale 会先降采样再放大导致文字糊——根治法详见审美准则 Q2）；可选 dof 顶部渐变糊带 |
 | PaperTitleCard.tsx | 字卡呼吸位 | 衬线大字逐词入场，accent 词琥珀色；可挂 DigitRoll 数字子标 |
 | FlashCut.tsx | 暖白闪转场 | 只盖硬切两侧 10f，不当装饰光效 |

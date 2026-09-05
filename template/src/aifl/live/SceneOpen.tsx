@@ -6,12 +6,22 @@ import layout from '../live-layout.json';
 const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 
-const INK = 'oklch(18% 0.006 82)';
-const AMBER = 'oklch(52% 0.115 65)';
-const INK2 = 'oklch(50% 0.006 82)';
-
-const WORDMARK = 'AI Foundation Lab';
-const KICKER = 'TEAM RESEARCH CONSOLE';
+/** Context-level defaults (copy / sizes / palette), editable per clip in the
+ * workbench. Motion timing below stays fixed. Hex = sRGB of the oklch tokens. */
+export const SCENE_OPEN_DEFAULTS = {
+  wordmark: 'AI Foundation Lab',
+  wordmarkSize: 132,
+  kicker: 'TEAM RESEARCH CONSOLE',
+  kickerSize: 26,
+  noteLine1: 'One card,',
+  noteLine2: 'one project.',
+  noteSize: 37,
+  ink: '#13110f',    // oklch(18% 0.006 82)
+  amber: '#955905',  // oklch(52% 0.115 65)
+  muted: '#65635f',  // oklch(50% 0.006 82)
+  paper: '#faf7f2',
+};
+type SceneOpenProps = Partial<typeof SCENE_OPEN_DEFAULTS>;
 
 const PAGE_H = layout.projects.pageH;
 
@@ -57,7 +67,11 @@ const BEAM_CORE = 'rgba(255,248,232,0.98)';
  * the soft page texture; the card springs up off the plane and hovers ~54f
  * while a beam runs two laps around its rounded outline; then it settles flush
  * back into its slot (lock→touchdown ≈ 3.3s). */
-export const SceneOpen: React.FC = () => {
+export const SceneOpen: React.FC<SceneOpenProps> = (props) => {
+  const {
+    wordmark: WORDMARK, wordmarkSize, kicker: KICKER, kickerSize, noteLine1, noteLine2, noteSize,
+    ink: INK, amber: AMBER, muted: INK2, paper,
+  } = { ...SCENE_OPEN_DEFAULTS, ...props };
   const frame = useCurrentFrame();
   const duration = AIFL_SHOTS.morning.duration; // 220
 
@@ -195,7 +209,7 @@ export const SceneOpen: React.FC = () => {
   const rootOpacity = 1 - outT;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: '#faf7f2', opacity: rootOpacity }}>
+    <AbsoluteFill style={{ backgroundColor: paper, opacity: rootOpacity }}>
       {frame >= 84 ? (
         <AbsoluteFill style={{ opacity: macroIn }}>
           <PageCam
@@ -375,11 +389,11 @@ export const SceneOpen: React.FC = () => {
                   >
                     <div
                       style={{
-                        fontFamily: SERIF, fontSize: 37, fontWeight: 600, color: INK,
+                        fontFamily: SERIF, fontSize: noteSize, fontWeight: 600, color: INK,
                         lineHeight: 1.16, letterSpacing: '-0.012em',
                       }}
                     >
-                      One card,
+                      {noteLine1}
                     </div>
                     <div style={{ position: 'relative', display: 'inline-block' }}>
                       {/* marker highlight sweeping in behind the words */}
@@ -394,11 +408,11 @@ export const SceneOpen: React.FC = () => {
                       <div
                         style={{
                           position: 'relative',
-                          fontFamily: SERIF, fontStyle: 'italic', fontSize: 37, fontWeight: 600,
+                          fontFamily: SERIF, fontStyle: 'italic', fontSize: noteSize, fontWeight: 600,
                           color: INK, lineHeight: 1.16, letterSpacing: '-0.012em',
                         }}
                       >
-                        one project.
+                        {noteLine2}
                       </div>
                     </div>
                   </div>
@@ -458,7 +472,7 @@ export const SceneOpen: React.FC = () => {
             {/* wordmark: glyph-by-glyph letterpress with amber under-glint */}
             <div
               style={{
-                fontFamily: SERIF, fontSize: 132, fontWeight: 600, color: INK,
+                fontFamily: SERIF, fontSize: wordmarkSize, fontWeight: 600, color: INK,
                 letterSpacing: '-0.01em', lineHeight: 1, whiteSpace: 'pre',
                 display: 'inline-flex', alignItems: 'flex-end',
               }}
@@ -507,7 +521,7 @@ export const SceneOpen: React.FC = () => {
             {/* mono kicker typewriter + amber block cursor */}
             <div
               style={{
-                fontFamily: MONO, fontSize: 26, letterSpacing: '0.14em', color: INK2,
+                fontFamily: MONO, fontSize: kickerSize, letterSpacing: '0.14em', color: INK2,
                 marginTop: 30, textTransform: 'uppercase', height: 30,
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
               }}

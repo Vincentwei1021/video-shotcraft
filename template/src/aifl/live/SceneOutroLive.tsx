@@ -5,7 +5,17 @@ import layout from '../live-layout.json';
 
 const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
-const LETTERS = 'AI Foundation Lab'.split('');
+/** Context-level defaults (copy / sizes / palette), editable per clip in the workbench. */
+export const SCENE_OUTRO_DEFAULTS = {
+  wordmark: 'AI Foundation Lab',
+  wordmarkSize: 148,
+  tagline: 'Team Research Console',
+  taglineSize: 25,
+  ink: '#13110f',    // oklch(18% 0.006 82)
+  amber: '#955905',  // oklch(52% 0.115 65)
+  muted: '#65635f',  // oklch(50% 0.006 82)
+};
+type SceneOutroProps = Partial<typeof SCENE_OUTRO_DEFAULTS>;
 const PAGE_H = layout.projects.pageH;
 const WBR_PAGE_H = layout.wbr.pageH;
 
@@ -63,7 +73,9 @@ const DUST = Array.from({ length: 20 }, (_, i) => ({
  * Launch-event treatment: a crane-in camera on the whole photo layer, ghost
  * trails + landing glows on the fly-ins, a stage light behind the wordmark,
  * gold dust and a single opening light sweep for atmosphere. */
-export const SceneOutroLive: React.FC = () => {
+export const SceneOutroLive: React.FC<SceneOutroProps> = (props) => {
+  const { wordmark, wordmarkSize, tagline, taglineSize, ink, amber, muted } = { ...SCENE_OUTRO_DEFAULTS, ...props };
+  const LETTERS = wordmark.split('');
   const frame = useCurrentFrame();
   const duration = AIFL_SHOTS.outro.duration; // 115
 
@@ -350,7 +362,7 @@ export const SceneOutroLive: React.FC = () => {
 
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', pointerEvents: 'none' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: SERIF, fontSize: 148, fontWeight: 600, color: 'oklch(18% 0.006 82)', letterSpacing: `${wordSpacing}em`, display: 'flex' }}>
+          <div style={{ fontFamily: SERIF, fontSize: wordmarkSize, fontWeight: 600, color: ink, letterSpacing: `${wordSpacing}em`, display: 'flex' }}>
             {LETTERS.map((ch, i) => {
               const delay = Math.round(42 + i * 1.8);
               const t = interpolate(frame, [delay, delay + 8], [0, 1], {
@@ -375,17 +387,17 @@ export const SceneOutroLive: React.FC = () => {
             })}
           </div>
           <div style={{ position: 'relative', height: 6, width: 260, margin: '34px auto 0' }}>
-            <div style={{ position: 'absolute', inset: 0, borderRadius: 3, background: 'oklch(52% 0.115 65)', transform: `scaleX(${rule})` }} />
+            <div style={{ position: 'absolute', inset: 0, borderRadius: 3, background: amber, transform: `scaleX(${rule})` }} />
             {/* launch lower-third: 1px amber lines shooting out from the rule ends, then fading */}
             {ruleExt > 0 && ruleExtFade > 0 ? (
               <>
-                <div style={{ position: 'absolute', top: 2.5, height: 1, right: '100%', width: 190 * ruleExt, background: 'oklch(52% 0.115 65)', opacity: ruleExtFade }} />
-                <div style={{ position: 'absolute', top: 2.5, height: 1, left: '100%', width: 190 * ruleExt, background: 'oklch(52% 0.115 65)', opacity: ruleExtFade }} />
+                <div style={{ position: 'absolute', top: 2.5, height: 1, right: '100%', width: 190 * ruleExt, background: amber, opacity: ruleExtFade }} />
+                <div style={{ position: 'absolute', top: 2.5, height: 1, left: '100%', width: 190 * ruleExt, background: amber, opacity: ruleExtFade }} />
               </>
             ) : null}
           </div>
-          <div style={{ fontFamily: MONO, fontSize: 25, letterSpacing: '0.14em', color: 'oklch(50% 0.006 82)', marginTop: 30, opacity: tag, textTransform: 'uppercase' }}>
-            Team Research Console
+          <div style={{ fontFamily: MONO, fontSize: taglineSize, letterSpacing: '0.14em', color: muted, marginTop: 30, opacity: tag, textTransform: 'uppercase' }}>
+            {tagline}
           </div>
         </div>
       </AbsoluteFill>

@@ -16,9 +16,16 @@ const DETAIL_CAM: CamKey[] = [
 const FLY_EASE = Easing.bezier(0.3, 0, 0.25, 1);
 const detailSrc = staticFile('textures/live/detail-full.png');
 
+/** Context-level defaults, editable per clip in the workbench. */
+export const SCENE_DETAIL_DEFAULTS = {
+  accent: '#ae6700', // oklch(58% 0.13 65) — embed seam colour
+};
+type SceneDetailProps = Partial<typeof SCENE_DETAIL_DEFAULTS>;
+
 /** Open on the nano-lab detail page, then pan down while the
  * research-question rows fly in from the air and embed into their slots. */
-export const SceneDetail: React.FC = () => {
+export const SceneDetail: React.FC<SceneDetailProps> = (props) => {
+  const { accent } = { ...SCENE_DETAIL_DEFAULTS, ...props };
   const frame = useCurrentFrame();
   const df = frame;
 
@@ -123,7 +130,7 @@ export const SceneDetail: React.FC = () => {
                 top: r.y + r.h - 2,
                 width: seamW,
                 height: 2,
-                background: 'oklch(58% 0.13 65)',
+                background: accent,
                 boxShadow: '0 0 6px rgba(180,120,50,0.35)',
                 opacity: seamOpacity,
                 zIndex: 4,

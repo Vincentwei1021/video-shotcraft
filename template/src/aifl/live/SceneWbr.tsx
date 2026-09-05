@@ -10,7 +10,6 @@ const PAGE_H = layout.wbr.pageH;
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 const PAPER = '#fdfcfa';
-const AMBER = 'oklch(52% 0.115 65)';
 const AMBER_WASH = 'oklch(95% 0.05 85)';
 
 // editor-title close-up → ease out to the whole page (both rails on camera)
@@ -35,14 +34,34 @@ const WIPE = 8;
 // the live W28 entry, so W27…W22 drop in from above one after another (list
 // stacking, same vocabulary as the papers shot), landing below it. ----
 const SANS = 'ui-sans-serif, system-ui, -apple-system, sans-serif';
-const PAST_WEEKS = [
-  { week: '2026 第 27 周', date: '7月3日', title: '2026-W27 · Foundation Lab Weekly' },
-  { week: '2026 第 26 周', date: '6月26日', title: '2026-W26 · Foundation Lab Weekly' },
-  { week: '2026 第 25 周', date: '6月19日', title: '2026-W25 · Foundation Lab Weekly' },
-  { week: '2026 第 24 周', date: '6月12日', title: '2026-W24 · Foundation Lab Weekly' },
-  { week: '2026 第 23 周', date: '6月5日', title: '2026-W23 · Foundation Lab Weekly' },
-  { week: '2026 第 22 周', date: '5月29日', title: '2026-W22 · Foundation Lab Weekly' },
-];
+/** One past week per line: `week|date|title` */
+const PAST_WEEKS_DSL = [
+  '2026 第 27 周|7月3日|2026-W27 · Foundation Lab Weekly',
+  '2026 第 26 周|6月26日|2026-W26 · Foundation Lab Weekly',
+  '2026 第 25 周|6月19日|2026-W25 · Foundation Lab Weekly',
+  '2026 第 24 周|6月12日|2026-W24 · Foundation Lab Weekly',
+  '2026 第 23 周|6月5日|2026-W23 · Foundation Lab Weekly',
+  '2026 第 22 周|5月29日|2026-W22 · Foundation Lab Weekly',
+].join('\n');
+const parsePastWeeks = (dsl: string) =>
+  dsl
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((l) => {
+      const [week = '', date = '', title = ''] = l.split('|').map((s) => s.trim());
+      return { week, date, title };
+    });
+
+/** Context-level defaults (kicker copy / past-week list / palette), editable per clip in the workbench. */
+export const SCENE_WBR_DEFAULTS = {
+  kicker: 'Weekly Brief · 2026-W28',
+  kickerSize: 24,
+  pastWeeks: PAST_WEEKS_DSL,
+  amber: '#955905',  // oklch(52% 0.115 65)
+  muted: '#65635f',  // oklch(50% 0.006 82)
+};
+type SceneWbrProps = Partial<typeof SCENE_WBR_DEFAULTS>;
 const WEEK_Y0 = 228; // just under the baked-in W28 entry
 const WEEK_H = 56;
 const WEEK_CUE = (i: number) => 58 + i * 5; // after the left rail wipes on (46–56)
@@ -62,7 +81,9 @@ const memberH2 = new Set<number>();
  * wipes left→right behind an amber caret), member names get an @-mention amber
  * wash, then the week list (left) and comment sidebar (right) wipe on stage —
  * the whole page, both rails included, settles into frame. */
-export const SceneWbr: React.FC = () => {
+export const SceneWbr: React.FC<SceneWbrProps> = (props) => {
+  const { kicker, kickerSize, pastWeeks, amber: AMBER, muted } = { ...SCENE_WBR_DEFAULTS, ...props };
+  const PAST_WEEKS = parsePastWeeks(pastWeeks);
   const frame = useCurrentFrame();
 
   // screen-space kicker stamps in
@@ -284,15 +305,15 @@ export const SceneWbr: React.FC = () => {
 
           textAlign: 'right',
           fontFamily: MONO,
-          fontSize: 24,
+          fontSize: kickerSize,
           letterSpacing: '0.14em',
-          color: 'oklch(50% 0.006 82)',
+          color: muted,
           textTransform: 'uppercase',
           opacity: kick,
           pointerEvents: 'none',
         }}
       >
-        Weekly Brief · 2026-W28
+        {kicker}
       </div>
     </>
   );

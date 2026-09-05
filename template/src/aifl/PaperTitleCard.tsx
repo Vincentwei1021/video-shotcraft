@@ -4,6 +4,17 @@ import { DigitRoll } from './DigitRoll';
 const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 
+/** Context-level defaults (copy size / palette). Exposed as props so the
+ * workbench can edit them per clip; the motion timing stays fixed. Hex values
+ * are the sRGB renderings of the original oklch tokens. */
+export const TITLE_CARD_DEFAULTS = {
+  fontSize: 116,
+  ink: '#13110f',    // oklch(18% 0.006 82)
+  accent: '#955905', // oklch(52% 0.115 65)
+  muted: '#65635f',  // oklch(50% 0.006 82)
+  paper: '#f9f6f1',  // oklch(97.5% 0.008 82)
+};
+
 /**
  * Paper title card: warm paper field, serif statement letterpressed word by
  * word, amber italic accent word, amber underline growing beneath.
@@ -13,7 +24,19 @@ export const PaperTitleCard: React.FC<{
   words: { text: string; accent?: boolean }[];
   sub?: string;
   subDigits?: string;
-}> = ({ duration, words, sub, subDigits }) => {
+  fontSize?: number;
+  ink?: string;
+  accent?: string;
+  muted?: string;
+  paper?: string;
+}> = ({
+  duration, words, sub, subDigits,
+  fontSize = TITLE_CARD_DEFAULTS.fontSize,
+  ink = TITLE_CARD_DEFAULTS.ink,
+  accent = TITLE_CARD_DEFAULTS.accent,
+  muted = TITLE_CARD_DEFAULTS.muted,
+  paper = TITLE_CARD_DEFAULTS.paper,
+}) => {
   const frame = useCurrentFrame();
   const fadeOut = interpolate(frame, [duration - 8, duration], [1, 0], {
     extrapolateLeft: 'clamp',
@@ -32,7 +55,7 @@ export const PaperTitleCard: React.FC<{
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: 'oklch(97.5% 0.008 82)',
+        backgroundColor: paper,
         justifyContent: 'center',
         alignItems: 'center',
         opacity: fadeOut,
@@ -42,8 +65,8 @@ export const PaperTitleCard: React.FC<{
       <div style={{ textAlign: 'center', maxWidth: 1500 }}>
         <div
           style={{
-            fontFamily: SERIF, fontSize: 116, fontWeight: 600, lineHeight: 1.14,
-            color: 'oklch(18% 0.006 82)', letterSpacing: '-0.012em',
+            fontFamily: SERIF, fontSize, fontWeight: 600, lineHeight: 1.14,
+            color: ink, letterSpacing: '-0.012em',
             display: 'flex', flexWrap: 'wrap', justifyContent: 'center', columnGap: '0.26em',
           }}
         >
@@ -63,7 +86,7 @@ export const PaperTitleCard: React.FC<{
                   filter: `blur(${(1 - t) * 7}px)`,
                   display: 'inline-block',
                   fontStyle: w.accent ? 'italic' : 'normal',
-                  color: w.accent ? 'oklch(52% 0.115 65)' : undefined,
+                  color: w.accent ? accent : undefined,
                 }}
               >
                 {w.text}
@@ -74,12 +97,12 @@ export const PaperTitleCard: React.FC<{
         <div
           style={{
             height: 6, width: 220, margin: '38px auto 0', borderRadius: 3,
-            background: 'oklch(52% 0.115 65)', transform: `scaleX(${underline})`,
+            background: accent, transform: `scaleX(${underline})`,
           }}
         />
         {sub ? (
-          <div style={{ fontFamily: MONO, fontSize: 26, letterSpacing: '0.12em', color: 'oklch(50% 0.006 82)', marginTop: 34, opacity: subT, textTransform: 'uppercase', display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: '0.5em' }}>
-            {subDigits ? <DigitRoll value={subDigits} delay={12} fontSize={26} /> : null}
+          <div style={{ fontFamily: MONO, fontSize: 26, letterSpacing: '0.12em', color: muted, marginTop: 34, opacity: subT, textTransform: 'uppercase', display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: '0.5em' }}>
+            {subDigits ? <DigitRoll value={subDigits} delay={12} fontSize={26} color={accent} /> : null}
             <span>{sub}</span>
           </div>
         ) : null}
