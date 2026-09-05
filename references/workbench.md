@@ -100,6 +100,12 @@ demo 里的场景常量（`CONFIG` / 顶部 `const`）照这个模式提成 `DEF
 4. **纯函数、确定性**：不读 `useVideoConfig().durationInFrames` 做绝对时间假设（motion-lab
    系 `useT()` 归一化是例外且被工作台正确处理：clip 拉长=动画放慢）。
 5. 交付前跑一次 `npm run parity`（§5）确认拆解无损。
+6. **实时预览得跑得动**：Player 是实时合成，不像渲染那样每帧等栅格化完成再截图。铺满巨型平面
+   （几千 px 见方）的程序渐变 / `backdrop-filter` 放在 PageCam 这类每帧改 `zoom` 的 3D 层里，
+   Chrome 栅格化跟不上就整块时有时无——Ink Press 模板 S3 的金属桌面曾因此在预览里疯狂闪，
+   其余镜头全片 0 次异常（用 CDP screencast 逐帧测亮度脉冲得出）。这类纯装饰的重绘内容用
+   `getRemotionEnvironment().isRendering` 分流：渲染走原效果，预览用纯色 / 更轻的替身，几何
+   与时序不变（`SceneFlyIn.tsx` 的 `METAL_PREVIEW` 是范例）。parity 只比渲染结果，所以仍成立。
 
 schema 字段类型：`text` / `textarea` / `number`（min/max/step/unit）/ `slider` / `color` /
 `select`（options）/ `boolean`，定义在 `workbench/src/cards/types.ts`。
