@@ -6,7 +6,7 @@ import { projectDuration, useStore } from "../store";
 import type { PreviewItem } from "../store";
 import { fmtFrames } from "../time";
 import { CARDS } from "../cards/registry";
-import { CARD_FPS, cardSize, defaultsOf } from "../cards/types";
+import { cardFps, cardSize, defaultsOf } from "../cards/types";
 
 /** 素材库点击预览：占据画面区，循环播放；主工程 Player 保持挂载（display:none） */
 const ItemPreview: React.FC<{ item: NonNullable<PreviewItem>; onClose: () => void }> = ({
@@ -27,7 +27,7 @@ const ItemPreview: React.FC<{ item: NonNullable<PreviewItem>; onClose: () => voi
           durationInFrames={Math.max(2, card.durationInFrames)}
           compositionWidth={width}
           compositionHeight={height}
-          fps={CARD_FPS}
+          fps={cardFps(card)}
           autoPlay
           loop
           controls={false}

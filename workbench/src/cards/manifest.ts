@@ -49,7 +49,7 @@ export type WorkbenchManifest = {
   /** 舞台底色（Main 最外层 AbsoluteFill 的 background） */
   background?: string;
   /** 版本号（可选）。给了就作为「这是不是同一版成片」的判据；不给则按清单内容哈希
-   *  （时间表 / props / 组件 displayName / 音效表），任一处变了都算新版本 */
+   *  （时间表 / label / props / 单元→卡的分组拓扑 / 组件 displayName / 音效表），任一处变了都算新版本 */
   revision?: string;
   shots: ManifestUnit[];
   /** 转场层（闪白 / 光条…） */
@@ -66,6 +66,34 @@ export type WorkbenchManifest = {
   original?: React.ComponentType<Record<string, unknown>>;
 };
 
+export const UNIT_KINDS = ["shot", "transition", "caption", "overlay"] as const;
+export type UnitKind = (typeof UNIT_KINDS)[number];
+
+export const unitsOf = (m: WorkbenchManifest, kind: UnitKind): ManifestUnit[] =>
+  kind === "shot" ? m.shots : (m[`${kind}s`] ?? []);
+
+/** 单元 → 卡 id 的分组：显式 cardId 优先；否则同一组件**引用**共用一张卡，卡 id 取该组首个单元的 id
+ *  （`proj:<kind>:<cardId|首个 unit id>`）。projectCards 建卡与下面的内容哈希共用这一份，
+ *  所以「某单元换了组件」这类只体现在引用关系上的变化（多数组件没有 displayName）也会改变哈希，
+ *  旧存档里指向老卡的 clip 不会被继续沿用去渲错组件 */
+export const groupUnits = (m: WorkbenchManifest): Map<ManifestUnit, string> => {
+  const out = new Map<ManifestUnit, string>();
+  for (const kind of UNIT_KINDS) {
+    const groups = new Map<unknown, ManifestUnit[]>();
+    for (const u of unitsOf(m, kind)) {
+      const k = u.cardId ?? u.component;
+      const g = groups.get(k);
+      if (g) g.push(u);
+      else groups.set(k, [u]);
+    }
+    for (const units of groups.values()) {
+      const id = `proj:${kind}:${units[0].cardId ?? units[0].id}`;
+      for (const u of units) out.set(u, id);
+    }
+  }
+  return out;
+};
+
 /** FNV-1a 32 位，输出 8 位 hex——够用来判"内容变没变"，不做安全用途 */
 const fnv1a = (s: string) => {
   let h = 0x811c9dc5;
@@ -76,18 +104,21 @@ const fnv1a = (s: string) => {
   return h.toString(16).padStart(8, "0");
 };
 
-/** 清单可序列化部分的规范化串。组件只取显式 displayName（.name 会被 HMR / 压缩改写，
- *  纳入会让同一版成片在 dev / build 间被误判为新版本、白白丢掉用户改动） */
+/** 清单可序列化部分的规范化串——凡是会被复制进 ClipData 或决定 clip 指向哪张卡的信息都在内：
+ *  时间 / label / props / durationProp / 分组后的卡 id（见 groupUnits）/ 音频表。
+ *  组件本身只取显式 displayName（.name 会被 HMR / 压缩改写，纳入会让同一版成片在 dev / build 间
+ *  被误判为新版本、白白丢掉用户改动）；组件引用的变化靠卡 id 拓扑体现 */
 const canonical = (m: WorkbenchManifest): string => {
-  const unit = (kind: string, u: ManifestUnit) =>
-    [kind, u.id, u.from, u.duration, u.cardId ?? "", (u.component as { displayName?: string }).displayName ?? "", u.durationProp ?? "", JSON.stringify(u.props ?? {})].join("|");
-  const audio = (kind: string, a: ManifestAudio) => [kind, a.from, a.duration ?? "", a.src, a.volume].join("|");
+  const cardOf = groupUnits(m);
+  const unit = (u: ManifestUnit) =>
+    [
+      cardOf.get(u) ?? "", u.id, u.label ?? "", u.from, u.duration, u.durationProp ?? "",
+      (u.component as { displayName?: string }).displayName ?? "", JSON.stringify(u.props ?? {}),
+    ].join("|");
+  const audio = (kind: string, a: ManifestAudio) => [kind, a.from, a.duration ?? "", a.src, a.volume, a.label ?? ""].join("|");
   return [
     m.name, m.fps, m.width, m.height, m.total, m.background ?? "", (m.order ?? []).join(","),
-    ...m.shots.map((u) => unit("shot", u)),
-    ...(m.transitions ?? []).map((u) => unit("transition", u)),
-    ...(m.captions ?? []).map((u) => unit("caption", u)),
-    ...(m.overlays ?? []).map((u) => unit("overlay", u)),
+    ...UNIT_KINDS.flatMap((kind) => unitsOf(m, kind).map(unit)),
     ...(m.sfx ?? []).map((a) => audio("sfx", a)),
     ...(m.bgm ?? []).map((a) => audio("bgm", a)),
   ].join("\n");

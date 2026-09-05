@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import type { PropField } from "../cards/types";
+import { cardFps, sourceLength } from "../cards/types";
 import { CARDS } from "../cards/registry";
 import { findClip, useStore } from "../store";
 
@@ -150,6 +151,9 @@ export const Inspector: React.FC = () => {
   const { track, clip } = hit;
   const card = CARDS[clip.cardId];
   const fps = project.fps;
+  // 卡片编排帧率 ≠ 工程帧率（只有逐帧编排的卡需要提示；媒体卡按墙钟走无此问题）
+  const srcFps = card ? cardFps(card) : fps;
+  const fpsMismatch = !!card && card.timing !== "realtime" && srcFps !== fps;
   // 每次编辑手势开始压一次撤销快照；短时间内的连续输入合并为一步
   const begin = () => {
     const now = Date.now();
@@ -274,7 +278,7 @@ export const Inspector: React.FC = () => {
                   updateClip(clip.id, {
                     duration: Math.max(
                       2,
-                      Math.round((card.durationInFrames - clip.inOffset) / clip.speed),
+                      Math.round((sourceLength(card, fps) - clip.inOffset) / clip.speed),
                     ),
                   });
                 }}
@@ -282,6 +286,12 @@ export const Inspector: React.FC = () => {
                 ↺ 恢复原始时长
               </button>
             </Row>
+          )}
+          {fpsMismatch && (
+            <div className="dim" style={{ fontSize: 11, lineHeight: 1.5, padding: "4px 0 2px" }}>
+              此卡按 {srcFps}fps 编排，工程 {fps}fps：上轨时已换算时长并以 {(srcFps / fps).toFixed(2)}× 变速保持节奏。
+              卡内若按 useVideoConfig().fps 计时（spring 等），节奏仍会偏 {(fps / srcFps).toFixed(2)}×。
+            </div>
           )}
         </section>
 

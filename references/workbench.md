@@ -76,7 +76,7 @@ demo 里的场景常量（`CONFIG` / 顶部 `const`）照这个模式提成 `DEF
 渲染与清单同一份数据）。
 
 **版本判据**：`?import=project` 打开时，存档的 `source` 与 `manifestKey(清单)` 不同才重新导入。key = 名字 + 总帧数 + `revision`，
-未写 `revision` 时用清单内容哈希（时间表 / props / 组件 displayName / 音效表）——改了镜头位置、文案、
+未写 `revision` 时用清单内容哈希（时间表 / label / props / 单元→卡的分组拓扑 / 组件 displayName / 音效表）——改了镜头位置、文案、
 音效或换了组件即视为新版本；旧存档压进撤销栈，⌘Z 可找回。
 
 **分组规则**：同一 `cardId`（或同一 `component` 引用）的单元共用一张「成片单元卡」，
@@ -138,8 +138,11 @@ demo 全部 schema 为空（时间/图层可编辑，属性不可编辑）——
 ## 6. 已知边界
 
 - 同轨允许 clip 重叠（层级用多轨表达）；变速为匀速重映射（无曲线变速）。
-- 卡片统一按 30fps 编排（`CARD_FPS`）；工程 fps 不同时，拖卡上轨会按帧率换算时长并反向变速，
-  播放速度不变；时间码 / 片段秒数 / 预览余量都按工程 fps 计。
+- 卡片库（demo / 原生卡）按 30fps 编排（`CARD_FPS`），成片单元卡按成片清单的 fps（`CardDef.sourceFps`）；
+  工程 fps 不同时，拖卡上轨按 `clipDefaultsFor` 换算时长并反向变速，播放速度不变；媒体卡
+  （视频 / 音频 / 图片，`timing: "realtime"`）只换算时长、不变速。Freeze 不改 `useVideoConfig().fps`，
+  卡内若用 `spring({fps})` 等按秒计时，非 30fps 工程里节奏会偏移——属性面板会提示，成片单元不受影响
+  （帧率与工程一致）。时间码 / 片段秒数 / 预览余量都按工程 fps 计。
 - `open.mjs` 只重启自己启动的 dev server（`.dev.pid` + 进程命令行核实）；端口被手动起的 server
   占着时报错退出，因为 `@proj` 别名在 vite 启动时定死、刷新不会换工程。
 - 音频 clip 导入时截到成片总长（原片里超出合成尾部的 `<Sequence>` 本就被截）。

@@ -97,7 +97,7 @@ vite.config.ts            Vite + 导出渲染 API（POST /api/export → Remotio
 ## 已知边界
 
 - 同轨允许 clip 重叠（层级用多轨表达）；变速为匀速重映射（无曲线变速）
-- 卡片按 30fps 编排；非 30fps 工程里拖卡上轨会按帧率换算时长 + 反向变速，播放速度不变
+- 卡片库按 30fps 编排、成片单元按成片 fps；非 30fps 工程里拖卡上轨会换算时长 + 反向变速（媒体卡只换算时长），播放速度不变；按秒计时（spring）的 demo 节奏会偏，面板有提示
 - demo 卡 schema 为空：能裁剪 / 变速 / 定格 / 图层变换，不能改文案颜色——要可调参先把 CONFIG 提成 props
 - 导出走 dev server（`npm run dev` 时可用）。Remotion 静态服务器拒绝服务符号链接，所以导出前
   自动把 `public/` 解引用同步到 `.render-public/`；命令行手动渲染同理：

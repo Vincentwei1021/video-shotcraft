@@ -1,7 +1,7 @@
 import React from "react";
 import { Composition } from "remotion";
 import { CARD_LIST } from "../cards/registry";
-import { cardSize, defaultsOf } from "../cards/types";
+import { cardFps, cardSize, defaultsOf } from "../cards/types";
 import { zodFromCard } from "./zodFromCard";
 import { MainComposition } from "../preview/Composition";
 import { demoProject } from "../demoProject";
@@ -71,7 +71,7 @@ export const RemotionRoot: React.FC = () => {
             // 动态注册：schema/defaultProps 无法静态对齐类型，交给运行时（zod 会校验）
             component={card.component as React.ComponentType<Record<string, unknown>>}
             durationInFrames={Math.max(2, card.durationInFrames)}
-            fps={30}
+            fps={cardFps(card)}
             width={width}
             height={height}
             schema={zodFromCard(card) as never}

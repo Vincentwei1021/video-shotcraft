@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { ClipData, ProjectData, TrackData } from "./types";
 import { uid } from "./types";
 import { CARDS } from "./cards/registry";
-import { CARD_FPS } from "./cards/types";
+import { clipDefaultsFor } from "./cards/types";
 import { demoProject } from "./demoProject";
 import { MANIFEST } from "./cards/projectCards";
 import { manifestKey } from "./cards/manifest";
@@ -214,17 +214,17 @@ export const useStore = create<WorkbenchState>((set, get) => ({
         const track =
           d.tracks.find((t) => t.id === trackId) ?? d.tracks[d.tracks.length - 1];
         if (!track) return;
-        // 卡片按 CARD_FPS（30）编排；工程 fps 不同时按帧率换算时长 + 反向变速，实际播放速度不变。
-        // 媒体卡（音频/视频）是实时素材，不换算
-        const isMedia = card.kind === "audio" || card.kind === "video";
-        const fpsScale = isMedia ? 1 : d.fps / CARD_FPS;
+        // 卡片按自己的 sourceFps 编排（卡片库 30、成片单元 = 清单 fps）；工程 fps 不同时换算时长 +
+        // 反向变速，播放速度不变；媒体卡（realtime）只换算时长、不变速。
+        // 拖拽负载里的 duration（素材库给视频 / 音频的默认长度）与 durationInFrames 同口径，一并换算
+        const { duration, speed } = clipDefaultsFor(card, d.fps, extra?.duration);
         track.clips.push({
           id: newId,
           cardId,
           start: Math.max(0, Math.round(at ?? s.playhead)),
-          duration: extra?.duration ?? Math.max(2, Math.round(card.durationInFrames * fpsScale)),
+          duration,
           inOffset: 0,
-          speed: fpsScale === 1 ? 1 : 1 / fpsScale,
+          speed,
           opacity: 1,
           scale: 1,
           x: 0,
