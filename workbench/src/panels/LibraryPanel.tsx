@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Player } from "@remotion/player";
+import { Player, type PlayerRef } from "@remotion/player";
 import type { CardDef } from "../cards/types";
 import { CARD_FPS, cardSize, defaultsOf } from "../cards/types";
 import { CARD_LIST } from "../cards/registry";
@@ -75,21 +75,52 @@ const LazyLoopVideo: React.FC<{ src: string }> = ({ src }) => {
   );
 };
 
-/** 没有预渲染视频的卡：可见时用实时 Player 循环当缩略图 */
+/** 没有预渲染视频的卡：可见时用实时 Player 当缩略图——**静止在 45% 处的定妆帧**，鼠标悬停才循环播放。
+ *  曾经默认自动循环：十几个 1080p 场景同时跑、闪白转场卡每 0.3s 白一次、字卡每 1.8s 淡出重来，
+ *  首屏像在闪光灯下；大图反复解码还刷出一串 EncodingError。 */
 const LazyCardLoop: React.FC<{ card: CardDef }> = ({ card }) => {
   const { ref, visible } = useVisible();
   const { width, height } = cardSize(card);
+  const player = useRef<PlayerRef>(null);
+  const [hover, setHover] = useState(false);
+  const total = Math.max(2, card.durationInFrames);
+  const poster = Math.min(total - 1, Math.round(total * 0.45));
+  // .lib-thumb 本身 pointer-events:none（让拖拽落到 .lib-cell 上），悬停监听挂到所属 cell
+  useEffect(() => {
+    const cell = ref.current?.closest(".lib-cell");
+    if (!cell) return;
+    const on = () => setHover(true);
+    const off = () => setHover(false);
+    cell.addEventListener("pointerenter", on);
+    cell.addEventListener("pointerleave", off);
+    return () => {
+      cell.removeEventListener("pointerenter", on);
+      cell.removeEventListener("pointerleave", off);
+    };
+  }, [ref]);
+  useEffect(() => {
+    const p = player.current;
+    if (!p) return;
+    if (hover) {
+      p.seekTo(0);
+      p.play();
+    } else {
+      p.pause();
+      p.seekTo(poster);
+    }
+  }, [hover, poster, visible]);
   return (
     <div ref={ref} className="lib-thumb" style={{ position: "relative" }}>
       {visible && (
         <Player
+          ref={player}
           component={card.component}
           inputProps={defaultsOf(card)}
-          durationInFrames={Math.max(2, card.durationInFrames)}
+          durationInFrames={total}
           compositionWidth={width}
           compositionHeight={height}
           fps={CARD_FPS}
-          autoPlay
+          initialFrame={poster}
           loop
           controls={false}
           initiallyMuted
