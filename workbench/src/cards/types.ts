@@ -84,6 +84,12 @@ export const sourceLength = (card: CardDef, projectFps: number) =>
     ? Math.max(2, Math.round((card.durationInFrames * projectFps) / cardFps(card)))
     : card.durationInFrames;
 
+/** clip.inOffset 的计量帧率：frames 卡的裁入点是**卡片源帧**（Freeze frame = inOffset + f×speed，
+ *  时间轨左拖 / 分割也按 speed 换算成源帧），realtime 媒体卡的裁入点直接是 trimBefore（工程帧）。
+ *  属性面板 / 时间轨徽标把它换成秒时必须除以这个帧率，否则卡片帧率≠工程帧率时显示与录入都会错 */
+export const inOffsetFps = (card: CardDef | undefined, projectFps: number) =>
+  !card || card.timing === "realtime" ? projectFps : cardFps(card);
+
 /** 新 clip 的默认时长 / 变速：`sourceFrames`（缺省卡片原始时长）按卡片帧率计。
  *  frames 卡：时长 × (工程fps / 卡片fps)、speed = 卡片fps / 工程fps，卡内逐帧动画的墙钟节奏不变
  *  （注意 Freeze 不改 useVideoConfig().fps，卡内若用 spring({fps}) 等按秒计时，节奏仍会随工程 fps 偏移，

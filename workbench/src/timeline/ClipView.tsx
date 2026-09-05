@@ -1,4 +1,5 @@
 import React from "react";
+import { inOffsetFps } from "../cards/types";
 import type { ClipData } from "../types";
 import { CARDS } from "../cards/registry";
 import { useStore } from "../store";
@@ -122,7 +123,7 @@ export const ClipView: React.FC<{
         <span className="clip-meta">
           {durSec}s
           {clip.speed !== 1 && <em className="badge">{clip.speed}×</em>}
-          {clip.inOffset > 0 && <em className="badge">✂{(clip.inOffset / fps).toFixed(1)}s</em>}
+          {clip.inOffset > 0 && <em className="badge">✂{(clip.inOffset / inOffsetFps(card, fps)).toFixed(1)}s</em>}
           {clip.opacity < 1 && <em className="badge">{Math.round(clip.opacity * 100)}%</em>}
         </span>
       </div>

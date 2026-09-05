@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import type { PropField } from "../cards/types";
-import { cardFps, sourceLength } from "../cards/types";
+import { cardFps, inOffsetFps, sourceLength } from "../cards/types";
 import { CARDS } from "../cards/registry";
 import { findClip, useStore } from "../store";
 
@@ -154,6 +154,8 @@ export const Inspector: React.FC = () => {
   // 卡片编排帧率 ≠ 工程帧率（只有逐帧编排的卡需要提示；媒体卡按墙钟走无此问题）
   const srcFps = card ? cardFps(card) : fps;
   const fpsMismatch = !!card && card.timing !== "realtime" && srcFps !== fps;
+  // 裁入点按源帧计（见 inOffsetFps），秒数换算不能一律用工程 fps
+  const inFps = inOffsetFps(card, fps);
   // 每次编辑手势开始压一次撤销快照；短时间内的连续输入合并为一步
   const begin = () => {
     const now = Date.now();
@@ -255,13 +257,13 @@ export const Inspector: React.FC = () => {
             <span className="ctl-row">
               <input
                 type="number"
-                value={Number((clip.inOffset / fps).toFixed(2))}
+                value={Number((clip.inOffset / inFps).toFixed(2))}
                 min={0}
                 step={0.1}
                 onFocus={begin}
                 onChange={(e) =>
                   updateClip(clip.id, {
-                    inOffset: Math.max(0, Math.round(Number(e.target.value) * fps)),
+                    inOffset: Math.max(0, Math.round(Number(e.target.value) * inFps)),
                   })
                 }
               />

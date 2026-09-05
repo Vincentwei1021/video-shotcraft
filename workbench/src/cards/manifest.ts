@@ -86,8 +86,16 @@ export const groupUnits = (m: WorkbenchManifest): Map<ManifestUnit, string> => {
       if (g) g.push(u);
       else groups.set(k, [u]);
     }
+    // 一组一个 id。显式 cardId 与另一组「首个单元 id」撞名、或单元 id 重复时，后出现的组按顺序加
+    // `~2`/`~3` 后缀（命名仍是清单的确定函数，哈希稳定），并在控制台提醒作者改 id
+    const used = new Set<string>();
     for (const units of groups.values()) {
-      const id = `proj:${kind}:${units[0].cardId ?? units[0].id}`;
+      const base = `proj:${kind}:${units[0].cardId ?? units[0].id}`;
+      let id = base;
+      for (let n = 2; used.has(id); n++) id = `${base}~${n}`;
+      if (id !== base)
+        console.warn(`[workbench] 清单卡 id 撞名：${base} 已被另一组单元占用，本组改用 ${id}——建议给单元换 id 或写显式 cardId`);
+      used.add(id);
       for (const u of units) out.set(u, id);
     }
   }
