@@ -1,4 +1,4 @@
-import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile } from 'remotion';
+import { AbsoluteFill, Audio, Sequence, staticFile } from 'remotion';
 import { SceneOpen } from './live/SceneOpen';
 import { SceneFlyIn } from './live/SceneFlyIn';
 import { SceneDetail } from './live/SceneDetail';
@@ -114,13 +114,10 @@ export const SFX: { from: number; src: string; volume: number }[] = [
 ];
 
 export const AiflMain: React.FC = () => {
-  // plate render for the Jianying draft export: captions + SFX are rebuilt as
-  // native editable tracks there, so the plate must ship without them
-  const { plate = false } = getInputProps() as { plate?: boolean };
   return (
     <AbsoluteFill style={{ backgroundColor: '#f2eee6' }}>
       {/* beat-pinned promo sound effects (no music bed — SFX only) */}
-      {!plate && SFX.map((s, i) => (
+      {SFX.map((s, i) => (
         <Sequence
           key={`sfx-${i}`}
           from={s.from}
@@ -174,7 +171,7 @@ export const AiflMain: React.FC = () => {
         <SceneOutroLive />
       </Sequence>
       {/* narration captions over the live shots (under the flash cuts) */}
-      {!plate && CAPTIONS.map((c) => (
+      {CAPTIONS.map((c) => (
         <Sequence key={c.from} from={c.from} durationInFrames={c.duration}>
           <Caption text={c.text} duration={c.duration} />
         </Sequence>
