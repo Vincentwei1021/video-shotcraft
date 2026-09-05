@@ -45,6 +45,20 @@
 > 🎙️ [**プロジェクトページ »**](https://github.com/Vincentwei1021/video-talkcraft) ·
 > 🖼️ [**78 本のナレーション用モーションプレビューを見る »**](https://vincentwei1021.github.io/video-talkcraft/)
 
+> [!IMPORTANT]
+> ### 🛠️ 2026-09 · 新機能：**モーションワークベンチ**——納品後もブラウザで編集を続ける
+> 納品後、skill が CapCut 風のブラウザワークベンチを自動で開きます
+> （`node workbench/scripts/open.mjs <project>`）。映像は元のショット構成どおりに
+> ショット / トランジション / 字幕 / SFX のトラックへ分解され、任意のショットを選んで
+> 文言・フォントサイズ・色をスキーマ駆動のインスペクタで編集、クリップの移動・トリム・
+> 速度変更、**216 本の demo モーション**をライブラリからドラッグして追加、そのまま
+> Remotion で書き出せます。プレビューとレンダリングはフレーム単位で一致（ピクセル比較で検証済み）。
+>
+> ![モーションワークベンチ](workbench/docs/overview.png)
+>
+> 🧭 [**ワークベンチガイド：各パネルと機能をスクリーンショット付きで »**](workbench/GUIDE.md)（中国語）·
+> 🔌 [**連携コントラクト »**](references/workbench.md)
+
 - 🌟 **2026-08 · ショットレシピカード 48 枚を新規追加**——ライブラリは 104 枚
   から **152 カード / 209 プレビュー**に拡充。209 候補から参照映像との
   フレーム単位比較レビューを 8 ラウンド重ねて厳選し、既存カテゴリに統合：
@@ -158,6 +172,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
 | 制作手法 | キャプチャ、ビジュアルディレクション、ストーリーボード、サウンドデザイン、ビート同期、最終 QA |
 | 剪映プロジェクト書き出し | 完成映像を剪映（CapCut 中国版）で継続編集——ショット変速・字幕・音声トラックを編集可（macOS 11.2 実機検証済み） |
+| モーションワークベンチ | 納品後に開くブラウザのタイムラインエディタ：映像をトラックに分解、公開されたショット属性の編集、再タイミング、216 個の demo モーションのドラッグ投入、Remotion 書き出し |
 
 このツールキットは主に Web およびデスクトップ製品のプロモーションを対象としていますが、
 各ショットカードは機能デモ、ブランド映像、ローンチ動画、
@@ -175,11 +190,13 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
-│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   └── workbench.md         # Motion workbench: manifest contract + editability rules
 ├── demos/                   # Remotion reference implementations for shot cards
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
 ├── jianying-export/         # JianYing draft installers (mac tested / win untested)
+├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts

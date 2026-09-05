@@ -45,6 +45,21 @@ beat-synced cuts, and film-grade SFX included.
 > 🎙️ [**Project page »**](https://github.com/Vincentwei1021/video-talkcraft) ·
 > 🖼️ [**Browse all 78 narration motion previews »**](https://vincentwei1021.github.io/video-talkcraft/)
 
+> [!IMPORTANT]
+> ### 🛠️ 2026-09 · New: the **Motion Workbench** — keep editing the delivered film in your browser
+> After delivery the skill opens a CapCut-style workbench
+> (`node workbench/scripts/open.mjs <project>`). The film is decomposed into
+> shot / transition / caption / SFX tracks exactly as authored; select any shot
+> and edit its copy, font sizes and colours in a schema-driven inspector, move,
+> trim or speed-ramp clips, drag any of the **216 demo motions** in from the
+> library, then export with Remotion. Preview and render are frame-identical
+> (pixel-parity verified).
+>
+> ![Motion Workbench](workbench/docs/overview.png)
+>
+> 🧭 [**Workbench guide — every panel and feature, with screenshots »**](workbench/GUIDE.md) (Chinese) ·
+> 🔌 [**Integration contract »**](references/workbench.md)
+
 - 🌟 **2026-08 · 48 new shot recipe cards** — the library grows from 104 to
   **152 cards / 209 previews**. Distilled from 209 candidate motions through
   eight rounds of frame-by-frame review against reference footage, then folded
@@ -158,6 +173,7 @@ With these three flags, frame renders from the bundled template work.
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
 | JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
+| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 216 demo motions, export via Remotion |
 
 The toolkit primarily targets web and desktop product promos, while individual
 shot cards can also be used in feature demos, brand films, launch videos, and
@@ -175,11 +191,13 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
-│   └── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   └── workbench.md         # Motion workbench: manifest contract + editability rules
 ├── demos/                   # Remotion reference implementations (same categories)
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
 ├── jianying-export/         # JianYing draft installers (mac tested / win untested)
+├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
     ├── scripts/             # Page-asset capture scripts

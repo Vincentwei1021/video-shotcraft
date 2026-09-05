@@ -1,4 +1,4 @@
-import { Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
+import { Img, interpolate, staticFile, useCurrentFrame, Easing, getRemotionEnvironment } from 'remotion';
 import { PageCam, CamKey } from './PageCam';
 import layout from '../live-layout.json';
 
@@ -47,6 +47,14 @@ const STACK_STEP = 3; // px of physical height per card — the pile reads as a 
 // dark-metal backdrop for the opening close-up: covers everything in the page
 // plane, with a warm spotlight pooled on the pile; fades out with the pull-back
 const METAL_FADE = [34, 56] as const;
+// Real-time preview stand-in for the metal (Player / Studio / workbench — anything that is
+// not the final render). The procedural gradients below cover a 9000×9000 plane that
+// Chromium has to re-rasterize every frame while PageCam's `zoom` changes; in real time
+// the raster never keeps up, the plane drops in and out, and the close-up strobes between
+// dark table and white page (measured: ~20 blank-outs in the first 2s). A flat fill needs
+// no raster at all. Same geometry, same fade — only the paint differs; the render still
+// paints the brushed metal. Tone = median of the rendered table (#373637 sampled).
+const METAL_PREVIEW = '#383638';
 
 const grid = [
   ...cards.map((c) => ({ file: c.file, x: c.x, y: c.y, w: c.w, h: c.h, title: c.title })),
@@ -77,7 +85,13 @@ grid.forEach((_, i) => {
 
 // search box (page-space CSS px) + typing beats
 const SEARCH = { x: 408, y: 130, w: 1016, h: 44 };
-const QUERY = 'nano-lab';
+/** Context-level defaults, editable per clip in the workbench. `query` is only the
+ * typed text; the card that survives the filter is still the nano-lab card from layout. */
+export const SCENE_FLYIN_DEFAULTS = {
+  query: 'nano-lab',
+  accent: '#ae6700', // oklch(58% 0.13 65)
+};
+type SceneFlyInProps = Partial<typeof SCENE_FLYIN_DEFAULTS>;
 const TYPE_START = 128; // 3 frames per character → last char at ≈149
 const FILTER_START = 160; // beat of rest after typing, then the grid filters
 
@@ -106,8 +120,10 @@ const CAM_KEYS: CamKey[] = [
   { frame: 190, cx: CLICK_C.x, cy: CLICK_C.y, zoom: 2.2, rotX: 0, rotY: 0, rotZ: 0, persp: 1300 }, // push into the clicked card, carried through the white flash
 ];
 
-export const SceneFlyIn: React.FC = () => {
+export const SceneFlyIn: React.FC<SceneFlyInProps> = (props) => {
+  const { query: QUERY, accent } = { ...SCENE_FLYIN_DEFAULTS, ...props };
   const frame = useCurrentFrame();
+  const { isRendering } = getRemotionEnvironment();
 
   // DOF fades out over the straightening leg of the scroll (82 → 98)
   const dofStrength = interpolate(frame, [82, 98], [5, 0], {
@@ -147,7 +163,7 @@ export const SceneFlyIn: React.FC = () => {
             opacity: interpolate(frame, [METAL_FADE[0], METAL_FADE[1]], [1, 0], {
               extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
             }),
-            background: [
+            background: isRendering ? [
               // warm key light pooled on the pile
               `radial-gradient(1300px 900px at ${3000 + PILE_CX}px ${3000 + PILE_CY}px, rgba(255,214,150,0.20), rgba(255,190,120,0.06) 40%, transparent 68%)`,
               // brushed-metal grain: fine anisotropic streaks
@@ -155,7 +171,7 @@ export const SceneFlyIn: React.FC = () => {
               'repeating-linear-gradient(100deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 2px, transparent 4px, transparent 13px)',
               // broad steel sheen
               'linear-gradient(115deg, #2a2d33 0%, #383c44 28%, #22242a 55%, #33363e 78%, #1d1f24 100%)',
-            ].join(', '),
+            ].join(', ') : METAL_PREVIEW,
             pointerEvents: 'none',
           }}
         />
@@ -375,7 +391,7 @@ export const SceneFlyIn: React.FC = () => {
                 width: 2,
                 height: 20,
                 marginLeft: 2,
-                background: 'oklch(58% 0.13 65)',
+                background: accent,
               }}
             />
           ) : null}
@@ -400,7 +416,7 @@ export const SceneFlyIn: React.FC = () => {
               width: rad * 2,
               height: rad * 2,
               borderRadius: '50%',
-              border: '2px solid oklch(58% 0.13 65)',
+              border: `2px solid ${accent}`,
               opacity: 1 - t,
               pointerEvents: 'none',
             }}
@@ -418,7 +434,7 @@ export const SceneFlyIn: React.FC = () => {
             width: nano.w + 12,
             height: nano.h + 12,
             borderRadius: 16,
-            border: '3px solid oklch(58% 0.13 65)',
+            border: `3px solid ${accent}`,
             boxShadow: '0 0 40px rgba(180,120,50,0.5)',
             opacity: interpolate(frame, [178, 181], [0.5, 1], {
               extrapolateLeft: 'clamp', extrapolateRight: 'clamp',

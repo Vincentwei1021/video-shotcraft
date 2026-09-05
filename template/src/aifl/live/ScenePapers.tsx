@@ -8,7 +8,16 @@ const cards = layout.papers.cards;
 const PAGE_H = layout.papers.pageH;
 
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
-const AMBER = 'oklch(52% 0.115 65)';
+
+/** Context-level defaults (screen-space counter copy / palette), editable per clip in the workbench. */
+export const SCENE_PAPERS_DEFAULTS = {
+  title: 'Paper Radar',
+  subtitle: 'Of 31 Fetched Today',
+  counterSize: 96,
+  amber: '#955905',  // oklch(52% 0.115 65)
+  muted: '#65635f',  // oklch(50% 0.006 82)
+};
+type ScenePapersProps = Partial<typeof SCENE_PAPERS_DEFAULTS>;
 
 // paperN.png files, one per card
 const FILES = ['paper1.png', 'paper2.png', 'paper3.png', 'paper4.png', 'paper5.png'];
@@ -32,7 +41,8 @@ const CAM_KEYS: CamKey[] = [
 /** Paper radar: daily paper cards stack up into place one by one (the list-stack
  * motif), each landing pressing the settled stack down and bouncing back, with
  * an amber highlight sweeping the linked-project name and a screen-space counter. */
-export const ScenePapers: React.FC = () => {
+export const ScenePapers: React.FC<ScenePapersProps> = (props) => {
+  const { title, subtitle, counterSize, amber: AMBER, muted } = { ...SCENE_PAPERS_DEFAULTS, ...props };
   const frame = useCurrentFrame();
 
   // how many cards have already landed (t reached 1) — drives the counter
@@ -170,14 +180,14 @@ export const ScenePapers: React.FC = () => {
 
       {/* screen-space counter, top-right */}
       <div style={{ position: 'absolute', top: 70, right: 96, textAlign: 'right', pointerEvents: 'none' }}>
-        <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.16em', color: 'oklch(50% 0.006 82)', textTransform: 'uppercase' }}>
-          Paper Radar
+        <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.16em', color: muted, textTransform: 'uppercase' }}>
+          {title}
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
-          <DigitRoll key={landedCount} value={String(landedCount)} fontSize={96} color={AMBER} />
+          <DigitRoll key={landedCount} value={String(landedCount)} fontSize={counterSize} color={AMBER} />
         </div>
-        <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: '0.12em', color: 'oklch(50% 0.006 82)', marginTop: 4, textTransform: 'uppercase' }}>
-          Of 31 Fetched Today
+        <div style={{ fontFamily: MONO, fontSize: 20, letterSpacing: '0.12em', color: muted, marginTop: 4, textTransform: 'uppercase' }}>
+          {subtitle}
         </div>
       </div>
     </>

@@ -1,0 +1,24 @@
+node_modules/
+dist/
+*.tsbuildinfo
+exports/
+.render-public/
+.dev.pid
+.dev.log
+
+# 按本机链接生成（scripts/gen-index.mjs：prepare / predev / prebuild / prestudio 都会跑）
+src/cards/demo-index.ts
+src/cards/demoMeta.ts
+src/mediaManifest.ts
+src/projMeta.ts
+
+# 机器本地符号链接：指向外部成片工程的 src/（绝对路径，不进库）。
+# 链接方法见 README「接入成片工程」；未链接时自动使用 proj-stub 降级。
+proj
+
+# public/ 全部由 scripts/open.mjs / gen-index.mjs 按本机链接生成
+public/*
+!public/.gitkeep
+
+# 导入 vs 原片逐帧对照产物（scripts/parity.mjs）
+.parity/

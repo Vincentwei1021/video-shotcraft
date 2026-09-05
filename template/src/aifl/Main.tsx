@@ -26,8 +26,34 @@ export const AIFL_SHOTS = {
 
 export const AIFL_TOTAL = 1085;
 
+// title-card copy: space-separated words, `*word*` = amber italic accent. Single
+// source for the render below and for the workbench manifest (workbench.ts).
+export const TITLE_CARDS = {
+  card1: { text: 'All your team’s research, *one* place to go.' },
+  card2: { text: 'Paper *Radar,* tailored for your morning reading.', sub: 'of 31 fetched today', subDigits: '5' },
+  cardWbr: { text: 'Every project, *linked* to your weekly report.' },
+  card3: { text: 'The whole team, on the *same* page.' },
+} as const;
+
+export const parseWords = (text: string): { text: string; accent?: boolean }[] =>
+  text
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => {
+      const m = w.match(/^\*(.+)\*$/);
+      return m ? { text: m[1], accent: true } : { text: w };
+    });
+
+// warm flash cuts straddle these hard cuts (from = cut − 5, 10f long)
+export const FLASH_CUTS = [AIFL_SHOTS.table.from, AIFL_SHOTS.macro.from, AIFL_SHOTS.chart.from, AIFL_SHOTS.wbr.from];
+
+// keyboard: 24f for the short search-box typing, 44f under the wbr writing
+// reveals; everything else plays out (≤3s assets)
+export const sfxDuration = (s: { from: number; src: string }) =>
+  s.src === 'keyboard.mp3' ? (s.from > 700 ? 44 : 24) : 90;
+
 // bottom-strip narration over the live shots (absolute frames; outro stays clean)
-const CAPTIONS = [
+export const CAPTIONS = [
   { from: 90, duration: 40, text: 'TEN LIVE PROJECTS · FOUR RESEARCHERS' },
   // (the hero-card hover annotation lives inside SceneOpen as a 3D floating note)
   { from: 318, duration: 44, text: 'NEW WORK LANDS ALL WEEK' },
@@ -40,7 +66,7 @@ const CAPTIONS = [
 // sound design pinned to animation beats (absolute frames, Mixkit license).
 // Classic product-promo vocabulary: whooshes on camera moves, cinematic
 // impacts on landings, a riser into the finale, sparkle on the reveal.
-const SFX: { from: number; src: string; volume: number }[] = [
+export const SFX: { from: number; src: string; volume: number }[] = [
   // brand open: soft transition as the lockup lands, whoosh into the console
   { from: 12, src: 'transition-soft.mp3', volume: 0.4 },
   { from: 78, src: 'whoosh-fast.mp3', volume: 0.45 }, // brand → dashboard
@@ -95,9 +121,7 @@ export const AiflMain: React.FC = () => {
         <Sequence
           key={`sfx-${i}`}
           from={s.from}
-          // keyboard: 24f for the short search-box typing, 44f under the wbr
-          // writing reveals; everything else plays out (≤3s assets)
-          durationInFrames={s.src === 'keyboard.mp3' ? (s.from > 700 ? 44 : 24) : 90}
+          durationInFrames={sfxDuration(s)}
         >
           <Audio src={staticFile(`audio/${s.src}`)} volume={s.volume} />
         </Sequence>
@@ -108,7 +132,7 @@ export const AiflMain: React.FC = () => {
       <Sequence from={AIFL_SHOTS.card1.from} durationInFrames={AIFL_SHOTS.card1.duration}>
         <PaperTitleCard
           duration={AIFL_SHOTS.card1.duration}
-          words={[{ text: 'All' }, { text: 'your' }, { text: 'team’s' }, { text: 'research,' }, { text: 'one', accent: true }, { text: 'place' }, { text: 'to' }, { text: 'go.' }]}
+          words={parseWords(TITLE_CARDS.card1.text)}
         />
       </Sequence>
       <Sequence from={AIFL_SHOTS.table.from} durationInFrames={AIFL_SHOTS.table.duration}>
@@ -120,9 +144,9 @@ export const AiflMain: React.FC = () => {
       <Sequence from={AIFL_SHOTS.card2.from} durationInFrames={AIFL_SHOTS.card2.duration}>
         <PaperTitleCard
           duration={AIFL_SHOTS.card2.duration}
-          words={[{ text: 'Paper' }, { text: 'Radar,', accent: true }, { text: 'tailored' }, { text: 'for' }, { text: 'your' }, { text: 'morning' }, { text: 'reading.' }]}
-          sub="of 31 fetched today"
-          subDigits="5"
+          words={parseWords(TITLE_CARDS.card2.text)}
+          sub={TITLE_CARDS.card2.sub}
+          subDigits={TITLE_CARDS.card2.subDigits}
         />
       </Sequence>
       <Sequence from={AIFL_SHOTS.chart.from} durationInFrames={AIFL_SHOTS.chart.duration}>
@@ -131,7 +155,7 @@ export const AiflMain: React.FC = () => {
       <Sequence from={AIFL_SHOTS.cardWbr.from} durationInFrames={AIFL_SHOTS.cardWbr.duration}>
         <PaperTitleCard
           duration={AIFL_SHOTS.cardWbr.duration}
-          words={[{ text: 'Every' }, { text: 'project,' }, { text: 'linked', accent: true }, { text: 'to' }, { text: 'your' }, { text: 'weekly' }, { text: 'report.' }]}
+          words={parseWords(TITLE_CARDS.cardWbr.text)}
         />
       </Sequence>
       <Sequence from={AIFL_SHOTS.wbr.from} durationInFrames={AIFL_SHOTS.wbr.duration}>
@@ -140,7 +164,7 @@ export const AiflMain: React.FC = () => {
       <Sequence from={AIFL_SHOTS.card3.from} durationInFrames={AIFL_SHOTS.card3.duration}>
         <PaperTitleCard
           duration={AIFL_SHOTS.card3.duration}
-          words={[{ text: 'The' }, { text: 'whole' }, { text: 'team,' }, { text: 'on' }, { text: 'the' }, { text: 'same', accent: true }, { text: 'page.' }]}
+          words={parseWords(TITLE_CARDS.card3.text)}
         />
       </Sequence>
       <Sequence from={AIFL_SHOTS.outro.from} durationInFrames={AIFL_SHOTS.outro.duration}>
@@ -153,7 +177,7 @@ export const AiflMain: React.FC = () => {
         </Sequence>
       ))}
       {/* warm flash cuts straddling scene changes */}
-      {[AIFL_SHOTS.table.from, AIFL_SHOTS.macro.from, AIFL_SHOTS.chart.from, AIFL_SHOTS.wbr.from].map((cut) => (
+      {FLASH_CUTS.map((cut) => (
         <Sequence key={cut} from={cut - 5} durationInFrames={10}>
           <FlashCut duration={10} />
         </Sequence>
