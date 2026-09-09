@@ -32,6 +32,7 @@ FIELD_CARDS = '用到的镜头卡（可选）'
 FIELD_FILE = '视频文件（≤10MB 直接拖拽上传）'
 FIELD_URL = '视频外部链接（大文件用）'
 FIELD_X = 'X 账号（可选）'
+FIELD_YOUTUBE = 'YouTube（可选）'
 FIELD_XHS = '小红书（可选）'
 FIELD_DY = '抖音（可选）'
 
@@ -39,6 +40,7 @@ ATTACHMENT_RE = re.compile(
     r'https://github\.com/user-attachments/(?:assets/[\w-]+|files/\d+/\S+?)(?=[)\s"\']|$)'
     r'|https://user-images\.githubusercontent\.com/\S+?(?=[)\s"\']|$)')
 URL_RE = re.compile(r'https?://\S+?(?=[)\s"\']|$)')
+YOUTUBE_RE = re.compile(r'^https?://(?:www\.)?(?:youtube\.com|youtu\.be)/', re.I)
 
 
 def run(cmd, **kw):
@@ -153,6 +155,11 @@ def main():
         manifest = {'items': []}
 
     now = datetime.now(timezone.utc).isoformat(timespec='seconds')
+    youtube = fields.get(FIELD_YOUTUBE, '').strip()
+    xiaohongshu = fields.get(FIELD_XHS, '').strip()
+    # 兼容 YouTube 字段上线前把频道链接填到“小红书”的投稿。
+    if not youtube and YOUTUBE_RE.match(xiaohongshu):
+        youtube, xiaohongshu = xiaohongshu, ''
     entry = {
         'id': issue,
         'title': title,
@@ -161,7 +168,8 @@ def main():
         'author': {
             'github': env.get('ISSUE_USER', ''),
             'x': fields.get(FIELD_X, '').strip(),
-            'xiaohongshu': fields.get(FIELD_XHS, '').strip(),
+            'youtube': youtube,
+            'xiaohongshu': xiaohongshu,
             'douyin': fields.get(FIELD_DY, '').strip(),
         },
         # ?v= 缓存穿透：重新发布同一 issue 时 Pages CDN 才会取新文件

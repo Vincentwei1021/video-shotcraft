@@ -178,13 +178,19 @@ export const App: React.FC = () => {
   return (
     <div className="app">
       <header className="topbar">
-        <span className="logo">ShotCraft <b>Workbench</b></span>
+        <button className="brand-mark" title="ShotCraft home" aria-label="ShotCraft home">
+          <span className="brand-glyph">S</span>
+          <span className="logo">ShotCraft <b>Studio</b></span>
+        </button>
+        <span className="topbar-divider" />
         <input
           className="project-name"
           value={project.name}
           onChange={(e) => updateName(e.target.value)}
           spellCheck={false}
         />
+        <span className="save-state">● Đã lưu</span>
+        <span className="workspace-mode">Chỉnh sửa</span>
         <span style={{ flex: 1 }} />
         <button className="btn" disabled={!canUndo} onClick={undo} title="撤销（⌘Z）">
           ↩ 撤销
@@ -216,6 +222,32 @@ export const App: React.FC = () => {
       </header>
 
       <main className="main">
+        <nav className="tool-rail" aria-label="Công cụ chỉnh sửa">
+          {[
+            ["▦", "Media", true],
+            ["♫", "Audio", false],
+            ["T", "Text", false],
+            ["◇", "Stickers", false],
+            ["✦", "Effects", false],
+            ["↝", "Transitions", false],
+            ["◐", "Filters", false],
+          ].map(([icon, label, active]) => (
+            <button
+              key={label}
+              className={`tool-rail-item${active ? " active" : ""}`}
+              title={String(label)}
+              aria-label={String(label)}
+            >
+              <span className="tool-rail-icon">{icon}</span>
+              <span>{label}</span>
+            </button>
+          ))}
+          <span className="tool-rail-spacer" />
+          <button className="tool-rail-item" title="Cài đặt" aria-label="Cài đặt">
+            <span className="tool-rail-icon">⚙</span>
+            <span>Settings</span>
+          </button>
+        </nav>
         <div className="panel-wrap" style={{ width: libW }}>
           <LibraryPanel />
         </div>

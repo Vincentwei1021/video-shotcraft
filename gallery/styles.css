@@ -1165,7 +1165,7 @@ kbd { padding: 0.2rem 0.34rem; border: 1px solid var(--line); border-radius: 5px
   font-size: 0.64rem;
 }
 
-/* 作者社交账号：可点的是链接，纯 handle（小红书号/抖音号）渲染为文本徽章 */
+/* 作者社交账号：可点的是链接，纯 handle（小红书号/抖音号）渲染为文本徽章；YouTube handle 可直达频道 */
 .showcase-author {
   display: flex;
   flex-wrap: wrap;
