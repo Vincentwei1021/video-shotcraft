@@ -52,6 +52,12 @@ body:
       description: "@handle 或主页链接，会显示在你的作品卡片上"
       placeholder: "@yourhandle 或 https://x.com/yourhandle"
   - type: input
+    id: social-youtube
+    attributes:
+      label: YouTube（可选）
+      description: "@handle 或频道主页链接，会显示在你的作品卡片上"
+      placeholder: "@yourhandle 或 https://www.youtube.com/@yourhandle"
+  - type: input
     id: social-xiaohongshu
     attributes:
       label: 小红书（可选）
