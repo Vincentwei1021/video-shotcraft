@@ -11,16 +11,26 @@ import { DEMO_CATEGORIES, DEMO_META } from "./demoMeta";
  *  其余卡按绝对帧走：clip 超出原时长后尾帧定格。 */
 export const DEMO_CARDS: CardDef[] = DEMO_MODULES.map((m) => {
   const meta = DEMO_META[m.stem];
+  const hasHan = (value?: string) => !!value && /[\u3400-\u9fff]/.test(value);
+  const readableStem = m.stem
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const name = meta?.name && !hasHan(meta.name) ? meta.name : `Эффект · ${readableStem}`;
+  const summary = meta?.summary && !hasHan(meta.summary)
+    ? meta.summary
+    : `Демонстрационный эффект «${name}». Нажмите для предпросмотра и перетащите на таймлайн.`;
   return {
     id: `demo:${m.stem}`,
-    name: meta?.name ?? m.stem,
+    name,
     category: meta?.category ?? "动效库",
     durationInFrames: Math.max(2, Math.round(m.duration)),
     component: m.component,
     schema: [],
     accent: "#c58a2a",
     preview: meta?.preview ? `cardpreviews/${meta.preview}` : undefined,
-    summary: meta?.summary,
+    summary,
   };
 });
 

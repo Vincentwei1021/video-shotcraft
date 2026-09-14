@@ -12,12 +12,35 @@ export { projectDuration } from "./types";
 
 const STORAGE_KEY = "shotcraft-workbench-project-v1";
 
+const LEGACY_TRACK_NAMES: Record<string, string> = {
+  "转场": "Переходы",
+  "字幕": "Титры",
+  "叠加层": "Слои",
+  "镜头": "Кадры",
+  "音乐": "Музыка",
+  "音效": "Звуки",
+};
+
+const migrateTrackName = (name: string) => {
+  const exact = LEGACY_TRACK_NAMES[name];
+  if (exact) return exact;
+  const match = /^(转场|字幕|叠加层|镜头|音乐|音效) (\d+)$/.exec(name);
+  if (match) return `${LEGACY_TRACK_NAMES[match[1]]} ${match[2]}`;
+  const generic = /^轨道 (\d+)$/.exec(name);
+  return generic ? `Дорожка ${generic[1]}` : name;
+};
+
+const migrateProject = (project: ProjectData): ProjectData => ({
+  ...project,
+  tracks: project.tracks.map((track) => ({ ...track, name: migrateTrackName(track.name) })),
+});
+
 const loadSaved = (): ProjectData | null => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const p = JSON.parse(raw) as ProjectData;
-      if (p && Array.isArray(p.tracks)) return p;
+      if (p && Array.isArray(p.tracks)) return migrateProject(p);
     }
   } catch {
     /* 损坏的存档直接回退 */
@@ -164,7 +187,7 @@ export const useStore = create<WorkbenchState>((set, get) => ({
     get().commit();
     set((s) => ({
       project: mutateProject(s.project, (d) => {
-        d.tracks.unshift({ id: uid("track"), name: `轨道 ${d.tracks.length + 1}`, clips: [] });
+        d.tracks.unshift({ id: uid("track"), name: `Дорожка ${d.tracks.length + 1}`, clips: [] });
       }),
     }));
   },

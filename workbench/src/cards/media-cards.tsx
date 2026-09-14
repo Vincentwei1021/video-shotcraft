@@ -30,7 +30,7 @@ const VideoClip: React.FC<{
 
 export const videoClipCard: CardDef = {
   id: "video-clip",
-  name: "视频素材",
+  name: "Видео",
   category: "素材",
   kind: "video",
   timing: "realtime",
@@ -38,16 +38,16 @@ export const videoClipCard: CardDef = {
   accent: "#30d158",
   component: VideoClip as React.ComponentType<Record<string, unknown>>,
   schema: [
-    { type: "text", key: "file", label: "文件（public/ 下）", default: "" },
+    { type: "text", key: "file", label: "Файл (в public/)", default: "" },
     {
-      type: "select", key: "fit", label: "适配", default: "contain",
+      type: "select", key: "fit", label: "Заполнение", default: "contain",
       options: [
-        { value: "contain", label: "完整显示" },
-        { value: "cover", label: "铺满裁切" },
+        { value: "contain", label: "Показать целиком" },
+        { value: "cover", label: "Заполнить с обрезкой" },
       ],
     },
-    { type: "boolean", key: "muted", label: "静音", default: false },
-    { type: "slider", key: "volume", label: "音量", default: 1, min: 0, max: 1, step: 0.01 },
+    { type: "boolean", key: "muted", label: "Без звука", default: false },
+    { type: "slider", key: "volume", label: "Громкость", default: 1, min: 0, max: 1, step: 0.01 },
   ],
 };
 
@@ -65,19 +65,19 @@ const ImageClip: React.FC<{ file?: string; fit?: string }> = ({ file = "", fit =
 
 export const imageClipCard: CardDef = {
   id: "image-clip",
-  name: "图片素材",
+  name: "Изображение",
   category: "素材",
   timing: "realtime",
   durationInFrames: 90,
   accent: "#64d2ff",
   component: ImageClip as React.ComponentType<Record<string, unknown>>,
   schema: [
-    { type: "text", key: "file", label: "文件（public/ 下）", default: "" },
+    { type: "text", key: "file", label: "Файл (в public/)", default: "" },
     {
-      type: "select", key: "fit", label: "适配", default: "contain",
+      type: "select", key: "fit", label: "Заполнение", default: "contain",
       options: [
-        { value: "contain", label: "完整显示" },
-        { value: "cover", label: "铺满裁切" },
+        { value: "contain", label: "Показать целиком" },
+        { value: "cover", label: "Заполнить с обрезкой" },
       ],
     },
   ],
@@ -99,7 +99,7 @@ const AudioClip: React.FC<{ file?: string; volume?: number; inOffset?: number; s
 
 export const audioClipCard: CardDef = {
   id: "audio-clip",
-  name: "音频",
+  name: "Аудио",
   category: "音频",
   kind: "audio",
   timing: "realtime",
@@ -107,7 +107,7 @@ export const audioClipCard: CardDef = {
   accent: "#ff9f0a",
   component: AudioClip as React.ComponentType<Record<string, unknown>>,
   schema: [
-    { type: "text", key: "file", label: "文件（public/ 下）", default: "" },
-    { type: "slider", key: "volume", label: "音量", default: 1, min: 0, max: 1, step: 0.01 },
+    { type: "text", key: "file", label: "Файл (в public/)", default: "" },
+    { type: "slider", key: "volume", label: "Громкость", default: 1, min: 0, max: 1, step: 0.01 },
   ],
 };

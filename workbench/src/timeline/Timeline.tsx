@@ -120,38 +120,38 @@ export const Timeline: React.FC = () => {
         <button
           className="btn"
           disabled={!selectedClipId}
-          title="在播放头处分割选中片段（S）"
+          title="Разделить выбранный клип в позиции курсора (S)"
           onClick={() =>
             selectedClipId && splitClip(selectedClipId, useStore.getState().playhead)
           }
         >
-          ✂ 分割
+          ✂ Разделить
         </button>
         <button
           className="btn"
           disabled={!selectedClipId}
-          title="复制选中片段（⌘D）"
+          title="Дублировать выбранный клип (⌘D)"
           onClick={() => selectedClipId && duplicateClip(selectedClipId)}
         >
-          ⧉ 复制
+          ⧉ Дублировать
         </button>
         <button
           className="btn"
           disabled={!selectedClipId}
-          title="删除选中片段（Delete）"
+          title="Удалить выбранный клип (Delete)"
           onClick={() => selectedClipId && removeClip(selectedClipId)}
         >
-          🗑 删除
+          🗑 Удалить
         </button>
         <span className="tl-sep" />
-        <button className="btn" onClick={addTrack} title="新增一条轨道（加在最上层）">
-          ＋ 轨道
+        <button className="btn" onClick={addTrack} title="Добавить дорожку (поверх остальных)">
+          ＋ Дорожка
         </button>
         <span style={{ marginLeft: "auto" }} />
-        <button className="btn" onClick={fit} title="缩放到适配全部内容">
-          ⤢ 适配
+        <button className="btn" onClick={fit} title="Подогнать масштаб под весь проект">
+          ⤢ Подогнать
         </button>
-        <span className="dim">缩放</span>
+        <span className="dim">Масштаб</span>
         <input
           type="range"
           min={0.3}
@@ -182,7 +182,7 @@ export const Timeline: React.FC = () => {
               <div
                 className="tl-track-head"
                 style={{ width: HEADER_W }}
-                title="按住上下拖动调整轨道层序（上层盖住下层）"
+                title="Перетащите вверх или вниз, чтобы изменить порядок дорожек (верхняя перекрывает нижнюю)"
                 onPointerDown={onTrackHeadDown(track.id)}
               >
                 <span className="track-grip" aria-hidden>
@@ -194,18 +194,18 @@ export const Timeline: React.FC = () => {
                 <span className="track-actions">
                   <button
                     className="mini"
-                    title={track.hidden ? "显示轨道" : "隐藏轨道"}
+                    title={track.hidden ? "Показать дорожку" : "Скрыть дорожку"}
                     onClick={() => toggleTrackHidden(track.id)}
                   >
                     {track.hidden ? "🚫" : "👁"}
                   </button>
                   <button
                     className="mini"
-                    title="删除轨道"
+                    title="Удалить дорожку"
                     onClick={() => {
                       if (
                         track.clips.length === 0 ||
-                        window.confirm(`删除轨道「${track.name}」及其 ${track.clips.length} 个片段？`)
+                        window.confirm(`Удалить дорожку «${track.name}» и ${track.clips.length} клипов?`)
                       )
                         removeTrack(track.id);
                     }}

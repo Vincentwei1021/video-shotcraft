@@ -59,19 +59,19 @@ const CaptionStrip: React.FC<Props> = ({
 
 export const captionStripCard: CardDef = {
   id: "inkpress-caption",
-  name: "解说字幕条",
+  name: "Полоса субтитров",
   category: "工作台",
   durationInFrames: 60,
   accent: "#34c759",
   durationProp: "duration",
   component: CaptionStrip as React.ComponentType<Record<string, unknown>>,
-  summary: "底部通栏等宽解说条，琥珀方点引导；透明底，叠在任何镜头上",
+  summary: "Моноширинная полоса субтитров внизу кадра с янтарной точкой; прозрачный фон, можно накладывать на любой кадр",
   schema: [
-    { type: "text", key: "text", label: "文案", default: "SEARCH · FILTER · OPEN" },
-    { type: "slider", key: "bottom", label: "底距", default: 72, min: 20, max: 400, step: 2, unit: "px" },
-    { type: "slider", key: "fontSize", label: "字号", default: 22, min: 14, max: 48, step: 1, unit: "px" },
-    { type: "color", key: "color", label: "文字色", default: "#615c54" },
-    { type: "color", key: "accent", label: "方点色", default: "#b5651d" },
-    { type: "boolean", key: "uppercase", label: "全大写", default: true },
+    { type: "text", key: "text", label: "Текст", default: "SEARCH · FILTER · OPEN" },
+    { type: "slider", key: "bottom", label: "Отступ снизу", default: 72, min: 20, max: 400, step: 2, unit: "px" },
+    { type: "slider", key: "fontSize", label: "Размер шрифта", default: 22, min: 14, max: 48, step: 1, unit: "px" },
+    { type: "color", key: "color", label: "Цвет текста", default: "#615c54" },
+    { type: "color", key: "accent", label: "Цвет точки", default: "#b5651d" },
+    { type: "boolean", key: "uppercase", label: "Все буквы заглавные", default: true },
   ],
 };

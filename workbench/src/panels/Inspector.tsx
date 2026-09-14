@@ -131,18 +131,18 @@ export const Inspector: React.FC = () => {
   if (!hit) {
     return (
       <div className="inspector">
-        <div className="panel-title">属性</div>
+        <div className="panel-title">Свойства</div>
         <div className="inspector-empty dim">
-          选中时间轨上的片段后，
+          Выберите клип на таймлайне,
           <br />
-          在这里调整它的文字、颜色、
+          чтобы изменить его текст, цвет,
           <br />
-          动画节奏、变速与图层属性。
+          темп анимации, скорость и свойства слоя.
           <br />
           <br />
-          快捷键：空格 播放 · S 分割
+          Горячие клавиши: пробел — воспроизведение · S — разделить
           <br />
-          Delete 删除 · ⌘Z 撤销 · ⌘D 复制
+          Delete — удалить · ⌘Z — отменить · ⌘D — дублировать
         </div>
       </div>
     );
@@ -175,7 +175,7 @@ export const Inspector: React.FC = () => {
       <div className="inspector-scroll">
         {card && card.schema.length > 0 && (
           <section>
-            <div className="sec-title">内容与样式</div>
+            <div className="sec-title">Содержимое и стиль</div>
             {card.schema.map((field) => (
               <Row key={field.key} label={field.label}>
                 <PropControl
@@ -190,8 +190,8 @@ export const Inspector: React.FC = () => {
         )}
 
         <section>
-          <div className="sec-title">时间与变速</div>
-          <Row label="起点">
+          <div className="sec-title">Время и скорость</div>
+          <Row label="Начало">
             <span className="ctl-row">
               <input
                 type="number"
@@ -206,7 +206,7 @@ export const Inspector: React.FC = () => {
               <span className="unit">s</span>
             </span>
           </Row>
-          <Row label="时长">
+          <Row label="Длительность">
             <span className="ctl-row">
               <input
                 type="number"
@@ -223,7 +223,7 @@ export const Inspector: React.FC = () => {
               <span className="unit">s</span>
             </span>
           </Row>
-          <Row label="变速">
+          <Row label="Скорость">
             <span className="ctl-row">
               <input
                 type="range"
@@ -253,7 +253,7 @@ export const Inspector: React.FC = () => {
               ))}
             </span>
           </Row>
-          <Row label="裁入点">
+          <Row label="Точка входа">
             <span className="ctl-row">
               <input
                 type="number"
@@ -274,7 +274,7 @@ export const Inspector: React.FC = () => {
             <Row label="">
               <button
                 className="mini"
-                title="时长恢复为卡片原始时长（按当前变速换算）"
+                title="Вернуть исходную длительность карточки с учётом текущей скорости"
                 onClick={() => {
                   begin();
                   updateClip(clip.id, {
@@ -285,21 +285,21 @@ export const Inspector: React.FC = () => {
                   });
                 }}
               >
-                ↺ 恢复原始时长
+                ↺ Вернуть исходную длительность
               </button>
             </Row>
           )}
           {fpsMismatch && (
             <div className="dim" style={{ fontSize: 11, lineHeight: 1.5, padding: "4px 0 2px" }}>
-              此卡按 {srcFps}fps 编排，工程 {fps}fps：上轨时已换算时长并以 {(srcFps / fps).toFixed(2)}× 变速保持节奏。
-              卡内若按 useVideoConfig().fps 计时（spring 等），节奏仍会偏 {(fps / srcFps).toFixed(2)}×。
+              Эта карточка собрана в {srcFps} fps, а проект работает в {fps} fps: длительность и скорость уже пересчитаны для сохранения темпа.
+              Если внутри карточки время считается через useVideoConfig().fps (например, spring), темп всё равно будет отличаться в {(fps / srcFps).toFixed(2)} раза.
             </div>
           )}
         </section>
 
         <section>
-          <div className="sec-title">图层</div>
-          <Row label="不透明度">
+          <div className="sec-title">Слой</div>
+          <Row label="Непрозрачность">
             <span className="ctl-row">
               <input
                 type="range"
@@ -313,7 +313,7 @@ export const Inspector: React.FC = () => {
               <span className="slider-val">{Math.round(clip.opacity * 100)}%</span>
             </span>
           </Row>
-          <Row label="缩放">
+          <Row label="Масштаб">
             <span className="ctl-row">
               <input
                 type="range"
@@ -327,7 +327,7 @@ export const Inspector: React.FC = () => {
               <span className="slider-val">{clip.scale.toFixed(2)}</span>
             </span>
           </Row>
-          <Row label="位移 X">
+          <Row label="Смещение X">
             <span className="ctl-row">
               <input
                 type="number"
@@ -339,7 +339,7 @@ export const Inspector: React.FC = () => {
               <span className="unit">px</span>
             </span>
           </Row>
-          <Row label="位移 Y">
+          <Row label="Смещение Y">
             <span className="ctl-row">
               <input
                 type="number"
@@ -355,7 +355,7 @@ export const Inspector: React.FC = () => {
 
         <section>
           <button className="btn danger" onClick={() => removeClip(clip.id)}>
-            删除片段
+            Удалить клип
           </button>
         </section>
       </div>

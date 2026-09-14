@@ -70,7 +70,7 @@ export const buildProjectFromManifest = (m: WorkbenchManifest = MANIFEST!): Proj
   };
 
   const order = m.order ?? ["transitions", "captions", "overlays"];
-  const NAMES = { transitions: "转场", captions: "字幕", overlays: "叠加层" } as const;
+  const NAMES = { transitions: "Переходы", captions: "Титры", overlays: "Слои" } as const;
   const upper = order
     .map((k) => unitTrack(k.slice(0, -1) as "transition" | "caption" | "overlay", NAMES[k]))
     .filter((t): t is TrackData => !!t);
@@ -78,9 +78,9 @@ export const buildProjectFromManifest = (m: WorkbenchManifest = MANIFEST!): Proj
   const tracks: TrackData[] = [
     // tracks[0] 为最上层，对应原片 z 序：转场 > 字幕 > 叠加层 > 镜头（缺省序，清单 order 可改）
     ...upper,
-    unitTrack("shot", "镜头")!,
-    ...(m.bgm?.length ? packAudio(m.bgm, "音乐", m.total, m.total) : []),
-    ...(m.sfx?.length ? packAudio(m.sfx, "音效", 90, m.total) : []),
+    unitTrack("shot", "Кадры")!,
+    ...(m.bgm?.length ? packAudio(m.bgm, "Музыка", m.total, m.total) : []),
+    ...(m.sfx?.length ? packAudio(m.sfx, "Звуки", 90, m.total) : []),
   ];
 
   return {

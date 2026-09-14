@@ -30,15 +30,15 @@ const FlashCut: React.FC<Props> = ({ peak = 0.85, color = "#fff8eb", duration = 
 
 export const flashCutCard: CardDef = {
   id: "inkpress-flash-cut",
-  name: "暖白闪转场",
+  name: "Тёплый световой переход",
   category: "工作台",
   durationInFrames: 10,
   accent: "#f7c948",
   durationProp: "duration",
   component: FlashCut as React.ComponentType<Record<string, unknown>>,
-  summary: "放在硬切点前 5 帧、跨骑两侧各 5 帧；只盖接缝，不当装饰光效",
+  summary: "Световой переход на стыке кадров: по 5 кадров до и после склейки, только закрывает шов",
   schema: [
-    { type: "slider", key: "peak", label: "峰值不透明度", default: 0.85, min: 0.2, max: 1, step: 0.05 },
-    { type: "color", key: "color", label: "暖白色", default: "#fff8eb" },
+    { type: "slider", key: "peak", label: "Пиковая непрозрачность", default: 0.85, min: 0.2, max: 1, step: 0.05 },
+    { type: "color", key: "color", label: "Цвет тёплого света", default: "#fff8eb" },
   ],
 };

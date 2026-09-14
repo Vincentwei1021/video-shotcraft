@@ -9,7 +9,7 @@ export type { UnitKind } from "./manifest";
 /** 已链接成片工程的清单（未链接 / 工程没写 workbench.ts 时为 null） */
 export const MANIFEST: WorkbenchManifest | null = (RAW ?? null) as WorkbenchManifest | null;
 
-const KIND_LABEL = { shot: "镜头", transition: "转场", caption: "字幕", overlay: "叠加层" } as const;
+const KIND_LABEL = { shot: "Кадр", transition: "Переход", caption: "Титр", overlay: "Слой" } as const;
 const KIND_ACCENT: Record<keyof typeof KIND_LABEL, string> = {
   shot: "#4c9aff",
   transition: "#f7c948",
@@ -39,7 +39,7 @@ const build = (m: WorkbenchManifest | null) => {
       cards.push({
         id,
         name,
-        category: "成片单元",
+        category: "Сцены проекта",
         durationInFrames: Math.max(2, first.duration),
         // 成片单元按成片自己的帧率编排（不是卡片库的 30fps）
         sourceFps: m.fps,

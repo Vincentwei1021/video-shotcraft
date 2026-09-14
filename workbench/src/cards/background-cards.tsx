@@ -16,7 +16,7 @@ const solidCard = (id: string, name: string, color: string, accent: string): Car
   durationInFrames: 300,
   accent,
   component: Solid as React.ComponentType<Record<string, unknown>>,
-  schema: [{ type: "color", key: "color", label: "底色", default: color }],
+  schema: [{ type: "color", key: "color", label: "Цвет фона", default: color }],
 });
 
 /** 暖纸底 + 中心亮斑（PaperTitleCard 同款 radial 提亮） */
@@ -30,19 +30,19 @@ const Paper: React.FC<{ color?: string; glow?: number }> = ({ color = "#f2eee6",
 );
 
 export const BG_CARDS: CardDef[] = [
-  solidCard("bg-paper", "纸底 · 暖白", "#f2eee6", "#e6dfd0"),
-  solidCard("bg-white", "纯白", "#ffffff", "#e8e8ea"),
-  solidCard("bg-ink", "墨黑", "#0a0908", "#3a3a3f"),
+  solidCard("bg-paper", "Бумага · тёплый белый", "#f2eee6", "#e6dfd0"),
+  solidCard("bg-white", "Чистый белый", "#ffffff", "#e8e8ea"),
+  solidCard("bg-ink", "Чёрный", "#0a0908", "#3a3a3f"),
   {
     id: "bg-paper-glow",
-    name: "纸底 · 中心提亮",
+    name: "Бумага · центральное свечение",
     category: "背景",
     durationInFrames: 300,
     accent: "#e6dfd0",
     component: Paper as React.ComponentType<Record<string, unknown>>,
     schema: [
-      { type: "color", key: "color", label: "底色", default: "#f2eee6" },
-      { type: "slider", key: "glow", label: "亮斑强度", default: 0.85, min: 0, max: 1, step: 0.05 },
+      { type: "color", key: "color", label: "Цвет фона", default: "#f2eee6" },
+      { type: "slider", key: "glow", label: "Сила свечения", default: 0.85, min: 0, max: 1, step: 0.05 },
     ],
   },
 ];
