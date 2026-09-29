@@ -172,6 +172,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
 | 制作手法 | キャプチャ、ビジュアルディレクション、ストーリーボード、サウンドデザイン、ビート同期、最終 QA |
 | 剪映プロジェクト書き出し | 完成映像を剪映（CapCut 中国版）で継続編集——ショット変速・字幕・音声トラックを編集可（macOS 11.2 実機検証済み） |
+| SNS 投稿（任意） | 依頼があれば、Upload-Post API で完成映像を TikTok・Instagram・YouTube・LinkedIn・X などへ投稿——キャプションと投稿先を確認し、dry-run の後に投稿（[ガイド](references/publish-upload-post.md)） |
 | モーションワークベンチ | 納品後に開くブラウザのタイムラインエディタ：映像をトラックに分解、公開されたショット属性の編集、再タイミング、216 個の demo モーションのドラッグ投入、Remotion 書き出し |
 
 このツールキットは主に Web およびデスクトップ製品のプロモーションを対象としていますが、
@@ -191,11 +192,13 @@ video-shotcraft/
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
 │   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
+│   ├── publish-upload-post.md # Optional social publishing (Upload-Post API)
 │   └── workbench.md         # Motion workbench: manifest contract + editability rules
 ├── demos/                   # Remotion reference implementations for shot cards
 ├── gallery/                 # Static motion-preview Gallery
 ├── template/                # Runnable complete video template
 ├── jianying-export/         # JianYing draft installers (mac tested / win untested)
+├── publish/                 # Optional social publisher (stdlib-only Python) + offline tests
 ├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components

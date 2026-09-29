@@ -161,6 +161,7 @@ agent 会替换成目标产品的截图、文案和品牌信息，复现同等�
 | 组件与素材 | 2.5D 页面相机、字幕、闪切、数字滚动、音效和素材采集脚本 |
 | 制作方法论 | 从素材采集、风格定调和分镜，到声音设计、节奏卡点与最终验收 |
 | 剪映工程导出 | 成片可装进剪映继续编辑：镜头变速/字幕/音轨全开放（Mac 11.2 实测） |
+| 社交平台发布（可选） | 用户要求时，通过 Upload-Post API 把成片发到 TikTok / Instagram / YouTube / LinkedIn / X 等；先确认文案与平台、dry-run 后再发（[说明](references/publish-upload-post.md)） |
 | 动效工作台 | 交付后自动打开的浏览器时间线编辑器：成片拆多轨、改镜头开放属性、变速重排、拖入 216 个 demo 动效、Remotion 导出 |
 
 当前主要面向 Web 与桌面产品宣传片，但镜头卡也可以单独用于功能演示、
@@ -179,11 +180,13 @@ video-shotcraft/
 │   ├── music-beat-sync.md   # BGM 节奏分析与卡点方法
 │   ├── sound-design.md      # 声音设计方法与判例
 │   ├── jianying-export.md   # 剪映工程导出方法
+│   ├── publish-upload-post.md # 社交平台发布（可选，Upload-Post API）
 │   └── workbench.md         # 动效工作台：成片接入契约 + 可编辑性规则
 ├── demos/                   # 镜头卡的 Remotion 参考实现（同类别目录）
 ├── gallery/                 # 在线样片画廊的静态站点
 ├── template/                # 可直接运行的完整成片模板
 ├── jianying-export/         # 剪映草稿安装模块（Mac 实测 / Windows 未验证）
+├── publish/                 # 社交平台发布脚本（纯标准库 Python）+ 离线单测
 ├── workbench/               # 交付后的动效工作台（Vite + Remotion Player）
 └── assets/
     ├── lib/                 # 可复制使用的 Remotion 组件
