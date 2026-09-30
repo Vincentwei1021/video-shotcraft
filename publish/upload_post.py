@@ -29,8 +29,10 @@ Facebook、X、Threads、Pinterest、Bluesky。只在用户明确要求发布、
   * 视频只上传一次，Upload-Post 分发到各平台，按平台返回链接或错误。
   * 异步上传：API 收到文件即返回 request_id，脚本轮询状态直到全部平台结束
     （或 --wait-timeout 超时；超时不取消，稍后用 --status 查）。
-  * 防重复发布：request_id 由脚本生成并作为 Idempotency-Key 发送；上传中途断网
-    时不重发文件，改为用同一个 id 查询是否已送达。
+  * 防重复发布：request_id 由脚本生成并作为 Idempotency-Key 发送。只有
+    400/401/403/422 算明确拒绝；5xx、超时、断网、2xx 却无有效 JSON 都算"不确定"——
+    不重发文件，改用同一个 id 查询；仍无法确认时输出 status=unknown（退出码 2）、
+    request_id 和 --status 命令。unknown 之后绝不能重跑发布命令，只能 --status。
   * profile 未连接的平台返回 skipped，不影响其他平台。
   * YouTube 默认 private；TikTok 默认沿用账号自身隐私设置。
 """
@@ -71,6 +73,16 @@ TITLE_MAX = {"youtube": 100, "tiktok": 2200}
 
 # 网络层错误：上传可能已送达，也可能没有——不重发，改查同一 request_id
 NETWORK_ERRORS = (urllib.error.URLError, socket.timeout, ConnectionError, TimeoutError)
+# 只有这些是"服务端受理前明确拒绝"：可以直接判失败。其余（5xx、网关错误、
+# 超时、2xx 却无有效 JSON）都算"不确定"——文件可能已被受理，绝不能重发。
+DEFINITIVE_REJECTIONS = {400, 401, 403, 422}
+PROBE_ATTEMPTS = 6          # 不确定时按同一 request_id 探查的次数（×POLL_INTERVAL_SECS）
+NOT_FOUND_GRACE_POLLS = 6   # 已受理后 status 仍 not_found 的容忍次数（记录可能稍晚写入）
+MAX_POLL_ERRORS = 6         # 轮询期间连续出错的容忍次数
+
+
+class AmbiguousSubmit(Exception):
+    """提交结果不确定：服务端可能已受理。只能按同一 request_id 查询，不能重发。"""
 
 
 class ApiError(Exception):
@@ -113,9 +125,9 @@ def _request(method: str, path: str, api_key: str, *, params: dict | None = None
     except urllib.error.HTTPError as e:
         status, raw = e.code, e.read()
     try:
-        data = json.loads(raw or b"{}")
-    except ValueError:
-        data = {"message": raw[:300].decode("utf-8", "replace")}
+        data = json.loads(raw)
+    except ValueError:  # 空响应或非 JSON
+        return status, {"_invalid": True, "message": raw[:300].decode("utf-8", "replace")}
     return status, data if isinstance(data, dict) else {"data": data}
 
 
@@ -150,6 +162,8 @@ def get_status(api_key: str, *, request_id: str | None = None, job_id: str | Non
         raise ApiError(f"Network error: {e}", "http")
     if status == 404:
         return {"status": "not_found", **params}
+    if status < 400 and data.get("_invalid"):
+        raise ApiError(f"HTTP {status}: empty or non-JSON status response", "http", status)
     return _check(status, data)
 
 
@@ -219,19 +233,60 @@ def submit_upload(api_key: str, video: str, form: list, thumbnail: str | None, r
         mime = mimetypes.guess_type(thumbnail)[0] or "image/png"
         files.append(("thumbnail", Path(thumbnail).name, Path(thumbnail).read_bytes(), mime))
     body, content_type = encode_multipart(form, files)
-    status, data = _request(
-        "POST", "/api/upload", api_key, body=body, timeout=UPLOAD_TIMEOUT,
-        headers={"Content-Type": content_type, "Idempotency-Key": request_id},
-    )
-    return _check(status, data)
+    try:
+        status, data = _request(
+            "POST", "/api/upload", api_key, body=body, timeout=UPLOAD_TIMEOUT,
+            headers={"Content-Type": content_type, "Idempotency-Key": request_id},
+        )
+    except NETWORK_ERRORS as e:
+        raise AmbiguousSubmit(f"network error: {e}")
+    if status in DEFINITIVE_REJECTIONS:
+        _check(status, data)  # 抛出 ApiError：受理前明确拒绝，可放心判失败
+    if status >= 400:
+        raise AmbiguousSubmit(f"HTTP {status}: {data.get('message') or data.get('error') or ''}".strip())
+    if data.get("_invalid"):
+        raise AmbiguousSubmit(f"HTTP {status} with an empty or non-JSON body")
+    return data
+
+
+def probe_submission(api_key: str, request_id: str) -> dict | None:
+    """不确定提交后按同一 request_id 查询：服务端有记录就返回状态，否则 None。"""
+    for attempt in range(PROBE_ATTEMPTS):
+        try:
+            status = get_status(api_key, request_id=request_id)
+            if status.get("status") != "not_found":
+                return status
+        except ApiError:
+            pass
+        if attempt < PROBE_ATTEMPTS - 1:
+            time.sleep(POLL_INTERVAL_SECS)
+    return None
 
 
 def wait_for_result(api_key: str, request_id: str, wait_secs: int) -> dict:
     deadline = time.monotonic() + wait_secs
     last = None
+    not_found = errors = 0
     while True:
-        status = get_status(api_key, request_id=request_id)
+        try:
+            status = get_status(api_key, request_id=request_id)
+            errors = 0
+        except ApiError as e:
+            # 已提交后查询出错：不能判失败（上传可能正在进行）
+            errors += 1
+            if errors >= MAX_POLL_ERRORS or time.monotonic() >= deadline:
+                return {"status": "unknown", "request_id": request_id, "reason": str(e)}
+            time.sleep(POLL_INTERVAL_SECS)
+            continue
         state = status.get("status")
+        if state == "not_found":
+            # 我们确实发出了上传：not_found 只说明记录还没写入或无法确认，不是失败
+            not_found += 1
+            if not_found >= NOT_FOUND_GRACE_POLLS or time.monotonic() >= deadline:
+                return {"status": "unknown", "request_id": request_id,
+                        "reason": "the server has no record of this request_id yet"}
+            time.sleep(POLL_INTERVAL_SECS)
+            continue
         progress = f"{status.get('completed', 0)}/{status.get('total', '?')}"
         if (state, progress) != last:
             log(f"   状态 status: {state} ({progress})")
@@ -332,6 +387,16 @@ def fail(msg: str, error_type: str, json_out: bool, **extra):
     log(f"!! {msg}")
     emit({"success": False, "error": msg, "errorType": error_type, **extra}, json_out)
     sys.exit(1)
+
+
+def report_unknown(request_id: str, reason: str, json_out: bool, **extra) -> int:
+    """结果无法确认：给出 request_id 与查询命令，明确要求不要重跑发布。"""
+    cmd = f"python3 publish/upload_post.py --status {request_id}"
+    log(f"?? Outcome UNKNOWN ({reason}). The video may already be publishing.")
+    log(f"?? DO NOT re-run the publish command — that can post it twice. Check with: {cmd}")
+    emit({"success": False, "status": "unknown", "requestId": request_id, "reason": reason,
+          "statusCommand": cmd, "doNotRerun": True, **extra}, json_out)
+    return 2
 
 
 def report(status: dict, results: list[dict], json_out: bool, **extra) -> int:
@@ -448,11 +513,15 @@ def main() -> None:
     log(f"-> Uploading '{Path(args.video).name}' to {', '.join(args.platforms)} as '{args.user}'...")
     try:
         submitted = submit_upload(api_key, args.video, form, args.thumbnail, request_id)
-    except ApiError as e:
+    except ApiError as e:  # 400/401/403/422：受理前明确拒绝
         fail(str(e), e.error_type, args.json_out, requestId=request_id)
-    except NETWORK_ERRORS as e:
-        log(f"?? network error while uploading ({e}); checking whether it arrived...")
-        submitted = {"request_id": request_id}
+    except AmbiguousSubmit as e:
+        log(f"?? upload response unclear ({e}); checking request {request_id} instead of re-sending...")
+        found = probe_submission(api_key, request_id)
+        if found is None:
+            sys.exit(report_unknown(request_id, str(e), args.json_out, platforms=args.platforms))
+        log("OK the server has this upload; continuing.")
+        submitted = {"request_id": request_id, "job_id": found.get("job_id")}
 
     if args.schedule:
         job_id = submitted.get("job_id")
@@ -469,10 +538,9 @@ def main() -> None:
               "platforms": args.platforms}, args.json_out)
         sys.exit(0)
 
-    try:
-        status = wait_for_result(api_key, request_id, args.wait_timeout)
-    except ApiError as e:
-        fail(str(e), e.error_type, args.json_out, requestId=request_id)
+    status = wait_for_result(api_key, request_id, args.wait_timeout)
+    if status.get("status") == "unknown":
+        sys.exit(report_unknown(request_id, status["reason"], args.json_out, platforms=args.platforms))
     status.setdefault("request_id", request_id)
     sys.exit(report(status, summarize_results(status), args.json_out, platforms=args.platforms))
 

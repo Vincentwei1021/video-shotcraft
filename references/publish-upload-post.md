@@ -57,8 +57,14 @@ python3 publish/upload_post.py --video out/promo.mp4 --title "<文案>" \
 
 去掉 `--dry-run` 重跑。脚本等待各平台结果（默认最多 10 分钟），逐平台输出链接或错误。
 
-- **超时或断网不要重跑**——会重复发布。改用 `--status <requestId>` 查询：
+- **每条发布命令只跑一次。** 无论超时、断网、报错还是 `status: "unknown"`，都**不要
+  重跑发布命令**——重跑会生成新的 request_id，同一视频会被发两次。只能查询：
   `python3 publish/upload_post.py --status <requestId> --json-out`
+- 脚本如何区分：只有 **400 / 401 / 403 / 422**（服务端受理前明确拒绝）才判失败，此时
+  没有任何东西被发出去，修正参数后可以再发。5xx、网关错误、超时、断网、2xx 却无有效
+  JSON 都属于"不确定"——视频可能已被受理。脚本会自动用同一个 request_id 查询：查到就
+  照常继续；仍无法确认则输出 `status: "unknown"`（退出码 2）、`requestId` 和
+  `statusCommand`，并带 `doNotRerun: true`。
 - 定时发布（`--schedule 2026-10-01T09:00:00 --timezone Asia/Shanghai`）立即返回
   `jobId` + `requestId`，之后同样用 `--status` 查。
 
@@ -72,6 +78,7 @@ python3 publish/upload_post.py --video out/promo.mp4 --title "<文案>" \
 | `skipped` | profile 没连这个平台，没有发 |
 | `failed` / `retryable` | `error` 是平台给的原因（如账号授权过期——去后台重新连接）；`retryable` 会由服务端自动重试 |
 | TikTok `inbox: true` | TikTok 把视频放进了草稿箱，需要用户在 TikTok App 里点发布 |
+| 整体 `status: "unknown"` | 无法确认是否已受理。原样告诉用户 `requestId`，稍后用 `statusCommand` 查询；**不要重跑发布命令** |
 
 ## 6. 参数速查
 

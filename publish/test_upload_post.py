@@ -18,6 +18,7 @@ import upload_post as up  # noqa: E402
 def run_cli(argv, *, post=None, gets=()):
     """跑一次 main()，返回 (退出码, JSON 输出, post mock, get mock)。"""
     out = io.StringIO()
+    # gets: 依次返回的 GET 响应列表；最后一个会一直重复（模拟持续同一状态）
     gets = list(gets)
 
     def fake_request(method, path, api_key, **kw):
@@ -25,7 +26,10 @@ def run_cli(argv, *, post=None, gets=()):
             if isinstance(post, Exception):
                 raise post
             return post
-        return gets.pop(0)
+        resp = gets.pop(0) if len(gets) > 1 else gets[0]
+        if isinstance(resp, Exception):
+            raise resp
+        return resp
 
     with mock.patch.object(sys, "argv", ["upload_post.py", *argv]), \
          mock.patch.dict("os.environ", {"UPLOAD_POST_API_KEY": "k"}), \
@@ -139,6 +143,76 @@ class UploadPostTest(unittest.TestCase):
         self.assertTrue(body.endswith(f"--{boundary}--\r\n".encode()))
         self.assertIn('name="title"\r\n\r\n标题'.encode(), body)
         self.assertIn(b'filename="a.mp4"\r\nContent-Type: video/mp4\r\n\r\nDATA', body)
+
+
+COMPLETED = (200, {"status": "completed", "results": [
+    {"platform": "tiktok", "success": True, "post_url": "https://tiktok.com/@a/video/1"}]})
+
+
+class AmbiguousSubmitTest(unittest.TestCase):
+    """提交结果不确定时绝不重发，只按同一 request_id 查询。"""
+
+    setUp = UploadPostTest.setUp
+    tearDown = UploadPostTest.tearDown
+
+    def _posts_and_ids(self, req):
+        posts = [c for c in req.call_args_list if c.args[0] == "POST"]
+        gets = [c for c in req.call_args_list if c.args[0] == "GET"]
+        return posts, posts[0].kwargs["headers"]["Idempotency-Key"], gets
+
+    def test_503_then_status_completed_is_success_without_resend(self):
+        code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                post=(503, {"message": "Service Unavailable"}), gets=[COMPLETED])
+        posts, sent_id, gets = self._posts_and_ids(req)
+        self.assertEqual((code, js["success"], len(posts)), (0, True, 1))
+        self.assertTrue(all(g.kwargs["params"] == {"request_id": sent_id} for g in gets))
+
+    def test_503_then_not_found_is_unknown_with_request_id(self):
+        for status in (500, 502, 503):
+            code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                    post=(status, {}), gets=[(404, {"status": "not_found"})])
+            posts, sent_id, _ = self._posts_and_ids(req)
+            self.assertEqual(code, 2)
+            self.assertEqual(js["status"], "unknown")
+            self.assertFalse(js["success"])
+            self.assertTrue(js["doNotRerun"])
+            self.assertEqual(js["requestId"], sent_id)
+            self.assertIn(f"--status {sent_id}", js["statusCommand"])
+            self.assertEqual(len(posts), 1)
+
+    def test_503_then_status_errors_is_unknown(self):
+        code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                post=(503, {}), gets=[(500, {"message": "boom"})])
+        self.assertEqual((code, js["status"]), (2, "unknown"))
+        self.assertEqual(len(self._posts_and_ids(req)[0]), 1)
+
+    def test_empty_2xx_is_treated_as_accepted(self):
+        code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                post=(200, {"_invalid": True, "message": ""}), gets=[COMPLETED])
+        self.assertEqual((code, js["success"]), (0, True))
+        self.assertEqual(len(self._posts_and_ids(req)[0]), 1)
+
+    def test_transport_error_then_not_found_is_unknown(self):
+        code, js, _ = run_cli(self.base + ["--platforms", "tiktok"],
+                              post=urllib.error.URLError("reset"), gets=[(404, {})])
+        self.assertEqual((code, js["status"]), (2, "unknown"))
+
+    def test_4xx_before_acceptance_is_definitive_and_not_polled(self):
+        for status, etype in ((400, "validation"), (401, "auth"), (403, "forbidden"), (422, "validation")):
+            code, js, req = run_cli(self.base + ["--platforms", "tiktok"], post=(status, {"message": "no"}),
+                                    gets=[COMPLETED])
+            self.assertEqual((code, js["errorType"]), (1, etype))
+            self.assertEqual([c for c in req.call_args_list if c.args[0] == "GET"], [])
+
+    def test_accepted_but_never_found_is_unknown_not_failure(self):
+        code, js, _ = run_cli(self.base + ["--platforms", "tiktok"],
+                              post=(200, {"request_id": "r"}), gets=[(404, {})])
+        self.assertEqual((code, js["status"]), (2, "unknown"))
+
+    def test_status_poll_errors_after_acceptance_are_unknown_not_failure(self):
+        code, js, _ = run_cli(self.base + ["--platforms", "tiktok"],
+                              post=(200, {"request_id": "r"}), gets=[(502, {"message": "bad gateway"})])
+        self.assertEqual((code, js["status"]), (2, "unknown"))
 
 
 if __name__ == "__main__":

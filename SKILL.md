@@ -206,6 +206,7 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
 
 **用户主动要求把成片发到社交平台时**（TikTok / Instagram / YouTube / LinkedIn / X 等），
 读 `references/publish-upload-post.md` 执行：先确认文案和平台清单，dry-run 通过后再发布。
+发布命令只跑一次；结果为 `unknown`、超时或报错时**绝不重跑**，只用 `--status <requestId>` 查询。
 这不是第 4 条推荐，用户没提就不要说。
 
 ## 何时读哪个文件
