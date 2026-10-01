@@ -22,3 +22,9 @@ PRODUCT.md
 # motion-lab 本地研究/渲染农场（动效已转换为正式镜头卡，此目录不进库）
 /motion-lab/
 .playwright-mcp/
+
+# 镜头改版前后对照（视频/打包产物本地生成，不进库）
+/shot-polish/before/
+/shot-polish/after/
+/shot-polish/bundle-*/
+/shot-polish/*.log

@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ShotCraft · Shot Polish — Before / After</title>
+<style>
+  :root {
+    --bg: #0c0d10; --panel: #14161b; --panel2: #1a1d23; --line: rgba(255,255,255,0.08);
+    --ink: #eceef2; --mid: #9aa0ab; --dim: #636a76; --accent: #f2b544; --before: #8b93a1; --after: #f2b544;
+    --font: -apple-system, "SF Pro Text", "Helvetica Neue", Inter, "PingFang SC", Arial, sans-serif;
+    --mono: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  header.top {
+    position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px) saturate(1.2);
+    background: rgba(12,13,16,0.82); border-bottom: 1px solid var(--line);
+  }
+  .wrap { max-width: 1720px; margin: 0 auto; padding: 0 28px; }
+  .bar1 { display: flex; align-items: center; gap: 18px; padding: 16px 0 10px; }
+  .brand { font-weight: 700; letter-spacing: -0.01em; font-size: 18px; }
+  .brand small { color: var(--mid); font-weight: 500; margin-left: 8px; font-size: 13px; letter-spacing: 0; }
+  .stats { color: var(--mid); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .stats b { color: var(--ink); font-weight: 600; }
+  .spacer { flex: 1; }
+  .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 2px; }
+  .seg button { all: unset; cursor: pointer; padding: 6px 11px; font-size: 12.5px; color: var(--mid); border-radius: 7px; }
+  .seg button.on { background: #2a2e36; color: var(--ink); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+  .bar2 { display: flex; align-items: center; gap: 10px; padding: 0 0 14px; flex-wrap: wrap; }
+  .chip { all: unset; cursor: pointer; font-size: 12.5px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line); color: var(--mid); white-space: nowrap; }
+  .chip .n { color: var(--dim); margin-left: 5px; font-variant-numeric: tabular-nums; }
+  .chip.on { color: #16130b; background: var(--accent); border-color: transparent; }
+  .chip.on .n { color: rgba(22,19,11,0.6); }
+  input.search { all: unset; font-size: 13px; padding: 7px 12px; min-width: 220px; border-radius: 9px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink); }
+  input.search::placeholder { color: var(--dim); }
+  label.tog { font-size: 12.5px; color: var(--mid); display: inline-flex; gap: 6px; align-items: center; cursor: pointer; user-select: none; }
+  main { padding: 26px 0 120px; }
+  .cathead { display: flex; align-items: baseline; gap: 12px; margin: 34px 0 14px; }
+  .cathead h2 { margin: 0; font-size: 22px; letter-spacing: -0.015em; }
+  .cathead span { color: var(--dim); font-size: 13px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; margin: 0 0 22px; overflow: hidden; }
+  .chead { display: flex; align-items: baseline; gap: 12px; padding: 16px 20px 12px; }
+  .idx { font-family: var(--mono); color: var(--dim); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .chead h3 { margin: 0; font-size: 16.5px; letter-spacing: -0.01em; font-weight: 650; }
+  .chead .en { color: var(--mid); font-size: 13px; }
+  .chead .stem { font-family: var(--mono); color: var(--dim); font-size: 12px; margin-left: auto; }
+  .chead .stem a { text-decoration: none; }
+  .summary { color: var(--mid); font-size: 13px; line-height: 1.55; padding: 0 20px 14px; max-width: 1200px; }
+  .stage { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
+  .vbox { position: relative; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; cursor: pointer; }
+  .vbox video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+  .tag { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; padding: 4px 8px; border-radius: 6px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); pointer-events: none; z-index: 3; }
+  .tag.b { color: var(--before); } .tag.a { color: var(--after); }
+  .tag.r { left: auto; right: 10px; }
+  .missing { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 13px; }
+  /* wipe 模式：同一画框里叠两层，拖把手看切分 */
+  .stage.wipe { grid-template-columns: 1fr; }
+  .stage.wipe .vbox.single { max-width: 1280px; width: 100%; margin: 0 auto; }
+  .vbox .topv { clip-path: inset(0 0 0 var(--cut, 50%)); z-index: 2; }
+  .handle { position: absolute; top: 0; bottom: 0; left: var(--cut, 50%); width: 2px; background: var(--accent); z-index: 4; transform: translateX(-1px); box-shadow: 0 0 12px rgba(242,181,68,0.5); }
+  .handle::after { content: "⟷"; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--accent); color: #16130b; font-size: 13px; font-weight: 700; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; }
+  .ctrl { display: flex; align-items: center; gap: 12px; padding: 12px 20px 4px; }
+  .ctrl button { all: unset; cursor: pointer; font-size: 12.5px; color: var(--ink); background: var(--panel2); border: 1px solid var(--line); padding: 5px 10px; border-radius: 7px; font-variant-numeric: tabular-nums; }
+  .ctrl button:hover { background: #242830; }
+  .ctrl input[type=range] { flex: 1; accent-color: var(--accent); }
+  .ctrl .tc { font-family: var(--mono); font-size: 12px; color: var(--mid); min-width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+  .notes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 20px 18px; }
+  .notes > div { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .notes h4 { margin: 0 0 8px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .notes .iss h4 { color: var(--before); } .notes .chg h4 { color: var(--after); }
+  .notes ul { margin: 0; padding-left: 18px; color: #c9cdd4; font-size: 13px; line-height: 1.6; }
+  .notes .none { color: var(--dim); font-size: 13px; }
+  .empty { color: var(--dim); text-align: center; padding: 80px 0; }
+  @media (max-width: 1100px) { .stage, .notes { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="bar1">
+      <div class="brand">ShotCraft · Shot Polish<small data-i18n="subtitle"></small></div>
+      <div class="stats" id="stats"></div>
+      <div class="spacer"></div>
+      <div class="seg" id="mode">
+        <button data-v="side" class="on" data-i18n="side"></button>
+        <button data-v="wipe" data-i18n="wipe"></button>
+      </div>
+      <div class="seg" id="speed">
+        <button data-v="0.25">0.25×</button><button data-v="0.5">0.5×</button><button data-v="1" class="on">1×</button>
+      </div>
+      <div class="seg" id="lang">
+        <button data-v="zh" class="on">中文</button><button data-v="en">EN</button>
+      </div>
+    </div>
+    <div class="bar2">
+      <div id="cats" style="display:flex; gap:8px; flex-wrap:wrap"></div>
+      <div class="spacer"></div>
+      <label class="tog"><input type="checkbox" id="autoplay" checked /> <span data-i18n="autoplay"></span></label>
+      <input class="search" id="q" />
+    </div>
+  </div>
+</header>
+<main class="wrap" id="list"></main>
+<script>
+const DATA = /*__DATA__*/null;
+const FPS = 30;
+const T = {
+  zh: { subtitle: '216 个镜头改版前后对照', side: '并排', wipe: '划像', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
+        all: '全部', before: '改版前', after: '改版后', issues: '改版前的问题', changes: '改版做了什么', nonotes: '（暂无说明）',
+        notyet: '尚未渲染', play: '播放', pause: '暂停', shots: '个镜头', polished: '已改版', empty: '没有匹配的镜头',
+        cats: { opening: '开场', camera: '运镜与空间', transition: '转场', typography: '文字排版', 'ui-entrance': 'UI 入场',
+                interaction: '交互演示', data: '数据', effects: '特效', rhythm: '节奏', outro: '收尾' } },
+  en: { subtitle: 'before / after for 216 shots', side: 'Side by side', wipe: 'Wipe', autoplay: 'Autoplay in view', search: 'Search card / component…',
+        all: 'All', before: 'Before', after: 'After', issues: 'What was rough', changes: 'What changed', nonotes: '(no notes yet)',
+        notyet: 'not rendered yet', play: 'Play', pause: 'Pause', shots: 'shots', polished: 'polished', empty: 'No matching shots',
+        cats: Object.fromEntries(DATA.cats.map(c => [c.key, c.en])) },
+};
+const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: '', mode: 'side', speed: 1, autoplay: true };
+const t = k => T[state.lang][k];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function applyI18n() {
+  document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.getElementById('q').placeholder = t('search');
+  const done = DATA.items.filter(i => i.before && i.after).length;
+  document.getElementById('stats').innerHTML = `<b>${DATA.items.length}</b> ${t('shots')} · <b>${done}</b> ${t('polished')}`;
+}
+
+function renderCats() {
+  const counts = { all: DATA.items.length };
+  DATA.items.forEach(i => { counts[i.cat] = (counts[i.cat] || 0) + 1; });
+  const el = document.getElementById('cats');
+  el.innerHTML = [['all', t('all')], ...DATA.cats.map(c => [c.key, t('cats')[c.key]])]
+    .map(([k, label]) => `<button class="chip ${state.cat === k ? 'on' : ''}" data-k="${k}">${esc(label)}<span class="n">${counts[k] || 0}</span></button>`).join('');
+  el.querySelectorAll('.chip').forEach(b => b.onclick = () => { state.cat = b.dataset.k; renderCats(); renderList(); });
+}
+
+function filtered() {
+  const q = state.q.trim().toLowerCase();
+  return DATA.items.filter(i => (state.cat === 'all' || i.cat === state.cat) &&
+    (!q || [i.name, i.nameEn, i.stem, i.card].some(s => String(s).toLowerCase().includes(q))));
+}
+
+function list(arr) {
+  return arr.length ? `<ul>${arr.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : `<div class="none">${t('nonotes')}</div>`;
+}
+
+function stageHtml(i) {
+  const v = (src, cls) => src ? `<video class="${cls}" data-src="${src}" muted loop playsinline preload="none"></video>` : `<div class="missing">${t('notyet')}</div>`;
+  if (state.mode === 'wipe') {
+    return `<div class="stage wipe"><div class="vbox single" style="--cut:50%">
+      ${v(i.before, 'v-before')}${v(i.after, 'v-after topv')}
+      <span class="tag b">${t('before')}</span><span class="tag a r">${t('after')}</span><div class="handle"></div></div></div>`;
+  }
+  return `<div class="stage">
+    <div class="vbox">${v(i.before, 'v-before')}<span class="tag b">${t('before')}</span></div>
+    <div class="vbox">${v(i.after, 'v-after')}<span class="tag a">${t('after')}</span></div></div>`;
+}
+
+let io;
+function renderList() {
+  if (io) io.disconnect();
+  document.querySelectorAll('video').forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+  const items = filtered();
+  const root = document.getElementById('list');
+  if (!items.length) { root.innerHTML = `<div class="empty">${t('empty')}</div>`; return; }
+  let html = '', lastCat = null, n = 0;
+  const zh = state.lang === 'zh';
+  for (const i of items) {
+    if (i.cat !== lastCat) {
+      lastCat = i.cat;
+      const c = items.filter(x => x.cat === i.cat).length;
+      html += `<div class="cathead"><h2>${esc(t('cats')[i.cat] || i.cat)}</h2><span>${c} ${t('shots')}</span></div>`;
+    }
+    n++;
+    const name = zh ? i.name : i.nameEn;
+    const sub = zh ? i.nameEn : i.name;
+    html += `<section class="card" data-stem="${i.stem}" id="${i.stem}">
+      <div class="chead"><span class="idx">${String(n).padStart(3, '0')}</span><h3>${esc(name)}</h3><span class="en">${esc(sub)}</span>
+        <span class="stem"><a href="#${i.stem}">${esc(i.path)}</a>${i.frames ? ` · ${i.frames}f` : ''}</span></div>
+      ${(zh ? i.summary : i.summaryEn) ? `<div class="summary">${esc(zh ? i.summary : i.summaryEn)}</div>` : ''}
+      ${stageHtml(i)}
+      <div class="ctrl"><button class="pp">${t('pause')}</button><button class="fb">◀ 1f</button><button class="ff">1f ▶</button>
+        <input type="range" class="scrub" min="0" max="1000" value="0" /><span class="tc">0 / ${i.frames ?? '–'}f</span></div>
+      <div class="notes"><div class="iss"><h4>${t('issues')}</h4>${list(zh ? i.issues : (i.issuesEn.length ? i.issuesEn : i.issues))}</div>
+        <div class="chg"><h4>${t('changes')}</h4>${list(zh ? i.changes : (i.changesEn.length ? i.changesEn : i.changes))}</div></div>
+    </section>`;
+  }
+  root.innerHTML = html;
+  root.querySelectorAll('.card').forEach(setupCard);
+  io = new IntersectionObserver(ents => ents.forEach(e => {
+    const card = e.target;
+    if (e.isIntersecting) activate(card); else deactivate(card);
+  }), { rootMargin: '300px 0px' });
+  root.querySelectorAll('.card').forEach(c => io.observe(c));
+}
+
+// 每张卡：after 为主时钟，before 跟随；共享进度条与逐帧步进
+function setupCard(card) {
+  const a = card.querySelector('.v-after'), b = card.querySelector('.v-before');
+  const master = a || b, slave = a && b ? b : null;
+  card._vids = [a, b].filter(Boolean);
+  card._playing = state.autoplay;
+  const pp = card.querySelector('.pp'), scrub = card.querySelector('.scrub'), tc = card.querySelector('.tc');
+  const setPP = () => { pp.textContent = card._playing ? t('pause') : t('play'); };
+  setPP();
+  const playAll = () => { card._playing = true; setPP(); card._vids.forEach(v => { v.playbackRate = state.speed; v.play().catch(() => {}); }); };
+  const pauseAll = () => { card._playing = false; setPP(); card._vids.forEach(v => v.pause()); };
+  const seek = s => { card._vids.forEach(v => { if (v.readyState) v.currentTime = Math.max(0, Math.min(s, (v.duration || s) - 0.001)); }); };
+  card._play = playAll; card._pause = pauseAll;
+  pp.onclick = () => (card._playing ? pauseAll() : playAll());
+  card.querySelectorAll('.vbox').forEach(vb => vb.addEventListener('click', ev => { if (!vb.querySelector('.handle')) pp.onclick(); }));
+  card.querySelector('.fb').onclick = () => { pauseAll(); seek((master?.currentTime || 0) - 1 / FPS); };
+  card.querySelector('.ff').onclick = () => { pauseAll(); seek((master?.currentTime || 0) + 1 / FPS); };
+  scrub.oninput = () => { pauseAll(); if (master?.duration) seek((scrub.value / 1000) * master.duration); };
+  if (master) {
+    const tick = () => {
+      if (!card._active) return;
+      if (master.duration) {
+        scrub.value = Math.round((master.currentTime / master.duration) * 1000);
+        tc.textContent = `${Math.round(master.currentTime * FPS)} / ${Math.round(master.duration * FPS)}f`;
+      }
+      if (slave && slave.readyState && Math.abs(slave.currentTime - master.currentTime) > 1.5 / FPS) slave.currentTime = master.currentTime;
+      requestAnimationFrame(tick);
+    };
+    card._tick = tick;
+  }
+  // 划像把手
+  const vb = card.querySelector('.vbox.single');
+  if (vb) {
+    let drag = false;
+    const move = ev => { const r = vb.getBoundingClientRect(); const x = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)); vb.style.setProperty('--cut', `${(x * 100).toFixed(2)}%`); };
+    vb.addEventListener('pointerdown', ev => { drag = true; vb.setPointerCapture(ev.pointerId); move(ev); });
+    vb.addEventListener('pointermove', ev => { if (drag) move(ev); });
+    vb.addEventListener('pointerup', () => { drag = false; });
+  }
+}
+
+function activate(card) {
+  if (card._active) return;
+  card._active = true;
+  card._vids.forEach(v => { if (!v.getAttribute('src')) { v.src = v.dataset.src; v.preload = 'auto'; } v.playbackRate = state.speed; });
+  if (state.autoplay && card._playing !== false) card._play(); else card._vids.forEach(v => v.pause());
+  card._tick && requestAnimationFrame(card._tick);
+}
+function deactivate(card) {
+  if (!card._active) return;
+  card._active = false;
+  card._vids.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+}
+
+function seg(id, key, cb) {
+  const el = document.getElementById(id);
+  el.querySelectorAll('button').forEach(b => {
+    b.classList.toggle('on', String(state[key]) === b.dataset.v);
+    b.onclick = () => { state[key] = key === 'speed' ? Number(b.dataset.v) : b.dataset.v; el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); cb(); };
+  });
+}
+seg('mode', 'mode', renderList);
+seg('speed', 'speed', () => document.querySelectorAll('video').forEach(v => { v.playbackRate = state.speed; }));
+seg('lang', 'lang', () => { localStorage.setItem('sp-lang', state.lang); applyI18n(); renderCats(); renderList(); });
+document.getElementById('q').oninput = e => { state.q = e.target.value; renderList(); };
+document.getElementById('autoplay').onchange = e => {
+  state.autoplay = e.target.checked;
+  document.querySelectorAll('.card').forEach(c => { if (!c._active) return; state.autoplay ? c._play() : c._pause(); });
+};
+applyI18n(); renderCats(); renderList();
+if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 50);
+</script>
+</body>
+</html>

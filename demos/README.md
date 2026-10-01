@@ -7,8 +7,13 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
 使用方式：copy 需要的 .tsx 进你的 Remotion 项目（30fps / 1920×1080），
 注册成 Composition 即可跑。两类共享依赖：
 
-- `_fixtures/Fixtures.tsx` — 灰阶假 UI 场景件（FakeDashboard/Card/TitleBlock/G 调色板）。
+- `_fixtures/Fixtures.tsx` — 假 UI 场景件（FakeDashboard/Card/TitleBlock/G 调色板）。
+  渲染为克制的出版级产品 UI（发丝线细边、两层软阴影、seed 确定性的指标/sparkline/头像假内容，
+  可选 `tone="dark"`），外形几何与旧灰阶版一致，demo 按其坐标叠加的光标/高亮/推镜目标不受影响。
   多数 demo import 它；copy demo 时把 import 路径改成你项目里的位置。
+- `_fixtures/Polish.tsx` — 可选的质感工具件（贝塞尔缓动 EASE/ramp、胶片颗粒 Grain、暗角 Vignette、
+  softShadow/hairline/surface 材质 helper、按速度的方向性模糊 SpeedBlur、柔光背景 Backdrop），
+  仅依赖 remotion + react。用到它的 demo copy 时一并带上并改 import 路径。
 - `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，
   self-contained，仅依赖 remotion）。给"真实纹理"类 demo（spotlight-hero-card /
   type-and-filter / deck-deal-flyin / row-embed / list-stack-press /

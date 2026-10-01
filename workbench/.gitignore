@@ -22,3 +22,6 @@ public/*
 
 # 导入 vs 原片逐帧对照产物（scripts/parity.mjs）
 .parity/
+
+# scripts/check-demo.mjs 单卡自检的临时入口
+.check/
