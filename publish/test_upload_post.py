@@ -2,6 +2,8 @@
 
     python3 -m unittest publish/test_upload_post.py -v
 """
+import copy
+import http.client
 import io
 import json
 import sys
@@ -18,28 +20,33 @@ import upload_post as up  # noqa: E402
 def run_cli(argv, *, post=None, gets=()):
     """跑一次 main()，返回 (退出码, JSON 输出, post mock, get mock)。"""
     out = io.StringIO()
+    err = io.StringIO()
     # gets: 依次返回的 GET 响应列表；最后一个会一直重复（模拟持续同一状态）
     gets = list(gets)
 
     def fake_request(method, path, api_key, **kw):
         if method == "POST":
-            if isinstance(post, Exception):
+            if isinstance(post, BaseException):
                 raise post
             return post
         resp = gets.pop(0) if len(gets) > 1 else gets[0]
         if isinstance(resp, Exception):
             raise resp
-        return resp
+        return copy.deepcopy(resp)  # main() 会改返回的 dict，不能污染共享样例
 
     with mock.patch.object(sys, "argv", ["upload_post.py", *argv]), \
          mock.patch.dict("os.environ", {"UPLOAD_POST_API_KEY": "k"}), \
          mock.patch.object(up, "_request", side_effect=fake_request) as req, \
          mock.patch.object(up.time, "sleep"), \
-         mock.patch("sys.stdout", out), mock.patch("sys.stderr", io.StringIO()):
+         mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
         try:
             up.main()
         except SystemExit as e:
             code = e.code
+        except BaseException:  # 模拟进程中途死掉：保留 stderr 供断言
+            run_cli.last_stderr = err.getvalue()
+            raise
+    run_cli.last_stderr = err.getvalue()
     line = out.getvalue().strip().splitlines()
     return code, json.loads(line[-1]) if line else None, req
 
@@ -213,6 +220,64 @@ class AmbiguousSubmitTest(unittest.TestCase):
         code, js, _ = run_cli(self.base + ["--platforms", "tiktok"],
                               post=(200, {"request_id": "r"}), gets=[(502, {"message": "bad gateway"})])
         self.assertEqual((code, js["status"]), (2, "unknown"))
+
+
+class ReviewRegressionTest(unittest.TestCase):
+    """PR #93 review: truncated responses and the scheduled status command."""
+
+    setUp = UploadPostTest.setUp
+    tearDown = UploadPostTest.tearDown
+
+    def _sent_id(self, req):
+        posts = [c for c in req.call_args_list if c.args[0] == "POST"]
+        self.assertEqual(len(posts), 1)
+        return posts[0].kwargs["headers"]["Idempotency-Key"]
+
+    def test_incomplete_read_on_submit_is_ambiguous_and_actionable(self):
+        code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                post=http.client.IncompleteRead(b"partial"), gets=[(404, {})])
+        sent_id = self._sent_id(req)
+        self.assertEqual((code, js["status"], js["requestId"]), (2, "unknown", sent_id))
+        self.assertTrue(js["doNotRerun"])
+        self.assertIn(f"--status {sent_id}", js["statusCommand"])
+
+    def test_incomplete_read_then_found_keeps_the_same_id(self):
+        code, js, req = run_cli(self.base + ["--platforms", "tiktok"],
+                                post=http.client.IncompleteRead(b""), gets=[COMPLETED])
+        sent_id = self._sent_id(req)
+        self.assertEqual((code, js["success"], js["requestId"]), (0, True, sent_id))
+        gets = [c for c in req.call_args_list if c.args[0] == "GET"]
+        self.assertTrue(gets and all(g.kwargs["params"] == {"request_id": sent_id} for g in gets))
+
+    def test_other_http_client_errors_are_ambiguous(self):
+        for exc in (http.client.RemoteDisconnected("closed"), ConnectionResetError("reset")):
+            code, js, req = run_cli(self.base + ["--platforms", "tiktok"], post=exc, gets=[(404, {})])
+            self.assertEqual((code, js["status"]), (2, "unknown"))
+            self._sent_id(req)
+
+    def test_request_id_is_logged_before_sending(self):
+        # 进程在发送途中死掉：stderr 里必须已经有可用的恢复命令
+        with self.assertRaises(KeyboardInterrupt):
+            run_cli(self.base + ["--platforms", "tiktok"], post=KeyboardInterrupt())
+        logged = run_cli.last_stderr
+        match = __import__("re").search(r"--status ([0-9a-f-]{36})", logged)
+        self.assertIsNotNone(match, logged)
+        self.assertIn(f"request_id {match.group(1)}", logged)
+
+    def test_scheduled_status_command_uses_job_id_and_queries_it(self):
+        job_id = "a" * 32
+        code, js, _ = run_cli(
+            self.base + ["--platforms", "x", "--schedule", "2099-01-01T09:00:00Z"],
+            post=(202, {"success": True, "job_id": job_id, "request_id": "r"}))
+        self.assertEqual((code, js["status"], js["jobId"]), (0, "scheduled", job_id))
+        self.assertTrue(js["statusCommand"].endswith(f"--status {job_id}"))
+        # 按输出的命令查询：第一次请求必须是 job_id
+        status_args = js["statusCommand"].split("upload_post.py ", 1)[1].split()
+        code, js2, req = run_cli(status_args + ["--json-out"],
+                                 gets=[(200, {"status": "pending", "job_id": job_id, "results": []})])
+        first_get = [c for c in req.call_args_list if c.args[0] == "GET"][0]
+        self.assertEqual(first_get.kwargs["params"], {"job_id": job_id})
+        self.assertEqual(js2["jobId"], job_id)
 
 
 if __name__ == "__main__":

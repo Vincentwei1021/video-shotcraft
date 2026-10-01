@@ -7,7 +7,7 @@ LinkedIn、Facebook、X、Threads、Pinterest、Bluesky，可立即发布或定�
 
 **触发时机**：只在用户**主动要求**把成片发到社交平台时执行（例如"帮我发到
 TikTok 和 YouTube"）。它不是交付收尾 1-2-3 之外的第 4 条推荐，不要主动推销。
-发布是公开且难以撤回的操作——**必须先让用户确认文案和平台清单**，再真正发布。
+发布是公开且难以撤回的操作，**必须先让用户确认文案和平台清单**，再真正发布。
 
 > **说明**：Upload-Post 是第三方托管服务。免费版每月 10 次上传，覆盖上面除
 > TikTok 以外的全部平台（TikTok 需付费版）。只有用户配置了自己的 API key 时
@@ -51,22 +51,26 @@ python3 publish/upload_post.py --video out/promo.mp4 --title "<文案>" \
 ```
 
 检查输出：`authOk` 为 `true`；`missingPlatforms` 非空说明这些平台没连到 profile，
-会被跳过——告诉用户去后台连接，或从清单里去掉。
+会被跳过，告诉用户去后台连接，或从清单里去掉。
 
 ## 4. 发布
 
 去掉 `--dry-run` 重跑。脚本等待各平台结果（默认最多 10 分钟），逐平台输出链接或错误。
 
 - **每条发布命令只跑一次。** 无论超时、断网、报错还是 `status: "unknown"`，都**不要
-  重跑发布命令**——重跑会生成新的 request_id，同一视频会被发两次。只能查询：
+  重跑发布命令**，重跑会生成新的 request_id，同一视频会被发两次。只能查询：
   `python3 publish/upload_post.py --status <requestId> --json-out`
 - 脚本如何区分：只有 **400 / 401 / 403 / 422**（服务端受理前明确拒绝）才判失败，此时
   没有任何东西被发出去，修正参数后可以再发。5xx、网关错误、超时、断网、2xx 却无有效
-  JSON 都属于"不确定"——视频可能已被受理。脚本会自动用同一个 request_id 查询：查到就
+  JSON 都属于"不确定"，视频可能已被受理。脚本会自动用同一个 request_id 查询：查到就
   照常继续；仍无法确认则输出 `status: "unknown"`（退出码 2）、`requestId` 和
   `statusCommand`，并带 `doNotRerun: true`。
+- 脚本在**发送之前**就把 `request_id` 和对应的 `--status` 命令打到 stderr。进程中途
+  被中断时，用这条命令查询，不要重跑发布。
 - 定时发布（`--schedule 2026-10-01T09:00:00 --timezone Asia/Shanghai`）立即返回
-  `jobId` + `requestId`，之后同样用 `--status` 查。
+  `jobId` + `requestId` 和 `statusCommand`。定时任务按 **`jobId`** 查询：
+  `python3 publish/upload_post.py --status <jobId> --json-out`（输出里的 `statusCommand`
+  就是这条命令）。
 
 ## 5. 向用户汇报
 
@@ -76,7 +80,7 @@ python3 publish/upload_post.py --video out/promo.mp4 --title "<文案>" \
 |---|---|
 | `completed` + `url` | 已发布。私密发布没有公开链接：YouTube 仍给出本人可看的链接，其他平台给 `postId` + `note` |
 | `skipped` | profile 没连这个平台，没有发 |
-| `failed` / `retryable` | `error` 是平台给的原因（如账号授权过期——去后台重新连接）；`retryable` 会由服务端自动重试 |
+| `failed` / `retryable` | `error` 是平台给的原因（如账号授权过期，去后台重新连接）；`retryable` 会由服务端自动重试 |
 | TikTok `inbox: true` | TikTok 把视频放进了草稿箱，需要用户在 TikTok App 里点发布 |
 | 整体 `status: "unknown"` | 无法确认是否已受理。原样告诉用户 `requestId`，稍后用 `statusCommand` 查询；**不要重跑发布命令** |
 
@@ -98,7 +102,7 @@ python3 publish/upload_post.py --video out/promo.mp4 --title "<文案>" \
 | `--instagram-story` | 发 Stories 而非 Reels |
 | `--facebook-page-id` / `--linkedin-page-id` | 指定 Facebook 主页 / 以 LinkedIn 公司页发布 |
 | `--pinterest-board` | Pinterest 必填 |
-| `--status ID` | 查询之前的发布（request_id 或 job_id） |
+| `--status ID` | 查询之前的发布：即时发布用 request_id，定时发布用 job_id |
 | `--dry-run` / `--json-out` | 只校验不发布 / 输出一行 JSON |
 
 错误类型（`errorType`）：`auth`（key 缺失或错误）、`validation`（参数错误，或所选平台都没连接）、

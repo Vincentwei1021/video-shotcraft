@@ -3,7 +3,7 @@
 
 把交付的 MP4 一次发到 TikTok、Instagram（Reels/Stories）、YouTube、LinkedIn、
 Facebook、X、Threads、Pinterest、Bluesky。只在用户明确要求发布、并确认过文案与
-平台后执行——流程见 references/publish-upload-post.md。
+平台后执行，流程见 references/publish-upload-post.md。
 
 仅用 Python 标准库，无需 venv / pip。需要两个环境变量：
   UPLOAD_POST_API_KEY   Upload-Post 后台创建的 API key
@@ -30,7 +30,7 @@ Facebook、X、Threads、Pinterest、Bluesky。只在用户明确要求发布、
   * 异步上传：API 收到文件即返回 request_id，脚本轮询状态直到全部平台结束
     （或 --wait-timeout 超时；超时不取消，稍后用 --status 查）。
   * 防重复发布：request_id 由脚本生成并作为 Idempotency-Key 发送。只有
-    400/401/403/422 算明确拒绝；5xx、超时、断网、2xx 却无有效 JSON 都算"不确定"——
+    400/401/403/422 算明确拒绝；5xx、超时、断网、2xx 却无有效 JSON 都算"不确定"，
     不重发文件，改用同一个 id 查询；仍无法确认时输出 status=unknown（退出码 2）、
     request_id 和 --status 命令。unknown 之后绝不能重跑发布命令，只能 --status。
   * profile 未连接的平台返回 skipped，不影响其他平台。
@@ -39,6 +39,7 @@ Facebook、X、Threads、Pinterest、Bluesky。只在用户明确要求发布、
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import mimetypes
 import os
@@ -71,10 +72,13 @@ UPLOAD_TIMEOUT = 900
 API_TIMEOUT = 60
 TITLE_MAX = {"youtube": 100, "tiktok": 2200}
 
-# 网络层错误：上传可能已送达，也可能没有——不重发，改查同一 request_id
-NETWORK_ERRORS = (urllib.error.URLError, socket.timeout, ConnectionError, TimeoutError)
+# 网络层错误：上传可能已送达，也可能没有，不重发，改查同一 request_id
+# http.client.HTTPException 覆盖读响应体时的截断（IncompleteRead）、对端断开
+# （RemoteDisconnected）等；ConnectionError 覆盖 ConnectionResetError。
+NETWORK_ERRORS = (urllib.error.URLError, socket.timeout, ConnectionError, TimeoutError,
+                  http.client.HTTPException)
 # 只有这些是"服务端受理前明确拒绝"：可以直接判失败。其余（5xx、网关错误、
-# 超时、2xx 却无有效 JSON）都算"不确定"——文件可能已被受理，绝不能重发。
+# 超时、2xx 却无有效 JSON）都算"不确定"，文件可能已被受理，绝不能重发。
 DEFINITIVE_REJECTIONS = {400, 401, 403, 422}
 PROBE_ATTEMPTS = 6          # 不确定时按同一 request_id 探查的次数（×POLL_INTERVAL_SECS）
 NOT_FOUND_GRACE_POLLS = 6   # 已受理后 status 仍 not_found 的容忍次数（记录可能稍晚写入）
@@ -393,7 +397,7 @@ def report_unknown(request_id: str, reason: str, json_out: bool, **extra) -> int
     """结果无法确认：给出 request_id 与查询命令，明确要求不要重跑发布。"""
     cmd = f"python3 publish/upload_post.py --status {request_id}"
     log(f"?? Outcome UNKNOWN ({reason}). The video may already be publishing.")
-    log(f"?? DO NOT re-run the publish command — that can post it twice. Check with: {cmd}")
+    log(f"?? DO NOT re-run the publish command: that can post it twice. Check with: {cmd}")
     emit({"success": False, "status": "unknown", "requestId": request_id, "reason": reason,
           "statusCommand": cmd, "doNotRerun": True, **extra}, json_out)
     return 2
@@ -402,13 +406,13 @@ def report_unknown(request_id: str, reason: str, json_out: bool, **extra) -> int
 def report(status: dict, results: list[dict], json_out: bool, **extra) -> int:
     for r in results:
         if r["status"] == "completed":
-            where = ("sent to TikTok inbox — publish it from the app" if r["inbox"]
+            where = ("sent to TikTok inbox: publish it from the app" if r["inbox"]
                      else r["url"] or r["note"] or f"published (post id {r['postId']})")
             log(f"OK {r['platform']}: {where}")
         elif r["status"] == "skipped":
             log(f"-- {r['platform']}: skipped (no account connected to this profile)")
         elif r["status"] in ("failed", "retryable"):
-            log(f"!! {r['platform']}: {r['status']} — {r['error']}")
+            log(f"!! {r['platform']}: {r['status']}: {r['error']}")
         else:
             log(f"   {r['platform']}: {r['status']}")
     state = status.get("status")
@@ -461,7 +465,7 @@ def main() -> None:
     args = build_parser().parse_args()
     api_key = os.getenv("UPLOAD_POST_API_KEY")
     if not api_key and not args.dry_run:
-        fail("UPLOAD_POST_API_KEY is not set — see references/publish-upload-post.md.", "auth", args.json_out)
+        fail("UPLOAD_POST_API_KEY is not set: see references/publish-upload-post.md.", "auth", args.json_out)
 
     if args.status:
         # job_id 是 32 位十六进制；先查更可能的类型，另一种作兜底
@@ -488,7 +492,7 @@ def main() -> None:
     form = build_form(args, description, request_id)
 
     if args.dry_run:
-        log("Dry run — form fields (no upload):")
+        log("Dry run: form fields (no upload):")
         log(json.dumps(form, indent=2, ensure_ascii=False))
         auth_ok, auth_msg, connected, missing = False, None, [], []
         if not api_key:
@@ -502,14 +506,17 @@ def main() -> None:
             except ApiError as e:
                 auth_msg = str(e)
         if auth_msg:
-            log(f"?? auth not ready — {auth_msg}")
+            log(f"?? auth not ready: {auth_msg}")
         if missing:
-            log(f"?? not connected on '{args.user}': {', '.join(missing)} — these would be skipped.")
+            log(f"?? not connected on '{args.user}': {', '.join(missing)}: these would be skipped.")
         emit({"success": True, "dryRun": True, "authOk": auth_ok, "authError": auth_msg,
               "user": args.user, "platforms": args.platforms,
               "connectedPlatforms": connected, "missingPlatforms": missing}, args.json_out)
         sys.exit(0)
 
+    # 发送前先记下恢复用的 id：进程中途退出时，用它查询而不是重跑发布
+    log(f"-> request_id {request_id}. If this run is interrupted, do NOT re-run it; check with: "
+        f"python3 publish/upload_post.py --status {request_id}")
     log(f"-> Uploading '{Path(args.video).name}' to {', '.join(args.platforms)} as '{args.user}'...")
     try:
         submitted = submit_upload(api_key, args.video, form, args.thumbnail, request_id)
@@ -525,10 +532,12 @@ def main() -> None:
 
     if args.schedule:
         job_id = submitted.get("job_id")
+        # 定时发布按文档用 job_id 查询；API 没返回 job_id 时才退回 request_id
+        cmd = f"python3 publish/upload_post.py --status {job_id or request_id}"
         log(f"OK scheduled for {args.schedule} {args.timezone or 'UTC'} (job {job_id}).")
-        log(f"   check later: python3 publish/upload_post.py --status {request_id}")
+        log(f"   check later: {cmd}")
         emit({"success": True, "status": "scheduled", "jobId": job_id, "requestId": request_id,
-              "scheduledDate": args.schedule, "timezone": args.timezone,
+              "statusCommand": cmd, "scheduledDate": args.schedule, "timezone": args.timezone,
               "platforms": args.platforms}, args.json_out)
         sys.exit(0)
 

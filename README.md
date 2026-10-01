@@ -181,7 +181,7 @@ With these three flags, frame renders from the bundled template work.
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
 | JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
-| Social publishing (optional) | When you ask for it, publish the finished film to TikTok, Instagram, YouTube, LinkedIn, X and more via the Upload-Post API — caption and platforms confirmed first, dry-run before posting ([guide](references/publish-upload-post.md)) |
+| Social publishing (optional) | When you ask for it, publish the finished film to TikTok, Instagram, YouTube, LinkedIn, X and more via the Upload-Post API. Caption and platforms are confirmed first, with a dry-run before posting ([guide](references/publish-upload-post.md)) |
 | Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 216 demo motions, export via Remotion |
 
 The toolkit primarily targets web and desktop product promos, while individual

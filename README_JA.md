@@ -172,7 +172,7 @@ Use video-shotcraft to make a promo for my product with the Ink Press template.
 | コンポーネントとアセット | 2.5D ページカメラ、キャプション、フラッシュカット、数字ロール、SFX、キャプチャスクリプト |
 | 制作手法 | キャプチャ、ビジュアルディレクション、ストーリーボード、サウンドデザイン、ビート同期、最終 QA |
 | 剪映プロジェクト書き出し | 完成映像を剪映（CapCut 中国版）で継続編集——ショット変速・字幕・音声トラックを編集可（macOS 11.2 実機検証済み） |
-| SNS 投稿（任意） | 依頼があれば、Upload-Post API で完成映像を TikTok・Instagram・YouTube・LinkedIn・X などへ投稿——キャプションと投稿先を確認し、dry-run の後に投稿（[ガイド](references/publish-upload-post.md)） |
+| SNS 投稿（任意） | 依頼があれば、Upload-Post API で完成映像を TikTok・Instagram・YouTube・LinkedIn・X などへ投稿。キャプションと投稿先を確認し、dry-run の後に投稿（[ガイド](references/publish-upload-post.md)） |
 | モーションワークベンチ | 納品後に開くブラウザのタイムラインエディタ：映像をトラックに分解、公開されたショット属性の編集、再タイミング、216 個の demo モーションのドラッグ投入、Remotion 書き出し |
 
 このツールキットは主に Web およびデスクトップ製品のプロモーションを対象としていますが、
