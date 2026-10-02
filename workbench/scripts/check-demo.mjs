@@ -77,8 +77,9 @@ registerRoot(Root);
 `,
 );
 
+let serveUrl = "";
 try {
-  const serveUrl = await bundle({
+  serveUrl = await bundle({
     entryPoint: path.join(dir, "index.tsx"),
     publicDir: path.join(ROOT, "public"),
     webpackOverride: (c) => ({
@@ -135,4 +136,6 @@ try {
   }
 } finally {
   rmSync(dir, { recursive: true, force: true });
+  // 打包产物落在系统临时目录，每次 ~20MB，不清会把磁盘吃满
+  if (serveUrl) rmSync(serveUrl, { recursive: true, force: true });
 }
