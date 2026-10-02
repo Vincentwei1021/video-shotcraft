@@ -1,32 +1,31 @@
 {
   "stem": "KeycapSmashCut",
   "issues": [
-    "没有导出时长，工作台按 default 渲 150f，比源码注释的 140f 多出 10 帧死寂",
-    "引信段是浅灰平底上一枚 2px 灰边键帽，Helvetica 字形，裙边是一块平色 #6e6e6c，物件特写没有环境和体积",
-    "\"亮环\"实际是 14px 深灰实线圆环，读作墨圈而不是能量溢出",
-    "飞入物是灰阶骨架卡 + 灰条面板，模糊是各向同性 blur 1→5px，不沿运动方向",
-    "猛切后的键帽钉在 x464，正好压在新顶栏的 7d/30d/90d 分段控件上"
+    "引信段是浅灰底上一颗小白键帽，占画面不到 6%，没有物件特写的体积感与环境光",
+    "轰鸣段飞的是灰条占位卡，内容读不出，冲镜方向杂乱，能量在切点前没有堆到顶",
+    "猛切后的全景是灰白占位 dashboard，「定论」画面本身没有信息，键帽嵌在顶栏里几乎看不见",
+    "亮环是一个平面正圆，和台面透视不符"
   ],
   "changes": [
-    "补导出 KEYCAP_SMASH_CUT_DURATION = 140；25/28/46/52/58 全部时间点、3f 下沉 14px、裙边 12→3px 压扁不变",
-    "引信段换成物件特写语法：带色相深色台面（Backdrop dark + 顶光）+ 键帽下地面光池，浅色键帽在暗场里反差最大；键帽做出碟形键面、两段裙边渐变与随离台高度变虚的两层落地影",
-    "亮环改为 10→2px 浅靛发光细环（内外 glow），压到底同帧从键底溢出一团强调色光并在 16f 内衰减；轰鸣中暗角 0.35→0.6 收紧",
-    "飞入物换成出版级 Card 与命令面板（首行 Deploy to production ⌘⏎ 高亮），模糊改为 SpeedBlur 沿飞行方向的速度拖影 + 0.4→2px 景深虚化",
-    "暗→亮硬切到 FakeDashboard 亮色全景，键帽缩成 44px 嵌在搜索框左侧 16px、与搜索框同中线，切后无任何随帧属性"
+    "look 换成 graphite（近单色暗场）：300px 黑色阳极氧化键帽「⌘K」，上窄下宽的顶面 + 可见裙边厚度 + 轻微俯视，台面顶光光池与随悬浮高度变化的落地影，底部「Press ⌘K to begin」邀请观众按",
+    "按下 3f：裙边 34→6px 压扁 + 顶面下沉 40px 落到台面 + 变暗；地面亮环改成扁 0.3 的透视椭圆（扩散 out-cubic / 消散线性解耦）+ 键底一次溢光",
+    "轰鸣改「曲速」：6 块暗色玻璃面板（命令行、p95 41ms、工单、评审、构建图、分支合并）分两轮从中心径向冲出，ease-in 全程加速 + 0.7→3.2 冲脸 + 径向速度拖影；48 条速度线、中心白光、台面推近 1→1.5 同步 ease-in，切点前一帧最满",
+    "猛切改为暗→亮的骨白静帧：96px 标题「Everything, one keystroke away.」+ 整扇 Quarry 应用窗（侧栏、调出的命令面板首行 Deploy to production ⌘⏎ 高亮），同一颗黑键帽 48px 嵌在顶栏搜索框右端呼应引信",
+    "切后零随帧属性（颗粒也冻结），死寂 82f；总时长 140f 不变"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench rendered the 150f default, 10 frames of dead air past the 140f in the source comment",
-    "The fuse stage is a 2px grey-bordered keycap on flat light grey with Helvetica glyphs and a flat #6e6e6c skirt; an object close-up with no environment or volume",
-    "The \"bright ring\" was actually a 14px solid dark-grey ring, reading as an ink circle rather than spilled energy",
-    "The fly-ins were grey skeleton cards and a grey-bar panel, blurred isotropically 1→5px rather than along the motion",
-    "After the cut the keycap sat at x464, right on top of the new top bar's 7d/30d/90d segmented control"
+    "The fuse beat was a small white keycap on light grey, under 6% of the frame, with no product-shot volume or environment light",
+    "The roar flew grey-bar placeholder cards in scattered directions; nothing was readable and the energy did not peak before the cut",
+    "The post-cut panorama was a grey placeholder dashboard: the 'verdict' frame said nothing, and the keycap in the top bar was nearly invisible",
+    "The shock ring was a flat circle that ignored the tabletop perspective"
   ],
   "changesEn": [
-    "Exported KEYCAP_SMASH_CUT_DURATION = 140; the 25/28/46/52/58 beats, 3f 14px drop and 12→3px skirt squash are unchanged",
-    "The fuse stage now uses object close-up grammar: a hue-tinted dark tabletop (dark Backdrop with top light) and a floor light pool, so the light keycap has maximum contrast; the key gets a dished face, a two-tone skirt and a two-layer ground shadow that softens with height",
-    "The ring is a 10→2px pale indigo glowing hairline (inner and outer glow); the bottom-out frame spills one accent glow from under the key that decays within 16f; the vignette tightens 0.35→0.6 during the roar",
-    "Fly-ins are publication-grade Cards plus a command palette (top row Deploy to production ⌘⏎ highlighted), blurred with SpeedBlur along the flight direction plus a 0.4→2px depth defocus",
-    "A dark-to-light hard cut lands on the light FakeDashboard, with the keycap shrunk to 44px and seated 16px left of the search field on its centre line; nothing animates after the cut"
+    "Graphite look (near-monochrome dark): a 300px black anodised ⌘K keycap with a tapered top, visible skirt thickness and a slight top-down tilt, a pool of top light on the table, a hover-dependent contact shadow and a 'Press ⌘K to begin' prompt",
+    "The 3f press squashes the skirt from 34 to 6px, drops the top 40px onto the table and darkens it; the ring is now a 0.3-flattened perspective ellipse (out-cubic growth, linear fade, decoupled) with one light spill from under the key",
+    "The roar is a warp: six dark glass panels (command row, p95 41ms, issue, approvals, build chart, merged branch) burst radially from the centre in two passes, ease-in all the way, 0.7 to 3.2 scale, radial speed blur; 48 speed lines, a centre bloom and a 1 to 1.5 table push all ease in, so the frame before the cut is the fullest",
+    "The smash cut goes dark to light: a bone-white still with a 96px headline (Everything, one keystroke away.) and a full Quarry app window with the command palette open and Deploy to production ⌘⏎ highlighted; the same black keycap sits at 48px at the end of the search field, echoing the fuse",
+    "Nothing animates after the cut (grain is frozen too): 82f of silence, 140f total"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

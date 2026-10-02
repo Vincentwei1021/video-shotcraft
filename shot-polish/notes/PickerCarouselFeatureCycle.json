@@ -1,30 +1,31 @@
 {
   "stem": "PickerCarouselFeatureCycle",
   "issues": [
-    "行内图标是 ◎ ✉ ◧ ◈ ★ ↺ ⚑ 七个风格不一的 unicode 符号，粗细、基线、字形来源都不统一",
-    "背景是平涂 #F3F3F1，药丸只有一层 0 2px 8px 阴影，焦点行没有被\"托起来\"",
-    "吸附走位的快段（峰值约 54px/帧）完全锐利，滚轮缺少速度感；外侧 AI 徽标是一块平黑方块",
-    "上下渐隐是叠在列表上的纸色色块，背景只要不是纯色就会露出矩形边界"
+    "设计坐标 480×270 放大，焦点行实际约 68px、相邻行 50px 灰字，选择器只占画面中间一小条，四周大片空灰",
+    "纯平面列表，没有滚筒的立体感，药丸是一条细白条，焦点与非焦点的层次只靠灰度",
+    "AI 徽标 26×22 设计像素，放大后仍是角落一枚小黑块，读不出是谁在提供这些功能",
+    "每次吸附落定没有任何奖励，五拍之间画面除了换字没有变化"
   ],
   "changes": [
-    "图标换成同一套 16 网格 1.5 描边线性图标（清理/私信/分群/批量/奖励/自动流/实验），焦点行图标用唯一强调色 #5b63d3，可见性规则 max(0,1−d·1.6) 不变",
-    "纸面底加偏左上的柔和顶光 + 0.12 暗角 + 极弱颗粒，药丸身后一抹白色光池；药丸补顶沿内高光与近实远虚两层软影，scaleY 呼吸不变",
-    "列表按位置函数求纵向速度，走位快段给 SpeedBlur 竖向拖影（封顶 0.8 设计 px），outQuint 减速吸附与 HOLD 静止段自动归零",
-    "渐隐改为 mask-image alpha 遮罩，背景换渐变也无边界带；AI 徽标改深色渐变 + 内高光 + 浅靛小星芒；改用 raster=\"zoom\" 原生栅格化",
-    "STEPS=5、HOLD=5/14、窗口 0.05→0.95、三通道距离衰减等全部参数不变"
+    "look 换成 porcelain（冷白 · 钴蓝）：左栏固定 108px 钴蓝 AI 徽章 + 「Juniper」眉题 + 90px 标题「One assistant. / Every job.」，右栏 980px 宽滚筒选择器装在一块极淡的瓷白玻璃立板里",
+    "滚筒化：行高 128、焦点行 78px 粗体，每行在圆柱上相隔 19°（y = R·sinθ、rotateX），透明度 / 字号 / 灰度三通道连续衰减，上下 alpha 遮罩消隐",
+    "节奏：0–18f 入场（徽章弹簧、标题逐行升起、各行错峰），五拍每拍 20f = 13f outQuint 吸附 + 7f 真静止，尾段 hold 22f + 1% 极缓推进",
+    "每拍有奖励：焦点行 72px 钴蓝图标块浮现、药丸右端快捷键键帽 ⌘N 落定浮起、药丸 scaleY 1.04 轻呼吸；左栏副句同拍换成该功能「替你做了什么」的一句",
+    "药丸改为带顶沿高光与钴蓝远影的白色胶囊，走位快段整列纵向速度拖影，吸附减速段自动归零"
   ],
   "issuesEn": [
-    "Row icons were seven mismatched unicode symbols (◎ ✉ ◧ ◈ ★ ↺ ⚑) with different weights, baselines and font sources",
-    "The background is a flat #F3F3F1 and the pill has a single 0 2px 8px shadow, so the focus row is never lifted",
-    "The fast part of each snap (peaking near 54px/frame) is razor sharp, so the wheel has no sense of speed; the AI badge is a flat black block",
-    "The top/bottom fade is a paper-coloured block laid over the list, exposing a rectangle as soon as the background isn't a flat colour"
+    "Built at 480x270 and scaled up: the focus row was about 68px, neighbours 50px grey, and the picker was a thin strip in a big empty grey frame",
+    "A flat list with no wheel depth; the focus pill was a thin white strip and hierarchy relied on grey levels alone",
+    "The 26x22 AI badge was still a small black chip in the corner after scaling, so it never said who provides these features",
+    "Landing on an item gave no reward; apart from the text changing, the five beats looked identical"
   ],
   "changesEn": [
-    "Icons are one 16-grid 1.5-stroke line set (cleanup / message / segments / batch / reward / flows / testing), with the focus icon in the single accent #5b63d3; the max(0,1−d·1.6) visibility rule is unchanged",
-    "The paper gets a soft upper-left key light, 0.12 vignette and faint grain, plus a white light pool behind the pill; the pill gains a top inner highlight and a two-layer contact/ambient shadow, keeping its scaleY breath",
-    "List velocity is derived from the position function, so the fast part of each move gets a vertical SpeedBlur (capped at 0.8 design px) that falls to zero during the outQuint snap and HOLD",
-    "The fade is now a mask-image alpha mask with no boundary on a gradient background; the AI badge gets a dark gradient, inner highlight and a pale indigo sparkle; switched to raster=\"zoom\"",
-    "STEPS=5, HOLD=5/14, the 0.05→0.95 window and the three-channel distance falloff are all unchanged"
+    "Porcelain look (cool white, cobalt): a fixed left column with a 108px cobalt AI badge, a Juniper kicker and a 90px headline (One assistant. / Every job.); on the right a 980px wheel picker sits inside a faint porcelain glass panel",
+    "Now a real wheel: 128px rows, a 78px bold focus row, rows spaced 19 degrees around a cylinder (y = R·sinθ with rotateX), with opacity, size and grey fading continuously by distance and alpha masks at the edges",
+    "Rhythm: 0-18f entrance (badge spring, headline lines rising, rows staggered), then five 20f beats of 13f outQuint snap plus 7f true stillness, ending on a 22f hold with a 1% push",
+    "Every beat pays off: a 72px cobalt icon tile appears in the focus row, a ⌘N keycap rises at the pill's right end on landing, the pill breathes 1.04 in scaleY, and the left subline swaps to one line about what that feature does for you",
+    "The pill is a white capsule with a top highlight and a soft cobalt shadow; the list gets vertical speed blur on fast frames, dropping to zero as it snaps"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }
