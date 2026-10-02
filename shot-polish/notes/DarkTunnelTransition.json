@@ -1,28 +1,31 @@
 {
   "stem": "DarkTunnelTransition",
   "issues": [
-    "A 推出与 B 迎入是两条各自缓动的曲线：A 减速出画、B 慢起入画，中段速度掉到零，「一条 take」断成两截",
-    "A 只是平移出画，没有「推进」的纵深；高达 ~190px/帧的位移毫无运动模糊，频闪",
-    "暗场只有 4 个 2px 尘点，肉眼几乎看不见，实际是 4–6 帧死黑",
-    "B 从右缘滑入时页面硬边直接贴在黑底上，没有空间层次"
+    "横向平移 + 满屏截图，\"穿暗场\"只是两张页面之间一段灰黑空档，前进感弱",
+    "暗场只有一团冷光和零星尘点，5 帧里几乎看不出在\"航行\"",
+    "两景都是满屏亮页贴图，没有舞台、没有光，和暗场衔接生硬",
+    "后景从 0.62 + 失焦迎入的尺度变化小，迎面放大的冲击力不足"
   ],
   "changes": [
-    "改成「只有一台相机」：A（世界 x=0）、尘流、B（世界 x=6400）全由同一条行程 cam(f)=D·bezier(0.55,0,0.2,1) 驱动，加速推出→暗场峰值 ~660px/帧→长尾减速迎入，速度连续不回摆",
-    "A 推出时同步推近 scale 1→1.18 并压暗 55%；B 从 0.62 + 10px 失焦迎面放大收焦并从暗里亮起；两景按速度挂 SpeedBlur 横向运动模糊（≤40px，静止为 0）",
-    "暗场改为带色相深底 + 中心冷光 + 暗角 + 颗粒，54 颗三层视差尘点按速度拉成拖影，读作「仍在高速穿行」",
-    "节拍对齐卡片定义：推出 11f → 暗场滑行 5f → 迎入 14f，56f 起 B 真静止 64f；两景边缘加大而虚的投影分层"
+    "look 换成 midnight 午夜蓝；运动改成沿镜头光轴的纵深直航：A 窗口迎面扑过镜头，B 从隧道尽头 0.2× 的小亮窗一路放大到满幅",
+    "只有一台相机：A、5 道闸门、光尘、B 全部按同一条 c(f) 做透视投影 s=F/(z−c)，加速推出 → 暗场峰值 → 长尾减速，中途不回摆",
+    "暗场做成隧道：与窗口同形、逐道同向多转 5° 的发丝闸门连续掠过，外圈光尘按相机速度拉成径向光丝，尽头一团冷光核是 B 的光源",
+    "速度感：A 扑过时叠 3 层递减缩放的变焦残影并淡出；B 远处景深虚化、边放大边收焦去暗",
+    "两景都是浮在蓝夜舞台上的窗口，左下骑缝挂场景标签胶囊（Projects · 10 active / Weekly report · W28）；B 落定后同一相机 0.3/f 极缓前推"
   ],
   "issuesEn": [
-    "A's push-out and B's entry were two separately eased curves: A decelerated out and B started slow, so speed dropped to zero mid-way and the 'single take' broke in two",
-    "A merely slid off with no sense of pushing forward, and ~190px/frame of travel had no motion blur, so it strobed",
-    "The dark field had only four 2px dust specks — practically invisible — so it was really 4–6 dead black frames",
-    "B slid in from the right with its hard page edge pasted on black, with no spatial layering"
+    "A lateral slide between full-bleed screenshots made the dark-field pass just a grey gap between two pages, with weak forward motion",
+    "The dark field had only a cool glow and a few specks, so the 5 frames barely read as travel",
+    "Both scenes were bright full-bleed page textures with no stage or light, clashing with the dark field",
+    "The incoming scene only grew from 0.62 with blur, too small a scale change to feel like it was rushing at the camera"
   ],
   "changesEn": [
-    "Rebuilt around a single camera: A (world x=0), the dust stream and B (world x=6400) are all driven by one travel curve cam(f)=D·bezier(0.55,0,0.2,1) — accelerate out → ~660px/frame peak in the dark → long decelerating approach, with continuous velocity and no back-swing",
-    "A also pushes in (scale 1→1.18) and darkens 55% as it exits; B grows from 0.62 with a 10px defocus, racks into focus and brightens out of the dark; both get velocity-driven SpeedBlur (≤40px, zero at rest)",
-    "The dark field now has a hue-tinted base, a cool center glow, vignette and grain; 54 dust motes on three parallax layers stretch into speed streaks so it reads as still travelling fast",
-    "Beats match the card spec: 11f push-out → 5f dark glide → 14f approach, with B truly still from 56f for 64f; soft, wide shadows separate the page edges from the void"
+    "Midnight blue look; the move is now a dolly along the lens axis: window A rushes past the camera and B grows from a 0.2x lit window at the end of the tunnel to full frame",
+    "One camera only: A, five gates, motes and B are all projected with s=F/(z-c) from a single c(f), accelerating out, peaking in the dark, then decelerating with a long tail and no backswing",
+    "The dark field is a tunnel: hairline gates shaped like the window, each rotated a further 5 degrees, fly past while outer motes stretch into radial streaks with camera speed and a cool core marks B's light",
+    "Speed cues: three shrinking zoom-trail copies of A as it passes and fades; B starts depth-blurred and sharpens and brightens as it grows",
+    "Both scenes are windows on the blue stage with a scene-tag pill on the lower-left edge (Projects · 10 active / Weekly report · W28); after B lands the same camera keeps a 0.3/f creep"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

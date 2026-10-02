@@ -1,32 +1,31 @@
 {
   "stem": "BlackCardTransition",
   "issues": [
-    "完整标题落定后只 hold 15 帧（0.5s）就淡出，观众来不及读完（违反 R1）",
-    "黑场是一块平涂 #0c0c10，字卡段没有任何空间氛围，像黑屏",
-    "逐词压印按等差 3f 起跑，节奏机械",
-    "等宽副行只有 20px（约 1.9% 帧高），处于「想让人读但读不清」的中间态",
-    "前镜原地熄灯、字卡原地淡出，镜与镜之间没有运动惯性"
+    "前后两景是满屏平贴的截图，淡入淡出就是整屏叠黑，没有舞台和光",
+    "字卡 96px 居中一行半，第二行孤零零一个词，版式松散",
+    "副行等宽字只有 28px，读不清；黑场大面积空着，构图没有重心",
+    "节奏平均：淡出、压印、退场、淡入都是同一种软切，缺少\"熄灯—亮灯\"的仪式感"
   ],
   "changes": [
-    "时间轴重排（总长 120f 不变）：字卡 14–44f 压印完，完整标题 hold 30f（1s）再退场，字卡退净后 B 才淡入，不叠化",
-    "暗场改为带色相深底 + 字卡后一团极淡暖光（6–20f 缓亮）+ 暗角 + 颗粒，still alive 但不抢字",
-    "逐词起跑改为缓动分布（前紧后松，14→32f），每词 snappy 缓动下沉 0.12em + scale 1.14→1 + 6px→0 失焦收清",
-    "副行提到 28px 等宽、0.18em 字距并随细线一起上浮淡入；强调色细线改 2px 两端渐隐、从中心 snappy 展开",
-    "A 淡出时延续前镜推进惯性轻推 2.5%；字卡退场上浮 14px + 微糊（ease-in）；B 从 1.03 轻收落定"
+    "look 换成 ember 暖黑影院：两景都是浮在暖黑舞台上的产品窗口（真实截图纹理），舞台顶部有主光",
+    "淡入黑场改成\"熄灯\"：主光收暗、窗口亮度自下而上落下，相机带着前镜惯性继续轻推 4%；后镜反向\"开灯\"从暗里被照亮并 1.05→1 落定",
+    "字卡改成左对齐电影章节版式：CHAPTER 02 眉题 + 132px 两行大标题逐词压印（1.16×/虚 10px→实，前密后疏），关键词琥珀→橙渐变",
+    "右侧巨型描边章节号「02」由琥珀光沿轮廓画出，底部四段章节进度条点亮第 2 章，填满黑场的构图重心",
+    "时间表 140f：熄灯 18f → 压印 24f → 完整字卡 hold 30f（极缓前推 1.5%）→ 上浮虚化退场 → 开灯 18f → B hold"
   ],
   "issuesEn": [
-    "The full headline held for only 15 frames (0.5s) before fading — too short to read (violates R1)",
-    "The black field was a flat #0c0c10 with no atmosphere during the card — it read as a dead screen",
-    "Word stamps started on an even 3f cadence, which felt mechanical",
-    "The mono subline was only 20px (~1.9% of frame height), stuck in the 'meant to be read but can't be' middle state",
-    "The outgoing shot just switched off and the card faded in place — no carried motion between shots"
+    "Both scenes were flat full-bleed screenshots and the fade was a plain full-frame dip to black, with no stage or light",
+    "The 96px centred title wrapped into a line and a half, leaving one orphan word on line two",
+    "The 28px mono subline was unreadable and the black frame was mostly empty with no visual anchor",
+    "Even rhythm: fade-out, imprint, exit and fade-in were all the same soft dissolve, with no lights-down ceremony"
   ],
   "changesEn": [
-    "Retimed within the same 120f: words finish stamping by 44f, the full headline holds 30f (1s), and B fades in only after the card has fully cleared — no cross-dissolve",
-    "The dark field now has a hue-tinted base, a faint warm glow behind the card (eases up 6–20f), vignette and grain — alive without competing with the type",
-    "Word starts follow an eased distribution (tight first, looser last, 14→32f); each word drops 0.12em with a snappy ease while scaling 1.14→1 and focusing from 6px blur",
-    "Subline raised to 28px mono with 0.18em tracking, rising in with the rule; the accent rule is now 2px with faded ends, unfolding from center",
-    "A carries the previous shot's push (+2.5%) as it fades; the card exits rising 14px with a slight blur (ease-in); B settles in from scale 1.03"
+    "Warm ember cinema look: both scenes are product windows (real screenshot textures) floating on a warm black stage under a top key light",
+    "The dip to black is now a lights-down: the key light dims and the window darkens bottom-up while the camera keeps a 4% inertial push; the next scene is lit back up and settles from 1.05 to 1",
+    "The card is a left-aligned film chapter layout: CHAPTER 02 kicker plus a 132px two-line headline imprinted word by word (1.16x/10px blur to sharp, dense then loose), key words in an amber-to-orange gradient",
+    "A giant outlined 02 is traced in amber on the right and a four-part chapter bar lights up chapter 2, anchoring the empty dark frame",
+    "140f timeline: 18f lights-down, 24f imprint, 30f full-card hold with a 1.5% creep, blurred rise-out, 18f lights-up, then B hold"
   ],
-  "mdChanged": false
+  "look": "ember",
+  "mdChanged": true
 }

@@ -1,24 +1,31 @@
 {
   "stem": "WhipPanReal",
   "issues": [
-    "CameraMotionBlur 20 次子帧叠加在 8bit 下累加出色偏：整片偏黄，连静止的 hold 帧都被染色，和其他镜头接不上",
-    "甩动段的拖影是一格一格的回波残影，不是连续的速度涂抹，糊帧里能数出重影",
-    "模糊量与速度无关（快门角固定），起止帧和峰值帧的糊程度不成比例"
+    "同一张项目页甩到同一张页的另一块，换景前后几乎一样，看不出\"功能段连打\"",
+    "满屏浅色截图、没有任何标题文字，暂停任何一帧都只是一张网页",
+    "只有一次甩动，节奏单调；甩动时整屏单层平移，没有纵深",
+    "全片无强调色、无舞台光"
   ],
   "changes": [
-    "去掉 CameraMotionBlur，改用按瞬时速度计算的方向性高斯拖影（SpeedBlur，sd ≈ 0.085×速度、封顶 64px），只在甩动段生效",
-    "静止段不挂任何 filter，颜色与原始纹理逐像素一致（纸色 #f9f6f1 不再偏黄）",
-    "保留 8f / 2880px / bezier(0.6,0,0.4,1) 的甩动曲线与两端 hold；起止低速几乎不糊、中段峰值 ~780px/f 糊到不可辨，借糊帧换景"
+    "look 换成 lime 酸柠夜：横向长舞台并排三个功能段，每段 = 112px 两行大标题（关键词酸柠色）+ 等宽序号 01/03 + 右侧产品窗口（项目板 / 周报正文 / 论文雷达真实纹理）",
+    "节奏改为两次 8f 甩镜连打 A→B→C（hold 28f / 36f / 46f），每甩 2880px、峰值 ~680px/f，借糊帧换景、甩完即停",
+    "三层视差：标题层 1.14×、窗口层 1×、标题背后巨型描边序号 0.55×，每层按自己的瞬时速度挂方向性拖影，静止段零滤镜",
+    "底部三段进度条随落点点亮当前段；描边序号只显示当前段，不从窗口边露出邻段",
+    "时长 120→126f"
   ],
   "issuesEn": [
-    "CameraMotionBlur's 20 sub-frame accumulation drifted color in 8-bit: the whole shot turned yellowish, even the static hold frames, so it no longer matched neighbouring shots",
-    "The smear during the whip was stepped echo ghosts rather than a continuous speed streak — you could count the copies",
-    "Blur amount ignored speed (fixed shutter angle), so start/end frames and the peak frame weren't blurred in proportion"
+    "It whipped from one part of the projects page to another part of the same page, so before and after looked almost identical and it did not read as a run of features",
+    "Full-frame light screenshots with no titles: any paused frame was just a web page",
+    "A single whip made the rhythm monotonous, and the whole frame panned as one flat layer with no depth",
+    "No accent colour and no stage light anywhere"
   ],
   "changesEn": [
-    "Replaced CameraMotionBlur with a directional Gaussian smear driven by instantaneous velocity (SpeedBlur, sd ≈ 0.085×speed, capped at 64px), active only during the whip",
-    "Static frames carry no filter at all, so colors match the source texture pixel for pixel (the #f9f6f1 paper tone no longer yellows)",
-    "Kept the 8f / 2880px / bezier(0.6,0,0.4,1) whip curve and both holds; low speed at the ends barely blurs, while the ~780px/f peak smears past recognition to hide the scene change"
+    "Lime night look: three feature sections side by side on a long horizontal stage, each with a 112px two-line headline (key words in lime), a mono 01/03 index and a product window on the right (projects board, weekly report body, paper radar, all real textures)",
+    "The rhythm is now two back-to-back 8f whips A to B to C (holds of 28f, 36f and 46f), each covering 2880px at a ~680px/f peak, swapping scenes on the blur frames and stopping dead",
+    "Three parallax layers: headlines at 1.14x, windows at 1x and giant outlined indices behind the headlines at 0.55x, each with directional blur from its own speed and no filters while still",
+    "A three-part progress bar at the bottom lights the current section on landing; the outlined index only shows for the current section so neighbours never peek past the window edge",
+    "Duration 120 to 126f"
   ],
+  "look": "lime",
   "mdChanged": true
 }

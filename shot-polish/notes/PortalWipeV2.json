@@ -1,30 +1,31 @@
 {
   "stem": "PortalWipeV2",
   "issues": [
-    "门户卡是一张悬浮在网格上方的额外卡片，不在 dashboard 的任何槽位里（违反 Q9），点开的来源不可信",
-    "窗内新场景打着调试标题「Scene B」，dashboard 缩略图外套 2px 灰边框，像截图贴在灰底上",
-    "近景两张卡散开后有一半出画，最终定格帧里是两块被裁掉的半张卡",
-    "放大前没有任何预备动作，旧场景在窗变大时亮度不变，窗与背景没有主次",
-    "工作台按默认 150f 推断（时长恰好），但缺少导出常量"
+    "新旧场景都是通用灰阶 FakeDashboard 骨架，没有任何可读内容，像线框稿",
+    "窗内只有灰色 dashboard 缩略 + 两张灰卡，\"穿窗进入那张卡的世界\"语义不成立",
+    "角落残留调试字「Scene B」，被浮卡压住一半",
+    "全片灰白无强调色，穿窗完成后的结尾帧不是一张完整画面"
   ],
   "changes": [
-    "门户卡改为 FakeDashboard A 网格里的真实槽位（第 2 行第 3 张，seed 6，几何按网格精确计算），12–25f 先悬浮抬起 8px / +2% / 阴影变大变虚作预备",
-    "窗内换成反差的深色世界：暗色 Backdrop + 静态颗粒 + 深色 dashboard 悬浮窗（发丝亮边 + 深投影），去掉调试标题",
-    "两张近景浮卡改深色版并从终点反推散开前位置，×1.3 散开后完整落在画内、压住大窗两角形成前后景",
-    "保留 40f bezier(0.7,0,0.3,1) 放大、0.08/0.3 两层视差与 65–73f 缓停；旧场景随窗变大压暗 32%，窗挂随高度变化的两层软阴影；补导出 PORTAL_WIPE_V2_DURATION = 150"
+    "look 换成 porcelain：外景重做成为镜头设计的 Workspace 主页——96px 问候标题 + 3×2 空间卡，每张有程序化封面（同心圆/柱/点阵/斜纹/弧/波形）、40px 标题、32px 元信息",
+    "语义闭环：目标卡「Northwind Forecast」的钴蓝波形封面就是窗内世界的样子——深钴蓝空间、同款三道波形放大成地貌",
+    "窗内严守 2 层视差：远景玻璃预测面板（64px 标题、实线历史 + 虚线预测区间 + TODAY 标线）系数 0.08，近景两枚指标浮卡（+18.4% / 94% confidence 环）系数 0.3，落点压住面板两角",
+    "运动：目标卡抬起作预备、邻卡退暗 18% → 40f bezier(0.7,0,0.3,1) 穿窗，卡面前 28% 行程渐隐 → 面积图随 t 画完 → 66f 完成后 8f 缓停，静止 hold 66f",
+    "删掉调试字；时长 150→140f"
   ],
   "issuesEn": [
-    "The portal card was an extra card floating above the grid, not sitting in any dashboard slot (violates Q9), so the origin of the 'open' wasn't believable",
-    "The inner scene carried a debug title \"Scene B\", and its dashboard thumbnail had a 2px gray frame, like a screenshot pasted on gray",
-    "After spreading, the two foreground cards ended half off-screen, so the final held frame showed two cropped half-cards",
-    "There was no anticipation before the expansion, and the old scene kept full brightness as the window grew, so there was no hierarchy",
-    "The workbench defaulted to 150f (correct by luck) but no duration constant was exported"
+    "Both scenes were generic grey FakeDashboard skeletons with no readable content, like wireframes",
+    "Inside the window there was only a grey dashboard thumbnail and two grey cards, so 'stepping into that card's world' did not read",
+    "A leftover debug label 'Scene B' sat in the corner, half covered by a floating card",
+    "Grey and white throughout with no accent, and the post-portal end frame was not a finished picture"
   ],
   "changesEn": [
-    "The portal card is now a real slot in FakeDashboard A's grid (row 2, column 3, seed 6, geometry computed from the grid); from 12–25f it lifts 8px, scales +2% and its shadow grows softer as anticipation",
-    "The inner scene is now a contrasting dark world: dark Backdrop with static grain and a dark dashboard window (hairline light edge, deep shadow); the debug title is gone",
-    "The two foreground cards use the dark tone and are back-solved from their end positions, so after the ×1.3 spread they sit fully in frame, overlapping two corners of the big window for foreground/background depth",
-    "Kept the 40f bezier(0.7,0,0.3,1) expansion, the 0.08/0.3 two-layer parallax and the 65–73f settle; the old scene darkens 32% as the window grows, and the window carries a height-dependent two-layer soft shadow; exported PORTAL_WIPE_V2_DURATION = 150"
+    "Porcelain look: the outer scene is a purpose-built Workspace home with a 96px greeting and a 3x2 grid of space cards, each with a procedural cover (rings, bars, dots, stripes, arcs, waves), a 40px title and 32px meta",
+    "Closed semantic loop: the target card Northwind Forecast has a cobalt wave cover, and the world inside the portal looks like that cover, a deep cobalt space with the same three waves enlarged into a landscape",
+    "Strictly two parallax layers inside: a far glass forecast panel (64px title, solid history, dashed forecast band, TODAY marker) at factor 0.08 and two near metric chips (+18.4% and a 94% confidence ring) at 0.3, landing over the panel's corners",
+    "Motion: the target lifts as anticipation while neighbours dim 18%, a 40f bezier(0.7,0,0.3,1) portal, the card face fades in the first 28% of travel, the area chart draws with t, then an 8f settle after 66f and a 66f still hold",
+    "Debug text removed; duration 150 to 140f"
   ],
-  "mdChanged": false
+  "look": "porcelain",
+  "mdChanged": true
 }
