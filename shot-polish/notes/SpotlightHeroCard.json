@@ -1,28 +1,31 @@
 {
   "stem": "SpotlightHeroCard",
   "issues": [
-    "聚光灯是一层 normal 叠加的径向渐变：光池中心 0.42 的暖白把主角卡中段的文字洗成一块白斑，对比度掉一截",
-    "光池外的压暗是不透明度 0.42 的灰褐色平铺，整页像蒙了一层脏纱，画面发闷",
-    "光池半径 360、边缘偏硬，落地后读作贴在卡上的白色圆盘，不像舞台光",
-    "3D 注记 “One card, one project.” 直接压在左侧邻卡的文字上，两层字互相打架，读不清"
+    "米白页面上的\"聚光灯\"只是一团暖白光斑，整页依旧明亮，看不出灯光与暗场的对比",
+    "光池边缘偏硬、中心把白卡打成一片白斑，像贴在页面上的圆盘而不是舞台光",
+    "注记在推进后被裁出画面左缘、压在邻卡文字上，读起来和背景字打架",
+    "注记在卡贴回前就退场，尾帧只剩一张卡的斜特写，没有信息"
   ],
   "changes": [
-    "聚光灯拆成三层、各用合适的混合模式：光池外暖棕 multiply 压暗（保色相不发灰），光池内暖白 soft-light 提亮（中间调变亮，深色文字保持对比），再叠一层 0.12 的 screen 轻抬亮",
-    "光池整体放大约 1.3 倍、衰减更软，读作打在页面上的舞台光；游走路径、收拢节奏、锁定脉冲和 vignette 时间轴全部不变",
-    "注记背后加一块同一 3D 平面、同一台相机的纸色柔光衬底（0.96→0 径向，6px 模糊），随注记一起浮入淡出，把背后邻卡的字压下去",
-    "加 0.04 颗粒；相机关键帧、rise/hover/reseat 动作弧、轮廓光束两圈和高清纹理交叉淡入一律保持原样"
+    "look 换为 graphite：真实页面截图保留，整页关灯压到 6–14% 亮度，只有光池里是页面本色；开灯是亮—回闪—稳的推闸节奏",
+    "光池改成近高斯衰减 + 低强度钨丝暖色，配一道从画面上方远处打下来的体积光柱（柱内有浮尘）；锁定后圆光池过渡成页面空间的卡形光——整页暗场在卡位挖卡形软孔，卡从边到边全亮、文字原生对比、衰减只在卡外，卡边一圈暖白轮廓光",
+    "相机焦点左移让卡偏右、左侧留给注记；注记改成白色粗黑体两行 + 香槟色马克条（字翻成墨色），垫暗色衬底，用同一台相机单独画在灯光层之上",
+    "注记不再提前退场，而是和卡一起落回页面平面；卡投影落向左下与光源一致，落地时一圈香槟色落地光",
+    "轮廓光束改为香槟金 + 白芯两圈；时长 139→172f，锁定到触地 3.6s，最后 1s 相机锁死只剩光的呼吸"
   ],
   "issuesEn": [
-    "The spotlight was a single normal-blend radial gradient: its 0.42 warm-white core washed the hero card's middle text into a white blotch and cut contrast",
-    "The dimming outside the pool was a flat 0.42 gray-brown, laying a dirty veil over the whole page and making the frame look murky",
-    "The 360px pool had a fairly hard edge and, after landing, read as a white disc stuck on the card rather than stage light",
-    "The 3D annotation 'One card, one project.' sat directly over the left neighbor card's text, so the two layers of type fought and neither read clearly"
+    "The \"spotlight\" on the cream page is just a warm blob; the whole page stays bright, so there is no light-versus-dark contrast",
+    "The pool has a fairly hard edge and blows the white card out in the centre, reading as a disc stuck on the page rather than stage light",
+    "After the push-in the annotation is cropped by the left edge and sits on top of the neighbouring card's text",
+    "The annotation exits before the card reseats, so the last frame is just an oblique close-up with no message"
   ],
   "changesEn": [
-    "Split the spotlight into three layers with suitable blend modes: a warm-brown multiply dims outside the pool (keeps hue, no gray veil), a warm-white soft-light brightens inside (lifts midtones while dark text keeps its contrast), plus a 0.12 screen lift",
-    "The pool is ~1.3x larger with a softer falloff, so it reads as stage light on the page; the roving path, contraction timing, lock pulse and vignette timeline are unchanged",
-    "Added a paper-colored soft backing behind the annotation on the same 3D plane and camera (0.96 to 0 radial, 6px blur) that floats in and out with it, pushing the neighbor card's text back",
-    "Added 0.04 grain; camera keyframes, the rise/hover/reseat arc, the two-lap outline beam and the hi-res texture crossfade are all untouched"
+    "Look switched to graphite: the real page screenshot is kept but the house lights go down to 6-14% brightness, with true colour only inside the pool; the lamp strikes on with an on-dip-steady flicker",
+    "The roaming pool has a near-Gaussian falloff with a gentle tungsten tint and a volumetric shaft from far above frame with dust in the beam; after the lock it hands over to a page-space card-shaped light: the darkened page gets a soft card-shaped hole, so the card is lit edge to edge at native text contrast with falloff only outside it, plus a warm rim around the card",
+    "The camera focus shifts left so the card sits right of centre and the left side is free for the annotation: two lines of bold white sans with a champagne highlighter that flips the words to ink, over a dark scrim, drawn with the same camera on a layer above the lighting",
+    "The annotation no longer exits early; it settles back onto the page plane together with the card. The card's shadow falls lower-left, matching the light, and a champagne ring flashes on touchdown",
+    "Perimeter beam recoloured to champagne gold with a white core for its two laps; duration 139 to 172f, 3.6s from lock to touchdown, and the final second holds a locked camera with only the light breathing"
   ],
-  "mdChanged": false
+  "look": "graphite",
+  "mdChanged": true
 }

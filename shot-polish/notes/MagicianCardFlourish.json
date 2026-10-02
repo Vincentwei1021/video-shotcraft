@@ -1,32 +1,31 @@
 {
   "stem": "MagicianCardFlourish",
   "issues": [
-    "没有导出时长常量，工作台从源码抓到 12f，改版前视频只有开场闪光，卡片还没飞出来就结束了",
-    "卡面是灰色骨架条加 2px 灰边的占位卡，卡背是灰色斜条纹，和精致的蓝色星芒完全不在一个档次",
-    "卡片按 380 宽栅格化后放大 1.88 倍定格，近满幅的定格帧文字和细节发软",
-    "纯 #000 黑场没有任何层次，定格后的 2 秒是死黑底上一张卡",
-    "白卡上的 overlay+screen 扫光会把深色文字洗成浅灰"
+    "定格后近 70 帧画面完全静止，只剩一张卡居中在纯黑里，没有任何后续信息",
+    "卡面是灰阶占位骨架（灰条 + 灰圆），定格成近满幅后反而更显空洞",
+    "背景是死平纯黑，没有光源与空间，星芒和卡片之间缺少\"光变出卡\"的联系",
+    "构图左右各空出约 500px 黑边，画面没有层级与视觉重心之外的内容"
   ],
   "changes": [
-    "导出 MAGICIAN_CARD_FLOURISH_DURATION = 126（闪光 9f + 飞行 50f + 定格展示与扫光 67f）；闪光、弹射、自旋、定格这些用户逐轮定过的参数一律不动",
-    "卡面换成出版级海报卡：品牌行（徽记 + Aurora + NEW），深蓝星光主视觉呼应开场星芒，标题 30/副题 17 设计号，作者行与 CTA；卡背换成深海军蓝加交叉细纹章和中心徽记；2px 灰边改为发丝线加内高光",
-    "卡片按定格尺寸布局、CSS zoom 栅格化，飞行中只缩小、透视距离同比放大，定格帧原生锐利（Q2）",
-    "暗场换成带冷色相的近黑径向底，加暗角和颗粒；定格后卡后亮起一团极淡的蓝色环境光",
-    "扫光改为 soft-light 加弱 screen，深色主视觉上看得出光泽，白卡上的文字不被洗白；定格段撤掉 CameraMotionBlur（画面冻结，结果相同，渲染省 7 倍）"
+    "look 换为 midnight：闪光期舞台压暗让星芒成为唯一光源，卡落定时主光与卡后背光一起亮起，浮尘缓慢漂移",
+    "卡面重做为深海军蓝「Founders Pass」邀请卡：四芒星徽记 + 同心细环 + 交叉针线复刻开场星芒，58px 大字标题、mono 票根行，徽记区全息箔随自旋角流光、定格即冻结",
+    "构图改为左卡右文：闪光点 = 落点（画面左 1/3），卡向右上荡出一道弧线再回到原点定格；右侧 132px 标题「Doors open / Nov 4.」与副文在定格后逐行揭示",
+    "保留用户定值的手法内核（9f 星芒转 90°、slow-in→弹射→减速弧线、13 圈对角自旋衰减、零回弹硬定格），飞行中卡带蓝色辉光被运动模糊拖成光尾",
+    "落定瞬间加一圈与卡同形的光脉冲外扩淡出，8f 后单次 sheen 扫光裁进圆角；时长 126→156f，最后 1.7s 是一张完整邀请海报"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench scraped 12f from the source, so the before video shows only the opening flash and ends before the card flies out",
-    "The card face was a gray skeleton placeholder with a 2px gray border and the back was gray diagonal stripes, far below the polished blue star flash",
-    "The card was rasterized at 380px wide and scaled 1.88x for the freeze, so the near-full-frame hero frame was soft",
-    "A pure #000 field with no depth, so the 2s after the freeze was one card on dead black",
-    "The overlay+screen sheen washed the dark text on the white card into light gray"
+    "After the freeze nearly 70 frames are completely static: one card centred on pure black with nothing else to read",
+    "The card face is a grey placeholder skeleton (grey bars and a grey circle), which looks emptier once it fills the frame",
+    "Flat pure-black background with no light source or depth; nothing ties the star flash to the card it produces",
+    "About 500px of black on each side; the frame has no hierarchy beyond the single card"
   ],
   "changesEn": [
-    "Exported MAGICIAN_CARD_FLOURISH_DURATION = 126 (9f flash + 50f flight + 67f freeze and sheen); the user-tuned flash, launch, spin and freeze parameters are untouched",
-    "The face is now a publication-grade poster card: brand row (mark + Aurora + NEW), a deep-blue star artwork echoing the opening flash, a 30/17 design-size title and subtitle, and an author row with CTA; the back is deep navy with a crosshatch guilloche and a center emblem; the 2px gray border is now a hairline with an inner highlight",
-    "The card is laid out at freeze size and rasterized via CSS zoom, so the flight only ever scales down (with perspective scaled to match) and the freeze frame is natively sharp (Q2)",
-    "The dark field is now a cool-hued near-black radial with vignette and grain, and a faint blue ambient glow rises behind the card after the freeze",
-    "The sheen is now soft-light plus a weak screen layer: visible gloss on the dark artwork without bleaching text on the white card; CameraMotionBlur is dropped during the freeze (the frame is frozen, so output is identical and rendering is 7x cheaper)"
+    "Look switched to midnight: the stage is held dark during the flash so the star is the only light, then the key light and a backlight bloom as the card lands, with slow drifting dust",
+    "Card rebuilt as a deep-navy \"Founders Pass\" invitation: four-point star emblem with fine rings and crossed needles echoing the opening flare, 58px headline, mono ticket stub, and a holographic foil that shifts with spin angle and freezes on landing",
+    "Composition is now card-left, copy-right: the flash point is the landing point, the card swings out in an arc to the upper right and returns to freeze; a 132px headline \"Doors open / Nov 4.\" and subline reveal line by line after the freeze",
+    "Kept the user-tuned core (9f star flash rotating 90deg, slow-in > burst > decelerating arc, 13 diagonal spins with decay, zero-bounce hard freeze); the card carries a blue glow in flight that motion blur smears into a light trail",
+    "On landing a card-shaped light pulse expands and fades, followed 8f later by one sheen clipped to the rounded corners; duration 126 to 156f, ending on a complete invitation poster"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

@@ -1,30 +1,31 @@
 {
   "stem": "TextAsMask",
   "issues": [
-    "没有导出时长常量，工作台按 md 猜成 20f，改版前视频只有开场 hold，字内漂移和放大接管都没演到",
-    "字内透出的 dashboard 大多是白卡和浅底，SCALE 读成普通白字，“字是窗口”的感觉很弱",
-    "接管层从 endT 0.25 就开始半透明淡入，中段在深底上叠出一层灰纱；线性插值的 1→26 放大先慢后猛地一胀",
-    "底部的 TEXT AS MASK 是调试占位；#2f2f2f 平灰底；字在第 0 帧硬切出现；漂移从静止瞬间跳到匀速"
+    "字里透出的是一张白色 dashboard，白底卡片塞进字形里只读成一行普通的浅紫白字，看不出\"窗里有画面\"",
+    "放大接管是匀速胀开，没有预备动作，冲击力弱；接管后是灰白小字的占位 dashboard",
+    "暗场 + 靛紫色调与库里大量暗场镜头雷同，字和背景之间没有空间关系",
+    "副题只有一行小字，字形 360px 只占画面一半宽"
   ],
   "changes": [
-    "导出 TEXT_AS_MASK_DURATION = 150（hold 20f + 漂移 80f + 放大接管 30f + 静止 20f）",
-    "字内 dashboard 放大到 1.4 倍，叠一层靛→紫 multiply 色调（接管前淡出）；字形加一圈 1.5px 内发丝高光，读作玻璃窗口的边",
-    "放大改为对数插值 26^e，每帧放大比例恒定，视觉上匀速冲进字里；接管层推迟到 endT 0.62–0.9 才淡入，去掉中段灰纱",
-    "漂移两端轻缓（bezier(0.3,0,0.7,1)），末端零速接上放大；字 14f 浮现（0.97→1）",
-    "暗场换成带色相的柔光深底，字后有极淡的强调色地光，加颗粒（接管后撤掉）；调试占位换成副题 ONE WORKSPACE FOR EVERY TEAM"
+    "look 换为 porcelain：冷白瓷舞台 + 主光 + 暗角，字形下垫一层带色相的软投影，470px Black 字像被挖进舞台的一扇窗",
+    "窗里换成为镜头设计的暗色实时面板（Meridian · Throughput）：钴蓝→青的流式面积图一直在流、请求数计数、柱图呼吸，亮线穿过字的腰线",
+    "节奏改为：遮罩自基线擦出 → 78f 字内漂移 → 8f 吸气（字 1→0.965）→ 24f 对数空间 t^1.8 加速冲入 46×；冲入时把 L 竖笔拉回画面中线",
+    "接管层只在竖笔撑满全屏（≈24×）之后才换层，消除灰纱；面板 1.32→1 expo-out 晚 4f 落定到标准构图",
+    "加入眉题 MERIDIAN CLOUD 与 40px 副题，冲入前退场；结尾停在完整的全屏面板，流式图仍在流动；时长 150→165f"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench guessed 20f from the md, so the before video shows only the opening hold, with no in-letter drift and no zoom takeover",
-    "The dashboard seen through the letters was mostly white cards on a light canvas, so SCALE read as plain white type and the letters-as-windows idea barely came through",
-    "The takeover layer started fading in at endT 0.25, laying a translucent gray veil over the dark field mid-move; the linearly interpolated 1→26 zoom started slow, then ballooned",
-    "TEXT AS MASK at the bottom was a debug placeholder; flat #2f2f2f background; the word hard-cut in on frame 0; the drift jumped from rest straight to constant speed"
+    "The letters reveal a white dashboard, so white cards inside the glyphs just read as plain pale lavender type rather than a window onto something",
+    "The takeover is a uniform swell with no anticipation, so it lacks punch, and it lands on a placeholder dashboard of small grey text",
+    "Dark stage with an indigo tint looks like many other dark shots in the library, and there is no spatial relationship between word and background",
+    "Only one small line of subtitle, and the 360px word covers about half the frame width"
   ],
   "changesEn": [
-    "Exported TEXT_AS_MASK_DURATION = 150 (20f hold + 80f drift + 30f zoom takeover + 20f rest)",
-    "The in-letter dashboard is scaled 1.4x with an indigo-to-violet multiply tint (faded out before takeover); the glyphs get a 1.5px inner hairline highlight that reads as the edge of a glass window",
-    "The zoom now interpolates logarithmically (26^e) for a constant per-frame zoom ratio, so the push into the letter feels even; the takeover layer is delayed to endT 0.62–0.9, removing the mid-move gray veil",
-    "The drift eases at both ends (bezier(0.3,0,0.7,1)) and hands off to the zoom at zero velocity; the word fades in over 14f (0.97→1)",
-    "The dark field is now a hued soft-light backdrop with a faint accent glow behind the word and grain (removed after takeover); the debug placeholder is replaced by the subtitle ONE WORKSPACE FOR EVERY TEAM"
+    "Look switched to porcelain: a cool white stage with key light and vignette; a tinted soft shadow under the glyphs makes the 470px black-weight word read as a window cut into the stage",
+    "Inside the window is a purpose-built dark live dashboard (Meridian / Throughput): a cobalt-to-teal streaming area chart that keeps flowing, a counting request rate and breathing bars, with the bright line running through the letters' waist",
+    "Re-timed: the mask wipes up from the baseline, 78f of drift inside the letters, an 8f breath (word 1 to 0.965), then a 24f log-space t^1.8 accelerating rush to 46x that also pulls the L stem to frame centre",
+    "The full-screen cover layer only switches in once the stem fills the frame (about 24x), removing the grey veil; the panel settles from 1.32 to 1 with expo-out, 4f behind the rush",
+    "Added a MERIDIAN CLOUD eyebrow and a 40px subline that exit before the rush; the shot ends on the complete full-screen dashboard with the chart still streaming; duration 150 to 165f"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }
