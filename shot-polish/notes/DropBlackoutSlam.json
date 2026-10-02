@@ -1,32 +1,31 @@
 {
   "stem": "DropBlackoutSlam",
   "issues": [
-    "没有导出时长常量，工作台默认 150f，比镜头本意多出 20f 尾巴",
-    "铺垫段的节拍点是一颗灰色实心圆，直接压在最后一行列表的内容上，像渲染残留",
-    "爆入后的舞台是 #2f2f2f 平涂灰，\"DROP\" 是 Helvetica 平涂白字，没有光、没有层次",
-    "冲击环是 10px 白色实线圈，边缘生硬，像矢量描边而不是能量波",
-    "5f 撞入只有 scale 变化，没有曝光冲击与拖影，爆点不够响；落定后画面只剩一个词，缺少收束信息"
+    "铺垫是一张灰色小字假 dashboard 在轻微呼吸，和\"音乐要落拍\"毫无关系，观众看不出黑场前\"要来了\"",
+    "爆入后只有一个 Helvetica 白字「DROP」压在 #2f2f2f 平灰底上，像占位符而不是发布口号",
+    "冲击环是一根灰色实线圈，没有光感；落定后画面完全静死",
+    "没有品牌、没有副句，结尾帧讲不出是什么产品的发布"
   ],
   "changes": [
-    "补 DROP_BLACKOUT_SLAM_DURATION = 130；切黑 50、爆入 62、12f 纯黑 #0c0c0c、1.35→1 / 10px 震屏 / 80→900px 环 16f 等节拍参数不变",
-    "节拍点改为顶栏空位里的 \"Live session · 150 BPM\" 胶囊：四根电平条每 12f 被敲一拍、逐条错 0.8f 指数衰减，录制红点同拍呼吸，不再压内容",
-    "舞台换成带色相的深色径向渐变 + 标题背后靛蓝余光（爆开满、18f 落到 0.55）+ 暗角 0.5 + 10% 颗粒；DROP 改系统字体 800、白→淡靛纵向渐变字面 + 柔辉光",
-    "爆入帧加中心泛白曝光冲击（0.55→0，6f）与两层向外放大的缩放拖影（4f 消失）；冲击环改为 6→1.5px 细亮芯 + 内外柔光晕",
-    "标题落定后 t=8–20 眉题 \"The new release · Out now\"（34px）从下方 16px ease-out 浮上，之后 48f 真静止"
+    "look 改为自定义「信号红 · 暖黑」，铺垫换成为镜头设计的编曲视图（Quasar Studio：4 条音轨、小节标尺、红色 DROP 标记旗），播放头按 150BPM 匀速走、正好在切黑帧撞上 DROP 标记",
+    "铺垫张力：相机 1.0→1.1 ease-in 逼近标记；拍点只打元素层（节拍灯 / 电平条 / 标记旗），最后 12f 军鼓滚奏式加密 12→6→3→2f；Riser 轨的楔形波形把\"蓄力\"可视化",
+    "黑场保持 12f 纯 #0c0c0c 死寂；爆入三件事同帧：300px 字标「QUASAR 3」1.35→1 撞入（5f snappy + 两层缩放残影）、10px 指数衰减震屏、细亮芯红晕冲击环 80→1100px",
+    "加一帧中心曝光 + 背后整条红色声纹从中心 ~140px/f 向两侧炸开、逐柱弹簧落定，成为字标后的静态声纹",
+    "落定排版：红色宽字距眉题 THE DROP · 03.21、56px 副句逐词升起、32px 底注；hold 段 1.0→1.02 极缓推镜 + 声纹极轻呼吸，136f"
   ],
   "issuesEn": [
-    "No exported duration; the workbench defaulted to 150f, 20f longer than the shot intends",
-    "The pre-drop beat marker was a solid grey dot sitting on top of the last list row, like a render artefact",
-    "After the drop the stage was flat #2f2f2f grey and 'DROP' was flat white Helvetica, with no light or depth",
-    "The shock ring was a 10px solid white circle with hard edges, reading as a vector stroke rather than an energy wave",
-    "The 5f slam was scale only, with no exposure hit or trail, so the drop lacked punch; the settled frame had a single word and nothing to close on"
+    "The build-up was a grey, small-text fake dashboard gently breathing, unrelated to a music drop, so nothing signalled that something was coming before the blackout",
+    "After the slam there was only a plain white Helvetica 'DROP' on a flat #2f2f2f grey, reading as a placeholder rather than a launch line",
+    "The shock ring was a solid grey circle with no sense of light, and the frame went completely dead after landing",
+    "No brand and no supporting line, so the end frame did not say what was being launched"
   ],
   "changesEn": [
-    "Added DROP_BLACKOUT_SLAM_DURATION = 130; blackout at 50, slam at 62, 12f of #0c0c0c, 1.35→1 scale, 10px shake and 80→900px ring over 16f all unchanged",
-    "The beat marker is now a 'Live session · 150 BPM' pill in empty top-bar space: four level bars hit every 12f, each decaying exponentially 0.8f after the last, with a recording dot pulsing on the beat; nothing covers content",
-    "Stage is now a tinted dark radial gradient with an indigo halo behind the word (full at impact, easing to 0.55 over 18f), a 0.5 vignette and 10% grain; DROP uses the system font at 800 with a white-to-pale-indigo fill and a soft glow",
-    "The impact frame adds a centre exposure bloom (0.55→0 over 6f) and two outward zoom trails that fade within 4f; the ring is now a bright 6→1.5px core with soft inner and outer glow",
-    "After the word lands, a 34px eyebrow 'The new release · Out now' rises 16px on ease-out at t=8–20, followed by a 48f true hold"
+    "Custom 'signal red on warm black' look; the build-up is now an arrangement view designed for the shot (Quasar Studio: 4 tracks, bar ruler, red DROP marker), with the playhead moving at a true 150BPM and hitting the DROP marker exactly on the blackout frame",
+    "Tension in the build: the camera pushes 1.0 to 1.1 with an ease-in toward the marker; beats hit only the element layer (beat LEDs, meters, marker flag), and the last 12f tighten like a snare roll, 12 to 6 to 3 to 2f; the riser track's wedge waveform makes the build visible",
+    "The blackout stays a dead 12f of pure #0c0c0c; three things fire on the same frame: a 300px 'QUASAR 3' wordmark slams 1.35 to 1 (5f snappy plus two scale echoes), a 10px exponentially decaying shake, and a thin bright-core red-glow ring from 80 to 1100px",
+    "Added a one-frame centre exposure and a full-width red waveform that bursts outward from the centre at about 140px/f, each bar settling on its own spring into a static waveform behind the wordmark",
+    "Settled layout: a wide-tracked red kicker 'THE DROP · 03.21', a 56px line rising word by word and a 32px footnote; the hold has a 1.0 to 1.02 slow push and a faint waveform breath, 136f total"
   ],
-  "mdChanged": false
+  "look": "custom",
+  "mdChanged": true
 }

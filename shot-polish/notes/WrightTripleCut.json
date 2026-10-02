@@ -1,32 +1,31 @@
 {
   "stem": "WrightTripleCut",
   "issues": [
-    "没有导出时长常量，工作台从源码抓到 25f，只渲染出开头全景 hold，三连特写和甩回全部丢失",
-    "三个特写都是浅灰底上一张 4px 灰边大白卡，按钮是灰块里一根白条、光标是黑圆点，读不出是什么控件",
-    "翻牌是整块黑卡 rotateX，没有翻牌的上下分片与铰线；开关是平涂灰 / 黑轨道",
-    "甩回靠三份整页 dashboard 错帧叠加冒充模糊，甩入时左侧大片空白",
-    "结果是在中上卡片上盖一块半透明白板 + 5px 黑边 + 260px 大 \"1\"，把卡片内容整个遮掉，泛光是白色外溢"
+    "全景是通用灰色小字 dashboard，结果卡只是一格灰卡片里一个大\"1\"，看不出三步操作产生了什么结果",
+    "三个特写（Deploy 按钮 / 开关 / 翻牌）和全景内容没有对应关系，读作三段素材硬拼",
+    "特写底是把整页 dashboard 放大虚化，灰白一片，控件材质平",
+    "结果只靠一圈靛蓝描边和 \"+1\" 角标，答案不够亮"
   ],
   "changes": [
-    "补 WRIGHT_TRIPLE_CUT_DURATION = 130；三特写 25/35/45 各 10f（静 4 / 动 3 / 静 3）、二值跳变、55 帧 6f poly(5) 甩回全部保留",
-    "特写底改为同一页面 2.6x 超近虚焦（blur 14px，微距景深）+ 柔光压亮；前景换成成品控件：靛蓝渐变 \"Deploy\" 按钮 + macOS 箭头光标，按下时阴影 26→5 收缩、下沉 8px",
-    "开关做成 iOS 式：内凹轨道灰→强调色、白色圆钮带两层软阴影，滑动途中横向拉伸 46px 再收回；翻牌改分体翻页（上片翻倒 → 下片落下 + 铰线 + 翻页暗面）",
-    "甩回改用按速度的横向 SpeedBlur（峰值封顶 30px），上一镜翻牌特写同步甩出画左，首尾相接不留空",
-    "结果改为 Deploys 卡同 seed 副本抬起 8px / 1.02 过冲 + 2px 强调色描边与同色柔光 + \"+1\" 角标弹出，卡外 10% 圆角挖空压暗收视线，84 帧起真静止"
+    "look 换成 ember，题材改为虚构智能供暖 App「Hearth」：全景是三张为镜头设计的房间卡（120px 细体温度读数、270° 表盘、电源钮、Boost 开关），橙色只属于\"正在加热\"",
+    "三个特写就是中间卡自己的三个控件，按原生尺寸重画：①电源钮按下亮橙（带机加工金属边框）②Boost 开关拨右（圆钮滑动拉伸 + 双层火苗）③表盘 19°→22°（弧线扫过、刻度点亮、300px 读数跳变）",
+    "三镜统一：主体屏心同倍率、同一套暖黑微距散景底（每镜换排布）、镜内极缓推近，左下角「01 POWER / 02 BOOST / 03 SET 22°」步骤号把三连读成一个流程",
+    "节奏保持静 4-动 3-静 3 的 10f 咔哒结构，状态在动作窗中点二值跳变；第三声后 7f poly(5) whip，上一镜甩出画左、全景从右甩入，按速度横向运动模糊",
+    "结果：中间卡弹簧抬起 + 橙色描边泛光、两侧卡压暗，状态胶囊「Heating · ready in 12 min」弹出；hold 54f 极缓推镜"
   ],
   "issuesEn": [
-    "No exported duration; the workbench grabbed 25f from the source, so only the opening wide hold rendered and the three close-ups and whip were lost",
-    "All three close-ups were a big white card with a 4px grey border on light grey; the button was a white bar in a grey block and the cursor a black dot, so the controls were unreadable",
-    "The flip was a whole black card on rotateX, with no split halves or hinge; the toggle was a flat grey/black track",
-    "The whip faked blur by stacking three full dashboards at frame offsets, leaving a large empty area on the left as it slid in",
-    "The result covered the top-middle card with a translucent white slab, a 5px black border and a 260px '1', hiding the card's content behind a white glow spill"
+    "The wide shot was a generic grey small-text dashboard, and the result card was just a big '1' in a grey tile, so the three steps had no visible outcome",
+    "The three close-ups (Deploy button, switch, flip counter) had no relation to the wide shot's content and read as three unrelated clips spliced together",
+    "The close-up background was the whole dashboard blown up and blurred into flat grey-white, and the controls looked flat",
+    "The result relied on an indigo outline and a '+1' badge; the answer was not bright enough"
   ],
   "changesEn": [
-    "Added WRIGHT_TRIPLE_CUT_DURATION = 130; close-ups at 25/35/45, 10f each (4 still / 3 action / 3 still), binary switches and the 6f poly(5) whip at frame 55 all kept",
-    "Close-ups sit on a 2.6x defocused view of the same page (14px blur, macro depth of field) with a soft light lift; foregrounds are finished controls: an indigo gradient 'Deploy' button and a macOS arrow cursor, with the shadow shrinking 26→5 as it presses down 8px",
-    "iOS-style toggle: inset track goes grey→accent and the white knob, with a two-layer soft shadow, stretches 46px mid-slide before settling; the counter is now a split-flap (top flap falls, bottom flap drops, with hinge line and a shaded underside)",
-    "The whip uses velocity-driven horizontal SpeedBlur (peak capped at 30px), and the flip close-up exits left in step so the frame never shows a gap",
-    "The result is a same-seed copy of the Deploys card lifting 8px with a 1.02 overshoot, a 2px accent outline with matching glow and a '+1' badge pop; a 10% rounded cut-out scrim dims everything else, with a true hold from frame 84"
+    "Ember look with a fictional smart-heating app, Hearth: the wide shot is three room cards designed for the shot (120px light temperature readout, 270° dial, power button, Boost toggle), and orange only ever means 'heating'",
+    "The three close-ups are the centre card's own controls, redrawn at native size: 1) the power button presses and lights orange inside a machined bezel, 2) the Boost toggle flips right with a stretching knob and a two-layer flame, 3) the dial goes 19° to 22° as the arc sweeps, ticks light up and the 300px readout jumps",
+    "The three shots match: subject centred at the same scale, the same warm-black macro bokeh (rearranged per shot), a slight in-shot push, and step labels '01 POWER / 02 BOOST / 03 SET 22°' bottom-left that tie the triple cut into one flow",
+    "Rhythm keeps the 10f click structure of 4 still, 3 action, 3 still, with each state flipping at the action midpoint; after the third click a 7f poly(5) whip throws the last shot off left and the wide shot in from the right, with velocity-based horizontal motion blur",
+    "Result: the centre card springs up with an orange glowing outline while the side cards dim, and a 'Heating · ready in 12 min' pill pops in; a 54f hold with a slow push"
   ],
+  "look": "ember",
   "mdChanged": true
 }
