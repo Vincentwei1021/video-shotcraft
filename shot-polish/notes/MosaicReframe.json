@@ -1,26 +1,33 @@
 {
   "stem": "MosaicReframe",
   "issues": [
-    "12 张瓦片只是渐变底 + 一枚发光圆点 + 两根白条，看不出是图片/作品，「同一批内容多种看法」的内容本身是空的",
-    "换位过程中瓦片贴着平面滑动，阴影始终一样，没有被拿起、放下的物理感",
-    "背景是纯 #0a0b10 平涂，暗场没有光向与层次"
+    "画面在 480×270 设计坐标里排版再放大，瓦片标题 5–10px 级，放大后仍是读不清的小字",
+    "瓦片是同一套蓝紫渐变色块 / 几何插画，12 张看起来一样，不像照片也不像任何产品",
+    "重排没有起因：布局自己突然变形，观众不知道是谁触发的",
+    "全程 smoothstep 同一条曲线、旋转与位置同时到，B→C 收尾没有落定感；C 态没有任何文字，尾帧不成画面"
   ],
   "changes": [
-    "瓦片换成像图片的 SVG 程序插画（日落 / 山脊 / 海浪 / 几何四式轮换，沿用原色相序列），viewBox + slice 等效 object-fit: cover，宽高独立插值时不变形不露底",
-    "每片底部 scrim 上加标题与张数（首片 Featured 大字），少数片加 FEATURED / NEW 角标；字号固定，不随宽高缩放",
-    "换位两段各按段进度 sin 包络抬起：环境阴影变大变虚、接触影变淡、微放大 2.5%，落位即贴回；瓦片补顶部内高光与发丝边",
-    "背景改带冷色主光的径向暗场 + 暗角 + soft-light 颗粒；三套布局坐标、smoothstep、段窗口与 0.007 stagger 全部不变"
+    "look 换成 sand（米色 · 赤陶）：虚构相册产品 Folio 的夏日影集，12 张程序绘制的暖调胶片照片（落日、沙丘、拱门、雾山、泳池、柑橘等八式）",
+    "加入因果：右上角 Grid / Mosaic / Cascade 分段控件，赤陶胶囊先滑（途中拉长）、瓦片晚 4f 开始重排",
+    "曲线分层：位置用 bezier(0.75,0,0.15,1) 果断换位，宽高晚 2f、旋转晚 4f 并轻过冲一次；途中抬起放大 3.5% + 阴影变虚",
+    "三态三种语气：B 态主图压 84px 衬线图注逐词升起；C 态瓦片长出相纸白边、按序号发牌式摊开",
+    "排版改 1920 原生：字标 48px、控件 30px、C 态左下 124px 衬线大标题「Summer, in sequence.」+ 32px 副行，尾帧是完整影集海报",
+    "时长 214f：浮现 22f → hold A → A→B → hold B 36f → B→C → hold C 34f，全程相机极缓推近 2.5%"
   ],
   "issuesEn": [
-    "The 12 tiles were just gradients with a glowing dot and two white bars — they didn't read as photos or work, so the \"same content, many views\" had no content",
-    "Tiles slid flat across the plane during re-layout with an unchanging shadow — no sense of being picked up and set down",
-    "Flat #0a0b10 background with no light direction or depth"
+    "Laid out in a 480×270 design space and scaled up, so tile titles were 5–10px-class text that stayed unreadable",
+    "Tiles were the same blue-purple gradient blocks with geometric art; all 12 looked alike and read neither as photos nor as a product",
+    "The reflow had no cause: the layout just morphed on its own, with nothing showing what triggered it",
+    "One smoothstep curve for everything with rotation landing together with position, so B to C never settled; the C state had no type and the last frame was not a composed image"
   ],
   "changesEn": [
-    "Tiles now hold photo-like SVG illustrations (sunset / ridge / waves / geometric, rotating, on the original hue sequence); viewBox + slice behaves like object-fit: cover, so independent width/height interpolation never distorts or exposes the base",
-    "A bottom scrim carries a title and photo count on each tile (larger on the featured tile), with FEATURED / NEW tags on a few; type size is fixed and doesn't scale with the box",
-    "In both re-layout phases each tile lifts on a sin envelope of its progress — ambient shadow grows and softens, contact shadow fades, 2.5% scale-up — and settles back on landing; tiles gain a top inner highlight and hairline edge",
-    "Background is a radial dark field with a cool key light, vignette and soft-light grain; the three layout tables, smoothstep, phase windows and 0.007 stagger are unchanged"
+    "Sand look (warm beige, terracotta): a summer set in Folio, a fictional photo library, with 12 procedurally drawn warm film-style photos (sunset, dunes, arch, misty ridge, pool, citrus and more)",
+    "Added cause: a Grid / Mosaic / Cascade segmented control top right whose terracotta pill slides first (stretching mid-way) and the tiles follow 4f later",
+    "Layered curves: position uses a decisive bezier(0.75,0,0.15,1), size lands 2f later and rotation 4f later with one light overshoot; tiles lift 3.5% with a softer, larger shadow while moving",
+    "Three states, three tones: in B the hero tile gets an 84px serif caption rising word by word; in C the tiles grow white print borders and are dealt out one by one",
+    "Native 1920 typography: 48px wordmark, 30px control, and in C a 124px serif headline 'Summer, in sequence.' with a 32px subline bottom left, so the last frame is a finished album poster",
+    "214f: 22f build-in, hold A, A to B, 36f hold B, B to C, 34f hold C, with a very slow 2.5% camera push throughout"
   ],
+  "look": "sand",
   "mdChanged": true
 }

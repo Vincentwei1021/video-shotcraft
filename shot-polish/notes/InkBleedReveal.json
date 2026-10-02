@@ -1,32 +1,31 @@
 {
   "stem": "InkBleedReveal",
   "issues": [
-    "旧景是灰底上一个调试字「BEFORE」，没有纸、没有墨，介质隐喻无从谈起",
-    "渗边只是遮罩的硬切口：新景直接从锯齿洞里露出来，没有墨色、没有湿晕，读作破洞而不是墨",
-    "没有落墨的起点，洇开凭空开始",
-    "新景从第一帧就是最终尺寸，缺少「显影」的过程感",
-    "工作台时长被推断成 80f，摘罩后的 30f 静止收尾被截掉"
+    "新景是灰阶占位 dashboard（灰条 + 空卡片），旧景只有一个 BEFORE 大字，两景之间没有任何叙事",
+    "墨边是撕纸洞一样的锯齿黑圈，没有\"墨\"的浓淡层次，读作烧穿或普通 iris 擦除",
+    "没有墨滴落下的起因，圆从画面里凭空长出来",
+    "洇满后 30f 全静止，新景没有任何跟随动作"
   ],
   "changes": [
-    "旧景换成暖白纸面章节扉页：等宽章号 + 112px 衬线标题（斜体强调）+ 细线 + 副题，铺静态纸纹颗粒（不换帧，静止段像素恒定）",
-    "墨做成三层同源须状遮罩：+110px 重羽化湿晕（0.12）→ 墨边外沿（领先 20–42px，0.42 + 3.2px 羽化）→ 墨芯（0.86 + 1px 羽化），新景在墨后显影",
-    "14–22f 先落一个小墨点（overshoot 缓动），再被洇开的墨边吞没",
-    "新景在遮罩内 scale 1.035→1（ease-out，100f 精确归 1）做显影收束；保留原半径曲线、±8% 扰动与 100f 摘罩",
-    "补导出 INK_BLEED_REVEAL_DURATION = 130（洇开 20–98f + 摘罩后真静止 30f）"
+    "look 用 paper（暖白纸 · 墨 · 朱红）：旧景是刊物《The Field Report》第 02 章扉页（150px 衬线标题 + 朱红斜体 + 正文双栏 + 书眉页码），新景是印在深靛墨底上的第 03 章——墨不是遮罩，而是新页的底色",
+    "墨的物理：墨滴从画外自由落体落下并按速度拉长 → 触纸溅出主墨团 + 7 粒卫星墨点 → 线性与 ease-out 各半的洇开 + 低频扰动，卫星被主墨团吞并",
+    "墨的层次：湿晕（极淡暖暗）/ 高频须状淡墨跑在最前 / 比墨底更浓的墨边 / 新景显影，四层同 seed 位移遮罩",
+    "跟随与收尾：106f 摘罩真静止，朱红细线描出、副题逐词由虚到实，相机极缓推近 1.5%；尾帧是完整的章节海报",
+    "落墨点放在右侧，让新章大标题最后被墨染到；时长 152f"
   ],
   "issuesEn": [
-    "The old scene was a debug word \"BEFORE\" on gray — no paper, no ink, so the medium metaphor had nothing to stand on",
-    "The bleed was just a hard mask cut: the new scene showed through a jagged hole with no ink color or wet halo, reading as a tear rather than ink",
-    "There was no ink drop — the bleed started out of nowhere",
-    "The new scene was at final size from the first frame, with no sense of developing",
-    "The workbench inferred 80f, cutting off the 30f hold after the mask is removed"
+    "The new scene was a greyscale placeholder dashboard (grey bars, empty cards) and the old scene was a single word, BEFORE, with no story between them",
+    "The ink edge was a jagged black ring like a hole torn in paper, with no light and dark in the ink, so it read as a burn-through or a plain iris wipe",
+    "Nothing caused it: no drop fell, the circle just grew out of the frame",
+    "After filling the frame it held completely still for 30f with no follow-through on the new scene"
   ],
   "changesEn": [
-    "The old scene is now a chapter title page on warm paper: mono chapter number, 112px serif title with italic emphasis, rule and subtitle, over static paper grain (no re-roll, so held frames stay pixel-identical)",
-    "Ink is three masks sharing the same tendril displacement: a +110px heavily feathered wet halo (0.12) → an outer ink fringe leading by 20–42px (0.42, 3.2px feather) → a dense core (0.86, 1px feather); the new scene develops behind the ink",
-    "A small ink drop lands first (14–22f, overshoot ease) before the bleed swallows it",
-    "Inside the mask the new scene settles from scale 1.035→1 (ease-out, exactly 1 at 100f) as a develop-in; the original radius curve, ±8% wobble and 100f mask removal are kept",
-    "Exported INK_BLEED_REVEAL_DURATION = 130 (bleed 20–98f + 30f true hold after unmasking)"
+    "Paper look (warm paper, ink, vermilion): the old scene is the Chapter 02 opener of a magazine, The Field Report (150px serif headline, vermilion italic, two body columns, running head and folio); the new scene is Chapter 03 printed on deep indigo ink, so the ink is the new page's ground rather than a mask",
+    "Ink physics: a drop free-falls in from off frame, stretching with speed, then hits the paper with a main splat and 7 satellite droplets, and spreads on a half-linear, half-ease-out curve with low-frequency wobble while the satellites are swallowed",
+    "Layered ink: a faint warm wet halo, a high-frequency diluted fringe running ahead, an edge denser than the ink ground, then the new scene developing, all four sharing one seeded displacement",
+    "Follow-through and ending: the mask comes off at 106f for a truly still frame, a vermilion rule draws in, the subline resolves word by word from blur and the camera pushes in 1.5%; the last frame is a finished chapter poster",
+    "The drop lands on the right so the new chapter headline is inked last; 152f total"
   ],
+  "look": "paper",
   "mdChanged": true
 }
