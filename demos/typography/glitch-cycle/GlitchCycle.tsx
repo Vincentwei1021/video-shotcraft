@@ -1,204 +1,217 @@
-// glitch-cycle — Glitch Cycle 乱码轮播（motion-lab 定稿转原生 Remotion）
-// 同一位置循环轮播状态短语，每条短语头尾乱码、中段偶发轻微抖动
-// （glitch 概率关键帧 [1,0,0,0.1,0,0,1]，最后一条结尾收为 0 保证 t=1 画面干净），
-// 切换瞬间伴随 RGB 分离与位移抖动；底部细进度条随 t 匀速填满。
-// 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
-// 质感层（改版）：短语在固定槽位里左右对称填空格（仍不增删字符、不重排），行真正居中；
-// glitch 浓度 g 再驱动一条水平撕裂带（行切三段、中段横移），切换峰值更像信号故障；
-// 进度条加四拍刻度 + 步骤/百分比状态行（tabular-nums），末条落定时状态点转实心；
-// 暗场柔光底 + 暗角 + 颗粒，强调色统一为批次靛蓝。
+// glitch-cycle — 乱码轮播：同一行等宽槽位循环轮播 4 条状态短语，每条头尾按概率关键帧
+// [1,0,0,0.1,0,0,1] 全乱码、中段偶发单字抖动，切换瞬间叠 RGB 分离、整行位移与水平撕裂；
+// 末条概率收 0 保证收尾干净。
+//
+// 第二轮重设计（极光夜 · 部署控制台）：
+// - look = aurora（深紫黑 · 紫 · 粉）。原生 1920 作画：短语是 104px 等宽大写、固定 17 个槽位
+//   （短语居中补空格，字符不增删、整行永不重排），四角细括号框住槽位，像一块广播级状态屏。
+// - 噪声浓度 g 一个变量同时驱动：逐字换乱码（粉 / 暗紫）、整行横向抖动（±g·36px，纵向只 ±g·10）、
+//   RGB 分离（粉左 / 冰蓝右各 g·10px）、g>0.25 的水平撕裂带（中段横移 ±g·80px）、g>0.45 的 3 块
+//   像素块残影——所以几种故障永不打架。每 2f 重掷一次（1f 一换糊成灰带，4f 以上看得清是另一个词）。
+// - 上方状态行（脉冲点 + DEPLOYING · halyard/web · #4127）、下方 1100px 进度轨（线性走满，四拍刻度 +
+//   发光头）+ STEP n/4 与百分比（tabular-nums）——给噪声一个稳定的"在推进"参照。
+// - 收尾：末条 READY TO SHIP 收干净的那一刻给一次柔和泛光（Q4：只给主角一次），进度到 100% 后
+//   状态行转 DEPLOYED、脉冲点转实心，下方升起一行强调色链接；最后 ~28f 干净海报。
+//
+// 时间表（30fps，共 168f）：每条短语 38f（乱 → 定 → 0.1 抽字 → 定 → 乱熔进下一条）
+//   0–38    INITIALIZING（第 0 帧即满乱码 = 开场就有画面）
+//   38–76   LOADING ASSETS
+//   76–114  COMPILING SHADERS
+//   114–168 READY TO SHIP：按 38f 走 KF_LAST，~139f 起干净；进度 0→100% 线性走到 140f
+//   140–168 DEPLOYED 状态 + 链接升起 + hold
 import React from 'react';
-import { useCurrentFrame } from 'remotion';
-import { DesignStage, lerp, rand, useT } from '../../_fixtures/Motion';
-import { Backdrop, FONT, Grain } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha } from '../../_fixtures/Look';
 
-export const GLITCH_CYCLE_DURATION = 168; // 5600ms @30fps
+export const GLITCH_CYCLE_DURATION = 168;
 
+const L = LOOKS.aurora;
 const PHRASES = ['INITIALIZING', 'LOADING ASSETS', 'COMPILING SHADERS', 'READY TO SHIP'];
 const POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&<>/\\';
-// glitch 概率关键帧 [1,0,0,0.1,0,0,1]（最后一条结尾收为 0，保证 t=1 画面干净）
 const KF = [1, 0, 0, 0.1, 0, 0, 1];
 const KF_LAST = [1, 0, 0, 0.1, 0, 0, 0];
 const MAXCH = Math.max(...PHRASES.map((p) => p.length));
-const ACCENT = '#8f97ff';
-const INK = '#e4e8f4';
-const BAR_W = 150;
+const SLOT = 38; // 每条短语帧数（末条之后一直延续到片尾）
+const DONE = 140; // 进度走满帧
+const SIZE = 104;
+const CELL = 0.64; // 槽宽（em）
+const SPLIT_A = '#ff4fa3'; // RGB 分离：粉
+const SPLIT_B = '#6fd8ff'; // RGB 分离：冰蓝
+const BAR_W = 1100;
 
-// 关键帧折线采样：p∈[0,1] 映射到 kf 段内线性插值
+const rand = (n: number) => {
+  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
 const glitchAt = (kf: number[], p: number) => {
   const segs = kf.length - 1;
   const x = Math.min(segs - 1e-6, Math.max(0, p * segs));
   const i = Math.floor(x);
-  return lerp(x - i, kf[i], kf[i + 1]);
+  return kf[i] + (kf[i + 1] - kf[i]) * (x - i);
 };
-
-// 短语居中填进 MAXCH 个固定槽位：左右对称补空格（槽位数不变 → 整行永不重排）
 const padCenter = (s: string) => {
   const left = Math.floor((MAXCH - s.length) / 2);
   return ' '.repeat(left) + s + ' '.repeat(MAXCH - s.length - left);
 };
 
 export const GlitchCycle: React.FC = () => {
-  const t = useT();
   const frame = useCurrentFrame();
   const N = PHRASES.length;
-  const slot = Math.min(N - 1, Math.floor(t * N));
-  const p = t * N - slot; // 短语内进度 0..1
+  const slot = Math.min(N - 1, Math.floor(frame / SLOT));
+  const p = Math.min(1, (frame - slot * SLOT) / SLOT);
   const text = padCenter(PHRASES[slot]);
   const g = glitchAt(slot === N - 1 ? KF_LAST : KF, p);
-  const bucket = Math.floor(frame / 2); // 乱码跳字节流：每 2 帧换一批随机字符
-  // 整行抖动 + RGB 分离，强度跟随 glitch 概率
-  const jx = (rand(bucket * 5 + slot) - 0.5) * g * 10;
-  const jy = (rand(bucket * 9 + slot + 40) - 0.5) * g * 4;
-  // 撕裂带：g>0.25 时行切三段，中段（随机高度 18–40%）按 g 横移
+  const bucket = Math.floor(frame / 2);
+
+  const jx = (rand(bucket * 5 + slot) - 0.5) * g * 36;
+  const jy = (rand(bucket * 9 + slot + 40) - 0.5) * g * 10;
   const tear = g > 0.25;
-  const bandTop = 15 + rand(bucket * 3 + 7) * 45;
-  const bandH = 18 + rand(bucket * 11 + 3) * 22;
-  const tearX = (rand(bucket * 13 + 5) - 0.5) * g * 22;
-  const done = slot === N - 1 && g < 0.02 && p > 0.5; // 末条收干净后：状态点转实心
+  const bandTop = 12 + rand(bucket * 3 + 7) * 50;
+  const bandH = 16 + rand(bucket * 11 + 3) * 24;
+  const tearX = (rand(bucket * 13 + 5) - 0.5) * g * 160;
+  const split = g * 10;
+
+  const prog = Math.min(1, frame / DONE);
+  const done = frame >= DONE;
+  const landed = slot === N - 1 && p > 0.66; // 末条干净
+  const bloom = landed ? Math.max(0, 1 - (frame - (slot * SLOT + SLOT * 0.66)) / 26) : 0;
+  const link = ramp(frame, DONE + 2, 16, EASE.snappy);
+  const pulse = 0.55 + 0.45 * Math.sin(frame / 4);
+  const intro = ramp(frame, 0, 14, EASE.out);
 
   const row = (dx: number, clip?: string, key?: string) => (
-    <div
-      key={key}
-      style={{
-        position: clip ? 'absolute' : 'relative',
-        left: 0,
-        top: 0,
-        display: 'flex',
-        transform: `translateX(${dx}px)`,
-        clipPath: clip,
-        textShadow:
-          g > 0.04
-            ? `${g * 3}px 0 rgba(255,70,110,${g * 0.75}), ${-g * 3}px 0 rgba(70,215,255,${g * 0.75}), 0 0 12px rgba(143,151,255,0.18)`
-            : '0 0 12px rgba(143,151,255,0.16)',
-      }}
-    >
+    <div key={key} style={{
+      position: clip ? 'absolute' : 'relative', left: 0, top: 0, display: 'flex',
+      transform: `translateX(${dx.toFixed(1)}px)`, clipPath: clip,
+      textShadow: g > 0.04
+        ? `${split.toFixed(1)}px 0 ${alpha(SPLIT_A, 0.8 * Math.min(1, g * 1.4))}, ${(-split).toFixed(1)}px 0 ${alpha(SPLIT_B, 0.8 * Math.min(1, g * 1.4))}`
+        : `0 0 ${(20 + 40 * bloom).toFixed(0)}px ${alpha(L.accent, 0.25 + 0.45 * bloom)}`,
+    }}>
       {Array.from({ length: MAXCH }, (_, i) => {
         const ch = text[i];
         let content = ch;
-        let color: string | undefined;
+        let color: string = L.ink;
         if (ch !== ' ') {
-          // 逐字符按种子掷 glitch：命中显示乱码 + 变色，未命中显示真字符
           const hit = rand(i * 31 + bucket * 17 + slot * 97) < g;
           if (hit) {
             content = POOL[Math.floor(rand(i * 131 + bucket * 7 + slot * 13) * POOL.length)];
-            color = rand(i + bucket) > 0.5 ? ACCENT : '#4c5370';
-          } else {
-            color = INK;
+            color = rand(i + bucket) > 0.5 ? L.accent2 : L.ink3;
           }
         }
-        return (
-          <span key={i} style={{ minWidth: '0.66em', textAlign: 'center', color }}>
-            {content}
-          </span>
-        );
+        return <span key={i} style={{ width: `${CELL}em`, textAlign: 'center', color, display: 'inline-block' }}>{content}</span>;
       })}
     </div>
   );
 
-  const pct = Math.round(t * 100);
+  // 像素块残影：g 高时 3 块小矩形在槽位里闪现（每 2f 重掷）
+  const blocks = g > 0.45
+    ? Array.from({ length: 3 }, (_, k) => ({
+      x: rand(bucket * 19 + k * 7) * 100, y: rand(bucket * 23 + k * 5) * 90,
+      w: 4 + rand(bucket * 29 + k) * 14, h: 6 + rand(bucket * 31 + k) * 14, c: k % 2 ? SPLIT_B : SPLIT_A,
+    }))
+    : [];
+
+  const slotW = MAXCH * CELL * SIZE;
+
   return (
-    <>
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.42 }} accent="#5b63d3" vignette={0.6} grain={0} />
-      <DesignStage bg="transparent">
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div
-            style={{
-              position: 'relative',
-              fontFamily: FONT.mono,
-              fontSize: 26,
-              fontWeight: 500,
-              letterSpacing: 3,
-              lineHeight: 1.2,
-              transform: `translate(${jx}px,${jy}px)`,
-            }}
-          >
-            {tear ? (
-              <>
-                {/* 占位行（不可见）撑住尺寸，三段切片绝对定位叠上 */}
-                <div style={{ visibility: 'hidden' }}>{row(0)}</div>
-                {row(0, `inset(0 0 ${100 - bandTop}% 0)`, 'a')}
-                {row(tearX, `inset(${bandTop}% -20px ${Math.max(0, 100 - bandTop - bandH)}% -20px)`, 'b')}
-                {row(0, `inset(${Math.min(100, bandTop + bandH)}% 0 0 0)`, 'c')}
-              </>
-            ) : (
-              row(0)
-            )}
+    <AbsoluteFill>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.45 }} fill={{ x: 0.82, y: 0.12 }} breathe={0.4} vignette={0.65}>
+        {/* 信号带：短语背后一条横向柔光 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 380, height: 300,
+          background: `radial-gradient(ellipse 45% 50% at 50% 50%, ${alpha(L.accent, 0.16 + 0.1 * g)} 0%, ${alpha(L.accent, 0)} 70%)`,
+        }} />
+        {/* 扫描线（静态、极淡） */}
+        <div style={{
+          position: 'absolute', inset: 0, opacity: 0.5,
+          background: `repeating-linear-gradient(180deg, ${alpha('#000000', 0)} 0px, ${alpha('#000000', 0)} 3px, ${alpha('#000000', 0.22)} 4px)`,
+        }} />
+      </Stage>
+
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ position: 'relative', width: slotW, opacity: intro }}>
+          {/* 状态行 */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 18, marginBottom: 54, fontFamily: FONT.mono, fontSize: 30,
+            letterSpacing: '0.14em', color: L.ink2,
+          }}>
+            <span style={{
+              width: 14, height: 14, borderRadius: 7, boxSizing: 'border-box', border: `2px solid ${L.accent2}`,
+              background: done ? L.accent2 : alpha(L.accent2, pulse * 0.8),
+              boxShadow: `0 0 ${done ? 16 : 10 * pulse}px ${alpha(L.accent2, 0.7)}`,
+            }} />
+            <span style={{ color: done ? L.ink : L.ink2, fontWeight: 600 }}>{done ? 'DEPLOYED' : 'DEPLOYING'}</span>
+            <span style={{ color: L.ink3 }}>·</span>
+            <span>halyard/web</span>
+            <span style={{ marginLeft: 'auto', color: L.ink3 }}>#4127</span>
+          </div>
+
+          {/* 槽位：四角括号 + 短语 */}
+          <div style={{ position: 'relative', padding: '30px 0' }}>
+            {[[0, 0], [1, 0], [0, 1], [1, 1]].map(([rx, ry], k) => (
+              <div key={k} style={{
+                position: 'absolute', width: 30, height: 30, left: rx ? undefined : -36, right: rx ? -36 : undefined,
+                top: ry ? undefined : 0, bottom: ry ? 0 : undefined,
+                borderLeft: rx ? undefined : `2px solid ${alpha(L.ink, 0.35)}`, borderRight: rx ? `2px solid ${alpha(L.ink, 0.35)}` : undefined,
+                borderTop: ry ? undefined : `2px solid ${alpha(L.ink, 0.35)}`, borderBottom: ry ? `2px solid ${alpha(L.ink, 0.35)}` : undefined,
+              }} />
+            ))}
+            <div style={{
+              position: 'relative', fontFamily: FONT.mono, fontSize: SIZE, fontWeight: 600, lineHeight: 1.1,
+              transform: `translate(${jx.toFixed(1)}px,${jy.toFixed(1)}px)`, whiteSpace: 'pre',
+            }}>
+              {tear ? (
+                <>
+                  <div style={{ visibility: 'hidden' }}>{row(0)}</div>
+                  {row(0, `inset(0 -200px ${100 - bandTop}% -200px)`, 'a')}
+                  {row(tearX, `inset(${bandTop}% -200px ${Math.max(0, 100 - bandTop - bandH)}% -200px)`, 'b')}
+                  {row(0, `inset(${Math.min(100, bandTop + bandH)}% -200px 0 -200px)`, 'c')}
+                </>
+              ) : row(0)}
+              {blocks.map((b, k) => (
+                <div key={k} style={{
+                  position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, width: b.w * 4, height: b.h * 2,
+                  background: alpha(b.c, 0.55), mixBlendMode: 'screen',
+                }} />
+              ))}
+            </div>
+          </div>
+
+          {/* 进度轨：线性走满（全片唯一线性元素），四拍刻度 + 发光头 */}
+          <div style={{ position: 'relative', marginTop: 56, width: BAR_W, marginLeft: (slotW - BAR_W) / 2, height: 4, borderRadius: 2, background: alpha(L.ink, 0.1) }}>
+            <div style={{
+              position: 'absolute', left: 0, top: 0, bottom: 0, width: `${prog * 100}%`, borderRadius: 2,
+              background: `linear-gradient(90deg, ${alpha(L.accent, 0.3)} 0%, ${L.accent} 70%, ${L.accent2} 100%)`,
+              boxShadow: `0 0 14px ${alpha(L.accent, 0.6)}`,
+            }} />
+            {[1, 2, 3].map((k) => {
+              const x = (k * SLOT) / DONE;
+              return (
+                <div key={k} style={{
+                  position: 'absolute', left: `${x * 100}%`, top: -7, width: 2, height: 18, marginLeft: -1,
+                  background: prog >= x ? L.accent : alpha(L.ink, 0.25),
+                }} />
+              );
+            })}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', position: 'absolute', left: 0, right: 0, top: 30,
+              fontFamily: FONT.mono, fontSize: 32, letterSpacing: '0.1em', color: L.ink2, fontVariantNumeric: 'tabular-nums',
+            }}>
+              <span>STEP {slot + 1}/{N}</span>
+              <span style={{ color: done ? L.ink : L.ink2 }}>{String(Math.round(prog * 100)).padStart(3, ' ')}%</span>
+            </div>
+          </div>
+
+          {/* 收尾链接 */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, bottom: -170, textAlign: 'center', fontFamily: FONT.sans, fontSize: 40,
+            fontWeight: 600, letterSpacing: '-0.01em', color: L.accent, opacity: link, transform: `translateY(${(1 - link) * 24}px)`,
+          }}>
+            Live at halyard.build/web →
           </div>
         </div>
-        {/* 底部进度条：随 t 匀速填满（全片唯一线性元素），四拍刻度 + 状态行 */}
-        <div style={{ position: 'absolute', left: 240 - BAR_W / 2, top: '63%', width: BAR_W }}>
-          <div
-            style={{
-              position: 'relative',
-              height: 2,
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: 1,
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                height: '100%',
-                width: `${t * 100}%`,
-                background: `linear-gradient(90deg, rgba(143,151,255,0.35) 0%, ${ACCENT} 100%)`,
-                boxShadow: '0 0 6px rgba(143,151,255,0.6)',
-              }}
-            />
-          </div>
-          {[1, 2, 3].map((k) => (
-            <div
-              key={k}
-              style={{
-                position: 'absolute',
-                left: (BAR_W * k) / 4 - 0.25,
-                top: -1.5,
-                width: 0.5,
-                height: 5,
-                background: t * 4 >= k ? 'rgba(143,151,255,0.9)' : 'rgba(255,255,255,0.22)',
-              }}
-            />
-          ))}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 7,
-              fontFamily: FONT.mono,
-              fontSize: 8,
-              letterSpacing: 1.2,
-              color: 'rgba(228,232,244,0.5)',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span
-                style={{
-                  width: 4,
-                  height: 4,
-                  borderRadius: 2,
-                  boxSizing: 'border-box',
-                  border: `0.75px solid ${ACCENT}`,
-                  background: done ? ACCENT : g > 0.3 ? 'rgba(143,151,255,0.55)' : 'transparent',
-                  boxShadow: done ? '0 0 5px rgba(143,151,255,0.8)' : undefined,
-                }}
-              />
-              STEP {slot + 1}/{N}
-            </span>
-            <span style={{ color: done ? 'rgba(228,232,244,0.85)' : undefined }}>{String(pct).padStart(3, ' ')}%</span>
-          </div>
-        </div>
-      </DesignStage>
-      <Grain opacity={0.08} blend="soft-light" />
-    </>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };

@@ -1,34 +1,33 @@
 {
   "stem": "BrandInkOpen",
   "issues": [
-    "号称纸墨质感，实际是 #faf7f2 纯色平铺，没有纸纹、光源与暗角",
-    "准星在字标上方占 98px 版面，淡出后留下空洞，整个 lockup 视觉上偏低不居中",
-    "每个字落定都闪一道琥珀下划线，17 次逐字 glint 群发（违反 Q4）",
-    "压印只是匀减速缩小，落点没有\"压进纸里\"的冲击与回弹；末字 70f 才落定，hold 不足 1 秒",
-    "kicker 26px（2.4% 帧高）低于辅助文字下限，且居中打字时整行左右漂移",
-    "退场用对称缓动，离场发软"
+    "字标只有 132px，在 1920 宽画面里像一行标题小字，整屏大面积空白，没有\"品牌第一拍\"的分量",
+    "画面是一张死平的米白底，除字以外什么都没有，暂停任意一帧都不像设计过的海报",
+    "副标题 mono 小字颜色很浅、字距挤，读起来像占位文字；品牌名用的是真实机构式的长名",
+    "压印只有 scale + blur，没有\"从空中砸进纸里\"的高度感，琥珀 glint 短划细到几乎看不见"
   ],
   "changes": [
-    "纸面：暖色低对比竖向渐变 + 左上主光 + 暖色暗角 + 两层确定性颗粒（细颗粒 + 粗纤维斑 multiply）",
-    "准星改为绝对定位在字标中心的套准标（竖横线 + 一圈细环描画，swift/out 缓动），不再占版面，lockup 真正居中",
-    "压印改为 ease-in 加速砸下（bezier .55,0,.8,.35）+ 落地 0.975 微压 5f 回弹 + 8f 墨晕，节拍 10+i·2.8、10f，末字 65f 落定，65→97 满 1 秒 hold",
-    "17 道逐字 glint 收成一道跟随压印前沿的琥珀彗尾短划，压完即熄",
-    "kicker 提到 32px / 0.2em 字距，按完整字符串宽度左对齐打字不再漂移；退场改 ease-in 并带 3px 模糊"
+    "look 换成 sand（米色棉纸 · 墨 · 赤陶），舞台做成一张活版打样稿：四角裁切线、左右套准标、左下色标条与打样编号，作压暗的纹理层",
+    "字标改为虚构品牌「Kestrel.」280px 粗衬线、占画宽 ~55%；赤陶句点是唯一强调色主角，最后一个落、压得最重",
+    "压印加高度：每字 1.45× 悬空 + 离地投影从远而虚收到贴实 + ease-in 加速砸下，落地微压回弹 + 墨晕 8f 收掉",
+    "glint 改成字下一条赤陶分隔线逐字段拉开（线头一点亮），全片唯一一道跟着压印前沿走的光，描完即 lockup 的结构线",
+    "时间表重排为 120f：0 帧起准星 + 裁切线同时描画 → 18–53 压印 → 54–74 打字 → hold 51f 并极缓推近 1.2% → 10f ease-in 上浮失焦退场",
+    "副标题改为 34px mono 宽字距「RESEARCH CONSOLE FOR TEAMS」+ 赤陶块光标，与字标形成衬线 / 等宽的字重对比"
   ],
   "issuesEn": [
-    "Claimed paper-and-ink look but was a flat #faf7f2 fill — no paper texture, light or vignette",
-    "Crosshair took 98px of layout above the wordmark; after fading it left a hole and the lockup sat visibly low",
-    "Every glyph flashed its own amber underline on landing — 17 glints in a row (violates Q4)",
-    "The press was a plain decelerating shrink with no impact or rebound; the last glyph landed at 70f, so the hold was under 1s",
-    "Kicker at 26px (2.4% of frame height) was below the auxiliary-text floor, and the centered typing made the line drift sideways",
-    "Exit used a symmetric ease and felt soft"
+    "The wordmark was only 132px, reading like a small headline in a 1920-wide frame with empty space everywhere, with none of the weight a brand's first beat needs",
+    "The background was a flat off-white with nothing but the text, so no paused frame looked like a designed poster",
+    "The mono kicker was pale and tightly tracked, reading like placeholder text, and the brand name was a long real-institution-style name",
+    "The press was just scale plus blur with no sense of dropping from the air into paper, and the amber glint dash was too thin to see"
   ],
   "changesEn": [
-    "Paper: warm low-contrast vertical gradient, top-left key light, warm vignette and two deterministic grain layers (fine grain + coarse fiber mottling, multiply)",
-    "Crosshair is now a registration mark absolutely centered on the wordmark (lines plus a thin ring, swift/out easing) — no layout space, the lockup is truly centered",
-    "Press is an accelerating ease-in stamp (bezier .55,0,.8,.35) with a 0.975 squash rebound over 5f and an 8f ink bloom; timing 10+i·2.8 / 10f, last glyph lands at 65f giving a full 1s hold 65→97",
-    "The 17 per-glyph glints are replaced by one amber comet dash that rides the pressing front and dies when the press ends",
-    "Kicker raised to 32px / 0.2em tracking and typed left-anchored inside the full-string width so it no longer drifts; exit uses ease-in with a 3px blur"
+    "Sand look (cotton paper, ink, terracotta); the stage is now a letterpress proof sheet with corner crop marks, side registration marks, a colour bar and proof number as a dimmed texture layer",
+    "The wordmark is the fictional brand 'Kestrel.' in a 280px bold serif spanning ~55% of the width; the terracotta period is the only accent, landing last and pressing hardest",
+    "The press has height: each letter hangs at 1.45x with a cast shadow that tightens as it falls, slams in with ease-in, then squashes slightly with an 8f ink spread",
+    "The glint became a terracotta rule that extends segment by segment under each landing letter with a bright head, the shot's single highlight, which then stays as the lockup divider",
+    "Retimed to 120f: crosshair and crop marks draw from frame 0, press 18-53, typing 54-74, a 51f hold with a 1.2% slow push, then a 10f ease-in rise-and-defocus exit",
+    "The kicker is now 34px wide-tracked mono 'RESEARCH CONSOLE FOR TEAMS' with a terracotta block cursor, contrasting serif against mono"
   ],
+  "look": "sand",
   "mdChanged": true
 }

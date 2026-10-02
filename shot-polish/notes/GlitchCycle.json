@@ -1,30 +1,31 @@
 {
   "stem": "GlitchCycle",
   "issues": [
-    "短短语在 17 个槽位里靠左摆，文字行和居中的进度条错位，四条短语都不居中",
-    "切换峰值只有换字 + 整行抖动 + text-shadow 色散，读作\"字在闪\"而不是信号故障",
-    "进度条 120×2px 孤零零一根线，看不出四拍，也没有任何状态信息",
-    "纯色 #0a0b10 平铺底，没有光源、暗角与颗粒"
+    "480×270 设计坐标放大，短语只占画宽 ~20%，进度条 150px、状态行 8px 级小字，整屏几乎全空",
+    "暗底 + 靛蓝的通用科技配色，切换故障只有轻微 RGB 毛边，\"信号熔断\"的冲击不够",
+    "四条短语之间没有上下文：看不出是在部署什么，结尾停在 READY TO SHIP 后也没有\"完成\"的落点",
+    "末条干净段只有十几帧，收尾 hold 偏短"
   ],
   "changes": [
-    "短语在固定槽位里左右对称补空格（槽位数不变、不重排），行与进度条同中线",
-    "同一个 glitch 浓度 g 再驱动水平撕裂带：g>0.25 时行切三段、中段横移 ±g·11px，带位每 2 帧重掷，和换字/位移/色散同源不打架",
-    "进度条加宽到 150、渐变填充带微光，加三根四拍刻度（走过即点亮）和 \"STEP n/4 / 百分比\" 状态行（32px 字高、tabular-nums），末条落定后状态点转实心发光",
-    "暗场柔光 Backdrop + 暗角 + soft-light 颗粒，文字加极淡靛蓝辉光；强调色统一为批次靛蓝 #8f97ff",
-    "概率关键帧 [1,0,0,0.1,0,0,1] / KF_LAST、每 2 帧重掷、抖动与色散幅度全部保留"
+    "look 换成 aurora（深紫黑 · 紫 · 粉），原生 1920 作画：短语 104px 等宽大写占画宽 ~58%，四角细括号框住 17 格固定槽位，背后一条横向信号光带 + 极淡扫描线",
+    "故障由同一个 g 统一驱动并加码：粉 / 冰蓝 RGB 分离 g·10px、横向抖动 ±g·36px、g>0.25 水平撕裂带、g>0.45 像素块残影，每 2f 重掷",
+    "加部署控制台上下文：上方状态行（脉冲点 · DEPLOYING · halyard/web · #4127）、下方 1100px 进度轨（线性 + 四拍刻度 + 发光头）与 32px STEP / 百分比",
+    "收尾落点：末条收干净时给一次柔和泛光，进度满后状态转 DEPLOYED、点转实心，升起强调色链接「Live at halyard.build/web →」",
+    "节奏改为每条 38f、末条延续到片尾，干净 hold 从十几帧拉到 ~28f"
   ],
   "issuesEn": [
-    "Short phrases sat left-aligned in the 17 fixed slots, so the text never lined up with the centered progress bar",
-    "The switch peak was only character swaps, row jitter and a text-shadow split — it read as flickering text, not a signal fault",
-    "The progress bar was a lone 120×2px line with no sense of the four beats and no status information",
-    "Flat #0a0b10 fill with no light, vignette or grain"
+    "Scaled up from 480x270 design space, the phrase covered only ~20% of the width, with a 150px progress bar and 8px-class status text, leaving the frame nearly empty",
+    "A generic dark-plus-indigo tech palette, and the switch glitch was only a faint RGB fringe without the punch of a signal meltdown",
+    "The four phrases had no context: you couldn't tell what was deploying, and ending on READY TO SHIP gave no sense of completion",
+    "The final clean stretch was only a dozen or so frames, so the closing hold was short"
   ],
   "changesEn": [
-    "Phrases are padded symmetrically inside the fixed slots (same slot count, no reflow), so the row shares the bar's center line",
-    "The same glitch density g now also drives a horizontal tear: above 0.25 the row splits into three bands and the middle one shifts ±g·11px, re-rolled every 2 frames — same source as swaps/jitter/split so they never fight",
-    "Bar widened to 150 with a glowing gradient fill, three beat ticks that light up as they're passed, and a \"STEP n/4 / percent\" status row (32px, tabular-nums); the status dot fills and glows once the last phrase settles",
-    "Dark soft-light Backdrop with vignette and soft-light grain, faint indigo glow on the type; accent unified to the batch indigo #8f97ff",
-    "Probability keyframes [1,0,0,0.1,0,0,1] / KF_LAST, the 2-frame re-roll and jitter/split amplitudes all kept"
+    "Aurora look (deep violet-black, violet, pink), drawn natively at 1920: a 104px monospace caps phrase spans ~58% of the width inside 17 fixed slots framed by fine corner brackets, over a horizontal signal glow and faint scanlines",
+    "One g value drives every glitch, now stronger: pink / ice-blue RGB split at g*10px, horizontal jitter of +/-g*36px, a tear band above g 0.25 and pixel-block artefacts above g 0.45, re-rolled every 2f",
+    "Deployment-console context: a status row above (pulsing dot, DEPLOYING, halyard/web, #4127) and a 1100px progress rail below (linear, four beat ticks, glowing head) with 32px STEP and percent readouts",
+    "A real ending: when the last phrase clears it gets one soft bloom, and at 100% the status flips to DEPLOYED with a solid dot as the accent link 'Live at halyard.build/web ->' rises in",
+    "Each phrase now runs 38f and the last one carries to the end, stretching the clean hold from about a dozen frames to ~28f"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

@@ -1,30 +1,31 @@
 {
   "stem": "FlyingWords",
   "issues": [
-    "22 个词各取随机 hsl（蓝→粉紫），整屏高饱和彩虹堆砌",
-    "每个词都挂 16px 彩色辉光，远近一样亮，读不出空气与纵深",
-    "近镜头只有各向同性 blur，没有沿飞行方向的速度线，\"擦身而过\"不成立",
-    "背景是单一径向渐变，没有颗粒和暗角，隧道里空空荡荡"
+    "480×270 设计坐标放大，词在 20–36px 档、粗细单一，画面像一团随机散落的标签云，没有\"隧道\"的结构",
+    "只有词本身在动，没有隧道壁或速度参照，纵深感全靠缩放，速度感很弱",
+    "近处词的运动模糊被封顶得很小，擦身而过时只是变大变糊，没有冲过镜头的拖尾",
+    "画面没有任何前景或视觉中心，卡片说它是背景层，demo 却没演示它怎么托住一个标题；词表是动效术语占位"
   ],
   "changes": [
-    "透视改为手算投影（scale = 1100/(1100−z)，与 CSS perspective 逐点等价），按每个词屏幕空间速度套径向方向性 SpeedBlur，近镜头拉出速度线；原近端模糊系数 26→18 分担",
-    "配色收成冷白三阶 + 4 个靛蓝强调词，辉光只留给强调词，其余只有 6px 极弱冷光",
-    "远端前 22% 行程加 ≤0.9px 大气雾失焦；新增 40 颗沿同一隧道运动的细尘埃做纵深参照",
-    "底改带色相的深蓝黑三段径向 + 暗角 + soft-light 颗粒；字体换系统字栈 700、-0.015em",
-    "z 线性推进、黄金角铺位、[0,1,0.5,0.2,0] 生命曲线、CYCLES=2 首尾无缝全部保留"
+    "look 换成 midnight（深蓝黑 · 电光蓝），原生 1920 作画、透视手算 P=4400，隧道尽头一团电光蓝光晕按 2 次/片呼吸",
+    "加两层纵深参照：10 道扁椭圆发丝环作隧道壁同速推进，56 粒尘埃画成沿径向拉长的光速流线，整条隧道 ±2.5° 周期滚转",
+    "22 个产品能力关键词：sans 700 冷白三阶 + 6 个衬线斜体词 + 4 个带泛光的电光蓝强调词；远端大气雾、近端 6 层方向拖尾 + 失焦",
+    "正中压一组静态字标（HALYARD MOTION 眉题 + 112px「Every tool, one timeline.」+ 径向暗幕），飞进字标区的词自动压到 20%，演示背景层托标题的用法",
+    "循环改成 t = frame / 180，末帧的下一帧正好回到第 0 帧，2 整圈真正无缝"
   ],
   "issuesEn": [
-    "Each of the 22 words took a random hsl (blue to pink-purple) — a saturated rainbow pile",
-    "Every word carried a 16px colored glow at equal strength near and far, so there was no air or depth",
-    "Near the camera there was only isotropic blur, no streaks along the flight path — the fly-by never sold",
-    "The background was a single radial gradient with no grain or vignette; the tunnel felt empty"
+    "Scaled up from 480x270 design space, the words sat at 20-36px in one weight, so the frame read as a random tag cloud with no tunnel structure",
+    "Only the words moved, with no tunnel walls or speed reference, so depth relied on scale alone and the sense of speed was weak",
+    "Near-camera motion blur was capped low, so words just grew and blurred as they passed instead of streaking past the lens",
+    "There was no foreground or focal point: the card calls it a background layer but the demo never showed it carrying a title, and the word list was motion-jargon placeholder"
   ],
   "changesEn": [
-    "Perspective is projected by hand (scale = 1100/(1100−z), point-for-point identical to CSS perspective) so each word gets a radial directional SpeedBlur from its screen-space velocity; near-end blur coefficient 26→18 to share the load",
-    "Palette reduced to three cool whites plus four indigo accent words; only accents glow, the rest get a faint 6px cool halo",
-    "Atmospheric defocus (≤0.9px) over the first 22% of travel; added 40 fine dust motes riding the same tunnel as a depth reference",
-    "Ground is a hue-tinted three-stop navy radial with vignette and soft-light grain; type switched to the system stack at 700, -0.015em",
-    "Linear z travel, golden-angle layout, the [0,1,0.5,0.2,0] life curve and the seamless CYCLES=2 loop are all kept"
+    "Midnight look (deep navy, electric blue), drawn natively at 1920 with hand-computed perspective P=4400, and an electric-blue glow at the tunnel's end breathing twice per loop",
+    "Two depth references were added: 10 flattened hairline rings advance as tunnel walls, 56 dust motes become radial light-speed streaks, and the whole tunnel rolls +/-2.5 degrees periodically",
+    "22 product-capability keywords: cool-white sans 700 in three tones, 6 serif italics and 4 glowing electric-blue accents, with atmospheric haze far away and a 6-layer directional trail plus defocus up close",
+    "A static lockup sits in the centre (HALYARD MOTION kicker, 112px 'Every tool, one timeline.', radial scrim), and words entering it drop to 20%, showing how the background layer carries a title",
+    "The loop now uses t = frame / 180, so the frame after the last is exactly frame 0, making two full cycles truly seamless"
   ],
+  "look": "midnight",
   "mdChanged": true
 }
