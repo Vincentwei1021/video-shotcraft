@@ -1,28 +1,31 @@
 {
   "stem": "BlindsSlice",
   "issues": [
-    "没有导出时长常量，工作台按卡片 md 抓到 20f——百叶窗波（20–52f）一帧都没进画，看到的只是一张静止页面",
-    "条内 A/B 只是横向 scaleX 挤压，叶片没有任何受光变化，读作两张图在横向压扁，不像叶片翻面",
-    "翻换中的相邻叶片之间没有缝，十二条切片在运动中糊成一整块",
-    "缝亮线的暗描边用纯黑 rgba(0,0,0,0.55)，与 Phase 0 页面的带色相深色不协调"
+    "A/B 两页都是灰色占位 dashboard，翻换前后几乎同色，波扫过去看不出换了什么",
+    "叶片翻换是 scaleX 横向挤压的伪 3D，读作两张图在挤，不是百叶窗",
+    "缝上的三层 SVG 亮线是贴上去的装饰，叶片本身没有受光与体积",
+    "10f 一叶、2f 等差错峰，节奏机械；翻完后 98f 什么都不发生"
   ],
   "changes": [
-    "补 BLINDS_SLICE_DURATION = 150（前态 20 + 波 32 + 真静止 98）；12×160 竖条、列号×2f 错峰、每条 10f Easing.in(cubic)、交接缝 x+160(1-p)、52f 摘罩全部保持",
-    "叶片受光：翻走的 A 面随 √p 转暗、翻来的 B 面从暗处转亮，阴影沿叶宽横向渐变（A 远端右缘最深 0.34、B 远端左缘最深 0.32，#10121a），切片读作绕铰边侧过去的叶片",
-    "翻换中的叶片两缘各补 1px 发丝分隔线（rgba(16,18,26,0.22)），与缝亮线同步 2f 淡入淡出，只在该条翻换时出现",
-    "缝亮线三层参数（16px 白 0.45 / 6px 暗 0.55 / 3px 白核）照旧，暗描边改带色相的 rgba(10,11,18,0.55)"
+    "look 改为 paper，瑞士网格杂志的翻页：虚构排版季刊《FORMA》两页——暖白纸 + 墨色 400px 巨字「Grid.」→ 整版朱红 + 奶白巨字「Rhythm.」，反差让每一叶都读得清",
+    "版面用 12 栏 × 160px 网格（发丝线可见）——栏 = 叶片，百叶窗沿着版式网格翻页，形式与手法同构",
+    "改成真 3D 叶片：preserve-3d 双面板（正面 A / 背面 B），共享 1900px 透视绕竖轴 0→180°；侧立时露出叶后暗槽，背光面按 sin θ 变暗、~35° 掠过一道高光、叶缘受光细线",
+    "节奏：每叶物理弹簧（~13f 到位、≈5° 过冲拍到位），起跳按 t^0.78 错峰（间隔 3.4f→2.1f，越翻越快）；波期间相机 1→1.02 再落回",
+    "收敛后摘罩（3D 全部卸载、B 页文字锐利），刊头细线重新画出作为落定一拍；时长 150→132f"
   ],
   "issuesEn": [
-    "No duration constant; the workbench picked 20f from the card md, so the blinds wave (20–52f) never appeared — viewers saw a static page",
-    "Inside each strip A and B were just squashed with scaleX and had no lighting change, reading as two images being compressed rather than slats turning",
-    "Adjacent turning slats had no gap between them, so the twelve strips merged into one block in motion",
-    "The seam's dark outline was pure black rgba(0,0,0,0.55), clashing with the tinted darks of the Phase 0 page"
+    "Both pages are grey placeholder dashboards of nearly the same tone, so you can't see what changed as the wave passes",
+    "The slat flip is a scaleX squash fake-3D — it reads as two images squeezing, not blinds",
+    "The three-layer SVG seam line is a pasted-on decoration; the slats themselves have no light or volume",
+    "10f per slat with linear 2f stagger feels mechanical, and nothing happens for 98f after the wave"
   ],
   "changesEn": [
-    "Added BLINDS_SLICE_DURATION = 150 (20 lead-in + 32 wave + 98 true hold); the 12×160 strips, column×2f stagger, 10f Easing.in(cubic) per strip, x+160(1-p) seam and 52f unmount are unchanged",
-    "Slat lighting: the departing A face darkens with √p and the arriving B face brightens out of shadow, with shading graded across the slat width (A's far right edge up to 0.34, B's far left edge up to 0.32, #10121a), so strips read as slats turning on a hinge",
-    "Turning slats get a 1px hairline divider on both edges (rgba(16,18,26,0.22)), fading in/out over 2f with the seam light and present only while that strip turns",
-    "The three seam-light layers (16px white 0.45 / 6px dark 0.55 / 3px white core) keep their values; the dark outline is now the tinted rgba(10,11,18,0.55)"
+    "Look switched to paper, a Swiss-grid magazine page turn: two spreads of the fictional type quarterly 'FORMA' — warm paper with a 400px ink 'Grid.' → full-bleed vermilion with a cream 'Rhythm.'; the contrast makes every slat legible",
+    "Layout uses a visible 12-column × 160px grid — columns are the slats, so the blinds turn along the layout grid itself",
+    "Real 3D slats: preserve-3d double-sided panels (A front / B back) rotating 0→180° about their own axis under a shared 1900px perspective; edge-on slats reveal a dark cavity, faces darken by sin θ, catch a highlight near 35° and get a lit edge",
+    "Rhythm: each slat flips on a physical spring (~13f, ~5° overshoot snapping into place), starts staggered by t^0.78 (gaps 3.4f→2.1f, accelerating wave); camera pushes 1→1.02 and settles during the wave",
+    "After settling the 3D is unmounted (crisp B type) and the masthead rule redraws as the landing beat; duration 150→132f"
   ],
-  "mdChanged": false
+  "look": "paper",
+  "mdChanged": true
 }

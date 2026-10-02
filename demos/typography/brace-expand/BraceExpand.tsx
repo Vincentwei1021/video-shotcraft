@@ -1,114 +1,141 @@
-// brace-expand — Brace Expand Reveal 括号拉幕（motion-lab 定稿转原生 Remotion）
-// 一对紧贴的花括号先小字号出现在正中，随即带过冲（outBack ~8%）地向左右滑开并放大到
-// 标题级，文字像被括号拉开幕布般在中间揭示（clip 宽度严格绑括号间距），落定后字距再细微松弛。
-// 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
-// 质感层（改版）：暗场柔光 Backdrop + 颗粒；括号换等宽字形 + 强调色微光，弹开快速段按速度
-// 给水平运动模糊；clip 两侧 5px 羽化（仍严格绑括号位置）；文案宽度贴满括号内腔，
-// 幕布真正"拉到头"才露全。
+// brace-expand — Brace Expand Reveal 括号拉幕
+// 一对紧贴的花括号先小字号出现在正中，随即带一次过冲向左右弹开并放大到标题级，括号之间的标题像被拉开的幕布
+// 一样从中间露出（clip 宽度严格绑括号间距），落定后字距再细微松弛。
+//
+// 第二轮重设计（午夜 · 开发者发布会字卡）：
+// - look = midnight。画面是一张技术产品发布字卡：等宽 300px 电光蓝花括号（带泛光）夹住 164px 800 字重的
+//   「Edge Functions」（字宽贴满括号内腔）；上方等宽眉题「// new in Nimbus 3」、下方副标逐词浮现。背景是编辑器式点阵网格
+//   （径向渐隐）+ 顶光 + 地平线光带，括号下方一道冷光反射。
+// - 开场：第 0 帧画面中心已有一个闪烁的输入光标（编辑器语感，不是空帧）；6f 光标被一对紧贴的 0.4 倍小括号
+//   "{}" 硬切替换（符号啪地在那儿，不淡入）——先建立"这是一对括号"。
+// - 主动作：14f 起物理弹簧 ex（damping 14 / stiffness 130：起跳后 ~8f 到位、~11f 过冲峰 ≈9%、一次回弹）；
+//   sc = mix(0.4, 1, ex)，幕布半宽 x = (HALF−内缘)·ex·sc，位移与放大乘在一起（放大本身也在推开括号）；
+//   括号中心 = ±(x + 内缘·sc)，文字 clip 宽度 = 2x，严格绑括号内缘，括号与文字共用同一个 sc。括号按水平速度加方向性运动模糊，落定为 0。
+// - 余波：落定后字距 −0.05em → −0.03em 松弛（呼一口气）、括号泛光从峰值回落；眉题与副标随后入场。
+//
+// 时间表（30fps，共 120f）：
+//   0–6     光标闪烁（中心，第 0 帧即在）
+//   6–14    小括号 "{}" 硬切出现、静置 8f
+//   14–38   弹开：弹簧 ~22f 到位、~25f 过冲峰 ≈9%、~38f 收敛；文字从中间被"拉"出来
+//   40–64   松弛：字距 −0.05→−0.03em（smooth）、泛光回落
+//   44–80   眉题字距收拢入场（44f）、副标逐词浮现（54f 起）
+//   80–120  hold：整幅极缓前推 1→1.012
 import React from 'react';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, FONT, Grain, SpeedBlur } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, glow, springAt, type } from '../../_fixtures/Look';
 
-export const BRACE_EXPAND_DURATION = 114; // 3800ms @30fps
+export const BRACE_EXPAND_DURATION = 120;
 
-const HALF = 148; // 括号最终半距
-const TITLE = 'Ship it faster'; // 字宽 ≈ 内腔宽（2·HALF − 34），揭示到最后一帧才露全
-const ACCENT = '#8f97ff'; // 括号强调色（全片唯一彩色）
+const L = LOOKS.midnight;
+const CY = 520; // 标题中线
+const HALF = 676; // 括号中心最终半距（px）
+const BRACE_FS = 300; // 括号最终字号
+const BRACE_INNER = 64; // 括号字形中心到内缘的距离（×sc），clip 从这里起算
+const TITLE = 'Edge Functions';
+const TITLE_FS = 164; // 字宽 ≈ 内腔宽 2·(HALF−内缘)：幕布拉到头才露全（换文案要同步调 HALF 或字号）
+const APPEAR = 6;
+const EXPAND = 14;
 
-// 括号半距 x(t)：位移与缩放乘在一起（放大本身也在推开括号）
-const braceX = (t: number) => {
-  const ex = seg(t, 0.13, 0.34, E.outBack);
-  return HALF * ex * lerp(ex, 0.6, 1);
+const expandAt = (f: number) => (f < EXPAND ? 0 : springAt(f, EXPAND, { damping: 14, stiffness: 130 }));
+// 幕布半宽 x = (HALF − 内缘)·ex·sc；括号中心 = ±(x + 内缘·sc)——ex=0 时两只括号内缘相贴成 "{}"
+const braceX = (f: number) => {
+  const ex = expandAt(f);
+  return (HALF - BRACE_INNER) * ex * mix(0.4, 1, ex);
 };
 
-// 单只花括号：x 为当前水平偏移（左负右正），sc 为同步放大比例，blurV 为水平速度（设计 px/帧）
-const Brace: React.FC<{ ch: string; x: number; sc: number; on: number; v: number }> = ({ ch, x, sc, on, v }) => (
-  // 运动模糊层要罩住括号整个行程（±HALF·过冲），滤镜区域按元素盒计算
-  <div style={{ position: 'absolute', left: -240, top: -60, width: 480, height: 120 }}>
-    <SpeedBlur vx={v} amount={0.32} max={6}>
-      <div
-        style={{
-          position: 'absolute',
-          left: 240,
-          top: 60,
-          fontWeight: 500,
-          fontSize: 44,
-          lineHeight: 1,
-          fontFamily: FONT.mono,
-          color: ACCENT,
-          textShadow: `0 0 10px rgba(143,151,255,0.35)`,
-          transform: `translate(-50%,-54%) translateX(${x}px) scale(${sc})`,
-          opacity: on,
-        }}
-      >
-        {ch}
-      </div>
-    </SpeedBlur>
-  </div>
+const Brace: React.FC<{ ch: string; x: number; sc: number; v: number; glowK: number }> = ({ ch, x, sc, v, glowK }) => (
+  <SpeedBlur vx={v} amount={0.22} max={16}>
+    <div style={{
+      position: 'absolute', left: 960 + x, top: CY, transform: `translate(-50%, -52%) scale(${sc.toFixed(4)})`,
+      fontFamily: FONT.mono, fontSize: BRACE_FS, fontWeight: 500, lineHeight: 1, color: L.accent,
+      textShadow: glow(L.accent, 0.5 + 0.5 * glowK),
+    }}>{ch}</div>
+  </SpeedBlur>
 );
 
 export const BraceExpand: React.FC = () => {
-  const t = useT();
-  const on = t >= 0.07 ? 1 : 0; // 先单独出现（小字号，硬切不淡入）
-  const ex = seg(t, 0.13, 0.34, E.outBack); // 弹开：过冲约 8% 再回弹
-  const sc = lerp(ex, 0.6, 1); // 字号同步放大到标题级
-  const x = braceX(t);
-  // 括号水平速度（设计 px/帧）：t 每帧步长 1/113，中心差分
-  const dt = 1 / (BRACE_EXPAND_DURATION - 1);
-  const v = (braceX(t + dt / 2) - braceX(t - dt / 2));
-  // 落定后 letterspacing 细微松弛
-  const ls = lerp(seg(t, 0.42, 0.62, E.inOutQuad), 1, 2.6);
-  const clipW = Math.max(0, x * 2 - 34);
-  // 两侧羽化：clip 很窄时羽化宽度跟着收，避免整块被羽化吃掉
-  const feather = Math.min(5, clipW / 4);
+  const frame = useCurrentFrame();
+  const on = frame >= APPEAR;
+  const ex = expandAt(frame);
+  const sc = mix(0.4, 1, ex);
+  const x = braceX(frame);
+  const v = braceX(frame + 0.5) - braceX(frame - 0.5); // 括号水平速度（px/帧）
+
+  // 文字揭示宽度：严格绑括号内缘（= 2x），两侧 14px 羽化（窄时跟着收）
+  const clipW = Math.max(0, 2 * x);
+  const bx = x + BRACE_INNER * sc; // 括号中心
+  const feather = Math.min(14, clipW / 4);
   const mask = `linear-gradient(90deg, transparent 0px, #000 ${feather}px, #000 calc(100% - ${feather}px), transparent 100%)`;
+
+  // 落定后字距松弛 + 泛光回落（泛光峰值跟着过冲走）
+  const relax = ramp(frame, 40, 24, EASE.smooth);
+  const ls = mix(-0.05, -0.03, relax);
+  const glowK = Math.min(1, ex) * (1 - ramp(frame, 34, 30, EASE.out));
+
+  // 光标：0–6f 闪烁
+  const caretOn = !on && Math.floor(frame / 3) % 2 === 0;
+
+  const cam = 1 + 0.012 * ramp(frame, 70, 50, EASE.smooth);
+
   return (
-    <>
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.4 }} accent="#5b63d3" vignette={0.55} grain={0} />
-      <DesignStage bg="transparent">
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 0, height: 0 }}>
-          {/* 文字揭示宽度严格绑括号间距（幕布感，而非打字） */}
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              transform: 'translate(-50%,-50%)',
-              overflow: 'hidden',
-              height: 60,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: clipW,
-              opacity: on,
-              WebkitMaskImage: mask,
-              maskImage: mask,
-            }}
-          >
-            <div
-              style={{
-                fontWeight: 700,
-                fontSize: 38,
-                lineHeight: 1.1,
-                fontFamily: FONT.sans,
-                whiteSpace: 'nowrap',
-                letterSpacing: `${ls - 1.6}px`,
-                transform: `scale(${sc})`,
-                backgroundImage: 'linear-gradient(180deg, #f7f8fb 0%, #e6e8ef 55%, #c3c7d4 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                paddingBottom: 2,
-              }}
-            >
-              {TITLE}
-            </div>
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.02 }} fill={null} horizon={0.66} breathe={0.4}>
+        {/* 编辑器点阵：32px 栅格，中心亮、四周隐去 */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: `radial-gradient(circle, ${alpha('#a9bcff', 0.16)} 1.4px, transparent 1.8px)`,
+          backgroundSize: '32px 32px', backgroundPosition: '16px 8px',
+          WebkitMaskImage: 'radial-gradient(ellipse 60% 55% at 50% 48%, #000 0%, rgba(0,0,0,0.35) 55%, transparent 85%)',
+          maskImage: 'radial-gradient(ellipse 60% 55% at 50% 48%, #000 0%, rgba(0,0,0,0.35) 55%, transparent 85%)',
+        }} />
+        {/* 括号下方的冷光反射带（随弹开展宽） */}
+        <div style={{
+          position: 'absolute', left: 960 - (x + 120), width: 2 * (x + 120), top: CY + 150, height: 90,
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(L.accent, 0.22 * Math.min(1, ex))} 0%, ${alpha(L.accent, 0)} 70%)`,
+        }} />
+      </Stage>
+
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: `50% ${CY}px` }}>
+        {/* 眉题：等宽注释 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: CY - 248, textAlign: 'center', color: L.accent2,
+          ...type(32, 500, { mono: true }), letterSpacing: `${mix(0.5, 0.08, ramp(frame, 44, 20, EASE.snappy)).toFixed(3)}em`,
+          opacity: ramp(frame, 44, 14, EASE.out),
+        }}>// new in Nimbus 3</div>
+
+        {/* 标题：clip 宽度绑括号间距（幕布感，不是淡入/打字） */}
+        {on && (
+          <div style={{
+            position: 'absolute', left: 960 - clipW / 2, width: clipW, top: CY - 110, height: 220, overflow: 'hidden',
+            WebkitMaskImage: mask, maskImage: mask,
+          }}>
+            <div style={{
+              position: 'absolute', left: clipW / 2, top: 110, transform: `translate(-50%, -54%) scale(${sc.toFixed(4)})`,
+              fontFamily: FONT.sans, fontSize: TITLE_FS, fontWeight: 800, letterSpacing: `${ls.toFixed(4)}em`, lineHeight: 1,
+              whiteSpace: 'nowrap',
+              backgroundImage: 'linear-gradient(180deg, #ffffff 0%, #e8eeff 55%, #a9b9e8 100%)',
+              WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', paddingBottom: 8,
+            }}>{TITLE}</div>
           </div>
-          <Brace ch="{" x={-x} sc={sc} on={on} v={-v} />
-          <Brace ch="}" x={x} sc={sc} on={on} v={v} />
+        )}
+
+        {on && <Brace ch="{" x={-bx} sc={sc} v={-v} glowK={glowK} />}
+        {on && <Brace ch="}" x={bx} sc={sc} v={v} glowK={glowK} />}
+
+        {/* 开场光标 */}
+        {caretOn && (
+          <div style={{
+            position: 'absolute', left: 960 - 4, top: CY - 60, width: 8, height: 120, borderRadius: 2,
+            background: L.accent, boxShadow: glow(L.accent, 0.6),
+          }} />
+        )}
+
+        {/* 副标 */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: CY + 170, textAlign: 'center', color: L.ink2, ...type(44, 450) }}>
+          <TextReveal text="Run code 40ms from every user." by="word" variant="blur" start={54} each={16} gap={3} />
         </div>
-      </DesignStage>
-      <Grain opacity={0.07} blend="soft-light" />
-    </>
+      </div>
+    </AbsoluteFill>
   );
 };

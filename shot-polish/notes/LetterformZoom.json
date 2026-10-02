@@ -1,32 +1,33 @@
 {
   "stem": "LetterformZoom",
   "issues": [
-    "没有导出时长常量，工作台只渲 60f——推进（25–85f）才走一半就结束，穿洞与接管都没进画",
-    "推进锚点在 A 的三角字腔，而字腔里是盖板不是洞：推到底撑满画面的是一块盖板三角再淡掉，读不出“穿过字形洞”",
-    "盖板是平涂米灰 + 0.3 透明度黑描边，字形洞和盖板明度接近，“洞里有东西”不够醒目",
-    "副标是两根灰色骨架条，没有任何章节信息",
-    "盖板与页面贴在同一平面，没有厚度与纵深"
+    "盖板是平涂米灰、字洞里透出的是灰色占位 dashboard，洞里有什么根本读不出来",
+    "「DASH」字卡没有任何文案层级与光，像线框稿",
+    "指数推进只有简单 blur，没有纵深与速度感，穿洞瞬间像整屏放大一张图",
+    "接管后的新页面是一张静止的灰色列表，穿越之后什么都没发生"
   ],
   "changes": [
-    "补 LETTERFORM_ZOOM_DURATION = 140（0–25 hold · 25–85 推进 · 85–110 落定 · 110–140 静止）；FS 560、scale=28^t、bezier(0.6,0,0.85,0.5) 60f、scale 15–24 撤板、blur÷scale 补偿、B 层 1→1.1→1 dolly 全部保持",
-    "推进锚点按渲染帧实测改到 A 横梁洞中心 (778,619)：横梁高 66px×28≈1850 撑满画高，推到底真正是洞吃满全屏，上方三角与下方豁口作为残余盖板上下甩出（md 参数表与已知坑同步）",
-    "盖板改为暗场章节字卡（SVG 径向渐变 #1d1e25→#0a0b0e 自带暗角），亮页面在字形洞里成为画面最亮处；字缘 2px 冷白受光边，线宽按 scale 补偿",
-    "盖板加按 scale 补偿的 drop-shadow（0 10px 22px），影子落进字洞压在页面上，读作厚板悬于页面之上",
-    "副标换成 32px 大写章节行（强调色圆点 + “Chapter 02 / Live dashboards”）；推进前 12–25f 先后吸 1.5% 做预备；全片叠 0.05 颗粒"
+    "look 改为 ember：暖黑章节字卡挖出 560px Black 字重「SHIFT」，洞里是熔金渐变的虚构发布页（Kiln 4.0），字形成了画面里最亮的东西",
+    "字缘加一圈只画在盖板上的模糊橙色描边（光从字洞漏出来）+ 1.5px 暖白切口边，配眉题「CHAPTER 02」字距收拢与 44px 副标",
+    "推进锚点改到「I」竖笔中心（实测 1029,515），30^u 慢起陡收 + 2% 后吸预备；快速段四层半透明残影叠成径向变焦拖尾 + 按 scale 补偿的模糊",
+    "两层视差：盖板 ×30、后景页面只推 1.08（交接处速度连续）并向左漂 28px，洞里内容在动，读作真实纵深；接管瞬间页面曝光 +12% 一闪",
+    "着陆后余波：部署卡计数 0→32、四条区域延迟条错峰填满、LIVE 标签弹簧弹出，尾帧是一张完整的产品发布海报",
+    "时长 140→150f，时间表：建立 0–26 / 预备 26–34 / 主推 34–86 / 落定 86–116 / 余波 96–132 / hold"
   ],
   "issuesEn": [
-    "No duration constant, so the workbench rendered just 60f — the push (25–85f) stopped halfway and neither the dive nor the takeover appeared",
-    "The push anchored on A's triangular counter, which is plate, not hole: what filled the screen at the end was a plate triangle fading out, not a dive through a letter-shaped window",
-    "The plate was flat beige with a 0.3-opacity black outline, so holes and plate had similar value and the page inside barely stood out",
-    "The subtitle was two grey skeleton bars with no chapter information",
-    "Plate and page sat on the same plane, with no thickness or depth"
+    "Flat beige plate with a grey placeholder dashboard showing through the letter holes — you can't tell anything is inside",
+    "The 'DASH' title card has no typographic hierarchy or light; it reads like a wireframe",
+    "The exponential push only adds a basic blur — no depth or speed, so going through the hole feels like scaling a flat image",
+    "The page that takes over is a static grey list; nothing happens after the fly-through"
   ],
   "changesEn": [
-    "Added LETTERFORM_ZOOM_DURATION = 140 (0–25 hold · 25–85 push · 85–110 settle · 110–140 hold); FS 560, scale=28^t, bezier(0.6,0,0.85,0.5) over 60f, plate removal at scale 15–24, blur÷scale compensation and the B-layer 1→1.1→1 dolly are unchanged",
-    "The push anchor moved to the measured centre of A's crossbar hole (778,619): the 66px bar ×28 ≈ 1850px fills the frame height, so the hole really swallows the screen while the counter above and gap below fly off as leftover plate (md parameter row and pitfall updated)",
-    "The plate is now a dark chapter card (SVG radial gradient #1d1e25→#0a0b0e with built-in vignette), making the page inside the letters the brightest thing in frame; letter edges get a 2px cool rim light with scale-compensated width",
-    "A scale-compensated drop-shadow (0 10px 22px) on the plate falls into the letter holes onto the page, so the plate reads as a thick slab floating above it",
-    "The subtitle is a 32px uppercase chapter line (accent dot + \"Chapter 02 / Live dashboards\"); a 1.5% pull-back at 12–25f anticipates the push; light 0.05 grain over the shot"
+    "Look switched to ember: a warm-black chapter card with a 560px Black 'SHIFT' cut out, revealing a molten-gold fictional launch page (Kiln 4.0) so the letterforms are the brightest thing on screen",
+    "A blurred orange stroke drawn only on the plate makes light leak out of the holes, plus a 1.5px warm cut edge; eyebrow 'CHAPTER 02' tracks in and a 44px subline rises",
+    "Push anchored at the centre of the 'I' stem (measured 1029,515), 30^u slow-in/steep curve with a 2% anticipation pull-back; four translucent lagged plates form a radial zoom trail plus scale-compensated blur",
+    "Two-layer parallax: plate goes ×30 while the page behind only pushes to 1.08 (velocity-continuous hand-off) and drifts 28px, so the holes show real depth; a +12% exposure pop at takeover",
+    "Aftermath once landed: deploy card counts 0→32, four region latency bars fill in a stagger, a LIVE pill springs in — the last frame is a full launch poster",
+    "Duration 140→150f; timeline: establish 0–26 / anticipate 26–34 / push 34–86 / settle 86–116 / aftermath 96–132 / hold"
   ],
+  "look": "ember",
   "mdChanged": true
 }

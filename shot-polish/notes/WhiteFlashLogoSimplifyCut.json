@@ -1,30 +1,31 @@
 {
   "stem": "WhiteFlashLogoSimplifyCut",
   "issues": [
-    "柔光扫掠是一块盖在字上方的径向光斑，光晕溢出字形，在黑底上糊成一团白雾（Q4 光溢出圆角/字形）",
-    "液态字像贴在平涂 #08070c 上的一张贴纸：没有发光感，背景也没有任何层次",
-    "冲白后整个后半场是大面积纯 #fff 死白，“过曝”与“定妆纸面”是同一种白",
-    "扁平字标只做透明度 + 0.96→1 缩放，落定缺少收束感；DesignStage 用 transform 放大 4 倍"
+    "占位字标「BRAND」是全大写宽字距的通用占位，没有品牌感，画面除一行字外全空",
+    "\"液态\"质感只是一条流动的线性渐变，没有材质感",
+    "白闪是整屏均匀淡入，读作剪辑软切而不是过曝",
+    "扁平字标在白底上淡入，像第二次揭示，降维的修辞不清楚"
   ],
   "changes": [
-    "高光改为与液态渐变同层、经 background-clip:text 裁进字形的高光带，静置段（t 0–0.34）自左向右扫过字面，只亮在字上",
-    "液态字下垫同色渐变的模糊 bloom（blur 9px、0.38，随冲白熄灭）；静置期字标随流光极缓推近 1→1.025，冲白脉冲时再前冲 3%",
-    "暗场改为带色相的深色渐变 + 字后冷紫余光 + 暗角 + 0.08 颗粒",
-    "白层仍“冲入后保持”：峰值纯白后 t=0.42–0.56 曝光回落成暖白纸面（#fbfbf9→#efefeb + 轻暗角 + 0.035 颗粒）",
-    "扁平字标入场加 1.2px→0 对焦模糊与字距 9.5→8 收拢；两层 DesignStage 改 raster=\"zoom\"；冲白窗口 0.34–0.42、过曝脉冲、0.48–0.74 入场、字号 62/58、GRAD_A/B/C 全部保持（md 动效核心与已知坑同步）"
+    "look = aurora 暗场演出 → 冷白纸面定妆；虚构词标「Vela.」300px 800 字重、负字距，液态与扁平两版同字号同位置，读作同一个字标被净化",
+    "液态金属材质：虹彩底色缓流 + 纵向体积明暗 + 字腰镀铬反光带 + 一次斜向高光（裁进字形）+ bloom + 地面倒影，背后极光余光与浮尘",
+    "加蓄力段 34–46f：字标提亮 ×1.7、一条横向变形眩光从字心拉开；冲白改为从字心撑满的径向白团（t² ease-in），50–54f 纯白 hold",
+    "定妆改为\"曝光回落\"：白层 22f quint-out 退去，扁平字标早已在位只做 1.03→1 对焦，避免二次揭示",
+    "锁定画面：强调紫短线画出、副标「Interfaces, distilled.」逐词升起、眉题「VELA DESIGN SYSTEM · 2.0」，尾帧是完整品牌锁定页；时长 108→120f"
   ],
   "issuesEn": [
-    "The highlight sweep was a radial blob laid over the text; its glow spilled outside the glyphs into a white haze on black (Q4 light spill)",
-    "The liquid wordmark looked like a sticker on flat #08070c — no glow, and no depth in the background",
-    "After the flash the whole second half was a large field of pure #fff, so the overexposure and the final paper were the same white",
-    "The flat logo only faded in with a 0.96→1 scale, with little sense of locking into place; DesignStage magnified 4× via transform"
+    "The placeholder 'BRAND' is a generic all-caps, wide-tracked stand-in with no brand character; apart from that one line the frame is empty",
+    "The 'liquid' look is just one flowing linear gradient with no sense of material",
+    "The white flash is a uniform full-screen fade, reading as a soft edit rather than overexposure",
+    "The flat wordmark fades in on white like a second reveal, muddying the simplification idea"
   ],
   "changesEn": [
-    "The highlight is now a band in the same layer as the liquid gradient, clipped into the glyphs with background-clip:text, sweeping left to right across the letters during the rest phase (t 0–0.34) and lighting only the letters",
-    "A blurred bloom of the same gradient sits under the liquid letters (blur 9px, 0.38, extinguished by the flash); the wordmark creeps in 1→1.025 during the rest phase and pushes another 3% on the flash pulse",
-    "The dark field is a tinted dark gradient with a cool violet glow behind the word, a vignette and 0.08 grain",
-    "The white layer still holds after flashing in: past the pure-white peak, exposure eases back over t=0.42–0.56 into a warm paper (#fbfbf9→#efefeb, light vignette, 0.035 grain)",
-    "The flat logo enters with a 1.2px→0 focus blur and tracking tightening 9.5→8; both DesignStages use raster=\"zoom\"; the 0.34–0.42 flash window, overexposure pulse, 0.48–0.74 entrance, 62/58 sizes and GRAD_A/B/C are unchanged (md motion core and pitfalls updated)"
+    "Look = aurora dark show → cool-white paper sign-off; fictional wordmark 'Vela.' at 300px/800 with tight tracking, liquid and flat versions share size and position so it reads as the same mark being purified",
+    "Liquid-metal material: flowing iridescent base, vertical volume shading, chrome horizon band, one diagonal sheen clipped to the glyphs, bloom and a floor reflection over an aurora glow with dust",
+    "Added a charge-up beat 34–46f: the mark brightens ×1.7 and an anamorphic flare stretches out from its centre; the flash is now a radial white burst from the word (t² ease-in) with a 4f pure-white hold",
+    "Sign-off is an exposure recovery: the white layer recedes over 22f (quint-out) while the flat mark is already in place, only focusing 1.03→1 — no second reveal",
+    "Lock-up: an accent-violet rule draws, 'Interfaces, distilled.' rises word by word, eyebrow 'VELA DESIGN SYSTEM · 2.0'; last frame is a full brand lock-up; duration 108→120f"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

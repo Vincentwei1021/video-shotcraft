@@ -1,32 +1,31 @@
 {
   "stem": "BraceExpand",
   "issues": [
-    "纯色平铺暗底，没有光源和层次",
-    "占位文案 \"Your title\" 远窄于括号内腔，括号还没拉开字就全露了，\"拉幕\"读不出来",
-    "括号用 800 字重系统无衬线纯白字形，和正文同色同质，看不出代码语感",
-    "括号 24f 内弹开 592px，快速段没有任何运动模糊，像逐帧跳位",
-    "clip 两侧是硬边裁切，字被切开时边缘生硬"
+    "占位文案「Your title」小字（约 1/8 画宽）居中在纯黑底上，画面空、没有层级",
+    "括号与文字字号接近、没有强调色，括号的符号感很弱",
+    "弹开曲线短促，文字不是被括号\"拉\"出来，揭示瞬间就完成",
+    "没有任何背景光、配套信息，落定后就是一张静态小字卡"
   ],
   "changes": [
-    "背景换成暗场柔光 Backdrop（居中主光 + 淡靛蓝余光 + 暗角）+ soft-light 颗粒",
-    "文案换成 \"Ship it faster\"，粗体 38px 宽度贴满 2·HALF−34 内腔，括号拉到头才露全；标题加亮上暗下竖向渐变",
-    "括号改等宽字形 500 字重 + 唯一强调色 #8f97ff 与 10px 微光，读作代码符号",
-    "按括号中心差分速度给水平 SpeedBlur（max 6 设计 px），只在弹开快速段生效、落定归零",
-    "clip 两侧加 5px 羽化遮罩（随 clip 宽度收窄），仍严格绑括号位置；outBack 过冲、7f 硬切出现、字距松弛节拍全部保留"
+    "look = midnight 开发者发布会字卡：等宽 300px 电光蓝花括号（带泛光）夹住 164px 800 字重「Edge Functions」，眉题 `// new in Nimbus 3` + 副标逐词浮现",
+    "开场第 0 帧是闪烁的输入光标，6f 被一对内缘相贴的 0.4 倍「{}」硬切替换，先建立符号",
+    "主动作改物理弹簧（≈9% 过冲、一次回弹）：幕布半宽 = (HALF−内缘)·ex·sc、括号中心再外移内缘·sc，clip 宽度严格 = 2x；标题宽度贴满 1224px 内腔，拉到头才露全",
+    "快速段括号按水平速度加方向性运动模糊，泛光峰值跟着过冲走再回落；落定后字距 −0.05→−0.03em 松弛",
+    "背景：编辑器点阵网格（径向渐隐）+ 顶光 + 地平线光带 + 随弹开展宽的冷光反射；尾段 1→1.012 缓推，时长 114→120f"
   ],
   "issuesEn": [
-    "Flat dark fill with no light or depth",
-    "Placeholder \"Your title\" was much narrower than the brace cavity, so it was fully visible long before the braces opened — the curtain read was lost",
-    "Braces were 800-weight system sans in plain white, same as the copy, with no code character",
-    "Braces travel 592px in 24f with no motion blur in the fast segment, reading as frame-skipping",
-    "Hard-edged clip made the cut glyph edges look crude"
+    "Placeholder 'Your title' in small type (about 1/8 of frame width) centred on flat black — empty frame, no hierarchy",
+    "Braces and text are nearly the same size with no accent colour, so the symbol barely registers",
+    "The expand curve is short and the text isn't pulled open by the braces — the reveal is over instantly",
+    "No background light or supporting info; once settled it's a static small title card"
   ],
   "changesEn": [
-    "Dark soft-light Backdrop (centered key, faint indigo spill, vignette) plus soft-light grain",
-    "Copy changed to \"Ship it faster\", whose 38px bold width fills the 2·HALF−34 cavity so it is fully revealed only when the braces finish; top-lit vertical gradient on the title",
-    "Braces switched to a 500-weight monospace glyph in the single accent #8f97ff with a 10px glow, reading as code syntax",
-    "Horizontal SpeedBlur driven by the braces' central-difference velocity (max 6 design px), active only during the fast expansion and zero once settled",
-    "5px feathered mask on both clip edges (shrinks with clip width), still strictly bound to brace positions; outBack overshoot, 7f hard-cut appearance and letter-spacing relax all kept"
+    "Look = midnight developer-launch title card: 300px mono electric-blue braces with glow framing a 164px 800-weight 'Edge Functions', with a mono eyebrow '// new in Nimbus 3' and a word-by-word subline",
+    "Frame 0 is a blinking text caret; at 6f it hard-cuts to a 0.4× '{}' pair touching at their inner edges, establishing the symbol first",
+    "Main move is a physical spring (~9% overshoot, one bounce): curtain half-width = (HALF−inner)·ex·sc, brace centres offset by inner·sc, clip width exactly 2x; the title fills the 1224px cavity so it's only fully revealed at full stretch",
+    "Braces get directional motion blur from their horizontal speed, glow peaks with the overshoot then decays; letter-spacing relaxes −0.05→−0.03em after landing",
+    "Backdrop: editor dot grid with radial falloff, top key light, horizon band and a cool reflection that widens with the braces; slow 1→1.012 push at the end, duration 114→120f"
   ],
+  "look": "midnight",
   "mdChanged": true
 }
