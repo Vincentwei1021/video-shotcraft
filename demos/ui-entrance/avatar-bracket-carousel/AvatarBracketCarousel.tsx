@@ -1,5 +1,5 @@
 // avatar-bracket-carousel — Bracket Carousel 对焦框头像轮换（motion-lab 定稿转原生 Remotion）
-// "Your ___ teammates" 填空排版：四角对焦框锁定当前头像，头像队列垂直 spring 轮换，
+// "Your ___ agent" 填空排版（video-shotcraft 的 agent 摄制组：导演 / 剪辑 / 动画 / 声音）：四角对焦框锁定当前头像，头像队列垂直 spring 轮换，
 // 入框放大清晰、出框缩小淡化，角色标签同步更换，两侧文字不动。
 // 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
 // 质感层（改版）：深色柔光底 + 颗粒在全分辨率层绘制；头像换成受光的渐变圆盘 + 线性图标；
@@ -16,40 +16,40 @@ const ACCENT = '#7b83f2';
 
 // 头像底色走中性灰阶梯度（仅用于区分队列项），强调色只留在对焦框上
 const AV = [
-  { c: '#4a4e5c', icon: 'palette', role: 'Designer' },
-  { c: '#565b6b', icon: 'chat', role: 'Support' },
-  { c: '#62687a', icon: 'chart', role: 'Analyst' },
-  { c: '#6f7588', icon: 'pen', role: 'Writer' },
+  { c: '#4a4e5c', icon: 'clapper', role: 'Director' },
+  { c: '#565b6b', icon: 'scissors', role: 'Editor' },
+  { c: '#62687a', icon: 'curve', role: 'Animator' },
+  { c: '#6f7588', icon: 'wave', role: 'Sound' },
 ];
 
 // 线性图标（24 视框，白色描边）——替代 emoji，头像本身不抢色
 const ICON: Record<string, React.ReactNode> = {
-  palette: (
+  // 场记板：导演
+  clapper: (
     <>
-      <path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.1 0 1.7-.8 1.7-1.6 0-.5-.2-.9-.5-1.2-.3-.4-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6h1.9c2.4 0 4.3-1.9 4.3-4.3 0-3.9-3.8-7.1-8.5-7.1Z" />
-      <circle cx="7.6" cy="11.4" r="1.15" fill="currentColor" stroke="none" />
-      <circle cx="10.4" cy="7.6" r="1.15" fill="currentColor" stroke="none" />
-      <circle cx="15" cy="7.9" r="1.15" fill="currentColor" stroke="none" />
+      <path d="M4.5 10h15v8.3c0 .7-.5 1.2-1.2 1.2H5.7c-.7 0-1.2-.5-1.2-1.2Z" />
+      <path d="M4.3 10 3.8 7.3c-.1-.6.3-1.2.9-1.3l12.6-2.3c.6-.1 1.2.3 1.3.9l.4 2.2Z" />
+      <path d="M8.4 5.2l2 3.3M12.8 4.4l2 3.3" />
     </>
   ),
-  chat: (
+  // 剪刀：剪辑
+  scissors: (
     <>
-      <path d="M4.5 6.8c0-1.5 1.2-2.7 2.7-2.7h9.6c1.5 0 2.7 1.2 2.7 2.7v6.4c0 1.5-1.2 2.7-2.7 2.7h-5.6l-4 3.3v-3.3c-1.5 0-2.7-1.2-2.7-2.7Z" />
-      <path d="M8.6 10h6.8M8.6 12.9h4.2" />
+      <circle cx="6.6" cy="6.8" r="2.5" />
+      <circle cx="6.6" cy="17.2" r="2.5" />
+      <path d="M8.7 8.3 19.5 17.6M8.7 15.7 19.5 6.4" />
     </>
   ),
-  chart: (
+  // 运动曲线 + 关键帧：动画
+  curve: (
     <>
-      <path d="M4.5 19.5h15" />
-      <path d="M7.5 16.5v-4.5M12 16.5V7.5M16.5 16.5v-6.5" />
+      <path d="M4.5 18.5C10 18.5 9.5 5.5 19.5 5.5" />
+      <rect x="2.9" y="16.9" width="3.2" height="3.2" transform="rotate(45 4.5 18.5)" fill="currentColor" stroke="none" />
+      <rect x="17.9" y="3.9" width="3.2" height="3.2" transform="rotate(45 19.5 5.5)" fill="currentColor" stroke="none" />
     </>
   ),
-  pen: (
-    <>
-      <path d="M14.6 5.2l4.2 4.2L9.4 18.8l-5 .8.8-5Z" />
-      <path d="M12.8 7l4.2 4.2" />
-    </>
-  ),
+  // 声波：音效
+  wave: <path d="M4.5 12h.01M8 9.2v5.6M11.2 5.8v12.4M14.4 8.4v7.2M17.6 10.4v3.2M20 12h.01" />,
 };
 
 // 四角对焦框的角路径（92×92 viewBox）
@@ -252,7 +252,7 @@ export const AvatarBracketCarousel: React.FC = () => {
           </div>
 
           <div style={{ ...word, opacity: wr, transform: `translateY(${(1 - wr) * 10}px)`, filter: `blur(${(1 - wr) * 2}px)` }}>
-            teammates
+            agent
           </div>
         </div>
       </DesignStage>

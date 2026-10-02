@@ -1,0 +1,18 @@
+{
+  "stem": "ImpactBurstKit",
+  "changed": true,
+  "brand": [
+    "眉题「INKWELL · PRICING」→ 镜刻标志 + video-shotcraft · formats",
+    "标题「Plans that grow with your docs.」→「One prompt to a finished promo.」",
+    "定价三卡 Starter / Pro / Team → 成片规格 Teaser 15s / Launch film 60s / Walkthrough 90s（卖点换成镜头卡功能，CTA「Render launch film」）",
+    "「MOST POPULAR」签 →「DIRECTOR'S CUT」"
+  ],
+  "brandEn": [
+    "Eyebrow \"INKWELL · PRICING\" → Frame Chisel mark + \"video-shotcraft · formats\"",
+    "Headline \"Plans that grow with your docs.\" → \"One prompt to a finished promo.\"",
+    "Pricing cards Starter / Pro / Team → film formats Teaser 15s / Launch film 60s / Walkthrough 90s (features from the skill, CTA \"Render launch film\")",
+    "\"MOST POPULAR\" badge → \"DIRECTOR'S CUT\""
+  ],
+  "styleKey": "impact-burst-kit",
+  "mdChanged": true
+}

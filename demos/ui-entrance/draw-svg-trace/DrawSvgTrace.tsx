@@ -3,15 +3,15 @@
 // 描边交棒给元素自身边框、内容上墨 → 同一套路短版给重点词画一笔下划线。
 //
 // 设计决定
-// - look = paper（暖白纸 · 墨 · 朱红）。主体放大到 1120×660（画宽 58%），内容是一张出版级季度指标卡：
-//   眉题 mono、两段式大标题「Revenue grew / 38%」（38% 用 200px 黑体，是全镜头的重点词）、32px 说明、
-//   右侧 12 根柱图（末三根朱红）、署名行。
+// - look = paper（暖白纸 · 墨 · 朱红）。主体放大到 1120×660（画宽 58%），内容是一张出版级 video-shotcraft 渲染报告卡：
+//   眉题 mono、两段式大标题「Cuts on the beat / 100%」（100% 用 188px 黑体，是全镜头的重点词）、32px 说明、
+//   右侧 12 根逐镜头能量柱（末三根朱红）、署名行（video-shotcraft 标志 + 字标）。
 // - 开场就有东西：绘图纸点阵底 + 四角先长出裁切标记（印刷对位线）——观众先知道"这里要画一个东西"，笔再沿轮廓跑一圈。
 // - 笔头：主线 6px 墨 + 三段渐细短 dash + 实心笔尖（按圆角矩形弧长精确定位，带落影）；
 //   描边速度 in-out（起笔、收笔有呼吸），笔尖在四个圆角处自然减速（弧长参数化本身不减速，靠 in-out 整体曲线）。
 // - 闭合：2f 冲纯黑 + 6→11px 加粗，6f 回落；裁切标记同时向外"弹"一下后退场。
 // - 上墨：内容自上而下 3f 错峰由虚到实 + 上浮；柱子从基线长出（错峰 1.5f，末三根最后、朱红）；卡片从贴地升起（阴影长出来）。
-// - 第二用法：38% 下一笔手绘朱红马克笔下划线（略带弧度的路径，18f out-cubic，笔头跟随），画完常驻。
+// - 第二用法：100% 下一笔手绘朱红马克笔下划线（略带弧度的路径，18f out-cubic，笔头跟随），画完常驻。
 //
 // 时间表（30fps，共 132f）
 //   0–12    裁切标记从四角长出（snappy，错峰 2f）
@@ -19,12 +19,13 @@
 //   50–58   闭合闪：50–52 冲黑加粗、52–58 回落；裁切标记外弹淡出
 //   50–74   上墨：卡底 + 内容逐块（3f 错峰）、柱图长出、卡片升起
 //   56–66   描边淡出 → 卡片自身发丝边淡入
-//   74–92   38% 下划线 18f
+//   74–92   100% 下划线 18f
 //   92–132  hold 40f：0.9% 极缓推近
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { EASE, FONT, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const DRAW_SVG_TRACE_DURATION = 132;
 
@@ -61,7 +62,7 @@ const rrPoint = (u: number, x: number, y: number, w: number, h: number, r: numbe
 };
 
 const BARS = [34, 40, 37, 48, 45, 54, 58, 56, 66, 74, 81, 96];
-const MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+const MONTHS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']; // 镜头 A–L（沿用原变量名）
 
 // 下划线：略带弧度的手绘笔画（本地坐标，宽 300）
 const UL_PATH = 'M4,14 C70,6 150,18 230,9 S290,10 300,8';
@@ -130,16 +131,17 @@ export const DrawSvgTrace: React.FC = () => {
           {/* 眉题行 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, ...rise(0) }}>
             <div style={{ width: 12, height: 12, borderRadius: 6, background: L.accent }} />
-            <div style={{ ...type(26, 600, { mono: true }), letterSpacing: '0.14em', color: L.ink2 }}>QUARTERLY REVIEW</div>
+            <div style={{ ...type(26, 600, { mono: true }), letterSpacing: '0.14em', color: L.ink2 }}>LAUNCH FILM · RENDER</div>
             <div style={{ flex: 1 }} />
-            <div style={{ ...type(26, 500, { mono: true }), color: L.ink3 }}>Oct – Dec 2026</div>
+            <div style={{ ...type(26, 500, { mono: true }), color: L.ink3 }}>v3 · 1080p30</div>
           </div>
 
           {/* 左栏：两段式大标题 + 说明 */}
           <div style={{ position: 'absolute', left: 64, top: 128, width: 560 }}>
-            <div style={{ ...type(72, 650), color: L.ink2, ...rise(1) }}>Revenue grew</div>
+            <div style={{ ...type(72, 650), color: L.ink2, ...rise(1) }}>Cuts on the beat</div>
             <div style={{ position: 'relative', display: 'inline-block', marginTop: 2, ...rise(2) }}>
-              <div style={{ ...type(212, 820), letterSpacing: '-0.055em', color: L.ink, lineHeight: 0.92 }}>38%</div>
+              {/* 四位数比原「38%」宽：字号 212→188 给右栏柱图留出呼吸 */}
+              <div style={{ ...type(188, 820), letterSpacing: '-0.055em', color: L.ink, lineHeight: 0.92 }}>100%</div>
               {/* 第二用法：重点词下方一笔朱红马克笔下划线 */}
               {up > 0.001 && (
                 <svg width={300} height={24} viewBox="0 0 300 24" style={{ position: 'absolute', left: 6, bottom: -26, width: 'calc(100% - 12px)', overflow: 'visible' }} preserveAspectRatio="none">
@@ -152,11 +154,11 @@ export const DrawSvgTrace: React.FC = () => {
               )}
             </div>
             <div style={{ marginTop: 44, ...type(32, 450), lineHeight: 1.35, color: L.ink2, ...rise(3) }}>
-              Self-serve upgrades and the new annual plan drove the Q4 lift.
+              Every cut snaps to the downbeat. Rendered by video-shotcraft.
             </div>
           </div>
 
-          {/* 右栏：柱图（从基线长出，末三根朱红） */}
+          {/* 右栏：逐镜头能量柱（从基线长出，末三根朱红） */}
           <div style={{ position: 'absolute', left: 680, top: 150, width: 376, height: 300, display: 'flex', alignItems: 'flex-end', gap: 10, opacity: inkIn(3) > 0 ? 1 : 0 }}>
             {BARS.map((v, i) => {
               const g = ramp(frame, 56 + i * 1.5, 14, EASE.snappy);
@@ -179,21 +181,14 @@ export const DrawSvgTrace: React.FC = () => {
               <div key={i} style={{ flex: 1, textAlign: 'center', ...type(20, 600, { mono: true }), color: i >= 9 ? L.accent : L.ink3 }}>{m}</div>
             ))}
           </div>
-          <div style={{ position: 'absolute', left: 680, top: 128, ...type(22, 600, { mono: true }), letterSpacing: '0.1em', color: L.ink3, ...rise(4) }}>MRR · USD</div>
+          <div style={{ position: 'absolute', left: 680, top: 128, ...type(22, 600, { mono: true }), letterSpacing: '0.1em', color: L.ink3, ...rise(4) }}>ENERGY · PER SHOT</div>
 
-          {/* 署名行 */}
+          {/* 署名行：video-shotcraft 标志 + 字标（亮底用 light 版） */}
           <div style={{ position: 'absolute', left: 64, right: 64, bottom: 44, display: 'flex', alignItems: 'center', gap: 16, ...rise(5) }}>
             <div style={{ position: 'absolute', left: 0, right: 0, top: -26, height: 1, background: L.line }} />
-            <div
-              style={{
-                width: 52, height: 52, borderRadius: 26, background: `linear-gradient(140deg, #2c6e5a, ${L.accent2})`, color: '#fffaf3',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', ...type(20, 700),
-              }}
-            >
-              MR
-            </div>
-            <div style={{ ...type(28, 650), color: L.ink }}>Maya Reyes</div>
-            <div style={{ ...type(28, 450), color: L.ink3 }}>Finance · updated 2h ago</div>
+            <ShotcraftMark size={52} tone="light" />
+            <div style={{ ...type(28, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</div>
+            <div style={{ ...type(28, 450), color: L.ink3 }}>agent · rendered 2m ago</div>
           </div>
         </div>
 

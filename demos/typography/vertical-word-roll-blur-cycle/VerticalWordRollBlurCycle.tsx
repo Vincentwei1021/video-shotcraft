@@ -1,5 +1,5 @@
 // vertical-word-roll-blur-cycle — Word Roll 竖向词条滚轮（motion-lab 定稿转原生 Remotion）
-// 标语后半词用竖向滚轮循环 Apps→Teams→Data→Everyone：中心词清晰上色，相邻行浅灰带
+// 标语（video-shotcraft 卖点句 "Crafted for ___"）后半词用竖向滚轮循环 Launches→Demos→Promos→Every Shot：中心词清晰上色，相邻行浅灰带
 // 垂直 blur（滚轮景深），每步 outQuint 前快后慢带轻微过冲，落定瞬间中心词从灰染成强调色。
 // 质感：blur 改为真·纵向高斯（SVG feGaussianBlur 只在 y 向，横向笔画不糊），转动时再按滚轮
 // 速度叠一层纵向运动模糊（静止为 0）；离中心越远的行按滚筒曲面轻微压扁；视窗上下沿柔边渐隐，
@@ -12,7 +12,7 @@ import { Backdrop, FONT, Grain } from '../../_fixtures/Polish';
 export const VERTICAL_WORD_ROLL_BLUR_CYCLE_DURATION = 150; // 5000ms @30fps
 
 const ROW = 44;
-const WORDS = ['Apps', 'Teams', 'Data', 'Everyone'];
+const WORDS = ['Launches', 'Demos', 'Promos', 'Every Shot'];
 // 3 次换词，每次 0.11（≈0.55s）
 const STEPS = [0.16, 0.36, 0.56];
 
@@ -78,7 +78,7 @@ export const VerticalWordRollBlurCycle: React.FC = () => {
               letterSpacing: -0.5,
             }}
           >
-            Built for
+            Crafted for
           </div>
           {/* 三行高的视窗，滚轮列在其中滑动，中心行 = 第二行；上下沿柔边渐隐 */}
           <div
@@ -122,6 +122,7 @@ export const VerticalWordRollBlurCycle: React.FC = () => {
                         fontSize: 30,
                         fontWeight: 800,
                         letterSpacing: -0.5,
+                        whiteSpace: 'nowrap', // 末词 "Every Shot" 带空格，禁止折行
                         filter: blur > 0.05 ? `url(#${fid})` : undefined,
                         opacity: op,
                         transform: `scaleY(${squash.toFixed(4)})`,

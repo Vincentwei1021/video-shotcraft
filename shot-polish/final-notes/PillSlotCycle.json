@@ -1,0 +1,16 @@
+{
+  "stem": "PillSlotCycle",
+  "changed": true,
+  "brand": [
+    "句干「One AI tool to」→「One skill to」，结论句「One skill to do it all.」",
+    "pill「Ask a question / Find in Drive / Find in Slack / Summarize / Improve writing / Draft an agenda」（含 Drive、Slack 真实产品名）→ video-shotcraft 六步「Storyboard it / Capture the page / Move the camera / Cut on the beat / Design the sound / Render the film」",
+    "六枚线性图标按新短语重画（分镜格 / 取景框 / 摄像机 / 节拍条 / 扬声器 / 播放）"
+  ],
+  "brandEn": [
+    "Stem 'One AI tool to' → 'One skill to'; payoff 'One skill to do it all.'",
+    "Pills incl. real product names Drive/Slack → video-shotcraft's six steps: 'Storyboard it / Capture the page / Move the camera / Cut on the beat / Design the sound / Render the film'",
+    "Six line icons redrawn to match (storyboard grid / capture frame / camera / beat bars / speaker / play)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

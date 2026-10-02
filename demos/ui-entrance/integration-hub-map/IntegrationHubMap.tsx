@@ -15,12 +15,14 @@
 // —— 质感层（改版）：
 // · 相机推拉/平移从 4 段关键帧（每段 inOut，关键帧处速度归零）改为一条连续曲线，前摇缓、无顿点
 // · 面板推拉改走 CSS zoom（布局级缩放），2.05x 近景与落定 1x 文字都按原生分辨率栅格化（Q2）；正面旧页换成出版级文档
-// · 图标瓷贴弹现带一次过冲、连通后染上本管末端色的霓虹余光；github/salesforce 换成可辨识字形
+// · 图标瓷贴弹现带一次过冲、连通后染上本管末端色的霓虹余光；品牌轮把五枚第三方 logo 换成 video-shotcraft 的五种输入
+//   （页面实拍 / 代码仓库 / 镜头配方卡 / 配乐 / 音效库）线性图标
 // · 光管：彩虹管体收细 + 白热芯 + 生长头火花，输送脉冲改成"亮头+拖尾"彗星形；管口接入瞬间一圈小涟漪
 // · 背景霓虹框去掉闪烁、减细减淡并随相机做弱视差，颗粒 + 暗角压住大面积暗场
 import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { Grain, Vignette, bezier } from '../../_fixtures/Polish';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const INTEGRATION_HUB_MAP_DURATION = 150; // 前摇 0.5s + 快翻 1.2s + 两拍接入 0.7s + 输送呼吸 ~2.6s
 
@@ -40,15 +42,15 @@ const ACC = '#5b55c8';
 // 面板推拉走 CSS zoom（布局级缩放）而非 transform scale：任意推拉量下文字都按显示尺寸原生栅格化（Q2）
 const PW = 820, PH = 520;
 
-// ---------- 中枢面板（Enterprise MQLs，内容对照截图 1/7） ----------
+// ---------- 中枢面板（video-shotcraft 工作区：版式对照截图 1/7，内容换成镜头/渲染的世界） ----------
 const LIST: { icon: string; title: string; sub: string }[] = [
-  { icon: '#4a9fd8', title: 'Q3 Enterprise Deal', sub: 'Revenue · Pipeline · Q3 Quota' },
-  { icon: '#4a9fd8', title: 'Major Enterprise Account - UK', sub: 'Revenue · MQL · International' },
-  { icon: '#34a853', title: 'Enterprise Pitch Deck', sub: 'Open in GDrive' },
-  { icon: '#a259ff', title: 'MQL Lead Form Design', sub: 'Figma File · Last Edited' },
-  { icon: '#f2c744', title: 'Enterprise Sales', sub: 'ClickUp Space' },
-  { icon: '#9a9a98', title: 'Enterprise Closed Archive', sub: 'Archived · In Enterprise Sales' },
-  { icon: '#c8c8c6', title: 'Open Enterprise Lead - Follow up', sub: 'In Progress · In Enterprise Sales · Yesterday' },
+  { icon: '#4a9fd8', title: 'Launch Film v3', sub: 'Storyboard · 12 shots · 0:45' },
+  { icon: '#4a9fd8', title: 'Shot 04 · Crash Zoom Punch', sub: 'Recipe card · Camera · 36f' },
+  { icon: '#34a853', title: 'Pricing Page Captures', sub: 'Page capture · 2x' },
+  { icon: '#a259ff', title: 'Hero Frame Design', sub: 'Design File · Last Edited' },
+  { icon: '#f2c744', title: 'Beat Grid · Soundtrack', sub: 'Audio · 120 BPM' },
+  { icon: '#9a9a98', title: 'Render Archive', sub: 'Archived · In Launch Film' },
+  { icon: '#c8c8c6', title: 'Render launch film - 1080p', sub: 'In Progress · In Render Queue · Yesterday' },
 ];
 
 // 面板外观：发丝线 + 顶部受光沿 + 投在暗场上的深影 + 一圈随 glow 增强的冷紫环境光（只给主角）
@@ -73,9 +75,10 @@ const panelShell = (glow: number): React.CSSProperties => ({
 const HubPanel: React.FC<{ glow: number }> = ({ glow }) => (
   <div style={{ ...panelShell(glow), padding: '26px 30px', display: 'flex', gap: 26 }}>
     <div style={{ flex: 2 }}>
-      <div style={{ fontSize: 27, fontWeight: 650, color: INK, letterSpacing: '-0.02em' }}>Enterprise MQLs</div>
+      {/* 工作区标题 = 产品字标（亮底反色版标志） */}
+      <ShotcraftWordmark size={25} tone="light" color={INK} markScale={1.3} gap={10} style={{ height: 32 }} />
       <div style={{ display: 'flex', gap: 16, marginTop: 12, borderBottom: `1px solid ${HAIR}`, paddingBottom: 8 }}>
-        {['All', 'Tasks', 'Docs', 'Whiteboards', 'Dashboards', 'Files', 'Chat', 'People'].map((t, i) => (
+        {['All', 'Shots', 'Cards', 'Storyboards', 'Renders', 'Audio', 'Captures', 'Exports'].map((t, i) => (
           <div key={t} style={{ fontSize: 12, color: i === 0 ? ACC : '#8e9099', fontWeight: i === 0 ? 650 : 450, position: 'relative' }}>
             {t}
             {i === 0 && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -9, height: 2, borderRadius: 1, background: ACC }} />}
@@ -107,14 +110,14 @@ const HubPanel: React.FC<{ glow: number }> = ({ glow }) => (
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}
       >
-        + Add Location Filter
+        + Add Shot Filter
       </div>
       <div style={{ fontSize: 10.5, color: INK3, marginTop: 24, letterSpacing: '0.08em', fontWeight: 600 }}>QUICK FILTERS</div>
       {['Assigned to Me', 'Created by Me'].map((t) => (
         <div key={t} style={{ fontSize: 13.5, color: INK2, marginTop: 11 }}>{t}</div>
       ))}
-      <div style={{ fontSize: 10.5, color: INK3, marginTop: 24, letterSpacing: '0.08em', fontWeight: 600 }}>TASK FILTERS</div>
-      {[['Open', 12], ['Closed', 31], ['Archived', 7]].map(([t, n]) => (
+      <div style={{ fontSize: 10.5, color: INK3, marginTop: 24, letterSpacing: '0.08em', fontWeight: 600 }}>RENDER QUEUE</div>
+      {[['Queued', 3], ['Rendered', 31], ['Archived', 7]].map(([t, n]) => (
         <div key={t} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13.5, color: INK2, marginTop: 11, width: 168 }}>
           <span>{t}</span>
           <span style={{ color: INK3, fontVariantNumeric: 'tabular-nums', fontSize: 12 }}>{n}</span>
@@ -126,18 +129,18 @@ const HubPanel: React.FC<{ glow: number }> = ({ glow }) => (
 
 // ---------- 翻转前的旧页面（正面）：另一张页面，翻面后才得到中枢页 ----------
 const PARAS = [
-  'Northwind Retail is consolidating three regional analytics vendors into a single workspace. The buying committee signed off on scope last week; legal review is the only open gate before signature.',
-  'Champion is the VP of Revenue Operations. Security questionnaire returned with two follow-ups on SSO provisioning and data residency, both answered in the shared drive.',
+  'A 45-second launch film for the new pricing page, cut from real page captures. video-shotcraft drafted the storyboard from twelve shot recipe cards; the beat grid is locked to the soundtrack.',
+  'Camera moves are 2.5D push-ins with a crash zoom on the hero. Sound design lands a whoosh on every cut, and the first full render is already queued for review in the workbench.',
 ];
 const FrontPanel: React.FC<{ glow: number }> = ({ glow }) => (
   <div style={{ ...panelShell(glow), padding: '30px 34px' }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(160deg, #5aaee6, #3d8fcc)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35)' }} />
-      <div style={{ fontSize: 26, fontWeight: 650, color: INK, letterSpacing: '-0.02em' }}>Q3 Enterprise Deal</div>
+      <div style={{ fontSize: 26, fontWeight: 650, color: INK, letterSpacing: '-0.02em' }}>Launch Film v3</div>
       <div style={{ marginLeft: 'auto', fontSize: 11.5, color: INK3 }}>Edited 2h ago</div>
     </div>
     <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-      {['Revenue', 'Pipeline', 'Q3 Quota'].map((t) => (
+      {['Storyboard', '12 shots', '0:45'].map((t) => (
         <div key={t} style={{ fontSize: 11.5, color: INK2, background: '#efeff1', borderRadius: 6, padding: '3px 10px', boxShadow: `inset 0 0 0 1px ${HAIR}` }}>
           {t}
         </div>
@@ -146,7 +149,7 @@ const FrontPanel: React.FC<{ glow: number }> = ({ glow }) => (
     <div style={{ height: 1, background: HAIR, marginTop: 18 }} />
     {/* 关键字段 */}
     <div style={{ display: 'flex', gap: 34, marginTop: 16 }}>
-      {[['Amount', '$1.24M'], ['Stage', 'Negotiation'], ['Close date', 'Sep 28'], ['Owner', 'Dana Whitfield']].map(([k, v]) => (
+      {[['Duration', '0:45'], ['Stage', 'Rendering'], ['Ships', 'Sep 28'], ['Director', 'Dana Whitfield']].map(([k, v]) => (
         <div key={k}>
           <div style={{ fontSize: 10.5, color: INK3, letterSpacing: '0.06em', fontWeight: 600 }}>{k.toUpperCase()}</div>
           <div style={{ fontSize: 15, color: INK, fontWeight: 600, marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{v}</div>
@@ -158,7 +161,7 @@ const FrontPanel: React.FC<{ glow: number }> = ({ glow }) => (
       <div key={i} style={{ fontSize: 13, lineHeight: 1.62, color: INK2, marginTop: 8, maxWidth: 720 }}>{p}</div>
     ))}
     <div style={{ fontSize: 15, fontWeight: 650, color: INK, marginTop: 18 }}>Next steps</div>
-    {['Send redlined MSA to procurement', 'Schedule SSO walkthrough with IT'].map((s, i) => (
+    {['Tune the crash zoom on the hero shot', 'Render the final cut at 1080p'].map((s, i) => (
       <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 9, marginTop: 9, fontSize: 13, color: INK2 }}>
         <div style={{ width: 13, height: 13, borderRadius: 4, boxShadow: `inset 0 0 0 1.2px ${i ? 'rgba(20,22,28,0.22)' : ACC}`, background: i ? '#fff' : 'rgba(91,85,200,0.1)' }} />
         {s}
@@ -167,62 +170,59 @@ const FrontPanel: React.FC<{ glow: number }> = ({ glow }) => (
   </div>
 );
 
-// ---------- 品牌图标瓷贴 ----------
+// ---------- 输入源图标瓷贴（video-shotcraft 自己的五种素材输入，无第三方标志） ----------
+// 线性图标：墨色描边 + 琥珀点睛（品牌唯一强调色）；48 视框、显示 54px
 const Tile: React.FC<{ kind: string; on: number; tint: string }> = ({ kind, on, tint }) => {
+  const AMBER = '#D3923C';
+  const ln = { fill: 'none', stroke: INK, strokeWidth: 3, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const am = { ...ln, stroke: AMBER };
   const glyph = (() => {
     switch (kind) {
-      case 'figma':
+      case 'capture':
+        // 页面实拍：浏览器框 + 内容区里一枚取景角标
         return (
-          <svg width={46} height={46} viewBox="0 0 46 46">
-            <path d="M16 2 h7 v14 h-7 a7 7 0 0 1 0 -14 Z" fill="#f24e1e" />
-            <path d="M23 2 h7 a7 7 0 0 1 0 14 h-7 Z" fill="#ff7262" />
-            <path d="M16 16 h7 v14 h-7 a7 7 0 0 1 0 -14 Z" fill="#a259ff" />
-            <circle cx={30} cy={23} r={7} fill="#1abcfe" />
-            <path d="M16 30 h7 v7 a7 7 0 1 1 -7 -7 Z" fill="#0acf83" />
+          <svg width={54} height={54} viewBox="0 0 48 48">
+            <rect x={5} y={8} width={38} height={32} rx={5} {...ln} />
+            <path d="M5 16 H43" {...ln} />
+            <circle cx={10.5} cy={12} r={1.4} fill={INK} />
+            <circle cx={15} cy={12} r={1.4} fill={INK} />
+            <circle cx={19.5} cy={12} r={1.4} fill={INK} />
+            <path d="M15 26 V22 H19 M29 22 H33 V26 M33 30 V34 H29 M19 34 H15 V30" {...am} strokeWidth={2.6} />
           </svg>
         );
-      case 'github':
-        // 深色圆底 + 分支字形（git branch）
+      case 'code':
+        // 代码仓库：</> 尖括号
         return (
-          <svg width={50} height={50} viewBox="0 0 50 50">
-            <circle cx={25} cy={25} r={24} fill="#24292f" />
-            <g fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round">
-              <path d="M19 15 V35" />
-              <path d="M31 19 C31 27 19 25 19 31" />
-            </g>
-            <circle cx={19} cy={14} r={3.6} fill="#24292f" stroke="#fff" strokeWidth={2.6} />
-            <circle cx={19} cy={36} r={3.6} fill="#24292f" stroke="#fff" strokeWidth={2.6} />
-            <circle cx={31} cy={17} r={3.6} fill="#24292f" stroke="#fff" strokeWidth={2.6} />
+          <svg width={54} height={54} viewBox="0 0 48 48">
+            <path d="M16 14 L6 24 L16 34" {...ln} strokeWidth={3.4} />
+            <path d="M32 14 L42 24 L32 34" {...ln} strokeWidth={3.4} />
+            <path d="M27.5 10 L20.5 38" {...am} strokeWidth={3.4} />
           </svg>
         );
-      case 'salesforce':
-        // 云朵：几枚同色圆 + 平底矩形求并
+      case 'recipe':
+        // 镜头配方卡：卡片 + 播放三角 + 两行配方
         return (
-          <svg width={58} height={40} viewBox="0 0 58 40">
-            <g fill="#00a1e0">
-              <circle cx={17} cy={26} r={9} />
-              <circle cx={27} cy={17} r={11} />
-              <circle cx={40} cy={19} r={9.5} />
-              <circle cx={47} cy={28} r={7} />
-              <rect x={17} y={24} width={30} height={11} />
-            </g>
+          <svg width={54} height={54} viewBox="0 0 48 48">
+            <rect x={8} y={5} width={32} height={38} rx={6} {...ln} />
+            <path d="M20 13 L30 19 L20 25 Z" fill={AMBER} stroke={AMBER} strokeWidth={2} strokeLinejoin="round" />
+            <path d="M15 32 H33 M15 37 H26" {...ln} strokeWidth={2.6} />
           </svg>
         );
-      case 'gdrive':
+      case 'music':
+        // 配乐 BGM：波形
         return (
-          <svg width={48} height={42} viewBox="0 0 48 42">
-            <path d="M16 2 L32 2 L20 24 L4 24 Z" fill="#34a853" transform="translate(2,2)" />
-            <path d="M32 2 L46 28 L30 28 L18 6 Z" fill="#fbbc04" transform="translate(0,2)" />
-            <path d="M6 28 L42 28 L36 38 L12 38 Z" fill="#4285f4" />
+          <svg width={54} height={54} viewBox="0 0 48 48">
+            {[6, 14, 24, 32, 18, 26, 10].map((h, k) => (
+              <path key={k} d={`M${6 + k * 6} ${24 - h / 2} V${24 + h / 2}`} {...(k === 2 || k === 3 ? am : ln)} />
+            ))}
           </svg>
         );
-      default: // dropbox
+      default: // sfx：音效库——扬声器 + 声波
         return (
-          <svg width={48} height={42} viewBox="0 0 48 42">
-            <path d="M12 0 L24 8 L12 16 L0 8 Z" fill="#0061ff" />
-            <path d="M36 0 L48 8 L36 16 L24 8 Z" fill="#0061ff" />
-            <path d="M12 18 L24 26 L12 34 L0 26 Z" fill="#0061ff" />
-            <path d="M36 18 L48 26 L36 34 L24 26 Z" fill="#0061ff" />
+          <svg width={54} height={54} viewBox="0 0 48 48">
+            <path d="M7 19 H14 L23 11 V37 L14 29 H7 Z" {...ln} />
+            <path d="M29 19 A7 7 0 0 1 29 29" {...am} />
+            <path d="M33.5 14 A13.5 13.5 0 0 1 33.5 34" {...am} />
           </svg>
         );
     }
@@ -255,11 +255,11 @@ const Tile: React.FC<{ kind: string; on: number; tint: string }> = ({ kind, on, 
 // ---------- 光管（彩虹渐变霓虹管） ----------
 type Pipe = { kind: string; icon: [number, number]; path: string; len: number; tIcon: number; tPipe: number; tint: string };
 const PIPES: Pipe[] = [
-  { kind: 'figma', icon: [452, 262], path: 'M 452 322 L 452 440 Q 452 480 492 480 L 552 480', len: 300, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
-  { kind: 'github', icon: [252, 612], path: 'M 316 612 L 552 612', len: 240, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
-  { kind: 'salesforce', icon: [992, 178], path: 'M 992 240 L 992 332', len: 92, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
-  { kind: 'gdrive', icon: [1512, 272], path: 'M 1512 332 L 1512 440 Q 1512 480 1472 480 L 1372 480', len: 290, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
-  { kind: 'dropbox', icon: [1702, 618], path: 'M 1640 618 L 1372 618', len: 270, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
+  { kind: 'capture', icon: [452, 262], path: 'M 452 322 L 452 440 Q 452 480 492 480 L 552 480', len: 300, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
+  { kind: 'code', icon: [252, 612], path: 'M 316 612 L 552 612', len: 240, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
+  { kind: 'recipe', icon: [992, 178], path: 'M 992 240 L 992 332', len: 92, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
+  { kind: 'music', icon: [1512, 272], path: 'M 1512 332 L 1512 440 Q 1512 480 1472 480 L 1372 480', len: 290, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
+  { kind: 'sfx', icon: [1702, 618], path: 'M 1640 618 L 1372 618', len: 270, tIcon: 52, tPipe: 62, tint: '#ffd44d' },
 ];
 const GROW = 9; // v8（批次 17）：用户意见"翻转过来后，5个app同时出现，然后同时连接"——两拍制：五图标 tIcon 统一 52 同帧出现，五管 tPipe 统一 62 同帧连接
 const FLOW_SPEED = 4.6; // 输送脉冲速度 px/f
@@ -406,7 +406,7 @@ export const IntegrationHubMap: React.FC = () => {
             );
           })}
           {/* userSpaceOnUse：纯水平/垂直直线管的 bbox 为零，百分比滤镜区域会
-              坍缩成 0 导致整条管不渲染（github/salesforce/dropbox 三管消失） */}
+              坍缩成 0 导致整条管不渲染（左 / 上中 / 右三条直管消失） */}
           <filter id={`pipeGlow-${uid}`} filterUnits="userSpaceOnUse" x="0" y="0" width="1920" height="1080">
             <feGaussianBlur stdDeviation="9" result="b" />
             <feMerge>

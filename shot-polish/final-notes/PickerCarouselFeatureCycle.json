@@ -1,0 +1,16 @@
+{
+  "stem": "PickerCarouselFeatureCycle",
+  "changed": true,
+  "brand": [
+    "左侧方形「AI」星芒徽标 → 深底 app 图标里的 video-shotcraft「镜刻」标志（反白版）",
+    "7 条占位功能名（Data Cleanup / Direct Message / Smart Segments…）→ video-shotcraft 功能：Shot recipe cards / Real page captures / 2.5D camera moves / Beat-synced cuts / Film-grade SFX / Motion workbench / Remotion render",
+    "行内线性图标按新功能同套重画（配方卡 / 取景框 / 摄影机 / 节拍 / 扬声器 / 调参滑杆 / 播放）"
+  ],
+  "brandEn": [
+    "Left square \"AI\" sparkle badge → video-shotcraft Frame Chisel mark (reverse) in a dark app-icon tile",
+    "Seven placeholder features (Data Cleanup / Direct Message / Smart Segments…) → video-shotcraft features: Shot recipe cards / Real page captures / 2.5D camera moves / Beat-synced cuts / Film-grade SFX / Motion workbench / Remotion render",
+    "Row line icons redrawn in the same set to match (recipe card / crop frame / camera / beat / speaker / sliders / play)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

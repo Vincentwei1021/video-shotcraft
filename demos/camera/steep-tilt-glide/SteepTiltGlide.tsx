@@ -12,9 +12,10 @@
 // 离散拷贝改为三层更密的拖尾（f-1.6/-3.2/-4.8，权重递减），读作拖影而不是双影；
 // 主区空白圆角砖填入克制的小组件内容；右段白页加发丝边与投影分层；屏幕空间
 // 左侧景深雾 + 颗粒，远端更沉、近端更亮，强化 60° 斜墙的纵深。
-import React, { useId } from 'react';
+import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
 import { FONT as PFONT, Grain } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const FONT = PFONT.sans;
 const INK = '#2a2a31';
@@ -45,45 +46,26 @@ const liftOf = (t: number, land: number, H = 230) => {
   return (1 - easeFall(p)) * H;
 };
 
-/* ClickUp 彩色小 logo（双 V 叠形近似） */
-const CULogo: React.FC<{ size: number }> = ({ size }) => {
-  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100">
-      <defs>
-        <linearGradient id={`cu1-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#8930fd" />
-          <stop offset="1" stopColor="#49ccf9" />
-        </linearGradient>
-        <linearGradient id={`cu2-${uid}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#ff02f0" />
-          <stop offset="1" stopColor="#ffc800" />
-        </linearGradient>
-      </defs>
-      <path d="M 14 62 L 50 30 L 86 62" fill="none" stroke={`url(#cu1-${uid})`} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M 22 84 L 50 62 L 78 84" fill="none" stroke={`url(#cu2-${uid})`} strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-};
-
-/* Dropbox 蓝四菱形 glyph（原片 f45/f60 主区圆角灰砖里的图标） */
-const DropboxGlyph: React.FC<{ size: number }> = ({ size }) => (
+/* 主区圆角灰砖里的图标：场记板（镜头 / 分镜的通用符号，取代原片的第三方 logo） */
+const ClapperGlyph: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 100 100">
-    {[[50, 8, 27, 22], [50, 8, 73, 22], [50, 36, 27, 50], [50, 36, 73, 50]].map(() => null)}
-    <g fill="#0061fe">
-      <path d="M 27 10 L 50 25 L 27 40 L 4 25 Z" />
-      <path d="M 73 10 L 96 25 L 73 40 L 50 25 Z" />
-      <path d="M 27 40 L 50 55 L 27 70 L 4 55 Z" />
-      <path d="M 73 40 L 96 55 L 73 70 L 50 55 Z" />
-      <path d="M 27 74 L 50 89 L 73 74 L 50 62 Z" />
+    {/* 拍板：墨色条 + 琥珀斜纹 */}
+    <g transform="rotate(-12 10 34)">
+      <rect x={10} y={20} width={80} height={16} rx={3} fill={BRAND.ink} />
+      {[0, 1, 2, 3].map((i) => (
+        <path key={i} d={`M ${18 + i * 19} 36 L ${28 + i * 19} 20 L ${36 + i * 19} 20 L ${26 + i * 19} 36 Z`} fill={BRAND.amber} />
+      ))}
     </g>
+    {/* 板身 */}
+    <rect x={10} y={40} width={80} height={46} rx={6} fill={BRAND.ink} />
+    <rect x={20} y={54} width={34} height={6} rx={3} fill={BRAND.paper} opacity={0.85} />
+    <rect x={20} y={68} width={52} height={6} rx={3} fill={BRAND.paper} opacity={0.5} />
   </svg>
 );
 
 /* 主区小组件：三张白砖各一种（进度 / 待办 / 走势），内容坐标同页面（6200 宽体系） */
 const MiniWidget: React.FC<{ kind: number }> = ({ kind }) => {
-  const title = ['Sprint 24', 'Due this week', 'Velocity'][kind];
+  const title = ['Render queue', 'Shot list', 'Renders'][kind];
   return (
     <div style={{ fontFamily: FONT, color: INK }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
@@ -100,7 +82,7 @@ const MiniWidget: React.FC<{ kind: number }> = ({ kind }) => {
       )}
       {kind === 1 && (
         <div style={{ marginTop: 36, display: 'flex', flexDirection: 'column', gap: 30 }}>
-          {[['Onboarding flow', 'Mon'], ['API rate limits', 'Wed'], ['Release notes', 'Fri']].map(([n, d], j) => (
+          {[['Storyboard', 'Mon'], ['Sound design', 'Wed'], ['Final render', 'Fri']].map(([n, d], j) => (
             <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 24, fontSize: 40 }}>
               <div style={{ width: 30, height: 30, borderRadius: 9, border: '4px solid #c9c9d4', boxSizing: 'border-box', background: j === 0 ? '#e33bc6' : 'transparent', borderColor: j === 0 ? '#e33bc6' : '#c9c9d4' }} />
               <span style={{ color: j === 0 ? '#9a9aa6' : INK, textDecoration: j === 0 ? 'line-through' : 'none' }}>{n}</span>
@@ -119,8 +101,8 @@ const MiniWidget: React.FC<{ kind: number }> = ({ kind }) => {
   );
 };
 
-/* 页面：宽 6200 —— 左段=ClickUp3.0 顶栏+侧栏（用户截图三张全在此段），
-   右段=原片后程滑入的 Dropbox 砖、大 W 字、Product Management 列表 */
+/* 页面：宽 6200 —— 左段=video-shotcraft 顶栏+侧栏（版式对齐原片用户截图三张），
+   右段=原片后程滑入的图标砖、大 W 字、Launch film shots 列表 */
 const PW = 6200;
 const PH = 2400;
 
@@ -143,30 +125,31 @@ const Panel: React.FC<{ shade: number; t?: number }> = ({ shade, t = 1 }) => (
               <rect key={i} x={x} y={y} width={13} height={13} rx={3} fill="none" stroke="#4a4a52" strokeWidth={3.5} />
             ))}
           </svg>
-          <div style={{ fontSize: 66, color: INK, fontWeight: 500, letterSpacing: '-0.01em' }}>Product analytics</div>
+          <div style={{ fontSize: 66, color: INK, fontWeight: 500, letterSpacing: '-0.01em' }}>Shot recipes</div>
         </div>
       </FloatWrap>
       <FloatWrap h={liftOf(t, 0.42, 280)}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 72, height: 72, borderRadius: 20, background: '#4147f5', marginLeft: 150, flexShrink: 0 }} />
-          <div style={{ fontSize: 165, color: '#222228', fontWeight: 600, marginLeft: 110, letterSpacing: '-0.035em', whiteSpace: 'nowrap' }}>ClickUp 3.0</div>
+          {/* 标题前的品牌方块 → video-shotcraft 标志；标题字标全小写 */}
+          <ShotcraftMark size={150} tone="light" style={{ marginLeft: 110, flexShrink: 0 }} />
+          <div style={{ fontSize: 165, color: '#222228', fontWeight: 600, marginLeft: 70, letterSpacing: '-0.035em', whiteSpace: 'nowrap', fontFamily: BRAND.font }}>{BRAND.name}</div>
         </div>
       </FloatWrap>
-      {/* 顶栏右延的淡 tab（对齐 clickup04 顶栏 Widget brainstorm / Design system） */}
-      {[['Widget brainstorm', 3050], ['Design system', 3900], ['Design', 4650]].map(([tb, x]) => (
+      {/* 顶栏右延的淡 tab（版式对齐原片 clickup04 顶栏） */}
+      {[['Launch storyboard', 3050], ['Camera moves', 3900], ['Renders', 4650]].map(([tb, x]) => (
         <div key={tb as string} style={{ position: 'absolute', left: x as number, top: 88, fontSize: 58, color: '#8d8d96' }}>{tb}</div>
       ))}
     </div>
-    {/* ClickUp logo 行 */}
+    {/* 工作区 logo 行：video-shotcraft 标志 + 简称 */}
     <div style={{ position: 'absolute', left: 120, top: 560 }}>
       <FloatWrap h={liftOf(t, 0.54, 250)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
-          <CULogo size={104} />
-          <div style={{ fontSize: 92, fontWeight: 750, color: '#222228', letterSpacing: '-0.03em' }}>ClickUp</div>
+          <ShotcraftMark size={104} tone="light" />
+          <div style={{ fontSize: 92, fontWeight: 750, color: '#222228', letterSpacing: '-0.03em', fontFamily: BRAND.font }}>{BRAND.short}</div>
         </div>
       </FloatWrap>
     </div>
-    {/* 主区圆角灰砖：Dropbox 图标 + 下拉 chevron（原片 f45–f60） */}
+    {/* 主区圆角灰砖：场记板图标 + 下拉 chevron（原片 f45–f60） */}
     <div style={{ position: 'absolute', left: 1330, top: 440 }}>
       <FloatWrap h={liftOf(t, 0.62, 260)}>
         <div style={{
@@ -178,7 +161,7 @@ const Panel: React.FC<{ shade: number; t?: number }> = ({ shade, t = 1 }) => (
             boxShadow: '0 6px 60px rgba(180,180,200,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <DropboxGlyph size={130} />
+            <ClapperGlyph size={130} />
           </div>
           <svg width={90} height={90} viewBox="0 0 40 40">
             <path d="M 10 15 L 20 26 L 30 15" fill="none" stroke="#6a6a74" strokeWidth={3.6} strokeLinecap="round" strokeLinejoin="round" />
@@ -245,14 +228,14 @@ const Panel: React.FC<{ shade: number; t?: number }> = ({ shade, t = 1 }) => (
         <MiniWidget kind={i} />
       </div>
     ))}
-    {/* —— 右段：Product Management 列表（原片尾程满幅白页） —— */}
+    {/* —— 右段：Launch film shots 列表（原片尾程满幅白页） —— */}
     <div style={{
       position: 'absolute', left: 3560, top: 230, width: PW - 3560, height: PH - 230,
       background: 'linear-gradient(180deg, #fdfdfe 0%, #f9f9fb 100%)',
       // 发丝边 + 左侧投影：白页叠在主区之上，而不是一条生硬的色块分界
       boxShadow: '-3px 0 0 rgba(28,28,40,0.06), -40px 0 90px -20px rgba(110,110,140,0.22)',
     }}>
-      <div style={{ position: 'absolute', left: 220, top: 200, fontSize: 150, fontWeight: 700, color: '#1f1f25', letterSpacing: '-0.035em', whiteSpace: 'nowrap' }}>Product Management</div>
+      <div style={{ position: 'absolute', left: 220, top: 200, fontSize: 150, fontWeight: 700, color: '#1f1f25', letterSpacing: '-0.035em', whiteSpace: 'nowrap' }}>Launch film shots</div>
       {/* List / Board tabs */}
       <div style={{ position: 'absolute', left: 240, top: 480, display: 'flex', gap: 110, alignItems: 'center' }}>
         <div style={{
@@ -284,9 +267,9 @@ const Panel: React.FC<{ shade: number; t?: number }> = ({ shade, t = 1 }) => (
         position: 'absolute', left: 240, top: 850, background: '#fce4f5', color: '#c93bb0',
         fontSize: 46, fontWeight: 650, letterSpacing: '0.06em', padding: '14px 30px', borderRadius: 14,
       }}>IN PROGRESS</div>
-      <div style={{ position: 'absolute', left: 244, top: 1030, fontSize: 44, fontWeight: 600, color: '#8f8f98', letterSpacing: '0.08em' }}>TASK NAME</div>
+      <div style={{ position: 'absolute', left: 244, top: 1030, fontSize: 44, fontWeight: 600, color: '#8f8f98', letterSpacing: '0.08em' }}>SHOT NAME</div>
       {/* 任务行 */}
-      {[['New Feature Launch', '#3a3a42'], ['Roadmap Q3', '#55555e'], ['User Testing', '#83838d'], ['Bug Triage', '#b3b3bc']].map(([name, col], i) => (
+      {[['Crash zoom opener', '#3a3a42'], ['Steep tilt glide', '#55555e'], ['Beat-synced cuts', '#83838d'], ['Logo sting', '#b3b3bc']].map(([name, col], i) => (
         <div key={name as string} style={{ position: 'absolute', left: 280, top: 1180 + i * 210, display: 'flex', alignItems: 'center', gap: 56 }}>
           <div style={{ width: 42, height: 42, borderRadius: 12, background: '#e33bc6' }} />
           <div style={{ fontSize: 64, fontWeight: 550, color: col as string, whiteSpace: 'nowrap' }}>{name}</div>

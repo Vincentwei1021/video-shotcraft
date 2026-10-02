@@ -5,8 +5,8 @@
 // - look = custom「cobalt arcade」：满版高饱和钴蓝色场（不是深海军蓝暗场）+ 白卡 + 街机黄。
 //   格斗游戏 combo UI 的语言直接拿来讲"功能连招"：伤害数字是黄色斜体 900 字重 + 硬投影（漫画式错位影），
 //   计数器是 150→210px 的斜体「×N」，底下三格热度条逐格点亮。
-// - 内容：虚构构建工具 Brickyard 3.0 的三项更新，每一击的"伤害"= 每次推送省下的时间（−48s / −3 min / −12 min），
-//   三击打完收尾一行「Up to 16 min back on every push.」——游戏梗落到真实收益上。
+// - 内容：video-shotcraft 的三项能力，每一击的"伤害"= 做一支宣传片省下的制作时间（−2 h / −1 day / −3 days，示意值），
+//   三击打完收尾一行「Up to a week back on every promo.」——游戏梗落到真实收益上。
 // - 顿帧是全局的：背景斜纹滚动、浮尘、卡片、特效全部由同一个 remap 时间 t 驱动，命中时整幅画面一起冻 2f；
 //   只有卡面闪白与槽位受光用真实帧（冻结期间也要发生）。
 // - 触地：卡按速度竖向拉伸 + 运动模糊 → 触地压扁回弹（指数回落）→ 白色冲击环外扩 + 黄色火花八向迸射 + 槽底受光。
@@ -15,12 +15,13 @@
 //   0–22    建立：钴蓝场、三个虚线槽位（01/02/03）、眉题、暗色 ×0 计数器
 //   20/48/76 → 30/58/86  三张卡各 10f ease-in(quad) 砸落（间隔 28f 的均匀连招节拍）
 //   每命中   全局顿帧 2f；伤害数字打在卡面上 scale 1.45→1 + 上浮 150px 出卡沿，4f 后 12f 渐隐；计数器 exp(−t/2.4) 回落
-//   100–124 收尾行逐词升起，"16 min" 用街机黄
+//   100–124 收尾行逐词升起，"a week" 用街机黄
 //   124–176 hold：背景斜纹极缓滚动，干净海报
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, SpeedBlur, Vignette, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const HIT_COUNTER_DURATION = 176;
 
@@ -44,33 +45,36 @@ const SLOT_XS = [0, 1, 2].map((i) => 960 - (SLOT_W * 3 + GAP * 2) / 2 + i * (SLO
 const DROP_FROM = -460;
 const inQuad = bezier(0.55, 0.085, 0.68, 0.53);
 
-const DMG = ['−48s', '−3 min', '−12 min'];
+const DMG = ['−2 h', '−1 day', '−3 days'];
 const DMG_SIZE = [88, 104, 124]; // 伤害数字逐击加大
 const PULSE = [1.3, 1.45, 1.6];
 const TILT = [-2, -4, -6];
 const COUNTER_SIZE = [140, 166, 196];
 
 const FEATURES = [
-  { icon: 'cache', name: 'Cached builds', desc: 'Skips untouched packages.', note: 'avg. per push' },
-  { icon: 'split', name: 'Parallel tests', desc: 'Suites shard across 32 runners.', note: 'avg. per push' },
-  { icon: 'eye', name: 'Instant previews', desc: 'Every branch gets a live URL.', note: 'avg. per review' },
+  { icon: 'recipe', name: 'Shot recipes', desc: 'Pick a move, not a blank canvas.', note: 'per shot' },
+  { icon: 'beat', name: 'Beat-synced cuts', desc: 'Every cut lands on the music.', note: 'per edit' },
+  { icon: 'layers', name: '2.5D camera', desc: 'Real pages, filmed in depth.', note: 'per promo' },
 ];
 
 const Icon: React.FC<{ name: string }> = ({ name }) => {
   const sw = { fill: 'none', stroke: C.bg1, strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
     <svg width={34} height={34} viewBox="0 0 24 24">
-      {name === 'cache' && (
+      {/* 镜头配方卡 */}
+      {name === 'recipe' && (
         <>
-          <ellipse cx="12" cy="6" rx="7" ry="2.6" {...sw} />
-          <path d="M5 6v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6M5 12v6c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-6" {...sw} />
+          <rect x="4" y="3.5" width="16" height="17" rx="2.5" {...sw} />
+          <path d="M8 8.5h8M8 12h8M8 15.5h5" {...sw} />
         </>
       )}
-      {name === 'split' && <path d="M4 12h5l3-6h8M9 12l3 6h8M17 3l3 3-3 3M17 15l3 3-3 3" {...sw} />}
-      {name === 'eye' && (
+      {/* 踩点：波形 */}
+      {name === 'beat' && <path d="M3 12h1.5M7 8.5v7M11 4.5v15M15 8v8M19 10.5v3M21 12h0.5" {...sw} />}
+      {/* 2.5D：层叠景深 */}
+      {name === 'layers' && (
         <>
-          <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" {...sw} />
-          <circle cx="12" cy="12" r="3" {...sw} />
+          <path d="M3 8.5L12 4l9 4.5-9 4.5-9-4.5z" {...sw} />
+          <path d="M3 12.5l9 4.5 9-4.5M3 16.5L12 21l9-4.5" {...sw} />
         </>
       )}
     </svg>
@@ -166,10 +170,8 @@ export const HitCounter: React.FC = () => {
 
       {/* 眉题 */}
       <div style={{ position: 'absolute', left: 120, top: 104, display: 'flex', alignItems: 'center', gap: 18, opacity: ramp(frame, 0, 14, EASE.out) }}>
-        <div style={{ width: 44, height: 44, borderRadius: 12, background: C.card, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: 20, height: 14, borderRadius: 3, background: C.bg1, boxShadow: `8px 8px 0 -2px ${C.hit}` }} />
-        </div>
-        <div style={{ ...type(34, 760), color: '#fff', letterSpacing: '-0.02em' }}>Brickyard 3.0</div>
+        <ShotcraftMark size={52} tone="dark" />
+        <div style={{ ...type(34, 760), color: '#fff', letterSpacing: '-0.02em' }}>{BRAND.name}</div>
         <div style={{ ...type(24, 650, { caps: true }), color: alpha('#ffffff', 0.62), letterSpacing: '0.24em', marginLeft: 8 }}>What’s new</div>
       </div>
 
@@ -325,7 +327,7 @@ export const HitCounter: React.FC = () => {
       {/* 收尾：真实收益 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 866, textAlign: 'center' }}>
         <TextReveal
-          text="Up to 16 min back on every push."
+          text="Up to a week back on every promo."
           by="word"
           variant="rise"
           start={HITS_REAL[2] + 14}

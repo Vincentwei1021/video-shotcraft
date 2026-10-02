@@ -1,0 +1,18 @@
+{
+  "stem": "CircleMatchIris",
+  "changed": true,
+  "brand": [
+    "眉题虚构跑团 App「Stride · Berlin Crew」→ video-shotcraft 标志 + 小写字标 +「· BERLIN STUDIO」",
+    "景 A 跑步周榜（km / runs）→ video-shotcraft 创作者出片周榜（Shots rendered、films、出片数）",
+    "景 B 圆环目标「of 50 km goal」→「of 54-shot goal」；副句「3.4 km left — one easy run.」→「7 shots left — one more render.」；三项数据换成 Rendered / This week / Avg render",
+    "排名胶囊「6.3 km to pass Aiko for #2」→「6 shots to pass Aiko for #2」"
+  ],
+  "brandEn": [
+    "Eyebrow: fictional running app \"Stride · Berlin Crew\" → video-shotcraft mark + lowercase wordmark + \"· BERLIN STUDIO\"",
+    "Scene A running leaderboard (km / runs) → video-shotcraft creators' weekly render leaderboard (Shots rendered, films, shot counts)",
+    "Scene B ring goal \"of 50 km goal\" → \"of 54-shot goal\"; subline \"3.4 km left — one easy run.\" → \"7 shots left — one more render.\"; the three stats become Rendered / This week / Avg render",
+    "Rank pill \"6.3 km to pass Aiko for #2\" → \"6 shots to pass Aiko for #2\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

@@ -1,0 +1,18 @@
+{
+  "stem": "ExplodedView",
+  "changed": true,
+  "brand": [
+    "侧栏「Relay」气泡 logo + 名字 → video-shotcraft 标志 + Shotcraft（侧栏窄，用简称）；导航换成 Shots / Storyboard / Timeline / Sound / Renders",
+    "收尾眉题「Relay 3」→ video-shotcraft 字标；副标题「One surface for every conversation.」→「Every shot, tuned in one place.」",
+    "客服工作台内容 → 动效工作台：命令栏「Add a shot or search recipes…」、KPI Avg. render time / Shots rendered / Cuts on the beat、Render volume 图表、助手改镜头卡点建议",
+    "标注说明：Every shot, one click away / Renders, timing and pace / Drafts shots you approve / Add a shot in one line"
+  ],
+  "brandEn": [
+    "Sidebar \"Relay\" bubble logo + name → video-shotcraft mark + \"Shotcraft\" (short name, narrow sidebar); nav → Shots / Storyboard / Timeline / Sound / Renders",
+    "Closing eyebrow \"Relay 3\" → video-shotcraft wordmark; subhead \"One surface for every conversation.\" → \"Every shot, tuned in one place.\"",
+    "Support desk content → motion workbench: command bar \"Add a shot or search recipes…\", KPIs Avg. render time / Shots rendered / Cuts on the beat, Render volume chart, assistant suggests a beat-snapped cut",
+    "Callout captions: Every shot, one click away / Renders, timing and pace / Drafts shots you approve / Add a shot in one line"
+  ],
+  "styleKey": "exploded-view",
+  "mdChanged": false
+}

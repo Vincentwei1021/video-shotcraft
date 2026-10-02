@@ -1,0 +1,18 @@
+{
+  "stem": "ScanlineAssembleFlyin",
+  "changed": true,
+  "brand": [
+    "装配出的天文摄影 App「Umbra」落地页 → video-shotcraft 落地页：半月 logo + Umbra → 镜刻标志 + video-shotcraft 字标；状态行 umbra.app → video-shotcraft",
+    "H1「Shoot the Milky Way.」→「Shoot the launch film.」；徽章「Deep-sky mode」→「Motion workbench」；正文 → 「One prompt to a finished promo. Your agent lines up every cut for you.」",
+    "导航 Features/Gallery/Pricing + Get the app → Recipes/Gallery/Docs + Get the skill；CTA「Download free」→「Start shooting」；银河卡改作样片镜头「SHOT 04 · 2.5D push-in · 120f」",
+    "三项数据（300 exposures / 4.2 s / 0 tripods）→ 1 prompt to a promo / 30 fps Remotion render / 0 keyframes by hand"
+  ],
+  "brandEn": [
+    "Assembled landing page of astro app \"Umbra\" → video-shotcraft landing page: half-moon logo + Umbra → Frame Chisel mark + video-shotcraft wordmark; status umbra.app → video-shotcraft",
+    "H1 \"Shoot the Milky Way.\" → \"Shoot the launch film.\"; badge \"Deep-sky mode\" → \"Motion workbench\"; body → \"One prompt to a finished promo. Your agent lines up every cut for you.\"",
+    "Nav Features/Gallery/Pricing + Get the app → Recipes/Gallery/Docs + Get the skill; CTA \"Download free\" → \"Start shooting\"; galaxy card becomes a sample shot \"SHOT 04 · 2.5D push-in · 120f\"",
+    "Stats (300 exposures / 4.2 s / 0 tripods) → 1 prompt to a promo / 30 fps Remotion render / 0 keyframes by hand"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

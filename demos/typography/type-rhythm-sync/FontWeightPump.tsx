@@ -13,16 +13,17 @@
 // - 不做整画面逐拍泵 / 抖动（节拍性抖动判例）：只有字、字后柔光和音序器格子随拍动。
 //
 // 时间表（30fps，共 165f）：
-//   0–15    预备：细体 LOUDER、音序器空格、眉题就位，字后光极缓呼吸
+//   0–15    预备：细体 LOUDER、音序器空格、眉题（video-shotcraft 标志 + 字标）就位，字后光极缓呼吸
 //   16–58   第 1 小节 4 拍（16/30/44/58），每拍 9–13f 衰减窗，拍距 14f > 衰减窗
 //   64–72   回声行淡入、上下拉开
 //   72–114  第 2 小节 4 拍，回声晚 2f 跟拍、被推开 26px
-//   128     drop：900 字重 + 渐变 + 光带，~12f 内回落到 780 定格；副标题逐词升起
+//   128     drop：900 字重 + 渐变 + 光带，~12f 内回落到 780 定格；副标题（video-shotcraft 卖点）逐词升起
 //   140–165 hold
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const FONT_WEIGHT_PUMP_DURATION = 165;
 
@@ -147,8 +148,10 @@ export const FontWeightPump: React.FC = () => {
       }} />
 
       {/* 眉题 */}
-      <div style={{ position: 'absolute', left: 120, top: 96, ...label, color: L.ink, opacity: intro }}>
-        Pulse <span style={{ color: L.ink3 }}>Audio</span>
+      <div style={{ position: 'absolute', left: 120, top: 92, display: 'flex', alignItems: 'center', gap: 14, opacity: intro }}>
+        <ShotcraftMark size={46} tone="dark" />
+        {/* 字标全小写，不走眉题的 caps 样式 */}
+        <span style={{ ...type(30, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
       </div>
       <div style={{ position: 'absolute', right: 120, top: 96, ...label, color: L.ink2, opacity: intro, fontVariantNumeric: 'tabular-nums' }}>
         128 BPM <span style={{ color: L.ink3, marginLeft: 18 }}>{`BAR ${bar} / 2`}</span>
@@ -183,7 +186,7 @@ export const FontWeightPump: React.FC = () => {
 
       {/* 副标题：drop 后逐词升起 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 850, textAlign: 'center', ...type(40, 500), color: L.ink2 }}>
-        <TextReveal text="Spatial bass. Now on every device." by="word" variant="rise" start={DROP + 8} each={14} gap={2.5} />
+        <TextReveal text="Beat-synced cuts, right on the drop." by="word" variant="rise" start={DROP + 8} each={14} gap={2.5} />
       </div>
 
       {/* 步进音序器：8 拍 + drop */}

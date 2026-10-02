@@ -1,7 +1,7 @@
 // grain-dissolve — Grain Dissolve → Condense 文字砂化凝聚（motion-lab 定稿转原生 Remotion）
-// 干净的整行字 "{ ACME. Now Live }" 先爆裂成沸腾颗粒噪点（轮廓隐约可辨、白色辉光），
+// 干净的整行字 "{ video-shotcraft. Now Live }" 先爆裂成沸腾颗粒噪点（轮廓隐约可辨、白色辉光），
 // 同时出现带 45° 斜纹填充和像素方块角柄的选区框；噪点沸腾约半程后选区框消失，
-// 噪点云急速凝聚成更大号的颗粒短字标（占位词 "ACME"），位移量衰减归零、辉光冲高回落，
+// 噪点云急速凝聚成更大号的颗粒短字标（video-shotcraft 字标，全小写），位移量衰减归零、辉光冲高回落，
 // 凝固为清晰发光短字标。四角 HUD 括角/圆点与左右中线短划全程常驻。
 // 滤镜链：feTurbulence seed 逐帧 + displacement scale 双向动画，终字同走滤镜再解除。
 // 质感升级：SVG 直接按 1920×1080 原生分辨率栅格化（viewBox 640×360，1 单位 = 3px），
@@ -12,6 +12,7 @@ import React, { useId } from 'react';
 import { AbsoluteFill } from 'remotion';
 import { E, rand, seg, useT } from '../../_fixtures/Motion';
 import { Backdrop, FONT } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const GRAIN_DISSOLVE_DURATION = 60; // 2000ms @30fps
 
@@ -35,8 +36,8 @@ const SAND = Array.from({ length: 150 }, (_, i) => {
     hx, hy,
     dx: Math.cos(ang) * (8 + r(4) * 26), // 砂化时被吹散的位移
     dy: Math.sin(ang) * (5 + r(5) * 14),
-    tx: 246 + r(6) * 148, // 短字标字面：x 246–394
-    ty: 164 + r(7) * 34, // y 164–198
+    tx: 140 + r(6) * 360, // 短字标字面（video-shotcraft 44px）：x 140–500
+    ty: 170 + r(7) * 28, // y 170–198
     size: 0.35 + r(8) * 0.75,
     alpha: 0.25 + r(9) * 0.6,
     lag: r(10) * 0.05, // 吸回的起跑错峰（非等差）
@@ -194,11 +195,11 @@ export const GrainDissolve: React.FC = () => {
             opacity={1 - cond}
             style={{
               fill: '#eceef3',
-              font: `500 33px ${FONT.sans}`,
-              letterSpacing: '1.6px',
+              font: `500 26px ${FONT.sans}`, // 品牌名比占位词长：字号 33→26 收进选区框
+              letterSpacing: '1.2px',
             }}
           >
-            {'{ ACME. Now Live }'}
+            {`{ ${BRAND.name}. Now Live }`}
           </text>
           <text
             x={320}
@@ -208,11 +209,11 @@ export const GrainDissolve: React.FC = () => {
             transform={`translate(320 180) scale(${markScale.toFixed(4)}) translate(-320 -180)`}
             style={{
               fill: '#ffffff',
-              font: `750 54px ${FONT.sans}`,
-              letterSpacing: '3px',
+              font: `750 44px ${BRAND.font}`, // 15 字符字标：54→44px，凝固后仍落在 HUD 括角之内
+              letterSpacing: '1.5px',
             }}
           >
-            ACME
+            {BRAND.name}
           </text>
         </g>
       </svg>

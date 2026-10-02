@@ -4,7 +4,8 @@
 //
 // 第二轮重设计（午夜 · 开发者发布会字卡）：
 // - look = midnight。画面是一张技术产品发布字卡：等宽 300px 电光蓝花括号（带泛光）夹住 164px 800 字重的
-//   「Edge Functions」（字宽贴满括号内腔）；上方等宽眉题「// new in Nimbus 3」、下方副标逐词浮现。背景是编辑器式点阵网格
+//   品牌名「video-shotcraft」（全小写，字宽贴满括号内腔）；上方等宽眉题「// shot recipes for your agent」、
+//   下方副标（品牌短句 Frame motion. Craft the shot.）逐词浮现。背景是编辑器式点阵网格
 //   （径向渐隐）+ 顶光 + 地平线光带，括号下方一道冷光反射。
 // - 开场：第 0 帧画面中心已有一个闪烁的输入光标（编辑器语感，不是空帧）；6f 光标被一对紧贴的 0.4 倍小括号
 //   "{}" 硬切替换（符号啪地在那儿，不淡入）——先建立"这是一对括号"。
@@ -24,6 +25,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, glow, springAt, type } from '../../_fixtures/Look';
+import { BRAND, PITCH } from '../../_fixtures/Brand';
 
 export const BRACE_EXPAND_DURATION = 120;
 
@@ -32,7 +34,7 @@ const CY = 520; // 标题中线
 const HALF = 676; // 括号中心最终半距（px）
 const BRACE_FS = 300; // 括号最终字号
 const BRACE_INNER = 64; // 括号字形中心到内缘的距离（×sc），clip 从这里起算
-const TITLE = 'Edge Functions';
+const TITLE = BRAND.name; // 字标全小写
 const TITLE_FS = 164; // 字宽 ≈ 内腔宽 2·(HALF−内缘)：幕布拉到头才露全（换文案要同步调 HALF 或字号）
 const APPEAR = 6;
 const EXPAND = 14;
@@ -102,7 +104,7 @@ export const BraceExpand: React.FC = () => {
           position: 'absolute', left: 0, right: 0, top: CY - 248, textAlign: 'center', color: L.accent2,
           ...type(32, 500, { mono: true }), letterSpacing: `${mix(0.5, 0.08, ramp(frame, 44, 20, EASE.snappy)).toFixed(3)}em`,
           opacity: ramp(frame, 44, 14, EASE.out),
-        }}>// new in Nimbus 3</div>
+        }}>// shot recipes for your agent</div>
 
         {/* 标题：clip 宽度绑括号间距（幕布感，不是淡入/打字） */}
         {on && (
@@ -133,7 +135,7 @@ export const BraceExpand: React.FC = () => {
 
         {/* 副标 */}
         <div style={{ position: 'absolute', left: 0, right: 0, top: CY + 170, textAlign: 'center', color: L.ink2, ...type(44, 450) }}>
-          <TextReveal text="Run code 40ms from every user." by="word" variant="blur" start={54} each={16} gap={3} />
+          <TextReveal text={PITCH.en.motto} by="word" variant="blur" start={54} each={16} gap={3} />
         </div>
       </div>
     </AbsoluteFill>

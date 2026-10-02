@@ -1,0 +1,16 @@
+{
+  "stem": "AvatarBracketCarousel",
+  "changed": true,
+  "brand": [
+    "句子「Your ___ teammates」→「Your ___ agent」（video-shotcraft 的 agent 摄制组）",
+    "四个角色 Designer / Support / Analyst / Writer → Director / Editor / Animator / Sound",
+    "头像图标 调色板 / 对话 / 图表 / 钢笔 → 场记板 / 剪刀 / 运动曲线 + 关键帧 / 声波"
+  ],
+  "brandEn": [
+    "Sentence \"Your ___ teammates\" → \"Your ___ agent\" (video-shotcraft's agent film crew)",
+    "Four roles Designer / Support / Analyst / Writer → Director / Editor / Animator / Sound",
+    "Avatar icons palette / chat / chart / pen → clapperboard / scissors / motion curve with keyframes / waveform"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

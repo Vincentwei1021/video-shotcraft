@@ -1,8 +1,8 @@
 // contact-shadow-lift｜接触阴影离面抬升
 //
 // 第二轮重设计（瓷白桌面 · 2.5D 斜俯拍 · 逐张点名）：
-// - look = porcelain（冷白 + 钴蓝）。三张 440×580 竖版「本周专注」卡平躺在一张斜俯拍（rotateX ≈ 30°）的
-//   瓷白桌面上：Deep work 18h / Meetings 6h / Recharge 4h。手法本身做成真的物理：
+// - look = porcelain（冷白 + 钴蓝）。三张 440×580 竖版 video-shotcraft 镜头配方卡平躺在一张斜俯拍（rotateX ≈ 30°）的
+//   瓷白桌面上：Whip pan 8f / Crash zoom 12f / Logo sting 24f（选定卡的图标位是 video-shotcraft 标志）。手法本身做成真的物理：
 //   卡沿桌面法线 translateZ 抬起，阴影是另一层「躺在桌面 z=0 上」的实体——接触核（小而实、几乎贴边）
 //   随抬升变大、变虚、变淡并向背光方向（右下）偏移；环境影（大而软）同步扩散。卡本体不带 box-shadow，
 //   影子留在桌上，所以"纸片离桌"的距离是被阴影证明的，不是被缩放暗示的。
@@ -16,12 +16,13 @@
 //   16–50   点名 1：抬 16–26、悬停、落回 40–48、卡壳 48–50
 //   50–84   点名 2：同上
 //   86–100  选定 3：抬升 14f（spring damping 16，~3% 过冲），100f 起悬停呼吸
-//   96–118  余波：钴蓝描边、对勾弹出（对勾描线）、星期格同步染成钴蓝
+//   96–118  余波：钴蓝描边、对勾弹出（对勾描线）、节拍格同步染成钴蓝
 //   118–150 hold：选定卡停在空中，极缓推镜
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CONTACT_SHADOW_LIFT_DURATION = 150;
 
@@ -69,22 +70,26 @@ const pickMotion = (f: number) => {
 const motionOf = (i: number, f: number) => (i < 2 ? scanMotion(f - SCANS[i]) : pickMotion(f));
 
 // ───────────── 内容 ─────────────
-type Focus = { tag: string; hours: string; note: string; days: number[]; glyph: 'deep' | 'meet' | 'rest' };
+// 镜头配方卡：tag = 镜头名、hours = 时长（帧）、days = 落在哪几拍（沿用原字段名）
+type Focus = { tag: string; hours: string; note: string; days: number[]; glyph: 'whip' | 'zoom' | 'sting' };
 const CARDS: Focus[] = [
-  { tag: 'Meetings', hours: '6h', note: 'Batched into Tue and Thu afternoons.', days: [0, 1, 0, 1, 0, 0, 0], glyph: 'meet' },
-  { tag: 'Recharge', hours: '4h', note: 'Walks, reading, a real lunch break.', days: [1, 0, 1, 0, 1, 1, 0], glyph: 'rest' },
-  { tag: 'Deep work', hours: '18h', note: 'Maker mornings. No calls before noon.', days: [1, 1, 1, 1, 1, 0, 0], glyph: 'deep' },
+  { tag: 'Whip pan', hours: '8f', note: 'A blurred hand-off between two scenes.', days: [0, 1, 0, 1, 0, 0, 0], glyph: 'whip' },
+  { tag: 'Crash zoom', hours: '12f', note: 'Punch in on the number that matters.', days: [1, 0, 1, 0, 1, 1, 0], glyph: 'zoom' },
+  { tag: 'Logo sting', hours: '24f', note: 'Lands the mark on the final downbeat.', days: [1, 1, 1, 1, 1, 0, 0], glyph: 'sting' },
 ];
 
-const Glyph: React.FC<{ kind: Focus['glyph']; color: string }> = ({ kind, color }) => (
-  <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
-    {kind === 'deep' && (<><circle cx={12} cy={12} r={8.5} /><circle cx={12} cy={12} r={4.5} /><circle cx={12} cy={12} r={0.8} fill={color} /></>)}
-    {kind === 'meet' && (<><circle cx={8.5} cy={9} r={3} /><circle cx={16} cy={9.5} r={2.4} /><path d="M3 19c.6-3 2.8-4.6 5.5-4.6S13.4 16 14 19M14.5 14.6c2.6-.4 5.6.9 6.3 4.4" /></>)}
-    {kind === 'rest' && <path d="M19.5 14.2A8 8 0 0 1 9.8 4.5a8 8 0 1 0 9.7 9.7Z" />}
-  </svg>
-);
+// whip = 横摇速度线、zoom = 推镜取景角标；sting（片尾 logo 一击）直接用 video-shotcraft 标志（标志不随选中态换色）
+const Glyph: React.FC<{ kind: Focus['glyph']; color: string }> = ({ kind, color }) =>
+  kind === 'sting' ? (
+    <ShotcraftMark size={46} tone="light" />
+  ) : (
+    <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+      {kind === 'whip' && <path d="M3 8h11M6 12h14M3 16h11M16 8.5l4 3.5-4 3.5" />}
+      {kind === 'zoom' && (<><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" /><circle cx={12} cy={12} r={2.4} /></>)}
+    </svg>
+  );
 
-const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const DAYS = ['1', '2', '3', '4', '5', '6', '7']; // 节拍号（沿用原变量名）
 
 const CardFace: React.FC<{ d: Focus; sel: number; check: number }> = ({ d, sel, check }) => {
   const tint = (a: number) => alpha(sel > 0.5 ? L.accent : L.ink, a);
@@ -146,10 +151,10 @@ export const ContactShadowLift: React.FC = () => {
       {/* 标题（屏幕空间，不进 3D） */}
       <div style={{ position: 'absolute', top: 92, left: 0, right: 0, textAlign: 'center' }}>
         <div style={{ ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.ink3, opacity: ramp(frame, 0, 14, EASE.out) }}>
-          WEEKLY FOCUS · OCT 6 – 12
+          SHOT RECIPES · LAUNCH FILM
         </div>
         <div style={{ ...type(120, 760), color: L.ink, marginTop: 18 }}>
-          <TextReveal text="Shape your week." by="word" start={2} each={18} gap={4} />
+          <TextReveal text="Pick your shot." by="word" start={2} each={18} gap={4} />
         </div>
       </div>
 

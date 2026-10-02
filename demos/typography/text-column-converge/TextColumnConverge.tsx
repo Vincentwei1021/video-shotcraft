@@ -4,6 +4,8 @@
 // 词换到 RAYCAST 后才发生唯一一次合拢——约 1.2s ease-in-out 连续滑动
 // （左缘 412→554 / 右缘 867→725），"NEW RAYCAST" 以屏幕中线居中定格；
 // 定格后约 0.6s，斜体 "COMING 2026" 在下方近乎硬切浮现。
+// （以上为原片测量记录；demo 内容已换成 video-shotcraft：特性词轮换 → 合拢成 "NEW video-shotcraft"，
+//  小字为品牌短句后半 "CRAFT THE SHOT."；合拢终点按字标字符数重算。）
 //
 // 质感升级（节拍/钉死/唯一合拢全部不动）：
 // - 暗场不再是 #050506 死黑：带冷色相的深底 + 中线上方极淡顶光 + 暗角 + soft-light 颗粒。
@@ -16,16 +18,18 @@ import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { FONT, Grain, SpeedBlur, Vignette, ramp, EASE } from '../../_fixtures/Polish';
 
 // 词轮换表：停留帧数不均（机器节奏），全程钉在右缘，不做间距收缩
+// 内容换成 video-shotcraft：八个特性词轮换，末词是全小写字标 video-shotcraft（字标规范：不做全大写）
+const BRAND_WORD = 'video-shotcraft';
 const STEPS: { word: string; dur: number }[] = [
-  { word: 'LAUNCHER DESIGN', dur: 16 },
-  { word: 'COMPACT MODE', dur: 12 },
-  { word: 'HOTKEY RECORDER', dur: 9 },
-  { word: 'HOTKEY TYPES', dur: 8 },
-  { word: 'VOICE FEATURES', dur: 7 },
-  { word: 'SETTINGS DESIGN', dur: 8 },
-  { word: 'AI CHAT', dur: 10 },
-  { word: 'FILE SEARCH', dur: 12 },
-  { word: 'RAYCAST', dur: 999 }, // 最后一词：停稳后触发唯一一次合拢
+  { word: 'SHOT RECIPE CARDS', dur: 16 },
+  { word: 'PAGE CAPTURES', dur: 12 },
+  { word: '2.5D CAMERA MOVES', dur: 9 },
+  { word: 'BEAT-SYNCED CUTS', dur: 8 },
+  { word: 'FILM-GRADE SFX', dur: 7 },
+  { word: 'MOTION WORKBENCH', dur: 8 },
+  { word: 'REMOTION RENDER', dur: 10 },
+  { word: 'JIANYING EXPORT', dur: 12 },
+  { word: BRAND_WORD, dur: 999 }, // 最后一词：停稳后触发唯一一次合拢
 ];
 
 const START = 8; // 开场黑场立静
@@ -37,13 +41,13 @@ const WORD_RIGHT_EDGE = 1302; // 868×1.5：特性词右缘（= 右屏边距，1
 const FS = 42; // 原片字高很小（720p 下 cap ~20px → 1080p ~30px → 字号 ~42）
 const LSP = 3; // letterSpacing
 // 合拢终点按本字体实际步进计算（监视器等宽：0.6em + letterSpacing），
-// 保证 "NEW RAYCAST" 恰好一个空格咬合、整行居中于 960，不会重叠
+// 保证 "NEW video-shotcraft" 恰好一个空格咬合、整行居中于 960，不会重叠
 const ADV = 0.6 * FS + LSP; // 每字符步进
-const LINE_W = 11 * ADV; // "NEW RAYCAST" 共 11 字符
+const LINE_W = (4 + BRAND_WORD.length) * ADV; // "NEW " + 字标，共 19 字符
 const MERGED_LEFT = 960 - LINE_W / 2; // 合拢后 NEW 左缘
-const MERGED_RIGHT = 960 + LINE_W / 2; // 合拢后 RAYCAST 右缘
+const MERGED_RIGHT = 960 + LINE_W / 2; // 合拢后字标右缘
 const CONVERGE_DUR = 36; // 合拢时长：原片 ~1.2s ≈ 36 帧
-const CONVERGE_DELAY = 10; // RAYCAST 停稳后先静置 10 帧再合拢（原片 32.4→32.7s）
+const CONVERGE_DELAY = 10; // 字标停稳后先静置 10 帧再合拢（原片 32.4→32.7s）
 const SUB_DELAY = 18; // 合拢定格后 ~0.6s 出斜体小字
 
 // 8f 黑场 + 82f 轮换 + 10f 停稳 + 36f 合拢 + 18f 定格 + 4f 小字 + 22f 静置 = 180f（6.0s）
@@ -84,14 +88,14 @@ export const TextColumnConverge: React.FC = () => {
   const isLast = idx === STEPS.length - 1;
   const local = t - stepStart;
 
-  // 唯一一次合拢：RAYCAST 停稳 CONVERGE_DELAY 帧后，ease-in-out 连续滑动
+  // 唯一一次合拢：字标停稳 CONVERGE_DELAY 帧后，ease-in-out 连续滑动
   const cvT = isLast ? local - CONVERGE_DELAY : -1;
   const cv = interpolate(cvT, [0, CONVERGE_DUR], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
     easing: Easing.inOut(Easing.cubic),
   });
 
-  // NEW 左缘：618 → 831；特性词右缘：1302 → 1088
+  // NEW 左缘：618 → 692；特性词右缘：1302 → 1228
   const newLeft = interpolate(cv, [0, 1], [NEW_LEFT_EDGE, MERGED_LEFT]);
   const wordRight = interpolate(cv, [0, 1], [WORD_RIGHT_EDGE, MERGED_RIGHT]);
 
@@ -176,7 +180,7 @@ export const TextColumnConverge: React.FC = () => {
             left: MERGED_LEFT, top: 519 + FS + 14,
             opacity: subOp,
           }}>
-            COMING 2026
+            CRAFT THE SHOT.
           </div>
         </div>
       )}

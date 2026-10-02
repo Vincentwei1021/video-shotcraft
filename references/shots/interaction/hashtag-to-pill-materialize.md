@@ -42,15 +42,17 @@ name: hashtag-to-pill-materialize
 ## 已知坑
 - demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
   首次实战须以真实素材回验
-- 与 typewriter-moves/ai-stream-response（打字呈现）、
-  morph-from-primitive（图元渐变成形）撞领域：本卡命门是**硬切
-  实体化非渐变变形**——只要你想加过渡，就该去用那几张卡而不是改这张
+- 与 typewriter-moves（打字呈现）、ui-to-brand-morph（渐变变形成形）
+  撞领域：本卡命门是**硬切实体化非渐变变形**——只要你想加过渡，
+  就该去用那两张卡而不是改这张
 - 早期版本曾杜撰"胶囊飞入下方滑入笔记卡"段，原片对照证伪已砍；
   别复活飞行段
 - transformOrigin 默认 50% 50% 会让缩放落位中心漂移 (1−s)×半宽，
   必须 origin 0 0 + translate 到目标中心再 scale（demo 内注释）
-- 与原片残余差距：音符图标手绘 SVG 曲线、Futura 回退字重、揭示帧
-  正文间距 ~10px 级别偏差；节奏与硬切时点已密帧对齐
+- 与原片残余差距：Futura 回退字重、揭示帧正文间距 ~10px 级别偏差；
+  节奏与硬切时点已密帧对齐。demo 内容已换成 video-shotcraft 的世界
+  （原片 "#music" + 音符 → "#shots" + 场记板图标，成品页 "My favorite shots"），
+  话题词与原词等长，胶囊几何不变
 
 ## 参考实现
 demos/interaction/hashtag-to-pill-materialize/

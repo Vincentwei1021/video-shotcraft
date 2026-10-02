@@ -2,16 +2,16 @@
 // 一个笔画，洞撑满全屏的瞬间新页面接管，残余笔画与盖板甩出画外。
 //
 // 第二轮重设计（余烬 · 熔炉之门）：
-// - look = ember。盖板是暖黑章节字卡（顶光 + 字后余烬光），560px Black 字重的「SHIFT」挖空成洞；
-//   洞里透出的是一张熔金色的发布页（橙 → 金渐变 + 一枚太阳光斑），所以字形本身就是画面里最亮的东西，
+// - look = ember。盖板是暖黑章节字卡（顶光 + 字后余烬光），560px Black 字重的「EDITS」挖空成洞；
+//   洞里透出的是一张熔金色的 video-shotcraft 发布页（橙 → 金渐变 + 一枚太阳光斑），所以字形本身就是画面里最亮的东西，
 //   "洞里有东西"第一帧就读得出。hold 期页面的文字/卡片层完全隐去，洞里只有暖色渐变与柔光形（读作图像，
-//   不和「SHIFT」两层字互相抢）；主推中段 64–90f 内容由 18px 失焦淡入合焦，接管时已清晰。
+//   不和「EDITS」两层字互相抢）；主推中段 64–90f 内容由 18px 失焦淡入合焦，接管时已清晰。
 //   字缘一圈熔光外溢到盖板上（模糊描边、只画在盖板区域内）——光从洞里漏出来。
 // - 空间：盖板在前、页面在后。推进时盖板 ×30 而页面只 ×1.08，两层视差读作真实纵深；
 //   快速段给盖板叠两层更小倍率的半透明残影（径向"变焦拖影"），代替整屏实时模糊。
 // - 锚点 = 「I」竖笔中心（洞），竖笔 ≈106px 宽 ×30 ≈ 3200px > 画宽，推到底真正是洞撑满全屏。
-// - 着陆后的余波：页面上的部署卡 0→32 个区域计数、四条区域延迟条错峰填满（先密后疏），
-//   "LIVE"标签弹出——穿越之后新页面立刻是活的，不是一张死图。
+// - 着陆后的余波：页面上的渲染卡 0→12 镜头计数、四条镜头时长条错峰填满（先密后疏），
+//   "DONE"标签弹出——穿越之后新页面立刻是活的，不是一张死图。
 //
 // 时间表（30fps，共 150f）：
 //   0–26    建立：字卡在场（第 0 帧即有画面），眉题/副标升起，盖板极缓前推 1→1.03（蓄势）
@@ -20,22 +20,23 @@
 //   64–90   页面内容失焦淡入 → 合焦（18px→0，EASE.out）
 //   76–86   接管：scale 14→26 盖板淡出；页面曝光 +12% 一闪回落
 //   86–116  落定：页面继续前推到 1.08，速度与主推末端连续（quint-out）
-//   96–132  余波：计数 0→32、延迟条错峰填满、LIVE 标签弹出
+//   96–132  余波：计数 0→12、时长条错峰填满、DONE 标签弹出
 //   132–150 hold：海报定格
 import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const LETTERFORM_ZOOM_DURATION = 150;
 
 const L = LOOKS.ember;
-const WORD = 'SHIFT';
+const WORD = 'EDITS';
 const FS = 560; // 标题字号
 const BASELINE = 712;
-// 推进锚点 = 「I」竖笔中心（字形笔画 = 洞），按渲染帧实测（scale 1）：竖笔 x 976–1083、y 316–713。
+// 推进锚点 = 「I」竖笔中心（字形笔画 = 洞），按渲染帧实测（scale 1，「EDITS」）：竖笔 x 920–1026、y 316–712。
 // 换字体 / 换词 / 换字号后必须重新实测（锚在盖板上推到底撑满画面的是盖板，读不出"穿洞"）。
-const ORIGIN = { x: 1029, y: 515 };
+const ORIGIN = { x: 973, y: 515 };
 const ZOOM_MAX = 30;
 const PUSH0 = 34;
 const PUSH1 = 86;
@@ -67,24 +68,25 @@ const pageScale = (f: number) => {
 
 const titleFont: React.CSSProperties = { fontFamily: FONT.sans, fontWeight: 900, fontSize: FS, letterSpacing: '-0.02em' };
 
-// ───────────── 后景：熔金发布页（Kiln 4.0 · Shift） ─────────────
-const REGIONS = [
-  { code: 'fra1', city: 'Frankfurt', ms: 38 },
-  { code: 'iad1', city: 'Virginia', ms: 41 },
-  { code: 'hnd1', city: 'Tokyo', ms: 52 },
-  { code: 'gru1', city: 'São Paulo', ms: 61 },
+// ───────────── 后景：熔金发布页（video-shotcraft · 渲染完成） ─────────────
+// 四个镜头 = 本仓库四张转场 demo 的真实帧数；条长 = 帧数 / 160
+const SHOTS = [
+  { code: 'sh01', name: 'Invisible cut', f: 110 },
+  { code: 'sh02', name: 'Letterform zoom', f: 150 },
+  { code: 'sh03', name: 'Light leak burn', f: 130 },
+  { code: 'sh04', name: 'Versus slam', f: 105 },
 ];
 const INK = '#1c0a02'; // 熔金底上的墨色（带暖色相的近黑）
 
 // 页面内容"失焦 → 合焦"：字卡 hold 期内容层完全隐去，字洞里只透出暖色渐变与光斑（读作图像/质感，
-// 不与「SHIFT」抢字）；主推中段 64–90f 内容由 18px 失焦淡入并合焦，接管时已清晰可读。
+// 不与「EDITS」抢字）；主推中段 64–90f 内容由 18px 失焦淡入并合焦，接管时已清晰可读。
 const REVEAL0 = 64;
 const REVEAL_DUR = 26;
 
 const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
   const reveal = ramp(frame, REVEAL0, REVEAL_DUR, EASE.out);
   const defocus = 18 * (1 - reveal);
-  const count = Math.round(32 * ramp(frame, 96, 30, EASE.snappy));
+  const count = Math.round(12 * ramp(frame, 96, 30, EASE.snappy));
   const live = springAt(frame, 124, { damping: 15, stiffness: 240 });
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
@@ -104,29 +106,30 @@ const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
       <AbsoluteFill style={{ opacity: reveal, filter: defocus > 0.05 ? `blur(${defocus.toFixed(2)}px)` : undefined }}>
       {/* 导航 */}
       <div style={{ position: 'absolute', left: 200, right: 230, top: 122, display: 'flex', alignItems: 'center', color: INK }}>
+        {/* App 图标：墨色圆角底 + 反白镜刻标志 */}
         <div style={{ width: 46, height: 46, borderRadius: 13, background: INK, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ width: 18, height: 24, borderRadius: '50% 50% 45% 45% / 62% 62% 38% 38%', background: 'linear-gradient(180deg, #ffd46a, #ff6b2c)' }} />
+          <ShotcraftMark size={34} tone="dark" />
         </div>
-        <div style={{ ...type(36, 750), marginLeft: 16 }}>Kiln</div>
+        <div style={{ fontFamily: BRAND.font, fontSize: 34, fontWeight: 700, letterSpacing: '0.03em', marginLeft: 16 }}>{BRAND.name}</div>
         <div style={{ flex: 1 }} />
-        {['Product', 'Pricing', 'Changelog'].map((s) => (
+        {['Shots', 'Workbench', 'Gallery'].map((s) => (
           <div key={s} style={{ ...type(28, 550), marginLeft: 48, opacity: 0.72 }}>{s}</div>
         ))}
-        <div style={{ ...type(28, 650), marginLeft: 48, padding: '14px 28px', borderRadius: 999, background: INK, color: '#ffe7c4' }}>Deploy</div>
+        <div style={{ ...type(28, 650), marginLeft: 48, padding: '14px 28px', borderRadius: 999, background: INK, color: '#ffe7c4' }}>Render</div>
       </div>
 
       {/* 主标题区 */}
       <div style={{ position: 'absolute', left: 200, top: 312, width: 860, color: INK }}>
-        <div style={{ ...type(26, 750, { caps: true }), letterSpacing: '0.2em', opacity: 0.62 }}>Shift · New in Kiln 4.0</div>
+        <div style={{ ...type(26, 750, { caps: true }), letterSpacing: '0.2em', opacity: 0.62 }}>Launch film · Final cut</div>
         <div style={{ ...type(140, 820), letterSpacing: '-0.05em', lineHeight: 0.92, marginTop: 30 }}>
-          Every region.<br />One push.
+          Every shot.<br />One prompt.
         </div>
         <div style={{ ...type(40, 480), lineHeight: 1.3, marginTop: 40, opacity: 0.78, width: 720 }}>
-          Ship to 32 regions in 4.2 seconds — with instant rollback built in.
+          Storyboard, animate, sound-design and deliver — cut to the beat.
         </div>
       </div>
 
-      {/* 部署卡：奶白磨砂玻璃（亮面，透过字洞时整张卡也是亮的）+ 顶部内高光 + 两层暖影 */}
+      {/* 渲染卡：奶白磨砂玻璃（亮面，透过字洞时整张卡也是亮的）+ 顶部内高光 + 两层暖影 */}
       <div style={{
         position: 'absolute', left: 1070, top: 282, width: 640, height: 600, borderRadius: 32,
         background: 'linear-gradient(180deg, rgba(255,250,242,0.94) 0%, rgba(255,240,224,0.88) 100%)',
@@ -135,7 +138,7 @@ const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
         padding: '40px 48px', boxSizing: 'border-box', color: INK,
       }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ ...type(26, 500, { mono: true }), color: alpha(INK, 0.55) }}>$ kiln deploy --all</div>
+          <div style={{ ...type(26, 500, { mono: true }), color: alpha(INK, 0.55) }}>launch-film.mp4</div>
           <div style={{ flex: 1 }} />
           <div style={{
             ...type(22, 750, { caps: true }), letterSpacing: '0.16em', padding: '8px 16px', borderRadius: 999,
@@ -143,28 +146,28 @@ const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
             transform: `scale(${mix(0.6, 1, live).toFixed(4)})`, opacity: Math.min(1, live * 1.5),
           }}>
             <div style={{ width: 10, height: 10, borderRadius: 5, background: '#ffb02e', boxShadow: '0 0 10px #ffb02e' }} />
-            Live
+            Done
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', marginTop: 34 }}>
           <div style={{ ...type(132, 820), letterSpacing: '-0.05em', width: 168, textAlign: 'right' }}>{count}</div>
-          <div style={{ ...type(60, 650), color: alpha(INK, 0.32), marginLeft: 14 }}>/32</div>
-          <div style={{ ...type(32, 520), color: alpha(INK, 0.6), marginLeft: 22 }}>regions live</div>
+          <div style={{ ...type(60, 650), color: alpha(INK, 0.32), marginLeft: 14 }}>/12</div>
+          <div style={{ ...type(32, 520), color: alpha(INK, 0.6), marginLeft: 22 }}>shots rendered</div>
         </div>
         <div style={{ marginTop: 34 }}>
-          {REGIONS.map((r, i) => {
+          {SHOTS.map((r, i) => {
             const fill = ramp(frame, 100 + [0, 4, 10, 18][i], 22, EASE.snappy);
             const on = fill > 0.02;
             return (
               <div key={r.code} style={{ marginTop: i ? 22 : 0 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                  <div style={{ ...type(30, 650) }}>{r.city}</div>
+                  <div style={{ ...type(30, 650) }}>{r.name}</div>
                   <div style={{ ...type(22, 500, { mono: true }), color: alpha(INK, 0.4), marginLeft: 14 }}>{r.code}</div>
                   <div style={{ flex: 1 }} />
-                  <div style={{ ...type(30, 600, { mono: true }), color: alpha(INK, on ? 0.9 : 0.3) }}>{on ? `${r.ms}ms` : '—'}</div>
+                  <div style={{ ...type(30, 600, { mono: true }), color: alpha(INK, on ? 0.9 : 0.3) }}>{on ? `${r.f}f` : '—'}</div>
                 </div>
                 <div style={{ marginTop: 10, height: 6, borderRadius: 3, background: alpha(INK, 0.08), overflow: 'hidden' }}>
-                  <div style={{ width: `${(fill * (100 - r.ms * 0.6)).toFixed(2)}%`, height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${L.accent}, #ffb02e)` }} />
+                  <div style={{ width: `${(fill * (r.f / 1.6)).toFixed(2)}%`, height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${L.accent}, #ffb02e)` }} />
                 </div>
               </div>
             );
@@ -227,7 +230,7 @@ const Plate: React.FC<{ scale: number; id: string; ghost?: boolean; blur?: numbe
             position: 'absolute', left: 0, right: 0, top: 790, textAlign: 'center', color: L.ink2, ...type(44, 480),
             opacity: intro, transform: `translateY(${((1 - intro) * 24).toFixed(2)}px)`,
           }}>
-            Deploys, rebuilt from the ground up.
+            Your product, in motion.
           </div>
         </>
       )}

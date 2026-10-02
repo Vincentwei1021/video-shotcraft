@@ -1,0 +1,12 @@
+{
+  "stem": "SplitTextStagger",
+  "changed": true,
+  "brand": [
+    "裂升标题「MOTION SYSTEM」→ 品牌短句前半句「FRAME MOTION.」（同为 13 字符，节奏帧数完全不变）"
+  ],
+  "brandEn": [
+    "Split-rise title \"MOTION SYSTEM\" → brand motto opener \"FRAME MOTION.\" (also 13 characters, timing unchanged)"
+  ],
+  "styleKey": "split-text-stagger",
+  "mdChanged": true
+}

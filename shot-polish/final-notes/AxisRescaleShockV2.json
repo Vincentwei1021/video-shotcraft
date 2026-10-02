@@ -1,0 +1,16 @@
+{
+  "stem": "AxisRescaleShockV2",
+  "changed": true,
+  "brand": [
+    "眉题「Ostro · Finance · FY2026」→ video-shotcraft 标志 + 字标 · Renders · FY2026",
+    "标题「Monthly revenue」→「Monthly renders」，财务营收换成月度渲染量",
+    "刻度 / KPI / 真值标签去掉美元符号（$25k…$400k、$833k、$340k → 25k…400k、833k、340k），数值与动作不变"
+  ],
+  "brandEn": [
+    "Eyebrow \"Ostro · Finance · FY2026\" → video-shotcraft mark + wordmark · Renders · FY2026",
+    "Title \"Monthly revenue\" → \"Monthly renders\" (revenue report becomes monthly render volume)",
+    "Dropped the $ from ticks / KPI / value tag ($25k…$400k, $833k, $340k → 25k…400k, 833k, 340k); numbers and motion unchanged"
+  ],
+  "styleKey": "axis-rescale-shock",
+  "mdChanged": true
+}

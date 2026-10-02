@@ -1,4 +1,4 @@
-// voice-waveform-live —— 录音胶囊实时声纹（第二轮重设计：「Juniper」语音助手 · 午后暖光）
+// voice-waveform-live —— 录音胶囊实时声纹（第二轮重设计：video-shotcraft 语音口述分镜 · 午后暖光）
 //
 // 设计决定：
 // - look = sand（米色 · 赤陶）：与原版 raycast 暗场玻璃完全拉开——白天、生活方式、暖阳。
@@ -9,13 +9,13 @@
 //   × 逐条 jitter，静默钳到 6px 点线。条色 = 赤陶纵向渐变，越旧越淡；麦克风钮赤陶底 + 随包络外扩的呼吸环；
 //   胶囊下方地面暖光随音量亮灭。
 // - 提交：按钮压缩回弹、波形 12f ease-in 塌缩，转写整体上移缩小并收进一枚赤陶色消息气泡（墨字 → 白字），
-//   气泡下出 "Sent to Juniper · 0:04"；胶囊退回待机（麦克风变灰、点线）。结尾帧 = 一张完整的对话海报。
+//   气泡下出 "Sent to Shotcraft · 0:03"；胶囊退回待机（麦克风变灰、点线）。结尾帧 = 一张完整的对话海报。
 //
 // 时间表（30fps，共 172f）：
-//   0–14    入场：胶囊 1.04→1 收焦淡入，标签 "Juniper is listening" 跟进（6f 后），提示语 Ask Juniper anything… 浮现、15f 首词前淡出
-//   15–57   说：Find a quiet table for four（逐词 17/22/25/32/40/45）
+//   0–14    入场：胶囊 1.04→1 收焦淡入，标签 "Shotcraft is listening" 跟进（6f 后），提示语 Describe your next shot… 浮现、15f 首词前淡出
+//   15–57   说：Make a launch film for Friday,（逐词 17/22/25/32/40/45）
 //   57–80   停：波形塌成点线、转写尾光标闪烁（停顿必须真的"停"）
-//   80–124  说：near the river, around eight.（82/88/92/102/112）
+//   80–124  说：open with a crash zoom.（82/88/92/102/112）
 //   126     提交：按钮 1→0.82→1，波形 12f 塌缩到 0.06，箭头上飞、对勾落入
 //   128–150 转写上移 + 缩到 0.72 收进气泡（22f，EASE.swift），气泡底色 / 白字 140 前到位
 //   140–152 "Sent" 行升起；胶囊下沉 24px 退回待机
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const VOICE_WAVEFORM_LIVE_DURATION = 172;
 
@@ -62,8 +63,8 @@ const SUBMIT = 126;
 
 // 逐词转写：词在它那一拍的音节起点出现
 const LINES: { w: string; at: number }[][] = [
-  [{ w: 'Find', at: 17 }, { w: 'a', at: 22 }, { w: 'quiet', at: 25 }, { w: 'table', at: 32 }, { w: 'for', at: 40 }, { w: 'four', at: 45 }],
-  [{ w: 'near', at: 82 }, { w: 'the', at: 88 }, { w: 'river,', at: 92 }, { w: 'around', at: 102 }, { w: 'eight.', at: 112 }],
+  [{ w: 'Make', at: 17 }, { w: 'a', at: 22 }, { w: 'launch', at: 25 }, { w: 'film', at: 32 }, { w: 'for', at: 40 }, { w: 'Friday,', at: 45 }],
+  [{ w: 'open', at: 82 }, { w: 'with', at: 88 }, { w: 'a', at: 92 }, { w: 'crash', at: 102 }, { w: 'zoom.', at: 112 }],
 ];
 
 const CAP = { w: 1240, h: 196, cy: 760 };
@@ -168,7 +169,7 @@ export const VoiceWaveformLive: React.FC = () => {
       {/* 开口前的提示语：首词落下前淡出（开场上半屏不空） */}
       {hintO > 0.01 && (
         <div style={{ position: 'absolute', left: 0, right: 0, top: TEXT_CY - 52, textAlign: 'center', fontSize: 92, fontWeight: 760, letterSpacing: '-0.035em', color: alpha(L.ink3, 0.55), opacity: hintO, filter: `blur(${((1 - hintO) * 6).toFixed(2)}px)` }}>
-          Ask Juniper anything…
+          Describe your next shot…
         </div>
       )}
 
@@ -177,17 +178,17 @@ export const VoiceWaveformLive: React.FC = () => {
         position: 'absolute', left: 0, right: 0, top: 492, textAlign: 'center', fontSize: 32, fontWeight: 550, color: L.ink2,
         opacity: sentT, transform: `translateY(${((1 - sentT) * 16).toFixed(2)}px)`,
       }}>
-        <span style={{ color: L.accent }}>✓</span>&nbsp; Sent to Juniper · {timer}
+        <span style={{ color: L.accent }}>✓</span>&nbsp; Sent to {BRAND.short} · {timer}
       </div>
 
-      {/* 标签：Juniper is listening */}
+      {/* 标签：Shotcraft is listening */}
       <div style={{
         position: 'absolute', left: 960 - CAP.w / 2 + 24, top: CAP.cy - CAP.h / 2 - 62, display: 'flex', alignItems: 'center', gap: 14,
         fontSize: 32, fontWeight: 600, color: L.ink2, letterSpacing: '-0.01em',
         opacity: labelT * (1 - idle), transform: `translateY(${((1 - labelT) * 10).toFixed(2)}px)`,
       }}>
         <span style={{ width: 14, height: 14, borderRadius: 7, background: L.accent, boxShadow: `0 0 0 ${(4 + 6 * nowEnv).toFixed(1)}px ${alpha(L.accent, 0.18)}` }} />
-        Juniper is listening
+        {BRAND.short} is listening
       </div>
 
       {/* ── 胶囊 ── */}

@@ -1,15 +1,16 @@
 // bezier-source-converge-merge — Bezier Converge 多源曲线汇流吞并（motion-lab 定稿转原生 Remotion）
 // 左侧四个来源节点各由一条细贝塞尔曲线连向右侧同一汇聚点：曲线先由左向右 draw-on，
 // 节点沿自己的曲线滑向汇聚点并三段式加速缩小（像被吸进去），强调色数据包小圆持续沿
-// 路径滑行，吞并完成后曲线从左端反向擦除，只留圆形徽标 + 逐词加深字幕。
+// 路径滑行，吞并完成后曲线从左端反向擦除，只留 video-shotcraft 镜刻标志 + 逐词加深字幕。
 // 设计坐标 480×270（DesignStage 等比放大），440×240 定尺画布居中排版。
-// 质感层（改版）：柔光浅底 + 颗粒；来源节点换成受光白瓷圆片 + 灰阶线性图标（数据库/云/表格/API）；
-// 曲线用灰→墨渐变描边；数据包是带彗尾的实心强调色点；徽标为强调色渐变圆 + 接收涟漪；
+// 质感层（改版）：柔光浅底 + 颗粒；来源节点换成受光白瓷圆片 + 灰阶线性图标（页面截图/镜头卡/代码/声音四种素材）；
+// 曲线用灰→墨渐变描边；数据包是带彗尾的实心强调色点；汇聚点是 video-shotcraft 标志（亮底版）+ 接收涟漪；
 // 擦除阶段相机平移把徽标收到画面正中，结尾构图居中落定。
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
 import { Backdrop, EASE, FONT, softShadow } from '../../_fixtures/Polish';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const BEZIER_SOURCE_CONVERGE_MERGE_DURATION = 168; // 5600ms @30fps
 
@@ -31,36 +32,41 @@ const mix = (p: number, a: string, b: string) => {
 
 const XC = 332, YC = 120; // 汇聚点
 
-// 中性来源节点占位（灰阶分层，仅用于区分四路来源；落地换真实来源 logo）
+// 四路素材来源（灰阶分层，仅用于区分四路）：页面截图 / 镜头配方卡 / 代码 / 声音——汇进同一支片子
 const SRCS = [
-  { y: 36, icon: 'db', c: '#2a2c33' },
-  { y: 92, icon: 'cloud', c: '#4b4e57' },
-  { y: 148, icon: 'sheet', c: '#6d7079' },
-  { y: 204, icon: 'api', c: '#8f929c' },
+  { y: 36, icon: 'shot', c: '#2a2c33' },
+  { y: 92, icon: 'card', c: '#4b4e57' },
+  { y: 148, icon: 'code', c: '#6d7079' },
+  { y: 204, icon: 'wave', c: '#8f929c' },
 ];
 
 // 线性图标（24 视框）
 const ICON: Record<string, React.ReactNode> = {
-  db: (
+  // 页面截图：浏览器窗口
+  shot: (
     <>
-      <ellipse cx="12" cy="6" rx="7" ry="2.6" />
-      <path d="M5 6v12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6" />
-      <path d="M5 12c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6" />
+      <rect x="3.5" y="5" width="17" height="14" rx="2.4" />
+      <path d="M3.5 9h17" />
+      <path d="M6.2 7h.01M8.4 7h.01" />
     </>
   ),
-  cloud: <path d="M7.2 18.5h9.6a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 6.9 9.4a4.6 4.6 0 0 0 .3 9.1Z" />,
-  sheet: (
+  // 镜头配方卡：一叠卡片
+  card: (
     <>
-      <rect x="4.5" y="4.5" width="15" height="15" rx="2.4" />
-      <path d="M4.5 9.5h15M4.5 14.5h15M10 9.5v10" />
+      <rect x="6.5" y="7.5" width="12" height="13" rx="2.2" />
+      <path d="M9.5 4.5h7.8c1.2 0 2.2 1 2.2 2.2v9.8" />
+      <path d="M9.3 12h6.4M9.3 15.5h4" />
     </>
   ),
-  api: (
+  // 代码
+  code: (
     <>
       <path d="M8.5 7 3.8 12l4.7 5M15.5 7l4.7 5-4.7 5" />
       <path d="M13.2 5.5 10.8 18.5" />
     </>
   ),
+  // 声音：声波
+  wave: <path d="M4 12h.01M7.4 9.2v5.6M10.6 5.8v12.4M13.8 8.4v7.2M17 10.4v3.2M20 12h.01" />,
 };
 
 type Pt = { x: number; y: number };
@@ -112,13 +118,13 @@ const mkPathGeom = (y0: number) => {
 const GEOMS = SRCS.map((s) => mkPathGeom(s.y));
 
 // 结尾字幕（逐词加深语法，只用到 show + inn 两态）
-const CAP_WORDS = 'Four sources unified'.split(' ');
+const CAP_WORDS = 'From screenshot to showreel'.split(' ');
 const CAP_ST = 0.78 / CAP_WORDS.length;
 const CAP_WIN = CAP_ST * 1.5;
 
-// 强调色渐变圆形徽标（内含四角星），size=34
-const BADGE_SIZE = 34;
-const BADGE_SVG = Number((BADGE_SIZE * 0.5).toFixed(1));
+// 汇聚点：白瓷圆片 + video-shotcraft 镜刻标志（亮底版）
+const BADGE_SIZE = 46; // 汇聚点白瓷圆片直径（= 接收涟漪的起始直径），略大于 44 的来源节点
+const MARK_SIZE = 34; // 标志 viewBox 128 内实形约占 81%，34 → 实形 ≈28，四周留足安全空间
 
 // 数据包彗尾：沿路径向后取 TAIL 个采样点，间隔 TAIL_GAP（路径比例），透明度与尺寸递减
 const TAIL = 9;
@@ -315,29 +321,28 @@ export const BezierSourceConvergeMerge: React.FC = () => {
               }}
             />
 
-            {/* 汇聚点徽标（强调色渐变圆 + 白色四角星） */}
+            {/* 汇聚点：白瓷圆片（与来源节点同材质，盖住曲线与数据包的汇入端）托着 video-shotcraft 镜刻标志（亮底版，
+                标志本身不加渐变/投影）；进场与接收脉冲沿用原徽标的 scale */}
             <div
               style={{
                 position: 'absolute',
                 width: BADGE_SIZE,
                 height: BADGE_SIZE,
+                left: XC - BADGE_SIZE / 2,
+                top: YC - BADGE_SIZE / 2,
                 borderRadius: '50%',
-                background: `radial-gradient(120% 110% at 30% 18%, ${ACCENT_HI} 0%, ${ACCENT} 55%, #4a51bd 100%)`,
-                border: '0.5px solid rgba(40,44,120,0.35)',
+                background: 'linear-gradient(180deg, #ffffff 0%, #f6f6f4 100%)',
+                border: `0.5px solid ${LINE}`,
                 boxSizing: 'border-box',
-                boxShadow: `inset 0 0.75px 0 rgba(255,255,255,0.35), ${softShadow(8, { color: '#2a2f8a', strength: 1.1 })}`,
+                boxShadow: `inset 0 0.5px 0 rgba(255,255,255,1), ${softShadow(8, { strength: 1 })}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                left: XC - 17,
-                top: YC - 17,
                 opacity: bp,
                 transform: `scale(${badgeScale})`,
               }}
             >
-              <svg width={BADGE_SVG} height={BADGE_SVG} viewBox="0 0 24 24">
-                <path d="M12 0.8 L14.3 9.7 L23.2 12 L14.3 14.3 L12 23.2 L9.7 14.3 L0.8 12 L9.7 9.7 Z" fill="#ffffff" />
-              </svg>
+              <ShotcraftMark size={MARK_SIZE} tone="light" />
             </div>
 
             {/* 结尾字幕：逐词加深（浅灰占位 → 近黑），居中于徽标下方，随 show 淡入上浮 */}
@@ -348,9 +353,9 @@ export const BezierSourceConvergeMerge: React.FC = () => {
                 alignItems: 'baseline',
                 justifyContent: 'center',
                 whiteSpace: 'nowrap',
-                left: XC - 100,
-                width: 200,
-                top: YC + 30,
+                left: XC - 120,
+                width: 240,
+                top: YC + 36,
                 opacity: capShow,
                 transform: `translateY(${((1 - capShow) * 4).toFixed(2)}px)`,
               }}

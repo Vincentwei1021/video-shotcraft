@@ -3,9 +3,9 @@
 // 靠并行密度制造信息轰炸（格内内容可整体替换，错拍表才是配方）。
 //
 // 第二轮重设计（余烬 · 发布日的四个现场）：
-// - look = ember（暖黑 · 橙 · 琥珀点缀）。四格是虚构产品「Brasa」发布日同时发生的四件事，按明度做棋盘交错：
-//   TL 奶油色 · 浏览器打开发布页 ｜ TR 暖黑 · 终端 deploy + 急推到「live in 4.2s」
-//   BL 橙色实底 · 三个巨大的词逐个砸下（瑞士海报）｜ BR 拿铁色 · 光标点 Approve → Publish → 上线通知弹出
+// - look = ember（暖黑 · 橙 · 琥珀点缀）。四格是 video-shotcraft 出一支宣传片时同时发生的四件事，按明度做棋盘交错：
+//   TL 奶油色 · 浏览器打开本地预览页（Launch film.）｜ TR 暖黑 · 终端 npx remotion render + 急推到「promo.mp4 ready」
+//   BL 橙色实底 · 「Prompt. Render. Ship.」三个巨大的词逐个砸下（瑞士海报）｜ BR 拿铁色 · 光标点 Approve → Publish → 上线通知弹出
 //   四格之间 8px 暖黑缝 + 20px 圆角，像一块 bento 发布板；格内字全部按 1080p 可读字号重排（≥32px，主词 132px）。
 // - 错拍表（帧，30fps）——任意相邻重事件间隔 ≥3f，从不齐动：
 //     TL  tab 6 / 11 / 16 / 21 弹入 · 0–40 地址栏打字 · 44 页面载入（大标题滑入）· 全程 inQuad 慢推 1→1.1
@@ -18,6 +18,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const QUAD_SPLIT_PARALLEL_SCENES_DURATION = 90;
 
@@ -48,9 +49,9 @@ const Corner: React.FC<{ n: string; label: string; color: string }> = ({ n, labe
   </div>
 );
 
-// ───────────── TL：浏览器打开发布页 ─────────────
-const URL = 'brasa.app/launch';
-const TABS = ['Docs', 'Pricing', 'Blog', 'Launch'];
+// ───────────── TL：浏览器打开本地预览页（不编域名：localhost 预览）─────────────
+const URL = 'localhost:3000/promo';
+const TABS = ['Recipes', 'Gallery', 'Docs', 'Promo'];
 const QuadTL: React.FC<{ f: number }> = ({ f }) => {
   const push = mix(1, 1.1, Math.pow(Math.min(1, f / 90), 2)); // inQuad 慢推：底噪运动
   const load = ramp(f, 44, 14, EASE.snappy);
@@ -88,11 +89,14 @@ const QuadTL: React.FC<{ f: number }> = ({ f }) => {
         {/* 页面：44f 载入，大标题从下滑入 */}
         <div style={{ position: 'absolute', left: 44, top: 168, right: 44 }}>
           <div style={{ height: 6, borderRadius: 3, background: ORANGE, width: `${load * 100}%`, opacity: 1 - ramp(f, 56, 6, EASE.linear), marginBottom: 20 }} />
-          <div style={{ ...type(22, 750, { caps: true }), letterSpacing: '0.18em', color: ORANGE, opacity: load }}>Brasa 2.0</div>
-          <div style={{ overflow: 'hidden', marginTop: 8 }}>
-            <div style={{ ...type(96, 850), color: DARK, transform: `translateY(${(1 - load) * 110}%)` }}>Launch day.</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: load }}>
+            <ShotcraftMark size={30} tone="light" />
+            <span style={{ fontFamily: BRAND.font, fontSize: 24, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1, color: DARK }}>{BRAND.name}</span>
           </div>
-          <div style={{ ...type(32, 500), color: '#7a6555', marginTop: 12, opacity: ramp(f, 50, 10, EASE.out) }}>Everything ships at 9:00 AM.</div>
+          <div style={{ overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ ...type(96, 850), color: DARK, transform: `translateY(${(1 - load) * 110}%)` }}>Launch film.</div>
+          </div>
+          <div style={{ ...type(32, 500), color: '#7a6555', marginTop: 12, opacity: ramp(f, 50, 10, EASE.out) }}>{PITCH.en.taglines[0]}</div>
         </div>
       </div>
       <Corner n="01" label="Web" color="#9b8a7a" />
@@ -100,8 +104,8 @@ const QuadTL: React.FC<{ f: number }> = ({ f }) => {
   );
 };
 
-// ───────────── TR：终端 deploy + whip 急推 ─────────────
-const CMD = 'brasa deploy --prod';
+// ───────────── TR：终端渲染 + whip 急推 ─────────────
+const CMD = 'npx remotion render';
 const QuadTR: React.FC<{ f: number }> = ({ f }) => {
   const zip = ramp(f, 37, 10, EASE.smooth);
   const zoom = mix(1, 1.85, zip);
@@ -120,22 +124,22 @@ const QuadTR: React.FC<{ f: number }> = ({ f }) => {
           <span style={{ display: 'inline-block', width: 20, height: 38, verticalAlign: '-6px', background: L.ink, opacity: f < 27 ? blink(f, 14, 5) : 0 }} />
         </div>
         <div style={{ ...mono(32), color: L.ink2, marginTop: 30, opacity: line(27) * old, transform: `translateX(${(1 - line(27)) * -16}px)` }}>
-          <span style={{ color: L.accent2 }}>✓</span> build      1.8s
+          <span style={{ color: L.accent2 }}>✓</span> bundle     1.8s
         </div>
         <div style={{ ...mono(32), color: L.ink2, marginTop: 14, opacity: line(33) * old, transform: `translateX(${(1 - line(33)) * -16}px)` }}>
-          <span style={{ color: L.accent2 }}>✓</span> edge       12 regions
+          <span style={{ color: L.accent2 }}>✓</span> frames     900/900
         </div>
         <div style={{ ...mono(40, 700), color: L.ink, marginTop: 36, opacity: line(37) }}>
-          <span style={{ color: ORANGE, textShadow: `0 0 18px ${alpha(ORANGE, 0.8)}` }}>●</span> live in <span style={{ color: L.accent2 }}>4.2s</span>
+          <span style={{ color: ORANGE, textShadow: `0 0 18px ${alpha(ORANGE, 0.8)}` }}>●</span> promo.mp4 <span style={{ color: L.accent2 }}>ready</span>
         </div>
       </div>
-      <Corner n="02" label="Ship" color={L.ink3} />
+      <Corner n="02" label="Render" color={L.ink3} />
     </div>
   );
 };
 
 // ───────────── BL：三词砸下 ─────────────
-const WORDS: Array<[string, number]> = [['Write.', 14], ['Ship.', 30], ['Repeat.', 49]];
+const WORDS: Array<[string, number]> = [['Prompt.', 14], ['Render.', 30], ['Ship.', 49]];
 const QuadBL: React.FC<{ f: number }> = ({ f }) => (
   <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(150deg, #ff8340 0%, ${ORANGE} 45%, #e8541c 100%)` }}>
     <div style={{ position: 'absolute', left: 64, top: 70 }}>
@@ -183,14 +187,14 @@ const QuadBR: React.FC<{ f: number }> = ({ f }) => {
         transform: `translateX(${(1 - slide) * -60}px)`, opacity: slide,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ ...type(40, 750), color: DARK }}>Release v2.0</div>
+          <div style={{ ...type(40, 750), color: DARK }}>Launch film · cut 3</div>
           <div style={{ marginLeft: 'auto', display: 'flex' }}>
             {['#e8541c', '#3d5a80', '#c4552d'].map((c, i) => (
               <div key={c} style={{ width: 40, height: 40, borderRadius: 20, background: c, border: '3px solid #fffaf4', marginLeft: i ? -12 : 0, ...type(18, 700), color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{'MJR'[i]}</div>
             ))}
           </div>
         </div>
-        <div style={{ ...type(30, 500), color: '#7a6555', marginTop: 10 }}>14 changes · 2 reviewers</div>
+        <div style={{ ...type(30, 500), color: '#7a6555', marginTop: 10 }}>12 shots · 2 reviewers</div>
         <div style={{ display: 'flex', gap: 16, marginTop: 30 }}>
           <div style={{
             width: 260, height: 70, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -211,7 +215,7 @@ const QuadBR: React.FC<{ f: number }> = ({ f }) => {
           boxShadow: '0 24px 50px -18px rgba(30,12,4,0.7)', transform: `translateY(${(1 - toast) * 40}px) scale(${mix(0.85, 1, toast)})`, opacity: Math.min(1, toast * 2),
         }}>
           <span style={{ width: 16, height: 16, borderRadius: 8, background: ORANGE, boxShadow: `0 0 14px ${ORANGE}` }} />
-          <span style={{ ...type(32, 650), color: CREAM }}>Live · <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.round(3214 * ramp(f, 56, 30, EASE.snappy)).toLocaleString('en-US')}</span> visitors</span>
+          <span style={{ ...type(32, 650), color: CREAM }}>Live · <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.round(3214 * ramp(f, 56, 30, EASE.snappy)).toLocaleString('en-US')}</span> views</span>
         </div>
       )}
       {/* 光标 */}

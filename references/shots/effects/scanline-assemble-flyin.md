@@ -24,7 +24,7 @@ name: scanline-assemble-flyin
 - 落位：槽位虚线 4f 内消失；四角电光蓝 L 角（臂长 22px）从外扩 20px 咬进到 10px，`land+1→+4` 亮、`+5→+14` 收；
   满宽导航不加
 - 状态行 `BLOCKS 0n / 07` + 秒表实时走；最后一块落位后切 `✓ BUILT`、秒表定格，蓝图网格退到 30%、
-  媒体卡（银河照片）亮起一档，之后 ~50f hold
+  媒体卡（银河样片镜头）亮起一档，之后 ~50f hold
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
@@ -46,7 +46,7 @@ name: scanline-assemble-flyin
   两层都随扫描线走，别把网格也 mask 掉，否则扫描线下方会变成死黑
 - 与 `scanline-annotate-focus` 共用"扫描线即因果"的逻辑；两张卡可以串联（先装配、后分析），
   但扫描线要换向或留空档，否则读作重复
-- 页面内容为虚构天文摄影 App「Umbra」，强调色（电光蓝 / 青）取自 LOOKS.midnight，换肤改 L 即可
+- 页面内容为 video-shotcraft 的落地页（镜刻标志 + 字标导航、「Shoot the / launch film.」H1、样片镜头卡），强调色（电光蓝 / 青）取自 LOOKS.midnight，换肤改 L 即可
 
 ## 参考实现
 demos/effects/scanline-assemble-flyin/

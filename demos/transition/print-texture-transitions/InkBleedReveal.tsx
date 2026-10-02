@@ -21,7 +21,7 @@ const PAPER = '#f3efe6'; // 暖白纸
 const INK = '#1a1c29'; // 带一点靛的墨色（不用纯黑）
 const PAPER_INK = '#2a2620'; // 印在纸上的字色
 
-// 旧景：章节扉页（纸 + 印刷字）
+// 旧景：章节扉页（纸 + 印刷字）——标题是 video-shotcraft 品牌短句，副题是宣传语
 const PaperPage: React.FC = () => (
   <div style={{
     position: 'absolute', inset: 0, background: `radial-gradient(ellipse 80% 70% at 42% 38%, #f8f5ee 0%, ${PAPER} 55%, #e9e4d8 100%)`,
@@ -32,13 +32,13 @@ const PaperPage: React.FC = () => (
         CHAPTER 02
       </div>
       <div style={{ fontFamily: SERIF, fontSize: 112, fontWeight: 500, lineHeight: 1.04, letterSpacing: '-0.025em' }}>
-        Measuring what
+        Frame motion.
         <br />
-        <span style={{ fontStyle: 'italic' }}>matters</span>
+        <span style={{ fontStyle: 'italic' }}>Craft the shot.</span>
       </div>
       <div style={{ width: 120, height: 1.5, background: '#b7ab97', margin: '44px auto 30px' }} />
       <div style={{ fontFamily: SERIF, fontSize: 34, color: '#6f675a', letterSpacing: '-0.005em' }}>
-        One dashboard for every signal your team ships.
+        Every shot, tuned in one place.
       </div>
     </div>
     {/* 纸纹：静态颗粒（step 极大 = 不换帧，静止段像素恒定） */}

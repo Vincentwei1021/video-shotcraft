@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { Card } from '../../_fixtures/Fixtures';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 import { Backdrop, FONT, Grain } from '../../_fixtures/Polish';
 
 // bento-light-up：暗场里 3×2 bento 墙压暗待命，随节拍逐格点亮——
@@ -12,6 +13,7 @@ import { Backdrop, FONT, Grain } from '../../_fixtures/Polish';
 // - 卡面用暗色出版级 Card（tone=dark），暗场品牌段里不再"白卡亮瞎"，点亮读作通电而非换色；
 // - 流光描边改为"彗星"：亮头 + 渐隐尾的描边段跑一圈后收成常亮细边，辉光只在描边上（不外溢成方框）；
 // - 标题改为眉标 + 主标题的字阶；暗场柔光底（暖色余光）+ 暗角 + 颗粒。
+// 品牌：眉标 = video-shotcraft 标志 + 小写字标（琥珀），主标题 = PITCH 口号「Every shot, tuned in one place.」。
 export const BENTO_LIGHT_UP_DURATION = 150;
 
 const AMBER = '#e8b45e';
@@ -126,9 +128,12 @@ export const BentoLightUp: React.FC = () => {
       }} />
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: '960px 540px' }}>
         <div style={{ position: 'absolute', left: LEFT, top: TOP - 132, fontFamily: FONT.sans, opacity: titleLit }}>
-          <div style={{ fontSize: 15, fontWeight: 650, letterSpacing: '0.16em', color: AMBER, opacity: 0.85 }}>PLATFORM</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 9, height: 18 }}>
+            <ShotcraftMark size={24} tone="dark" />
+            <span style={{ fontFamily: BRAND.font, fontSize: 17, fontWeight: 700, letterSpacing: '0.03em', color: AMBER, opacity: 0.9, lineHeight: 1 }}>{BRAND.name}</span>
+          </div>
           <div style={{ marginTop: 10, fontSize: 56, fontWeight: 700, letterSpacing: '-0.03em', color: '#f1efe9', lineHeight: 1 }}>
-            Everything your team runs on
+            {PITCH.en.taglines[2]}
           </div>
         </div>
         {CELLS.map((_, i) => (

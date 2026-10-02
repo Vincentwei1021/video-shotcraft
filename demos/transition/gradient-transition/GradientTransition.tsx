@@ -3,7 +3,7 @@
 //
 // 第二轮重设计（极光紫 · 发布会片头）：
 // - look = aurora（紫粉暗场）。渐变就是主视觉——前景只有一组大字排版，节奏跟着渐变类型换拍：
-//   「Bend light.」（linear：角度扫过）→「Focus it.」（radial：光斑对角游走并聚焦）→「Prism」字标（conic：三色环旋转）。
+//   「Bend light.」（linear：角度扫过）→「Focus it.」（radial：光斑对角游走并聚焦）→ video-shotcraft 字标（conic：三色环旋转）。
 //   每段文案的动词正好描述该段渐变的参数运动，文案即手法。
 // - 色彩：不再是七色彩虹——三段都在同一组紫 / 品红 / 冰蓝里取色，外圈压暗（radial 段光斑成立的前提，
 //   也给白字留对比）；conic 改成 A→B→C→A 三色环，圆心放在字标右后方并在小画布上预模糊，抹掉尖点。
@@ -17,11 +17,12 @@
 //   56–132  radial：圆心 (24%,72%) → (68%,38%) 对角游走、半径 48%→80% 扩张；52–62f 旧句虚化上飘，66–86f「Focus it.」
 //   118–132 交叉淡化 radial → conic（14f）
 //   118–200 conic：起始角 0→250° 旋转（ease-out 长尾，越转越慢落定）；114–124f 旧句退场，
-//           128–150f 字标「Prism」字距收拢入场，140–160f 副标题；160–200f hold
+//           128–150f video-shotcraft 字标字距收拢入场（标志框描出、斜切划入），140–160f 品牌短句；160–200f hold
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, Grain, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, TYPE, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const GRADIENT_TRANSITION_DURATION = 200;
 
@@ -84,7 +85,7 @@ export const GradientTransition: React.FC = () => {
     `conic-gradient(from ${Math.round(from)}deg at 64% 54%)`,
   ][phase];
 
-  // 字标「Prism」字距收拢
+  // video-shotcraft 字标字距收拢
   const markP = ramp(f, 128, 26, EASE.snappy);
   const subP = ramp(f, 142, 20, EASE.snappy);
 
@@ -121,19 +122,26 @@ export const GradientTransition: React.FC = () => {
           <div style={{ ...type(TYPE.label, 700, { caps: true }), letterSpacing: '0.3em', color: alpha(L.ink, 0.75), opacity: ramp(f, 124, 16, EASE.out) }}>
             Introducing
           </div>
+          {/* 品牌字标：标志（框描出 → 斜切划入）+ 全小写 video-shotcraft，字距收拢 */}
           <div style={{
-            ...type(TYPE.mega, 760), color: L.ink, marginTop: 18,
-            letterSpacing: `${mix(0.12, -0.045, markP).toFixed(4)}em`, opacity: ramp(f, 128, 12, EASE.out),
+            display: 'flex', alignItems: 'center', gap: 44, marginTop: 30,
+            opacity: ramp(f, 128, 12, EASE.out),
             filter: markP < 0.98 ? `blur(${((1 - markP) * 14).toFixed(2)}px)` : undefined,
-            textShadow: `0 12px 60px ${alpha('#05020c', 0.4)}`,
           }}>
-            Prism
+            <ShotcraftMark size={168} tone="dark" frameProgress={ramp(f, 128, 18, EASE.snappy)} cutProgress={ramp(f, 138, 14, EASE.snappy)} />
+            <div style={{
+              fontFamily: BRAND.font, fontSize: 156, fontWeight: 700, lineHeight: 1, whiteSpace: 'nowrap', color: L.ink,
+              letterSpacing: `${mix(0.1, 0.01, markP).toFixed(4)}em`,
+              textShadow: `0 12px 60px ${alpha('#05020c', 0.4)}`,
+            }}>
+              {BRAND.name}
+            </div>
           </div>
           <div style={{
-            ...type(TYPE.h3, 500), color: alpha(L.ink, 0.82), marginTop: 26,
+            ...type(TYPE.h3, 500), color: alpha(L.ink, 0.82), marginTop: 40,
             opacity: subP, transform: `translateY(${((1 - subP) * 18).toFixed(2)}px)`,
           }}>
-            The color engine for motion.
+            {PITCH.en.motto}
           </div>
         </div>
       )}

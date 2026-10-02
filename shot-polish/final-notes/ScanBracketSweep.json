@@ -1,0 +1,14 @@
+{
+  "stem": "ScanBracketSweep",
+  "changed": true,
+  "brand": [
+    "被扫描的合同「Vendor Agreement — Q3 / Northwind Supply Co.」→ 分镜清单「Launch Film — Shot List / video-shotcraft · Storyboard v3 · 1080p · 30 fps」",
+    "明细表（Line item / Owner / Due / Amount）→ 镜头 / 配方卡 / 入点 / 帧数 7 行；合计「Total due $48,920.00」→「Runtime 828 f · 27.6 s」；角标「PDF · 4 PAGES」→「7 SHOTS · 0:28」"
+  ],
+  "brandEn": [
+    "Scanned contract \"Vendor Agreement — Q3 / Northwind Supply Co.\" → shot list \"Launch Film — Shot List / video-shotcraft · Storyboard v3 · 1080p · 30 fps\"",
+    "Table (Line item / Owner / Due / Amount) → Shot / Recipe / Cue / Frames, 7 rows; total \"Total due $48,920.00\" → \"Runtime 828 f · 27.6 s\"; chip \"PDF · 4 PAGES\" → \"7 SHOTS · 0:28\""
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

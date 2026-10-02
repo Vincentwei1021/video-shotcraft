@@ -3,7 +3,8 @@
 // 慢速发牌三张白底描边药丸（outBack 弹入），每张落定后其下方走逐词加深字幕、
 // 下一张到来前整句淡出；左侧文档全程做极缓慢自动滚动保持"正在被读"。
 // 设计坐标 480×270（DesignStage 等比放大），440×240 定尺画布居中排版。
-// 质感层（改版）：文档从骨架条换成出版级"客户档案"正文（标题 / 元信息 / 分节正文）；
+// 质感层（改版）：文档从骨架条换成出版级 video-shotcraft「宣传片简报」正文（标题 / 元信息 / 分节正文），
+// 右侧三张药丸是 agent 据此推荐的三张镜头配方卡（Crash Zoom / Deck Deal / Logo Sting）；
 // 自动滚动改为连续匀速（原取模写法每 1/3 片长整页回跳 40px）；每张药丸落定时，文档里对应的
 // 依据句被荧光笔划出，并有一条强调色细线从该句连到药丸（"结论从文档里长出来"），随字幕退场；
 // 药丸换成受光白面 + 发丝线 + 两层软阴影 + 强调色图标底；柔光浅底 + 颗粒。
@@ -32,24 +33,24 @@ const mix = (p: number, a: string, b: string) => {
 };
 
 // 简易线性占位图标（纯 SVG，零依赖），强调色描边
-const Icon: React.FC<{ k: 'leaf' | 'bowl' | 'wrap'; size: number }> = ({ k, size }) => (
+// zoom = 推镜取景角标、deck = 一摞卡、sting = 星芒（片尾 logo 一击）
+const Icon: React.FC<{ k: 'zoom' | 'deck' | 'sting'; size: number }> = ({ k, size }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={ACCENT} strokeWidth={1.35} strokeLinecap="round" strokeLinejoin="round">
-    {k === 'leaf' && (
+    {k === 'zoom' && (
       <>
-        <path d="M3 13c0-6 5-10 10-10 0 6-4 10-10 10Z" />
-        <path d="M3 13 13 3" />
+        <path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" />
+        <circle cx={8} cy={8} r={1.6} />
       </>
     )}
-    {k === 'bowl' && (
+    {k === 'deck' && (
       <>
-        <path d="M2 7h12c0 4-2.6 6-6 6S2 11 2 7Z" />
-        <path d="M6 4.5V2M9.5 4.5V2" />
+        <rect x={4.5} y={2.5} width={9} height={7} rx={1.4} />
+        <path d="M2.5 6.2v5.9c0 .8.6 1.4 1.4 1.4h7.4" />
       </>
     )}
-    {k === 'wrap' && (
+    {k === 'sting' && (
       <>
-        <circle cx={8} cy={8} r={5.6} />
-        <path d="M4.4 6.2h7.2M4.4 9.8h7.2" />
+        <path d="M8 2.2 9.3 6.7 13.8 8 9.3 9.3 8 13.8 6.7 9.3 2.2 8 6.7 6.7Z" />
       </>
     )}
   </svg>
@@ -112,42 +113,42 @@ const Caption: React.FC<{
 const DW = 250, DH = 190;
 type Line = { y: number; kind: 'title' | 'meta' | 'h' | 'p'; text: string; mark?: number };
 const DOC: Line[] = [
-  { y: 17, kind: 'title', text: 'Account review · Northwind Studio' },
-  { y: 30, kind: 'meta', text: 'Prepared by Customer Ops  ·  Oct 2  ·  12 sources' },
-  { y: 53, kind: 'h', text: 'PROFILE' },
-  { y: 63, kind: 'p', text: 'Design agency, 14 seats, onboarded in March via a partner referral.' },
-  { y: 73, kind: 'p', text: 'Two admins; most members join from shared invite links each week.' },
-  { y: 83, kind: 'p', text: 'Health score trending up for six consecutive weeks of activity.' },
-  { y: 97, kind: 'h', text: 'PREFERENCES' },
-  { y: 107, kind: 'p', text: 'Prefers a guided quick start over manual workspace setup.', mark: 0 },
-  { y: 117, kind: 'p', text: 'Asked twice for templates instead of blank projects in support.' },
-  { y: 127, kind: 'p', text: 'Opens the onboarding checklist within the first five minutes.' },
-  { y: 141, kind: 'h', text: 'USAGE' },
-  { y: 151, kind: 'p', text: 'Most sessions land on weekdays between 9 and 11 am local time.', mark: 1 },
-  { y: 161, kind: 'p', text: 'Weekend activity under 4%; mobile share steady at about 18%.' },
-  { y: 171, kind: 'p', text: 'Peak concurrency of 11 seats on Tuesday review meetings.' },
-  { y: 185, kind: 'h', text: 'ORDERS' },
-  { y: 195, kind: 'p', text: 'The starter kit is their most repeated item across 9 orders.', mark: 2 },
-  { y: 205, kind: 'p', text: 'Average basket of 3.2 items; reorders every 24 days on average.' },
-  { y: 215, kind: 'p', text: 'No refunds or disputes recorded in the last two billing cycles.' },
-  { y: 229, kind: 'h', text: 'NOTES' },
-  { y: 239, kind: 'p', text: 'Champion is the studio lead; finance approves annual upgrades.' },
-  { y: 249, kind: 'p', text: 'Interested in a bundle once the team grows past twenty seats.' },
-  { y: 259, kind: 'p', text: 'Next check-in scheduled after the quarterly planning cycle.' },
+  { y: 17, kind: 'title', text: 'Launch film brief · video-shotcraft' },
+  { y: 30, kind: 'meta', text: 'Prepared by the Shotcraft agent  ·  Oct 2  ·  12 captures' },
+  { y: 53, kind: 'h', text: 'PRODUCT' },
+  { y: 63, kind: 'p', text: 'Agent skill for Claude Code and Codex, rendered with Remotion.' },
+  { y: 73, kind: 'p', text: 'Takes a frontend repo, real page captures and a one-line prompt.' },
+  { y: 83, kind: 'p', text: 'Ships a 1080p promo with beat-synced cuts and film-grade SFX.' },
+  { y: 97, kind: 'h', text: 'OPENER' },
+  { y: 107, kind: 'p', text: 'Wants a bold opener that hits the hero number on the first beat.', mark: 0 },
+  { y: 117, kind: 'p', text: 'Asked twice for camera moves instead of static slide transitions.' },
+  { y: 127, kind: 'p', text: 'The hook has to read in two seconds on a muted autoplay feed.' },
+  { y: 141, kind: 'h', text: 'MIDDLE' },
+  { y: 151, kind: 'p', text: 'The shot recipe library is the proof point viewers remember.', mark: 1 },
+  { y: 161, kind: 'p', text: 'Cards should pour in fast enough to feel like a full catalogue.' },
+  { y: 171, kind: 'p', text: 'Keep the 2.5D camera moving; no frame should sit dead for long.' },
+  { y: 185, kind: 'h', text: 'ENDING' },
+  { y: 195, kind: 'p', text: 'Every cut should resolve on the Frame Chisel mark at the close.', mark: 2 },
+  { y: 205, kind: 'p', text: 'Hold the final lockup for a full second before the music tails.' },
+  { y: 215, kind: 'p', text: 'The wordmark stays lowercase; amber is the only accent colour.' },
+  { y: 229, kind: 'h', text: 'AUDIO' },
+  { y: 239, kind: 'p', text: 'Track runs at 120 bpm; cuts snap to the downbeat of each bar.' },
+  { y: 249, kind: 'p', text: 'A whoosh on every camera move, one heavy hit on the logo sting.' },
+  { y: 259, kind: 'p', text: 'Voiceover optional; on-screen captions carry the story on mute.' },
   { y: 273, kind: 'h', text: 'NEXT STEPS' },
-  { y: 283, kind: 'p', text: 'Offer quick start, a weekday bundle plan and a starter kit refill.' },
-  { y: 293, kind: 'p', text: 'Share the recommendation summary with the account owner.' },
-  { y: 303, kind: 'p', text: 'Review outcomes in the next monthly account health digest.' },
+  { y: 283, kind: 'p', text: 'Render the crash zoom, deck deal and logo sting as a first cut.' },
+  { y: 293, kind: 'p', text: 'Open the workbench to tune timing and swap shots beat by beat.' },
+  { y: 303, kind: 'p', text: 'Export a JianYing draft for the final pass with the team.' },
 ];
 // 自动滚动总行程（设计 px）：等于原 3 周期 × 40 的速度（≈0.7px/f），改为连续匀速、不回跳
 const SCROLL = 120;
 // 文档内容坐标 → 画布坐标（与文档窗格 transform 同一套：left 34 / top 25 / origin 左缘中点）
 const DOC_LEFT = 34, DOC_TOP = (240 - DH) / 2;
 
-const ITEMS: { n: string; ic: 'leaf' | 'bowl' | 'wrap'; cap: string }[] = [
-  { n: 'Quick Start', ic: 'leaf', cap: 'Start matches their preference' },
-  { n: 'Bundle Plan', ic: 'bowl', cap: 'Plan fits their weekday usage' },
-  { n: 'Starter Kit', ic: 'wrap', cap: 'Kit is their top repeat item' },
+const ITEMS: { n: string; ic: 'zoom' | 'deck' | 'sting'; cap: string }[] = [
+  { n: 'Crash Zoom', ic: 'zoom', cap: 'Zoom lands the hero number' },
+  { n: 'Deck Deal', ic: 'deck', cap: 'Deal shows off the shot library' },
+  { n: 'Logo Sting', ic: 'sting', cap: 'Sting ends on the brand mark' },
 ];
 const PX = 214, PY = 54, PH = 34, PG = 14;
 const T0 = [0.26, 0.48, 0.70]; // 三张药丸的发牌起点

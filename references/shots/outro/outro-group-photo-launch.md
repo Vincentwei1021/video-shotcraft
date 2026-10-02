@@ -11,7 +11,7 @@ name: outro-group-photo-launch
 
 ## 动效核心
 - 9 个页面元素（nav/卡片/内容条/搜索框/统计条/文档头）从四方带旋转飞入，飞行段按速度做方向性运动模糊，落地压实（接触影收紧 + 1.5% 轻压，不逐个发光，Q4）
-- 字标 letterpress 逐字登场，全员"退后排"让主角；rule 长出、延长线射出
+- 字标（demo：video-shotcraft 标志 + 字标，眉题是品牌短句）letterpress 逐字登场，全员"退后排"让主角；rule 长出、延长线射出
 - crane 运镜：合影层整体 rotateX 4°→0 + scale 落下，之后缓推
 - 发布会氛围三件套：开场光带扫过、字标背后舞台光、金尘上飘
 - 背景页面 blur 化作景深
@@ -25,7 +25,7 @@ name: outro-group-photo-launch
 | 退后排 | 字标登场时 42–50f 全员 opacity −12%、saturate −8% | 主角登场配角必须让位，不让位字标压不住 9 个元素 |
 | crane 运镜 | `perspective(1400px) rotateX(4°→0) scale(1.06→1)` 前 40f 落下，之后缓推 +0.035（36f 起 in-out 零速起步，接 crane 不突变） | crane 幅度就这么小（4°）已经够"落机位"读感，大了会晕（推测） |
 | 氛围三件套 | 光带 2–14f（600px 宽 overlay 峰值 opacity 0.12）；舞台光 42→50→58f 0→0.5→0.25；金尘 20 颗 2.4–4.2px 带暖光晕、opacity 0.35–0.7 微闪 + 6 颗前景失焦光斑、全参数 index 派生确定性 | 粒子/光效参数必须确定性派生（硬规则：渲染必须可复现）；金尘超过 30 颗开始像雪（推测） |
-| 字标 | 字母 delay=42+i·1.8、8f；rule 58→70f 长出、两端 190px 延长线 8f 射出 6f 淡去；字距 62–66f 呼吸；背景页 24f 内 blur 0→14；落定后 sign-off hold 30f | 字标落定 hold 满 1 秒（R1 定案）；outro 不加解说 caption 保持干净（C1 例外项） |
+| 字标 | demo 为 video-shotcraft 标志 + 全小写字标（品牌字体 118px）：标志 38f 先压，字母 delay=42+i·1.8、8f，同一套 letterpress；rule 58→70f 长出、两端 190px 延长线 8f 射出 6f 淡去；字距 62–66f 呼吸；背景页 24f 内 blur 0→14；落定后 sign-off hold 30f | 字标落定 hold 满 1 秒（R1 定案）；outro 不加解说 caption 保持干净（C1 例外项） |
 
 ## 声音
 固定三拍句式：riser-cine 铺进组装（模板片钉在 f945）→ impact-deep-whoosh 钉字标 stamp（f980，vol 0.55 全片峰值）→ sparkle 点 rule（f1005）。这是模板片定稿后唯一从未改动的段落句式（S2；详见 sound-design 4.3）。

@@ -1,14 +1,14 @@
 // title-demote-to-label —— 大标题降格为节标签（两式串播）
 // 源：perplexity-promo 16–18.5s；B 式变体源自 framer text-selection-title。
 //
-// 第二轮重设计（paper · 瑞士网格编辑版式 · 虚构笔记产品「Margin」）：
-// - look = paper（暖白纸 · 墨 · 朱红）。主角是 220px / 850 字重的单词海报标题「Capture.」「Select.」，
+// 第二轮重设计（paper · 瑞士网格编辑版式 · 产品 = video-shotcraft 的分镜工作台）：
+// - look = paper（暖白纸 · 墨 · 朱红）。主角是 220px / 850 字重的单词海报标题「Frame.」「Craft.」（品牌短句 Frame motion. Craft the shot.），
 //   句点是朱红——降格后它就是栏目标签的识别点。12 栏网格的左边距 120、发丝线、mono 眉题撑起编辑版式。
 // - 降格：一次连续补间（26f，不对称 in-out：起步果断、落点很软）scale 1→0.22、中心→左上标签槽，
 //   transform-origin 左中、居中修正 translate(-50%) 随补间归零；飞行按速度加方向性运动模糊。
 //   眉题「CHAPTER 01」随起飞 6f 淡出，落位时标签前的「01 /」从左擦入接班。
 // - 内容在降格进行到 12f 时开始错峰生长（裁切揭开 + 上移 + 淡入，先密后疏），交接零空档：
-//   A = 导语 + 三张剪藏卡（文章 / 引文 / 语音备忘）；B = 一段正文，其中一句带朱红选区 + 浮出操作条。
+//   A = 导语 + 三张卡（镜头配方卡 / 用户评价 / 卡点节拍）；B = 一段分镜脚本，其中一句带朱红选区 → 连线 → 匹配镜头卡。
 // - 两式之间不再白闪：A 内容 ease-in 上移退场，A 标签上移一行、变灰缩小成"上一节"（多节连用不叠放），
 //   B 大标题在同一个舞台上显影——共享一个 Stage，没有接缝。
 // - B 式：朱红选区扫入（右缘跟着 3px 插入光标）→ 站 10f → 左缘撤走 → 再降格。
@@ -25,6 +25,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, SpeedBlur, bezier, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const L = LOOKS.paper;
 export const TITLE_DEMOTE_TO_LABEL_DURATION = 246;
@@ -67,7 +68,7 @@ const card: React.CSSProperties = {
   padding: '34px 36px', boxSizing: 'border-box', overflow: 'hidden',
 };
 
-// ───────────── A：剪藏（导语 + 三张卡） ─────────────
+// ───────────── A：取景（导语 + 配方卡 / 评价 / 节拍三张卡） ─────────────
 const ContentA: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
   const t = (k: number) => at + k; // 先密后疏的错峰
   return (
@@ -77,35 +78,35 @@ const ContentA: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
       </Grow>
       <Grow frame={frame} at={t(6)} style={{ marginTop: 40 }}>
         <div style={{ ...type(60, 650), color: L.ink, whiteSpace: 'nowrap' }}>
-          Clip anything. <span style={{ color: L.ink3 }}>Find it again in a second.</span>
+          Pick a shot. <span style={{ color: L.ink3 }}>Each one comes with a recipe.</span>
         </div>
       </Grow>
       <div style={{ display: 'flex', gap: 36, marginTop: 56 }}>
         <Grow frame={frame} at={t(10)} dur={22}>
           <div style={card}>
-            <Tag label="Article" />
-            <div style={{ ...type(42, 700), color: L.ink, marginTop: 26, lineHeight: 1.12 }}>The quiet power of plain text</div>
-            <div style={{ ...type(32, 400), color: L.ink2, marginTop: 18, lineHeight: 1.35 }}>Why the best tools get out of your way.</div>
+            <Tag label="Recipe card" />
+            <div style={{ ...type(42, 700), color: L.ink, marginTop: 26, lineHeight: 1.12 }}>Crash zoom punch</div>
+            <div style={{ ...type(32, 400), color: L.ink2, marginTop: 18, lineHeight: 1.35 }}>Slam into the one number that matters.</div>
             <div style={{ position: 'absolute', left: 36, right: 36, bottom: 30, display: 'flex', justifyContent: 'space-between', ...type(22, 500, { mono: true }), color: L.ink3 }}>
-              <span>longform.press</span><span>6 min</span>
+              <span>camera / punch-in</span><span>18f</span>
             </div>
           </div>
         </Grow>
         <Grow frame={frame} at={t(16)} dur={22}>
           <div style={{ ...card, background: L.ink, border: 'none' }}>
-            <Tag label="Quote" color={L.accent} />
+            <Tag label="Review" color={L.accent} />
             <div style={{ fontFamily: '"Iowan Old Style", Palatino, Georgia, serif', fontSize: 52, lineHeight: 1.12, fontStyle: 'italic', color: L.surface, marginTop: 26, letterSpacing: '-0.015em' }}>
-              “Make it work, then make it <span style={{ color: L.accent }}>beautiful</span>.”
+              “Camera moves I’d have keyframed for a <span style={{ color: L.accent }}>week</span>.”
             </div>
             <div style={{ position: 'absolute', left: 36, right: 36, bottom: 30, ...type(22, 500, { mono: true }), color: alpha(L.surface, 0.5) }}>
-              Saved from a talk · 03:12
+              Saved from launch day · 03:12
             </div>
           </div>
         </Grow>
         <Grow frame={frame} at={t(24)} dur={22}>
           <div style={card}>
-            <Tag label="Voice memo" color={L.accent2} />
-            <div style={{ ...type(42, 700), color: L.ink, marginTop: 26, lineHeight: 1.12 }}>Standup, Tuesday</div>
+            <Tag label="Beat grid" color={L.accent2} />
+            <div style={{ ...type(42, 700), color: L.ink, marginTop: 26, lineHeight: 1.12 }}>Launch BGM, 128 BPM</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, height: 120, marginTop: 30 }}>
               {Array.from({ length: 34 }, (_, i) => {
                 const hgt = 18 + 90 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.43));
@@ -113,7 +114,7 @@ const ContentA: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
               })}
             </div>
             <div style={{ position: 'absolute', left: 36, right: 36, bottom: 30, display: 'flex', justifyContent: 'space-between', ...type(22, 500, { mono: true }), color: L.ink3 }}>
-              <span>Transcribed</span><span>02:14</span>
+              <span>Cuts on the beat</span><span>00:32</span>
             </div>
           </div>
         </Grow>
@@ -122,7 +123,7 @@ const ContentA: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
   );
 };
 
-// ───────────── B：正文 + 句内选区 → 连线 → 旁注答案卡 ─────────────
+// ───────────── B：分镜脚本 + 句内选区 → 连线 → 匹配镜头卡 ─────────────
 const ContentB: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
   const sel = ramp(frame, at + 20, 12, EASE.swift); // 文中那句的选区扫入
   const wire = ramp(frame, at + 30, 12, EASE.swift); // 选区 → 答案卡的连线
@@ -134,36 +135,36 @@ const ContentB: React.FC<{ frame: number; at: number }> = ({ frame, at }) => {
       </Grow>
       <Grow frame={frame} at={at + 8} style={{ marginTop: 40 }}>
         <div style={{ ...type(22, 700, { caps: true, mono: true }), letterSpacing: '0.14em', color: L.ink3 }}>
-          Launch notes <span style={{ color: L.accent }}>·</span> Draft v4
+          Launch film <span style={{ color: L.accent }}>·</span> Storyboard v4
         </div>
       </Grow>
       <div style={{ position: 'relative', marginTop: 22 }}>
-        <Grow frame={frame} at={at + 10}><div style={body}>The spring release brings offline sync,</div></Grow>
-        <Grow frame={frame} at={at + 12}><div style={body}>a faster editor and, most of all,</div></Grow>
+        <Grow frame={frame} at={at + 10}><div style={body}>The launch film opens on the dashboard,</div></Grow>
+        <Grow frame={frame} at={at + 12}><div style={body}>glides past the chart and, best of all,</div></Grow>
         <Grow frame={frame} at={at + 14}>
           <div style={body}>
             <span style={{ position: 'relative', color: L.ink }}>
               <span style={{ position: 'absolute', left: -6, top: 8, bottom: 4, width: `calc(${(sel * 100).toFixed(2)}% + 12px)`, background: SEL, borderRadius: 5 }} />
-              <span style={{ position: 'relative' }}>answers you can trace to the source.</span>
+              <span style={{ position: 'relative' }}>every cut lands right on the beat.</span>
             </span>
           </div>
         </Grow>
-        <Grow frame={frame} at={at + 16}><div style={{ ...body, color: L.ink3 }}>Everything else waits for the summer cut.</div></Grow>
+        <Grow frame={frame} at={at + 16}><div style={{ ...body, color: L.ink3 }}>Sound design and the logo sting come last.</div></Grow>
         {/* 连线：从选区右缘拐到旁注卡 */}
         <svg width={1680} height={400} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', pointerEvents: 'none' }}>
-          <path d="M 890 217 L 1112 217" stroke={L.accent} strokeWidth={2.5} fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - wire} />
-          {wire > 0.02 && <circle cx={890} cy={217} r={6} fill={L.accent} />}
+          <path d="M 800 217 L 1112 217" stroke={L.accent} strokeWidth={2.5} fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - wire} />
+          {wire > 0.02 && <circle cx={800} cy={217} r={6} fill={L.accent} />}
         </svg>
-        {/* 旁注答案卡 */}
+        {/* 旁注：匹配到的镜头配方卡 */}
         <div style={{ position: 'absolute', left: 1120, top: -40, width: 560 }}>
           <Grow frame={frame} at={at + 38} dur={22}>
             <div style={{ ...card, width: 560, height: 'auto', padding: '32px 36px 30px' }}>
-              <Tag label="Answer · 2 sources" />
+              <Tag label="Shot match · 2 cards" />
               <div style={{ ...type(40, 650), color: L.ink, marginTop: 22, lineHeight: 1.18 }}>
-                Every claim links back to the line it came from.
+                Every line of the script becomes a tuned shot.
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 28 }}>
-                {[['spec.md', 'L214'], ['interview-03', '12:40']].map(([a, b]) => (
+                {[['beat-cut-moves', '4 cuts'], ['crash-zoom-punch', '18f']].map(([a, b]) => (
                   <div key={a} style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 18px', borderRadius: 12, background: L.surface2, ...type(26, 500, { mono: true }), color: L.ink2 }}>
                     <span>{a}</span><span style={{ color: L.accent }}>{b}</span>
                   </div>
@@ -184,7 +185,7 @@ const Footer: React.FC<{ frame: number }> = ({ frame }) => {
     <div style={{ position: 'absolute', left: MARGIN, right: MARGIN, top: 948, opacity: p }}>
       <div style={{ height: 1, background: L.line, transformOrigin: 'left', transform: `scaleX(${p.toFixed(4)})` }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, ...type(22, 500, { mono: true }), letterSpacing: '0.06em', color: L.ink3 }}>
-        <span>margin.app / notes</span><span>Autosaved · just now</span>
+        <span>{BRAND.name} / storyboard</span><span>Autosaved · just now</span>
       </div>
     </div>
   );
@@ -273,9 +274,9 @@ export const TitleDemoteToLabel: React.FC = () => {
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <Stage look={L} keyLight={{ x: 0.3, y: 0.05 }} fill={{ x: 0.9, y: 0.95 }} />
-      {/* 网格页眉：右上角产品名 / 页码（纹理级小字） */}
-      <div style={{ position: 'absolute', right: MARGIN, top: 182, display: 'flex', gap: 40, ...type(22, 600, { caps: true, mono: true }), letterSpacing: '0.16em', color: L.ink3, opacity: ramp(frame, 40, 20, EASE.out) }}>
-        <span>Margin</span><span style={{ color: L.ink }}>{frame < 190 ? '01' : '02'} / 04</span>
+      {/* 网格页眉：右上角品牌（镜刻标志 + 全小写字标）/ 页码（纹理级小字） */}
+      <div style={{ position: 'absolute', right: MARGIN, top: 182, display: 'flex', alignItems: 'center', gap: 40, ...type(22, 600, { caps: true, mono: true }), letterSpacing: '0.16em', color: L.ink3, opacity: ramp(frame, 40, 20, EASE.out) }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 12, textTransform: 'none', letterSpacing: '0.04em' }}><ShotcraftMark size={28} tone="light" />{BRAND.name}</span><span style={{ color: L.ink }}>{frame < 190 ? '01' : '02'} / 04</span>
       </div>
       {frame < B0 + 14 && (
         <div style={{ position: 'absolute', inset: 0, opacity: 1 - outA, transform: `translateY(${(-50 * outA).toFixed(2)}px)` }}>
@@ -284,8 +285,8 @@ export const TitleDemoteToLabel: React.FC = () => {
       )}
       {frame >= B0 + 40 && <ContentB frame={frame} at={178} />}
       <Footer frame={frame} />
-      <Title frame={frame} word="Capture" num="01" reveal={0} demote={36} retire={B0 + 54} />
-      <Title frame={frame} word="Select" num="02" reveal={B0 + 6} demote={166} select={{ on: 136, off: 156 }} />
+      <Title frame={frame} word="Frame" num="01" reveal={0} demote={36} retire={B0 + 54} />
+      <Title frame={frame} word="Craft" num="02" reveal={B0 + 6} demote={166} select={{ on: 136, off: 156 }} />
     </AbsoluteFill>
   );
 };

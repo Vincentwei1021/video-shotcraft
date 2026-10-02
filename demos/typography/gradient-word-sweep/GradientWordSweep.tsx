@@ -8,9 +8,11 @@
 //    改为所有带模糊的层都放进四周外扩 PAD 的 Halo 盒里，mask 色标用 calc 换算回文字坐标；
 // b) 闪电从 36 次随机事件收成 7 次排期（间隔 ≥9f、同屏 ≤1 道），末次 ~92f 熄灭，尾段留呼吸；
 // c) 入场改两行错峰 blur-slide；整段极缓推近 1→1.025；黑底换带色相的近黑 + 暗角 + 颗粒。
+// 文案：充能词 Supercharged 保留（闪电与辉光按它的字宽排布），标语改成 video-shotcraft 的宣传句。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { EASE, Grain, Vignette, ramp } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 const mulberry32 = (a: number) => () => {
   let t = (a += 0x6d2b79f5);
@@ -299,9 +301,9 @@ export const GradientWordSweep: React.FC = () => {
               })}
             </svg>
           </span>{' '}
-          <span>performance</span>
+          <span>product films</span>
         </div>
-        <div style={{ ...lineStyle, ...lineIn(enter2) }}>with rock-solid reliability</div>
+        <div style={{ ...lineStyle, ...lineIn(enter2) }}>made with {BRAND.name}</div>
       </div>
       <Vignette strength={0.5} inner={0.45} color="#000000" />
       <Grain opacity={0.07} blend="soft-light" />

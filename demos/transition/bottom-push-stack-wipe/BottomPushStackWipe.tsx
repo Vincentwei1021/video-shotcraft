@@ -4,19 +4,19 @@
 //
 // 第二轮重设计（设计决定）
 // - look = custom「瑞士海报」：第 0 章近黑开场，三章是三块拉满的饱和色板——钴蓝 / 朱橙 / 酸柠，
-//   色相彼此拉开 120° 级，换章一眼读作"换了个世界"。虚构产品 Tandem（团队协作），一章一个卖点。
+//   色相彼此拉开 120° 级，换章一眼读作"换了个世界"。产品是 video-shotcraft，一章一个卖点（一句话出片 / 踩点剪辑 / 自动交付）。
 // - 版式：左栏 120px 安全边距起排，眉题（章号 + 名称）→ 116px 超粗两行标题 → 40px 说明；
-//   右栏一张为镜头设计的大字 UI 卡（消息 / 通话 / 自动化），字号 ≥ 30px；色板本身左上受光、右下压暗，
+//   右栏一张为镜头设计的大字 UI 卡（和 agent 对话 / 踩点时间线 / 交付流水线），字号 ≥ 30px；色板本身左上受光、右下压暗，
 //   卡片投带色相的两层软阴影（同一光向），平面海报里也有前后景。
 // - 推入：26f 重 ease-out（快进慢停的"哐"），整摞按速度做纵向方向性模糊；新章上缘 2px 受光边 +
 //   压在旧章上的 56px 接触影。推入窗口内章内元素全部静止（钉死），标题在落定前 ~8f 才从线下升起，
 //   UI 卡的小动作（打字中 → 消息出现 / 说话声波 / 自动化逐步打勾）都放在 hold 里，避开推入。
 //
 // 时间表（30fps，170f）
-//   0–22    第 0 章：近黑底「Meet Tandem.」已在画面，标题 0f 起逐行升起，2–20f 落定
+//   0–22    第 0 章：近黑底「Meet video-shotcraft.」已在画面，标题 0f 起逐行升起，2–20f 落定
 //   22–48   推入 01 钴蓝（26f 重 ease-out，~34f 已到 95%）→ 34f 标题升起 → 36–48f 第三条消息"打字中"→ 48f 弹入
 //   48–66   hold（读）
-//   66–92   推入 02 朱橙 → 78f 标题 → 声波与计时全程在跳，82f 起第二位发言人亮环
+//   66–92   推入 02 朱橙 → 78f 标题 → 声波与计时全程在跳，82f 起第二个镜头亮环
 //   92–110  hold
 //   110–136 推入 03 酸柠（深色字）→ 122f 标题 → 126/134/142f 三个步骤依次打勾（弹簧）
 //   142–170 hold 28f：极缓推近 1.5%，尾帧是完整的章节海报
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, SpeedBlur, bezier, mix, ramp, softShadow, velocity } from '../../_fixtures/Polish';
 import { TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 const H = 1080;
 
@@ -39,19 +40,19 @@ type Chapter = {
 };
 const CHAPTERS: Chapter[] = [
   {
-    num: '00', name: 'Tandem 4.0', title: 'Meet\nTandem.', sub: 'The workspace that moves as fast as your team.',
+    num: '00', name: 'Agent skill', title: `Meet\n${BRAND.name}.`, sub: PITCH.en.taglines[1],
     hi: '#1c1c1e', base: '#141415', lo: '#0c0c0d', shade: '#000000', ink: '#f4f2ee', ink2: 'rgba(244,242,238,0.62)',
   },
   {
-    num: '01', name: 'Channels', title: 'One thread\nper project.', sub: 'Every decision, file and update lives where the work does.',
+    num: '01', name: 'Prompt', title: 'One prompt.\nOne film.', sub: 'Describe the promo. Your agent storyboards every shot.',
     hi: '#4565ff', base: '#2d4cff', lo: '#1c37e0', shade: '#0a1670', ink: '#ffffff', ink2: 'rgba(255,255,255,0.78)',
   },
   {
-    num: '02', name: 'Huddles', title: 'Talk it out\nin a tap.', sub: 'Jump into a live call from any channel. No links, no lobby.',
+    num: '02', name: 'Rhythm', title: 'Cut on\nthe beat.', sub: 'Every shot lands on the music, frame for frame.',
     hi: '#ff6a3d', base: '#ff4d1f', lo: '#e83c10', shade: '#6e1600', ink: '#ffffff', ink2: 'rgba(255,255,255,0.8)',
   },
   {
-    num: '03', name: 'Workflows', title: 'Busywork,\nautomated.', sub: 'Chain the steps your team repeats every single week.',
+    num: '03', name: 'Delivery', title: 'Delivery,\nautomated.', sub: 'Render, export and publish the moment the cut locks.',
     hi: '#dcfb5e', base: '#cdf23a', lo: '#b8dc22', shade: '#3c4a00', ink: '#121407', ink2: 'rgba(18,20,7,0.68)',
   },
 ];
@@ -64,13 +65,13 @@ const landAt = (i: number) => (i === 0 ? -10 : PUSH_STARTS[i - 1] + 12);
 const SANS = FONT.sans;
 
 // ───────────── UI 卡（为镜头设计：少元素、大字、强对比） ─────────────
-const Avatar: React.FC<{ c: string; t: string; size?: number; ring?: number; ringColor?: string }> = ({ c, t, size = 64, ring = 0, ringColor = '#fff' }) => (
+const Avatar: React.FC<{ c: string; t: string; size?: number; ring?: number; ringColor?: string; mark?: boolean }> = ({ c, t, size = 64, ring = 0, ringColor = '#fff', mark = false }) => (
   <div style={{
     width: size, height: size, borderRadius: size / 2, flex: 'none', background: c, color: '#fff',
     display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: SANS, fontWeight: 700,
     fontSize: size * 0.38, letterSpacing: '-0.01em',
     boxShadow: ring > 0 ? `0 0 0 ${4 + 6 * ring}px ${alpha(ringColor, 0.25 + 0.5 * ring)}` : undefined,
-  }}>{t}</div>
+  }}>{mark ? <ShotcraftMark size={size * 0.62} tone="dark" /> : t}</div>
 );
 
 const ChannelCard: React.FC<{ frame: number }> = ({ frame }) => {
@@ -78,18 +79,18 @@ const ChannelCard: React.FC<{ frame: number }> = ({ frame }) => {
   const typing = frame >= t0 && frame < t0 + 12;
   const msg = springAt(frame, t0 + 12, { damping: 18, stiffness: 200 });
   const msgs = [
-    { c: '#7c5cff', t: 'MK', name: 'Maya', time: '9:41', text: 'Launch copy is final. Shipping at 10.' },
-    { c: '#00a37a', t: 'TO', name: 'Theo', time: '9:43', text: 'Hero assets are in the folder.' },
+    { c: '#7c5cff', t: 'MK', name: 'Maya', time: '9:41', text: 'Cut a 30s launch film for our app.', mark: false },
+    { c: BRAND.ink, t: '', name: 'Shotcraft', time: '9:42', text: 'Storyboard ready: 12 shots, on beat.', mark: true },
   ];
   return (
     <div style={{ width: 760, padding: '40px 44px 44px', fontFamily: SANS, color: '#0e1020' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, paddingBottom: 28, borderBottom: '2px solid rgba(14,16,32,0.08)' }}>
-        <div style={{ ...type(44, 800), color: '#0e1020' }}># launch-week</div>
-        <div style={{ marginLeft: 'auto', fontSize: 28, fontWeight: 500, color: '#7a7f99' }}>12 members</div>
+        <div style={{ ...type(44, 800), color: '#0e1020' }}># launch-film</div>
+        <div style={{ marginLeft: 'auto', fontSize: 28, fontWeight: 500, color: '#7a7f99' }}>3 members</div>
       </div>
       {msgs.map((m, k) => (
         <div key={k} style={{ display: 'flex', gap: 22, marginTop: 32 }}>
-          <Avatar c={m.c} t={m.t} />
+          <Avatar c={m.c} t={m.t} mark={m.mark} />
           <div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
               <span style={{ fontSize: 32, fontWeight: 750, letterSpacing: '-0.015em' }}>{m.name}</span>
@@ -117,7 +118,7 @@ const ChannelCard: React.FC<{ frame: number }> = ({ frame }) => {
                 <span style={{ fontSize: 24, color: '#9a9fb5' }}>9:44</span>
               </div>
               <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
-                <div style={{ fontSize: 32, fontWeight: 700, color: '#2d4cff', padding: '8px 22px', borderRadius: 999, background: '#e8ecff' }}>Ship it  ↗</div>
+                <div style={{ fontSize: 32, fontWeight: 700, color: '#2d4cff', padding: '8px 22px', borderRadius: 999, background: '#e8ecff' }}>Render it  ↗</div>
               </div>
             </div>
           </div>
@@ -130,20 +131,20 @@ const ChannelCard: React.FC<{ frame: number }> = ({ frame }) => {
 const HuddleCard: React.FC<{ frame: number }> = ({ frame }) => {
   const t = frame - PUSH_STARTS[1];
   const people = [
-    { c: '#7c5cff', t: 'MK', name: 'Maya' },
-    { c: '#00a37a', t: 'TO', name: 'Theo' },
-    { c: '#ff9f1c', t: 'IR', name: 'Ines' },
-    { c: '#3a86ff', t: 'JL', name: 'Jun' },
+    { c: '#7c5cff', t: '01', name: 'Hook' },
+    { c: '#00a37a', t: '02', name: 'Zoom' },
+    { c: '#ff9f1c', t: '03', name: 'Whip' },
+    { c: '#3a86ff', t: '04', name: 'Sting' },
   ];
-  // 发言人：前段 Maya，82f 起交给 Theo（环 6f 交叉）
+  // 当前镜头：前段 01 Hook，82f 起交给 02 Zoom（环 6f 交叉，踩在拍点上换镜）
   const handoff = ramp(frame, PUSH_STARTS[1] + 16, 8, EASE.smooth);
   const speak = [1 - handoff, handoff, 0, 0];
-  const secs = 252 + Math.floor(Math.max(0, t) / 30);
+  const secs = 12 + Math.floor(Math.max(0, t) / 30);
   return (
     <div style={{ width: 760, padding: '40px 44px 44px', fontFamily: SANS, color: '#f6f3ef' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <div style={{ width: 16, height: 16, borderRadius: 8, background: '#3ddc84', boxShadow: '0 0 0 6px rgba(61,220,132,0.18)' }} />
-        <div style={{ ...type(40, 800) }}>Design review</div>
+        <div style={{ ...type(40, 800) }}>Beat sync · 128 BPM</div>
         <div style={{ marginLeft: 'auto', fontSize: 32, fontWeight: 600, color: 'rgba(246,243,239,0.6)', fontFamily: FONT.mono }}>
           {String(Math.floor(secs / 60)).padStart(2, '0')}:{String(secs % 60).padStart(2, '0')}
         </div>
@@ -165,20 +166,20 @@ const HuddleCard: React.FC<{ frame: number }> = ({ frame }) => {
         })}
       </div>
       <div style={{ display: 'flex', gap: 18, marginTop: 40 }}>
-        <div style={{ flex: 1, height: 76, borderRadius: 38, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 650 }}>Share screen</div>
-        <div style={{ width: 210, height: 76, borderRadius: 38, background: '#ff4d1f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 700 }}>Leave</div>
+        <div style={{ flex: 1, height: 76, borderRadius: 38, background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 650 }}>Preview</div>
+        <div style={{ width: 210, height: 76, borderRadius: 38, background: '#ff4d1f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 700 }}>Render</div>
       </div>
     </div>
   );
 };
 
 const WorkflowCard: React.FC<{ frame: number }> = ({ frame }) => {
-  const steps = ['Post the win in #sales', 'Create onboarding doc', 'Notify finance'];
+  const steps = ['Render 1080p master', 'Export JianYing draft', 'Post to the gallery'];
   const at = [PUSH_STARTS[2] + 16, PUSH_STARTS[2] + 24, PUSH_STARTS[2] + 32];
   return (
     <div style={{ width: 760, padding: '40px 44px 48px', fontFamily: SANS, color: '#121407' }}>
       <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: '0.12em', color: '#7b8064', textTransform: 'uppercase' }}>Trigger</div>
-      <div style={{ ...type(44, 800), marginTop: 12 }}>When a deal closes</div>
+      <div style={{ ...type(44, 800), marginTop: 12 }}>When the cut locks</div>
       <div style={{ position: 'relative', marginTop: 36 }}>
         {/* 竖向连接线：随打勾向下"灌注" */}
         <div style={{ position: 'absolute', left: 31, top: 56, height: 224, width: 3, background: 'rgba(18,20,7,0.1)' }} />
@@ -205,7 +206,7 @@ const WorkflowCard: React.FC<{ frame: number }> = ({ frame }) => {
               </div>
               <div style={{ fontSize: 36, fontWeight: 650, letterSpacing: '-0.015em', color: on ? '#121407' : '#8d927a' }}>{s}</div>
               <div style={{ marginLeft: 'auto', fontSize: 26, fontWeight: 600, color: '#8d927a', opacity: on ? Math.min(1, c) : 0, fontFamily: FONT.mono }}>
-                {['0.2s', '0.9s', '0.3s'][k]}
+                {['38s', '2.4s', '0.6s'][k]}
               </div>
             </div>
           );
@@ -245,8 +246,7 @@ const ChapterScene: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
       }}>{c.sub}</div>
       {/* 页脚：品牌 + 章节刻度（章内绝对坐标） */}
       <div style={{ position: 'absolute', left: 120, bottom: 96, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 30, height: 30, borderRadius: 9, background: c.ink, opacity: 0.92 }} />
-        <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', color: c.ink }}>Tandem</div>
+        <ShotcraftWordmark size={28} markScale={1.4} gap={14} tone={i === 3 ? 'light' : 'dark'} color={c.ink} />
         <div style={{ display: 'flex', gap: 10, marginLeft: 30 }}>
           {[1, 2, 3].map((k) => (
             <div key={k} style={{ width: k === i ? 64 : 28, height: 8, borderRadius: 4, background: c.ink, opacity: k === i ? 0.95 : 0.28 }} />

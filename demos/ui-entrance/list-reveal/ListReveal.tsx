@@ -2,9 +2,9 @@
 //
 // 第二轮重设计（石墨暗场 · 侧边栏海报）：
 // - look = graphite（近单色暗场，白为强调、香槟金只做点缀）。主体是一列 700×92 的侧边栏条目
-//   （Home / Projects / Analytics / Messages / Settings / Sign out），46px 字、34px 线性图标、
+//   （Home / Shots / Renders / Reviews / Settings / Sign out——video-shotcraft 工作台侧栏），46px 字、34px 线性图标、
 //   26px 等宽快捷键；当前项 Home 是一块受光的瓷白实心条（全片唯一的高亮），未读徽章用香槟金。
-//   右侧一句 120px 标题「Everything, within reach.」+ 36px 副句，构成左列表右标题的发布片海报。
+//   右侧一句 120px 标题「Every shot, within reach.」+ 36px 副句，构成左列表右标题的发布片海报。
 // - 手法本身（保留并做清楚）：两层运动完全解耦——
 //   ① 逐项找位：每项 24f，scale 0.82→1 + 上移 44→0 + 对焦模糊 8px→0，软 back 过冲（~1.5%，
 //      几乎读不出，只把落位那一帧"扣住"）；错峰 10f（"逐项读得完"的间隔），相邻约 2–3 项同时在动；
@@ -30,9 +30,9 @@ const L = LOOKS.graphite;
 
 const ITEMS = [
   { label: 'Home', key: '⌘1' },
-  { label: 'Projects', key: '⌘2' },
-  { label: 'Analytics', key: '⌘3' },
-  { label: 'Messages', key: '' },
+  { label: 'Shots', key: '⌘2' },
+  { label: 'Renders', key: '⌘3' },
+  { label: 'Reviews', key: '' },
   { label: 'Settings', key: '⌘,' },
   { label: 'Sign out', key: '' },
 ];
@@ -55,7 +55,7 @@ const Icon: React.FC<{ i: number; color: string }> = ({ i, color }) => {
     <svg width={34} height={34} viewBox="0 0 24 24">
       {i === 0 && (<><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19Z" {...p} /><path d="M9.5 20.5v-6h5v6" {...p} /></>)}
       {i === 1 && <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" {...p} />}
-      {i === 2 && (<><path d="M4 20h16" {...p} /><path d="M7 16v-4M12 16V7M17 16v-6" {...p} /></>)}
+      {i === 2 && (<><rect x={3.5} y={5} width={17} height={14} rx={2.5} {...p} /><path d="M10.2 9.2v5.6l4.6-2.8Z" {...p} /></>)}
       {i === 3 && <path d="M4 6.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2h-7l-4.5 3.5V16H6a2 2 0 0 1-2-2Z" {...p} />}
       {i === 4 && (<><circle cx={12} cy={12} r={3} {...p} /><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" {...p} /></>)}
       {i === 5 && (<><path d="M14 4h3.5A1.5 1.5 0 0 1 19 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14" {...p} /><path d="M10 8l-4 4 4 4M6 12h9" {...p} /></>)}
@@ -136,16 +136,16 @@ export const ListReveal: React.FC = () => {
       {/* 右侧标题：列表铺到一半才进 */}
       <div style={{ position: 'absolute', left: 1010, top: 336, width: 780 }}>
         <div style={{ ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.accent2, opacity: ramp(frame, 40, 16, EASE.out) }}>
-          NAVIGATION · v4
+          video-shotcraft · workbench
         </div>
         <div style={{ ...type(120, 760), color: L.ink, marginTop: 26 }}>
-          <TextReveal text={'Everything,\nwithin reach.'} by="line" start={46} each={22} gap={7} />
+          <TextReveal text={'Every shot,\nwithin reach.'} by="line" start={46} each={22} gap={7} />
         </div>
         <div style={{
           ...type(36, 450), color: L.ink2, marginTop: 34, lineHeight: 1.35, maxWidth: 760, whiteSpace: 'pre-line',
           opacity: ramp(frame, 66, 18, EASE.out), transform: `translateY(${((1 - ramp(frame, 66, 18, EASE.snappy)) * 16).toFixed(2)}px)`,
         }}>
-          {'Every project, report and thread,\none keystroke away.'}
+          {'Every recipe, render and storyboard,\none keystroke away.'}
         </div>
       </div>
     </AbsoluteFill>

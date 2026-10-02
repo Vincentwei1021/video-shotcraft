@@ -1,0 +1,16 @@
+{
+  "stem": "SpotlightSweepReveal",
+  "changed": true,
+  "brand": [
+    "追光扫亮的标题「Opening night.」→ 品牌短句「Craft the shot.」（shot. 保持斜体）",
+    "眉题「Friday · 8 pm · Row F」→「Tonight · World premiere」，副标题「Every seat in the house, one tap away.」→「Cinematic product videos, crafted by your agent.」",
+    "品牌行「◆ Balcony」→ video-shotcraft 标志 + 字标"
+  ],
+  "brandEn": [
+    "Spotlit headline \"Opening night.\" → brand motto \"Craft the shot.\" (\"shot.\" kept italic)",
+    "Eyebrow \"Friday · 8 pm · Row F\" → \"Tonight · World premiere\"; subtitle \"Every seat in the house, one tap away.\" → \"Cinematic product videos, crafted by your agent.\"",
+    "Brand line \"◆ Balcony\" → video-shotcraft mark + wordmark"
+  ],
+  "styleKey": "spotlight-sweep",
+  "mdChanged": true
+}

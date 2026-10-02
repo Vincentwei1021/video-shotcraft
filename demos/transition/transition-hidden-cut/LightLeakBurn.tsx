@@ -1,11 +1,12 @@
 // light-leak-burn〔转场〕：一团暖色胶片漏光从右上角斜扫入画，亮度顶峰时吞掉旧画面七成以上（高光溢出、
 // 对比度被冲淡），光峰帧硬切新画面，光沿对角线退散时新画面已在光下就位——比白闪柔、有方向、有温度。
 //
-// 第二轮重设计（暖黑电影感 · 相机 App「Ondo」的模式切换："从夜到黄昏"）：
+// 第二轮重设计（暖黑电影感 · video-shotcraft 取景器的模式切换："从夜到黄昏"）：
 // - look = ember（暖黑 · 余烬橙 · 琥珀金）。A / B 是同一个取景器里的两张全出血"照片"——同一道山脊剪影：
-//   A 夜景（冷蓝黑天、星点、新月、山间一盏暖窗灯）配「Made for the dark.」；
-//   B 黄昏（赤橙天空、半落的太阳、暖色雾带）配「Made for the light.」。漏光本身就是"天亮了"——光效即语义。
-// - 取景器 UI 让它是产品而不是壁纸：四角取景框、顶部等宽曝光参数、底部模式拨轮（NIGHT / GOLDEN HOUR / PORTRAIT），
+//   A 夜景（冷蓝黑天、星点、新月、山间一盏暖窗灯）配品牌短句上半「Frame motion.」；
+//   B 黄昏（赤橙天空、半落的太阳、暖色雾带）配下半「Craft the shot.」。漏光本身就是"天亮了"——光效即语义，
+//   一句 motto 被光峰切成两半。
+// - 取景器 UI 让它是产品而不是壁纸：四角取景框、顶部镜刻标志 + 字标与等宽曝光参数、底部模式拨轮（NIGHT / GOLDEN HOUR / PORTRAIT），
 //   光峰后高亮滑块从 NIGHT 滑到 GOLDEN HOUR（swift 曲线 14f）。
 // - 漏光三段色温：白热核 #fff3dc → 琥珀 #ffb347 → 余烬橙 #ff5a1f → 外缘赭红；全部是沿扫掠对角线拉长、转 −34° 的
 //   径向渐变椭圆（screen 叠加，不用 blur 滤镜——渐变本身就软，且便宜）；右缘另有一道"片门溢光"线性光带
@@ -23,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const LIGHT_LEAK_BURN_DURATION = 130;
 
@@ -114,6 +116,10 @@ const Golden: React.FC<{ f: number }> = ({ f }) => {
   );
 };
 
+// 品牌短句（PITCH.en.motto）被光峰切成两半：A 夜景 / B 黄昏
+const MOTTO_A = 'Frame motion.';
+const MOTTO_B = 'Craft the shot.';
+
 const MODES = ['NIGHT', 'GOLDEN HOUR', 'PORTRAIT'];
 const MODE_X = [0, 220, 532]; // 每项左缘（相对拨轮）
 const MODE_W = [172, 272, 228];
@@ -139,7 +145,11 @@ const Viewfinder: React.FC<{ golden: boolean; slide: number }> = ({ golden, slid
         position: 'absolute', left: PAD + 36, right: PAD + 36, top: 96, display: 'flex', justifyContent: 'space-between',
         fontFamily: FONT.mono, fontSize: 28, fontWeight: 600, letterSpacing: '0.08em', color: alpha(L.ink, 0.82),
       }}>
-        <span><span style={{ color: L.accent }}>●</span>&nbsp; ONDO</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ color: L.accent }}>●</span>
+          <ShotcraftMark size={36} tone="dark" />
+          <span style={{ letterSpacing: '0.02em' }}>{BRAND.name}</span>
+        </span>
         <span>{golden ? 'ISO 100 · 1/500 · ƒ2.8' : 'ISO 3200 · 1/8 · ƒ1.6'}</span>
         <span>{golden ? '4K · 24' : 'RAW · 24'}</span>
       </div>
@@ -210,9 +220,9 @@ export const LightLeakBurn: React.FC = () => {
           </div>
           <div style={{ ...type(140, 760), color: L.ink }}>
             {golden ? (
-              <TextReveal key="b" text="Made for the light." by="word" variant="rise" start={PEAK + 10} each={20} gap={4} />
+              <TextReveal key="b" text={MOTTO_B} by="word" variant="rise" start={PEAK + 10} each={20} gap={4} />
             ) : (
-              <TextReveal key="a" text="Made for the dark." by="word" variant="rise" start={2} each={20} gap={4} />
+              <TextReveal key="a" text={MOTTO_A} by="word" variant="rise" start={2} each={20} gap={4} />
             )}
           </div>
         </div>

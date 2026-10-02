@@ -1,12 +1,12 @@
 // 字形漂移合拢（letterform-drift-assembly）——Stranger Things 片头式入场。
-// 标题 "ASSEMBLE" 拆 8 字符：各自从不同方向（h(i) seeded 随机向量，
+// 品牌名 "Shotcraft"（BRAND.short，video-shotcraft 的简称）拆 9 字符：各自从不同方向（h(i) seeded 随机向量，
 // 幅度 ±260–360px）带 blur 8px + opacity 0.35 缓慢漂入，错峰归位
 // （delay i×3f，45f 行程，Easing.out(cubic)）。每字锁定瞬间给一次
 // "加深脉冲"：字色 ink→#000→ink + 描边 0→3px→0（8f）——白底上
 // 不用发光用加深（库判例）。全部合体后整词 scale 1→1.04→1 收束呼吸
 // （判例：1.02 太弱，加码到 1.04）。
 // 关键帧：0–24 各字错峰启程 → i 字 [i*3, i*3+45] 漂入归位 →
-// 锁定帧 i*3+45 起 8f 加深脉冲（最后一字 66–74）→ 80–104 整词呼吸 →
+// 锁定帧 i*3+45 起 8f 加深脉冲（最后一字 69–77）→ 80–104 整词呼吸 →
 // 104–150 全静止（46f，无逐帧滤镜）。
 //
 // 质感升级：去掉调试标题；柔光 Backdrop；系统 SF 栈 700、带色相的近黑墨色；
@@ -17,6 +17,7 @@ import React from 'react';
 import { useCurrentFrame, interpolate, Easing } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
 import { Backdrop, EASE, FONT, ramp } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const LETTERFORM_DRIFT_ASSEMBLY_DURATION = 150;
 
@@ -25,7 +26,7 @@ const h = (n: number) => {
   return s - Math.floor(s);
 };
 
-const WORD = 'ASSEMBLE';
+const WORD = BRAND.short; // 'Shotcraft'——片头式亮相落在品牌名上
 const TRAVEL = 45; // 每字漂入行程帧数
 const STAG = 3; // 错峰间隔
 const INK = [23, 24, 28]; // G.ink1 #17181c
@@ -33,7 +34,7 @@ const INK = [23, 24, 28]; // G.ink1 #17181c
 export const LetterformDriftAssembly: React.FC = () => {
   const frame = useCurrentFrame();
   const chars = WORD.split('');
-  const lastLock = (chars.length - 1) * STAG + TRAVEL; // 66
+  const lastLock = (chars.length - 1) * STAG + TRAVEL; // 69
 
   // 整词收束呼吸：80–92 放大到 1.04，92–104 回落，之后恒 1 → 帧确定
   const breath =

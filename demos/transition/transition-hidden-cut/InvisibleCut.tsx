@@ -2,10 +2,11 @@
 // 背景从 A 无痕硬切成 B，前景扫出画时观众以为还是同一镜。（invisible-cut + foreground-occlusion-swipe）
 //
 // 第二轮重设计（暖沙生活方式 · "点下预订，一晃就订好了"）：
-// - look = sand（米色 · 赤陶 · 靛蓝点缀），衬线标题 + 无衬线 UI 的旅行 App「Halden」。
-//   A：沙漠营地详情页——左侧 860px 程序绘制的沙丘日落"照片"，右侧衬线大标题、日期/人数、价格与赤陶「Reserve」大按钮；
-//   B：预订成功——左侧 150px 衬线「You're going.」，右侧一张票根卡（顶部还是那张沙丘照片 = 视觉连续，打孔线、
-//   大号确认码、赤陶对勾印章）。因果是一条线：按下 Reserve → 一晃 → 已订好。版式左右互换，换景幅度大但不突兀。
+// - look = sand（米色 · 赤陶 · 靛蓝点缀），衬线标题 + 无衬线 UI；产品 = video-shotcraft 的成片渲染页。
+//   A：发布片镜头详情——左侧 860px 程序绘制的沙丘日落"镜头画面"（角标 = 镜刻标志 + 镜头号），右侧衬线大标题、
+//   镜头数/片长、规格与赤陶「Render」大按钮；B：渲染完成——左侧 168px 衬线「That's a wrap.」，右侧一张票根卡
+//   （顶部还是那张沙丘画面 = 视觉连续，打孔线、大号渲染编号、赤陶对勾印章）。因果是一条线：按下 Render → 一晃 → 片子出好了。
+//   版式左右互换，换景幅度大但不突兀。
 // - 遮挡物 = 贴着镜头掠过的失焦深棕前景（像镜头前走过一根立柱）：纯渐变绘制（中心实、两侧 340px 软边 = 失焦 +
 //   运动模糊的观感），前缘一道赤陶轮廓光读作"受光的物体"；前方 640px 软投影先扫过页面（近物遮光）。
 //   不用 CameraMotionBlur（12 倍采样太贵），软边渐变本身就是糊。
@@ -14,7 +15,7 @@
 //
 // 时间表（30fps，共 110f）：
 //   0–24    A 静置（首帧即完整画面），横移极缓起步，照片里的日轮微微呼吸
-//   24–32   预备：Reserve 按钮按下（0.96 缩放 + 压暗 6f）→ 文案换成「Reserving…」
+//   24–32   预备：Render 按钮按下（0.96 缩放 + 压暗 6f）→ 文案换成「Rendering…」
 //   32–46   遮挡物右→左扫过 14f（bezier 0.3,0,0.7,1）；39f 实心区盖满 1920，硬切 A→B
 //   39–53   B 从右回稳；46–64 印章弹簧落座、对勾描画；45–68 说明行与确认码错峰升起
 //   70–110  hold 40f：横移收尾、日轮呼吸
@@ -22,12 +23,13 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const INVISIBLE_CUT_DURATION = 110;
 
 const S = LOOKS.sand;
 const PAD = 120;
-const PRESS = 24; // 按下 Reserve
+const PRESS = 24; // 按下 Render
 const SW_START = 32; // 遮挡物入画
 const SW_END = 46; // 遮挡物出画
 const CUT = 39; // 硬切：实心区盖满画幅的那一帧
@@ -97,7 +99,7 @@ const Dunes: React.FC<{ w: number; h: number; f: number; id: string }> = ({ w, h
   );
 };
 
-// ───────────── A：营地详情 ─────────────
+// ───────────── A：发布片镜头详情 ─────────────
 const PageA: React.FC<{ f: number }> = ({ f }) => {
   const down = ramp(f, PRESS, 4, EASE.out) * (1 - ramp(f, PRESS + 5, 8, EASE.out));
   const reserving = f >= PRESS + 4;
@@ -113,17 +115,17 @@ const PageA: React.FC<{ f: number }> = ({ f }) => {
           background: 'rgba(255,248,238,0.86)', boxShadow: `0 8px 24px -8px ${alpha(S.shadow, 0.4)}`,
           ...type(30, 650), color: S.ink,
         }}>
-          <span style={{ color: S.accent }}>★</span> 4.92 <span style={{ color: S.ink2, fontWeight: 500 }}>· 318 reviews</span>
+          <ShotcraftMark size={34} tone="light" /> Shot 03 <span style={{ color: S.ink2, fontWeight: 500 }}>· Golden hour</span>
         </div>
       </div>
 
       <div style={{ position: 'absolute', left: 1064, top: 176, width: 736 }}>
-        <div style={{ ...type(28, 700, { caps: true }), letterSpacing: '0.14em', color: S.accent }}>Desert camp · Merzouga</div>
+        <div style={{ ...type(28, 700, { caps: true }), letterSpacing: '0.14em', color: S.accent }}>Launch film · Final cut</div>
         <div style={{ fontFamily: SERIF, fontSize: 92, fontWeight: 500, lineHeight: 1.0, letterSpacing: '-0.025em', color: S.ink, marginTop: 26 }}>
-          Three nights under the <i style={{ color: S.accent }}>Sahara</i> sky
+          Direct the film.<br />Let the <i style={{ color: S.accent }}>agent</i><br />shoot it.
         </div>
         <div style={{ display: 'flex', marginTop: 44, borderTop: `1.5px solid ${S.line}`, borderBottom: `1.5px solid ${S.line}` }}>
-          {[['Dates', 'Nov 12 – 15'], ['Guests', '2 adults']].map(([k, v], i) => (
+          {[['Shots', '12 cuts'], ['Length', '0:45 · 30fps']].map(([k, v], i) => (
             <div key={k} style={{ flex: 1, padding: '22px 0', paddingLeft: i ? 32 : 0, borderLeft: i ? `1.5px solid ${S.line}` : undefined }}>
               <div style={{ ...type(26, 600, { caps: true }), letterSpacing: '0.1em', color: S.ink3 }}>{k}</div>
               <div style={{ ...type(40, 600), color: S.ink, marginTop: 6 }}>{v}</div>
@@ -131,8 +133,8 @@ const PageA: React.FC<{ f: number }> = ({ f }) => {
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginTop: 34 }}>
-          <span style={{ ...type(76, 700), color: S.ink }}>€640</span>
-          <span style={{ ...type(32, 500), color: S.ink2 }}>total · free cancellation</span>
+          <span style={{ ...type(76, 700), color: S.ink }}>1080p</span>
+          <span style={{ ...type(32, 500), color: S.ink2 }}>h264 · beat-synced SFX</span>
         </div>
         <div style={{
           marginTop: 34, height: 116, borderRadius: 58, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18,
@@ -147,14 +149,14 @@ const PageA: React.FC<{ f: number }> = ({ f }) => {
               transform: `rotate(${(f - PRESS) * 24}deg)`, boxSizing: 'border-box',
             }} />
           )}
-          {reserving ? 'Reserving…' : 'Reserve'}
+          {reserving ? 'Rendering…' : 'Render'}
         </div>
       </div>
     </>
   );
 };
 
-// ───────────── B：预订成功 ─────────────
+// ───────────── B：渲染完成 ─────────────
 const PageB: React.FC<{ f: number }> = ({ f }) => {
   const seal = springAt(f, CUT + 7, { damping: 13, stiffness: 190 });
   const check = ramp(f, CUT + 12, 14, EASE.out);
@@ -164,16 +166,16 @@ const PageB: React.FC<{ f: number }> = ({ f }) => {
       <div style={{ position: 'absolute', left: PAD, top: 214, width: 900 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, ...type(28, 700, { caps: true }), letterSpacing: '0.14em', color: S.accent }}>
           <span style={{ width: 14, height: 14, borderRadius: 7, background: S.accent }} />
-          Booking confirmed
+          Render complete
         </div>
         <div style={{ fontFamily: SERIF, fontSize: 168, fontWeight: 500, lineHeight: 0.94, letterSpacing: '-0.035em', color: S.ink, marginTop: 30 }}>
-          You’re<br /><i style={{ color: S.accent }}>going.</i>
+          That’s a<br /><i style={{ color: S.accent }}>wrap.</i>
         </div>
         <div style={{ ...type(42, 500), color: S.ink2, marginTop: 52, lineHeight: 1.35, opacity: rows[0], transform: `translateY(${(1 - rows[0]) * 22}px)` }}>
-          Three nights at Atlas Dunes Camp,<br />Merzouga · Nov 12 – 15
+          Launch film · 12 shots, beat-synced,<br />crafted with {BRAND.name}
         </div>
         <div style={{ ...type(32, 500), color: S.ink3, marginTop: 30, opacity: rows[1], transform: `translateY(${(1 - rows[1]) * 22}px)` }}>
-          Itinerary and desert transfer sent to your inbox
+          MP4 and JianYing project saved to your folder
         </div>
       </div>
 
@@ -191,7 +193,7 @@ const PageB: React.FC<{ f: number }> = ({ f }) => {
           <div key={x} style={{ position: 'absolute', left: x, top: 494, width: 52, height: 52, borderRadius: 26, background: S.bg[1], boxShadow: `inset 0 2px 6px ${alpha(S.shadow, 0.18)}` }} />
         ))}
         <div style={{ position: 'absolute', left: 52, top: 362, display: 'flex', justifyContent: 'space-between', width: 556 }}>
-          {[['From', 'Nov 12'], ['To', 'Nov 15']].map(([k, v]) => (
+          {[['Shots', '12'], ['Length', '0:45']].map(([k, v]) => (
             <div key={k}>
               <div style={{ ...type(24, 650, { caps: true }), letterSpacing: '0.12em', color: S.ink3 }}>{k}</div>
               <div style={{ fontFamily: SERIF, fontSize: 64, fontWeight: 500, letterSpacing: '-0.02em', color: S.ink, marginTop: 4 }}>{v}</div>
@@ -199,9 +201,9 @@ const PageB: React.FC<{ f: number }> = ({ f }) => {
           ))}
         </div>
         <div style={{ position: 'absolute', left: 52, top: 570, opacity: rows[2], transform: `translateY(${(1 - rows[2]) * 20}px)` }}>
-          <div style={{ ...type(24, 650, { caps: true }), letterSpacing: '0.12em', color: S.ink3 }}>Confirmation</div>
-          <div style={{ fontFamily: FONT.mono, fontSize: 64, fontWeight: 600, letterSpacing: '0.02em', color: S.ink, marginTop: 8 }}>HX-4821</div>
-          <div style={{ ...type(30, 500), color: S.ink2, marginTop: 14 }}>3 nights · 2 adults · €640</div>
+          <div style={{ ...type(24, 650, { caps: true }), letterSpacing: '0.12em', color: S.ink3 }}>Render</div>
+          <div style={{ fontFamily: FONT.mono, fontSize: 64, fontWeight: 600, letterSpacing: '0.02em', color: S.ink, marginTop: 8 }}>SC-4821</div>
+          <div style={{ ...type(30, 500), color: S.ink2, marginTop: 14 }}>12 shots · 0:45 · 1080p</div>
         </div>
       </div>
       {/* 赤陶印章：压在照片与票面交界处，弹簧落座 + 对勾描画 */}

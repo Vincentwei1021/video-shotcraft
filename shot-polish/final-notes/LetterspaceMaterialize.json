@@ -1,0 +1,14 @@
+{
+  "stem": "LetterspaceMaterialize",
+  "changed": true,
+  "brand": [
+    "描画结晶的字标 SUPERHUMAN → video-shotcraft（全小写）",
+    "骨架字形库重绘为 13 个几何小写单线字形，仍是全字符同帧起笔、同帧齐收，整行宽度与原版相近"
+  ],
+  "brandEn": [
+    "Stroke-drawn wordmark SUPERHUMAN → video-shotcraft (all lowercase)",
+    "Skeleton glyph set redrawn as 13 geometric lowercase monoline letters; all letters still start and finish on the same frame, line width close to the original"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

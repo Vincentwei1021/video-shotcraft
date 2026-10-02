@@ -4,12 +4,13 @@
 // 收尾真静止：标题字距 30f 收拢完（63f）后所有动画结束，静止 77f（>40f）。
 // 质感：三镜构图拉开（全景 / 换页全景 / 特写），特写放大走 CSS zoom 按目标尺寸栅格化（Q2）；
 // 三镜统一镜头暗角 + 颗粒，像同一台摄影机拍的；黑场是真正的纯黑空帧（静默一拍）；
-// 开场字卡是成品级标题：柔光底 + 眉题 + 主标题 + 副题，主标题在淡入微升的同时字距从
+// 开场字卡是成品级标题：柔光底 + 眉题 + 主标题（video-shotcraft 全小写字标）+ 副题（品牌 tagline），主标题在淡入微升的同时字距从
 // 0.05em 缓收到 −0.012em（预告片标题的"呼吸"），副题晚 6f 跟进，63f 后整帧冻结。
 import React from 'react';
 import { AbsoluteFill, Freeze, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { G, FakeDashboard } from '../../_fixtures/Fixtures';
 import { Backdrop, EASE, FONT, Grain, Vignette, mix, ramp, tracking } from '../../_fixtures/Polish';
+import { BRAND, PITCH } from '../../_fixtures/Brand';
 
 export const TRAILER_BUMPER_DURATION = 140; // 速剪 27f + 黑场 6f + 标题入场 30f + 静止 77f
 
@@ -131,11 +132,12 @@ export const TrailerBumper: React.FC = () => {
               marginBottom: 30,
             }}
           >
-            THIS FALL
+            INTRODUCING
           </div>
           <div
             style={{
               opacity,
+              fontFamily: BRAND.font,
               fontWeight: 800,
               fontSize: 176,
               lineHeight: 1,
@@ -145,7 +147,7 @@ export const TrailerBumper: React.FC = () => {
               whiteSpace: 'nowrap',
             }}
           >
-            THE LAUNCH
+            {BRAND.name}
           </div>
           <div
             style={{
@@ -157,7 +159,7 @@ export const TrailerBumper: React.FC = () => {
               letterSpacing: tracking(40),
             }}
           >
-            Everything your team ships, in one place.
+            {PITCH.en.taglines[1]}
           </div>
         </div>
       </AbsoluteFill>

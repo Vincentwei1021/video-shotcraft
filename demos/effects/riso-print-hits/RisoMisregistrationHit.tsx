@@ -5,11 +5,12 @@
 // 第二轮重设计（双色 riso 演出海报 · 荧光粉 × 蓝）：
 // - 配色 custom：再生新闻纸 #f3eee2 + riso 两色油墨——荧光粉 FLUO #ff4fa3 与 蓝 BLUE #1f5fc4。
 //   两版套准时 multiply 叠成深紫墨色（同一字形两版重合），错开时一侧粉、一侧蓝的彩边——经典 riso 毛边。
-// - 版式：瑞士网格海报。左对齐 300px 黑体两行「PRINT IT / LOUD.」压在右侧一只半调网点大太阳上
-//  （粉版，点径随离心距离变小 = 真半调），顶部版记、底部三栏演出信息（蓝版）。只有标题两版会错，
+// - 版式：瑞士网格海报（video-shotcraft 的 riso 宣传海报）。左对齐 300px 黑体两行「CRAFT IT / LOUD.」压在右侧
+//   一只半调网点大太阳上（粉版，点径随离心距离变小 = 真半调），顶部版记、底部三栏卖点信息（蓝版）。只有标题两版会错，
 //   背景元素保持套准（整画面全裂读作故障而非印刷）。
 // - 节奏：开场太阳像被墨辊滚上纸（自上而下的擦入 0–16f）、信息栏错峰落位 → 标题 8f ease-in 撞入
 //   → 命中同帧裂版 + 整页一记 1.2% 的顿挫 → 44f 衰减震荡 → 72f 硬切套准 + 「ON REGISTER」圆章盖下
+//   （圆章中心是单色版镜刻标志——BRAND.md 规定单色印刷用 mono 版，蓝版一色印出）
 //   → 44f 干净 hold（极缓推进）。
 //
 // 时间表（30fps，共 120f）：
@@ -21,6 +22,7 @@
 import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, SpeedBlur, Vignette, bezier, mix, ramp, velocity } from '../../_fixtures/Polish';
+import { MARK_PATHS } from '../../_fixtures/Brand';
 
 export const RISO_MISREGISTRATION_HIT_DURATION = 120;
 
@@ -45,7 +47,8 @@ const Plate: React.FC<{ color: string; dx: number; dy: number; scale?: number }>
     mixBlendMode: 'multiply', color, fontFamily: SANS, fontWeight: 900, fontSize: 300, lineHeight: 0.84,
     letterSpacing: '-0.045em', whiteSpace: 'nowrap',
   }}>
-    <div>PRINT IT</div>
+    {/* F 与 T 顶横在 −0.045em 字距下恰好相接，抗锯齿会留一条发丝缝——F 后再收 0.01em 让两笔重叠 */}
+    <div>CRA<span style={{ marginRight: '-0.01em' }}>F</span>T IT</div>
     <div>LOUD.</div>
   </div>
 );
@@ -94,7 +97,7 @@ const RegMark: React.FC<{ x: number; y: number }> = ({ x, y }) => (
   </svg>
 );
 
-// 圆章：套准那一帧盖下的「ON REGISTER」（粉版，环形字 + 中心星）
+// 圆章：套准那一帧盖下的「ON REGISTER」（蓝版，环形字 + 中心单色镜刻标志；标志反向转回 14° 保持正立）
 const Stamp: React.FC<{ s: number; o: number }> = ({ s, o }) => (
   <svg width={300} height={300} viewBox="-130 -130 260 260"
     style={{ position: 'absolute', left: 1480, top: 500, mixBlendMode: 'multiply', opacity: o, transform: `rotate(-14deg) scale(${s.toFixed(4)})` }}>
@@ -106,9 +109,13 @@ const Stamp: React.FC<{ s: number; o: number }> = ({ s, o }) => (
       <circle r={66} strokeWidth={3} />
     </g>
     <text fill={BLUE} style={{ fontFamily: FONT.mono, fontSize: 28, fontWeight: 700 }}>
-      <textPath href="#rmh-ring" textLength={540} lengthAdjust="spacing">ON REGISTER ✶ INKWELL ✶</textPath>
+      <textPath href="#rmh-ring" textLength={540} lengthAdjust="spacing">ON REGISTER ✶ SHOTCRAFT ✶</textPath>
     </text>
-    <path d="M0 -40 L11 -12 L40 -12 L17 6 L26 36 L0 18 L-26 36 L-17 6 L-40 -12 L-11 -12 Z" fill={BLUE} />
+    {/* 标志内容框 x16–120 / y16–112，中心 (68,64)；缩到 ~66px 宽放进内圈 r66 */}
+    <g transform="rotate(14) scale(0.64) translate(-68 -64)" fill={BLUE}>
+      <path d={MARK_PATHS.frame} />
+      <path d={MARK_PATHS.cut} />
+    </g>
   </svg>
 );
 
@@ -166,7 +173,7 @@ export const RisoMisregistrationHit: React.FC = () => {
           fontFamily: FONT.mono, fontSize: 26, fontWeight: 600, letterSpacing: '0.12em', color: BLUE, mixBlendMode: 'multiply',
           opacity: ramp(frame, 0, 10, EASE.out),
         }}>
-          <span>INKWELL PRESS — Nº 07</span>
+          <span>VIDEO-SHOTCRAFT — Nº 07</span>
           <span>TWO-COLOUR RISO · 1 OF 300</span>
         </div>
         <div style={{ position: 'absolute', left: 120, right: 120, top: 150, height: 4, background: BLUE, mixBlendMode: 'multiply', transformOrigin: '0 50%', transform: `scaleX(${ramp(frame, 0, 18, EASE.snappy).toFixed(4)})` }} />
@@ -175,9 +182,9 @@ export const RisoMisregistrationHit: React.FC = () => {
         <div style={{ position: 'absolute', left: 120, right: 120, top: 878, height: 4, background: BLUE, mixBlendMode: 'multiply', transformOrigin: '0 50%', transform: `scaleX(${ramp(frame, 2, 18, EASE.snappy).toFixed(4)})` }} />
         <div style={{ position: 'absolute', left: 120, right: 120, top: 906, display: 'grid', gridTemplateColumns: '1.25fr 1fr 1fr', gap: 48, color: BLUE, mixBlendMode: 'multiply' }}>
           {[
-            ['SMALL PRESS NIGHT', 'Zines, posters & live printing'],
-            ['FRI 14 NOV', 'Doors 19:00 — Hall B'],
-            ['FREE ENTRY', 'Bring your own paper'],
+            ['SHOT RECIPE CARDS', 'Cinematic product films'],
+            ['ONE PROMPT', 'To a finished promo'],
+            ['BUILT ON REMOTION', 'For Claude Code & Codex'],
           ].map(([a, b], i) => (
             <div key={i} style={info(i)}>
               <div style={{ fontFamily: SANS, fontSize: 40, fontWeight: 850, letterSpacing: '-0.01em', lineHeight: 1.1 }}>{a}</div>

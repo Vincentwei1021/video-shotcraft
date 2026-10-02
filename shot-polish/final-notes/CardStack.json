@@ -1,0 +1,18 @@
+{
+  "stem": "CardStack",
+  "changed": true,
+  "brand": [
+    "眉题品牌「PARCEL · TEMPLATES」+ 钴蓝方块 → 镜刻标志 + video-shotcraft · shot recipes",
+    "主角卡「Q4 Launch brief」（封面大字 Q4）→「Launch film」（封面换成镜刻标志反白版 + Launch）",
+    "九张模板卡（Launch plan / Weekly report / CRM…）→ 镜头配方卡（Beat-synced cuts / Bar chart rise / Render queue / Storyboard grid…），卡底「Used by Nk teams」→ 示意时长「N.Ns · 30 fps」",
+    "标题「Start from a template.」→「Start from a shot recipe.」，副句 → 「Nine shot recipes. Every one ready to render.」"
+  ],
+  "brandEn": [
+    "Eyebrow brand \"PARCEL · TEMPLATES\" + cobalt square → Frame Chisel mark + video-shotcraft · shot recipes",
+    "Hero card \"Q4 Launch brief\" (big Q4 on the cover) → \"Launch film\" (cover shows the reversed Frame Chisel mark + Launch)",
+    "Nine template cards (Launch plan / Weekly report / CRM…) → shot recipe cards (Beat-synced cuts / Bar chart rise / Render queue / Storyboard grid…); \"Used by Nk teams\" footers → sample durations \"N.Ns · 30 fps\"",
+    "Title \"Start from a template.\" → \"Start from a shot recipe.\"; sub-line → \"Nine shot recipes. Every one ready to render.\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

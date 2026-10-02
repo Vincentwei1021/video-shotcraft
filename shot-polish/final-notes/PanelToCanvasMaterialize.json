@@ -1,0 +1,18 @@
+{
+  "stem": "PanelToCanvasMaterialize",
+  "changed": true,
+  "brand": [
+    "板头眉题「Fieldnote · Board」→ video-shotcraft 标志 + 字标 +「· STORYBOARD」",
+    "大标题「Q3 discovery」→「Launch film」；计数「3 highlights pinned」→「3 shots pinned」",
+    "面板「Highlights / 5 from 14 sessions / Pick the ones worth discussing.」→「Shot recipes / 5 suggested / Pick the shots for this cut.」",
+    "5 条用户研究高光 → 5 张镜头配方卡（Crash zoom punch-in、Text as mask opener、Cursor flyover tour、Chart axis rescale shock、Grain dissolve outro），卡上标签/备注/时长同步换"
+  ],
+  "brandEn": [
+    "Board eyebrow \"Fieldnote · Board\" -> video-shotcraft mark + wordmark + \"· STORYBOARD\"",
+    "Title \"Q3 discovery\" -> \"Launch film\"; counter \"3 highlights pinned\" -> \"3 shots pinned\"",
+    "Panel \"Highlights / 5 from 14 sessions / Pick the ones worth discussing.\" -> \"Shot recipes / 5 suggested / Pick the shots for this cut.\"",
+    "Five user-research highlights -> five shot recipe cards (Crash zoom punch-in, Text as mask opener, Cursor flyover tour, Chart axis rescale shock, Grain dissolve outro) with matching tags, notes and frame counts"
+  ],
+  "styleKey": "panel-to-canvas",
+  "mdChanged": false
+}

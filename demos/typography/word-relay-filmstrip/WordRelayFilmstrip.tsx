@@ -2,27 +2,29 @@
 //
 // 第二轮重设计（石墨 · 电影感编辑部）：
 // - look = graphite（近单色暗场 + 金色点缀）。左列 940×530 页面卡黑白强制相间（出版级假页面：
-//   基准报告 / 研究长文 / 构建流水线 / 代码评审 / 影像查看器 / 出货表），每个动词停在对应证据上。
+//   节奏报告 / 分镜脚本 / 渲染流水线 / 成片 PR 评审 / 影像查看器 / 出货表），每个动词停在对应证据上。
+//   主体是 video-shotcraft（句中简称 Shotcraft）：分镜 frames → 渲染 builds → 成片 ships。
 // - 景深：焦点卡（中心在 y=540）全亮全尺寸，邻卡按离焦距离压暗 + 缩到 0.94 + 轻虚化，
 //   胶片步进时邻卡"对焦"进来——证据的主次一眼可见。
 // - 步进制保留：左列平时零位移，只在切词窗口内 18f 不对称 in-out 滚一格，快段叠纵向运动模糊。
-// - 右侧 Didot 140px：第一行名词「Atlas」（正体、次级墨）恒定，第二行动词斜体白字原位接力——
+// - 右侧 Didot 140px：第一行名词「Shotcraft」（正体、次级墨）恒定，第二行动词斜体白字原位接力——
 //   旧词先灰化、8f ease-in 从遮罩上沿升出（先出），新词逐字母从遮罩下沿升起（后进，1.2f 错峰）。
 //   词块垂直中心 = 焦点卡中点 y=540（像素级）；一条金色引线从焦点卡右缘指向词块中线，
 //   换词时收回、新证据落定后重新画出；词块下方一行证据注脚随动词同步接力。
 //
 // 时间表（30fps，共 180f）：
-//   0–16    预备：胶片静止、Atlas 与引线已在，序号 00
-//   16–34   第 1 格：胶片滚到「研究长文」，researches 逐字升起（23–49）
+//   0–16    预备：胶片静止、Shotcraft 与引线已在，序号 00
+//   16–34   第 1 格：胶片滚到「分镜脚本」，frames 逐字升起（23–45）
 //   34–66   hold（胶片零位移；相机 1→1.02 极缓推）
-//   66–84   第 2 格：researches 灰化升出（66–74）→ builds 升起（73–95），胶片滚到「构建流水线」
+//   66–84   第 2 格：frames 灰化升出（66–74）→ builds 升起（73–95），胶片滚到「渲染流水线」
 //   84–114  hold
-//   114–132 第 3 格：codes（121–141），胶片停在「代码评审」
+//   114–132 第 3 格：ships（121–141），胶片停在「成片 PR 评审」
 //   141–180 hold：尾帧是一张完整的图文对位海报
 import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const WORD_RELAY_FILMSTRIP_DURATION = 180;
 
@@ -37,30 +39,28 @@ const SANS = FONT.sans;
 const SERIF_TXT = '"Iowan Old Style", "Charter", Georgia, serif';
 
 // —— 页面卡集合：黑白相间（奇偶强制交替），内容各异 ——
-// 研究长文（亮）——"researches" 的证据
+// 分镜脚本（亮）——"frames" 的证据：video-shotcraft 的宣传片分镜文档
 const LightArticle: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: '#ffffff', padding: '30px 46px', fontFamily: SANS }}>
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28, paddingBottom: 16, borderBottom: '1px solid #eceae5' }}>
-      <div style={{ fontFamily: SERIF_TXT, fontSize: 22, fontWeight: 700, color: '#1d1c1a', letterSpacing: '0.01em' }}>
-        Perspective<span style={{ color: '#c4523a' }}>.</span>
-      </div>
+      <ShotcraftWordmark size={19} tone="light" markScale={1.7} gap={9} />
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 26, fontSize: 14, color: '#8a8780' }}>
-        {['Research', 'Models', 'Policy', 'About'].map((t, i) => <span key={t} style={{ color: i === 0 ? '#1d1c1a' : undefined, fontWeight: i === 0 ? 600 : 400 }}>{t}</span>)}
+        {['Shots', 'Templates', 'Gallery', 'Docs'].map((t, i) => <span key={t} style={{ color: i === 0 ? '#1d1c1a' : undefined, fontWeight: i === 0 ? 600 : 400 }}>{t}</span>)}
       </div>
     </div>
-    <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: '#c4523a', marginBottom: 12 }}>RESEARCH NOTE · 12 MIN READ</div>
+    <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: '#c4523a', marginBottom: 12 }}>STORYBOARD · LAUNCH FILM · 42 S</div>
     <div style={{ fontFamily: SERIF_TXT, fontSize: 38, lineHeight: 1.14, color: '#1b1a18', width: 620, marginBottom: 22, letterSpacing: '-0.01em' }}>
-      How open models changed the cost of curiosity
+      Twelve shots, one story,<br />every cut on the beat
     </div>
     <div style={{ display: 'flex', gap: 30 }}>
       <div style={{ flex: 1.3, fontFamily: SERIF_TXT, fontSize: 15.5, lineHeight: 1.6, color: '#5d5a54' }}>
-        Three years ago, running a frontier-scale experiment meant a grant, a queue and a quarter of waiting. Today a
-        graduate student can reproduce last spring&apos;s headline result on a rented GPU before lunch. We traced 1,240
-        published replications to see what that shift did to the questions people dare to ask.
+        The film opens on the real dashboard, pushes into the empty state, then crash-zooms onto the first result. Every
+        cut lands on a downbeat of the 112 BPM track, every camera move comes from a tuned shot recipe card, and the
+        brand lockup holds for the last two bars before the call to action.
       </div>
       <div style={{ flex: 1, borderRadius: 10, background: '#f7f5f0', border: '1px solid #ebe7de', padding: '16px 18px' }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#9a7a3a', marginBottom: 12 }}>KEY FINDINGS</div>
-        {[['4.2×', 'more replications per paper'], ['61%', 'run on a single node'], ['−83%', 'median compute cost'], ['2.1 d', 'time to first result']].map(([n, l]) => (
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: '#9a7a3a', marginBottom: 12 }}>SHOT LIST</div>
+        {[['S01', 'Dashboard push-in'], ['S02', 'Crash zoom punch'], ['S03', 'Word relay'], ['S04', 'Brand lockup']].map(([n, l]) => (
           <div key={l} style={{ display: 'flex', gap: 12, alignItems: 'baseline', marginBottom: 9 }}>
             <span style={{ width: 56, fontSize: 15, fontWeight: 700, color: '#1d1c1a', fontVariantNumeric: 'tabular-nums' }}>{n}</span>
             <span style={{ fontSize: 13.5, color: '#77736b' }}>{l}</span>
@@ -68,7 +68,7 @@ const LightArticle: React.FC = () => (
         ))}
       </div>
     </div>
-    {/* 图 1：逐年复现数的小柱图 + 图注 */}
+    {/* 图 1：每个镜头时长的小柱图 + 图注 */}
     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 22, marginTop: 20, paddingTop: 14, borderTop: '1px solid #eceae5' }}>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 48 }}>
         {[0.18, 0.24, 0.31, 0.46, 0.58, 0.72, 0.9, 1].map((v, i) => (
@@ -76,9 +76,9 @@ const LightArticle: React.FC = () => (
         ))}
       </div>
       <div style={{ fontSize: 13, color: '#8a8780', lineHeight: 1.45 }}>
-        <span style={{ fontWeight: 700, color: '#4a4741' }}>Fig. 1</span> — Replications per published paper, 2019–2026
+        <span style={{ fontWeight: 700, color: '#4a4741' }}>Fig. 1</span> — Shot lengths in frames, snapped to the beat grid
       </div>
-      <div style={{ marginLeft: 'auto', fontSize: 13, color: '#8a8780' }}>By M. Lindqvist &amp; T. Park</div>
+      <div style={{ marginLeft: 'auto', fontSize: 13, color: '#8a8780' }}>Storyboard v3 · 30 fps</div>
     </div>
   </div>
 );
@@ -124,7 +124,7 @@ const DarkMri: React.FC = () => (
 const LightTable: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: '#ffffff', padding: '28px 40px', fontFamily: SANS }}>
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 18 }}>
-      <div style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(145deg, #2c62c6, #1d4f9e)', marginRight: 12 }} />
+      <ShotcraftMark size={30} tone="light" style={{ marginRight: 12 }} />
       <div style={{ fontSize: 22, fontWeight: 700, color: '#1d1e21', letterSpacing: '-0.01em' }}>Q3 shipments by region</div>
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 18, fontSize: 13.5, color: '#8b9099' }}>
         <span>Export CSV</span><span>Filters (2)</span>
@@ -155,10 +155,10 @@ const LightTable: React.FC = () => (
 
 const DarkStats: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #110f14 0%, #0c0b0f 100%)', padding: '34px 46px', fontFamily: SANS }}>
-    <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: '#b0584c', marginBottom: 8 }}>LAB REPORT · BENCHMARKS</div>
-    <div style={{ fontSize: 28, fontWeight: 700, color: '#ece8e2', letterSpacing: '-0.015em', marginBottom: 22 }}>Reasoning accuracy, by model size</div>
+    <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: '#b0584c', marginBottom: 8 }}>PACING REPORT · LAUNCH FILM</div>
+    <div style={{ fontSize: 28, fontWeight: 700, color: '#ece8e2', letterSpacing: '-0.015em', marginBottom: 22 }}>Motion energy, shot by shot</div>
     <div style={{ borderLeft: '2px solid #5e2530', paddingLeft: 26 }}>
-      {[['1B', 0.24, '24.7'], ['3B', 0.33, '33.5'], ['7B', 0.46, '46.2'], ['13B', 0.58, '58.0'], ['34B', 0.69, '69.4'], ['70B', 0.86, '86.1']].map(([k, w, v], i) => (
+      {[['S01', 0.24, '24.7'], ['S02', 0.33, '33.5'], ['S03', 0.46, '46.2'], ['S04', 0.58, '58.0'], ['S05', 0.69, '69.4'], ['S06', 0.86, '86.1']].map(([k, w, v], i) => (
         <div key={k as string} style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
           <span style={{ width: 40, fontSize: 14, color: '#7d7983', fontWeight: 600 }}>{k}</span>
           <div style={{ width: 520, height: i === 5 ? 22 : 16, borderRadius: 4, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
@@ -169,7 +169,7 @@ const DarkStats: React.FC = () => (
       ))}
     </div>
     <div style={{ marginTop: 22, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '16px 24px', display: 'flex', gap: 54 }}>
-      {[['+39.9', 'pts, 7B → 70B'], ['1.8×', 'tokens / sec'], ['0.4%', 'variance, 5 runs']].map(([n, l]) => (
+      {[['12', 'shots on the beat'], ['112', 'BPM soundtrack'], ['0', 'dropped frames']].map(([n, l]) => (
         <div key={l}>
           <div style={{ fontSize: 22, fontWeight: 750, color: '#e8735f', fontVariantNumeric: 'tabular-nums' }}>{n}</div>
           <div style={{ fontSize: 13, color: '#77727e' }}>{l}</div>
@@ -179,17 +179,17 @@ const DarkStats: React.FC = () => (
   </div>
 );
 
-// 构建流水线（暗）——"builds" 的证据
+// 渲染流水线（暗）——"builds" 的证据：宣传片从分镜到成片的构建
 const DarkBuild: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #111318 0%, #0c0d11 100%)', padding: '26px 40px', fontFamily: SANS }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-      <div style={{ fontSize: 19, fontWeight: 700, color: '#e6e8ee' }}>acme / web-app</div>
+      <div style={{ fontSize: 19, fontWeight: 700, color: '#e6e8ee' }}>{BRAND.name} / launch-film</div>
       <div style={{ fontSize: 12.5, fontWeight: 600, color: '#9aa1b4', padding: '3px 9px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)' }}>main</div>
-      <div style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#e8b84a' }}>● Build #1284 running</div>
+      <div style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700, color: '#e8b84a' }}>● Render #1284 running</div>
     </div>
     {/* 流水线步骤 */}
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-      {[['Install', 1], ['Compile', 1], ['Test', 1], ['Bundle', 1], ['Deploy', 0]].map(([t, ok], i) => (
+      {[['Storyboard', 1], ['Shots', 1], ['Sound', 1], ['Render', 1], ['Deliver', 0]].map(([t, ok], i) => (
         <React.Fragment key={t as string}>
           {i > 0 && <div style={{ flex: 1, height: 1, background: ok ? 'rgba(95,195,140,0.4)' : 'rgba(255,255,255,0.1)' }} />}
           <div style={{
@@ -203,18 +203,18 @@ const DarkBuild: React.FC = () => (
       ))}
     </div>
     <div style={{ display: 'flex', gap: 18 }}>
-      {/* 构建日志 */}
+      {/* 渲染日志 */}
       <div style={{ flex: 1.6, background: '#08090c', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '14px 18px', fontFamily: FONT.mono, fontSize: 13, lineHeight: 1.75, color: '#7c8293' }}>
-        <div><span style={{ color: '#5f6577' }}>$</span> <span style={{ color: '#d4d8e2' }}>pnpm build --filter web</span></div>
-        <div><span style={{ color: '#5fc38c' }}>✓</span> Compiled 412 modules in 8.3s</div>
-        <div><span style={{ color: '#5fc38c' }}>✓</span> 248 tests passed · 0 failed</div>
-        <div><span style={{ color: '#5fc38c' }}>✓</span> Generated 38 static pages</div>
-        <div><span style={{ color: '#5fc38c' }}>✓</span> Bundle 1.82 MB (−6.4%)</div>
-        <div><span style={{ color: '#e8b84a' }}>▲</span> <span style={{ color: '#c9cdd8' }}>Deploying to 3 regions…</span></div>
+        <div><span style={{ color: '#5f6577' }}>$</span> <span style={{ color: '#d4d8e2' }}>npx remotion render Main launch.mp4</span></div>
+        <div><span style={{ color: '#5fc38c' }}>✓</span> Bundled 12 shots in 8.3s</div>
+        <div><span style={{ color: '#5fc38c' }}>✓</span> 1,260 frames rendered · 0 dropped</div>
+        <div><span style={{ color: '#5fc38c' }}>✓</span> 18 SFX cues locked to the beat</div>
+        <div><span style={{ color: '#5fc38c' }}>✓</span> Encoded h264 · 1080p · 30 fps</div>
+        <div><span style={{ color: '#e8b84a' }}>▲</span> <span style={{ color: '#c9cdd8' }}>Exporting JianYing draft…</span></div>
       </div>
       {/* 汇总 */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {[['Duration', '1m 42s'], ['Cache hit', '87%'], ['Lighthouse', '98']].map(([k, v]) => (
+        {[['Duration', '42.0s'], ['Frames', '1,260'], ['Render time', '1m 42s']].map(([k, v]) => (
           <div key={k} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '11px 16px' }}>
             <div style={{ fontSize: 12, color: '#6c7283', fontWeight: 600, letterSpacing: '0.06em' }}>{k.toUpperCase()}</div>
             <div style={{ fontSize: 21, fontWeight: 700, color: '#e6e8ee', fontVariantNumeric: 'tabular-nums' }}>{v}</div>
@@ -225,36 +225,36 @@ const DarkBuild: React.FC = () => (
   </div>
 );
 
-// 代码评审（亮）——"codes" 的证据
+// 成片 PR 评审（亮）——"ships" 的证据：把宣传片接进落地页的 PR
 const CODE: { n: number; d?: '+' | '-'; t: [string, string][] }[] = [
-  { n: 12, t: [['export function ', '#a626a4'], ['useCart', '#4078f2'], ['(userId: ', '#383a42'], ['string', '#c18401'], [') {', '#383a42']] },
-  { n: 13, t: [['  const ', '#a626a4'], ['items', '#383a42'], [' = ', '#0184bc'], ['useQuery', '#4078f2'], ['(cartKey(userId));', '#383a42']] },
-  { n: 14, d: '-', t: [['  const ', '#a626a4'], ['total', '#383a42'], [' = items.reduce((s, i) => s + i.price, ', '#383a42'], ['0', '#986801'], [');', '#383a42']] },
-  { n: 14, d: '+', t: [['  const ', '#a626a4'], ['total', '#383a42'], [' = ', '#0184bc'], ['useMemo', '#4078f2'], ['(() => ', '#383a42'], ['sum', '#4078f2'], ['(items), [items]);', '#383a42']] },
-  { n: 15, d: '+', t: [['  const ', '#a626a4'], ['isEmpty', '#383a42'], [' = items.length === ', '#383a42'], ['0', '#986801'], [';', '#383a42']] },
-  { n: 16, t: [['', '#383a42']] },
-  { n: 17, t: [['  return ', '#a626a4'], ['{ items, total, isEmpty };', '#383a42']] },
-  { n: 18, t: [['}', '#383a42']] },
+  { n: 12, t: [['export function ', '#a626a4'], ['Hero', '#4078f2'], ['(props: ', '#383a42'], ['HeroProps', '#c18401'], [') {', '#383a42']] },
+  { n: 13, t: [['  const ', '#a626a4'], ['film', '#383a42'], [' = ', '#0184bc'], ['staticFile', '#4078f2'], ['(', '#383a42'], ["'launch.mp4'", '#50a14f'], [');', '#383a42']] },
+  { n: 14, d: '-', t: [['  return ', '#a626a4'], ['<img src={props.screenshot} alt=', '#383a42'], ['""', '#50a14f'], [' />;', '#383a42']] },
+  { n: 14, d: '+', t: [['  return ', '#a626a4'], ['<video src={film} autoPlay muted loop', '#383a42']] },
+  { n: 15, d: '+', t: [['    poster=', '#383a42'], ['"launch-poster.jpg"', '#50a14f'], [' />;', '#383a42']] },
+  { n: 16, t: [['}', '#383a42']] },
+  { n: 17, t: [['', '#383a42']] },
+  { n: 18, t: [['export default ', '#a626a4'], ['Hero', '#4078f2'], [';', '#383a42']] },
 ];
 const LightCode: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: '#ffffff', fontFamily: SANS, display: 'flex', flexDirection: 'column' }}>
     <div style={{ height: 52, display: 'flex', alignItems: 'center', gap: 12, padding: '0 28px', borderBottom: '1px solid #eceef1' }}>
-      <div style={{ fontSize: 16, fontWeight: 700, color: '#1d1e21' }}>Refactor cart totals</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: '#1d1e21' }}>Add the launch film to the hero</div>
       <div style={{ fontSize: 13, color: '#8b9099' }}>#482 · 3 files · +24 −9</div>
       <div style={{ marginLeft: 'auto', fontSize: 12.5, fontWeight: 700, color: '#2e8a50', padding: '4px 10px', borderRadius: 10, background: 'rgba(46,138,80,0.1)' }}>✓ Checks passed</div>
     </div>
     <div style={{ display: 'flex', flex: 1 }}>
       <div style={{ width: 200, borderRight: '1px solid #eceef1', padding: '16px 18px', fontSize: 13.5, color: '#6b7079' }}>
-        {[['src/', 0], ['hooks/', 1], ['useCart.ts', 2], ['useOrders.ts', 2], ['lib/', 1], ['sum.ts', 2], ['tests/', 0]].map(([t, l]) => (
+        {[['src/', 0], ['landing/', 1], ['Hero.tsx', 2], ['Pricing.tsx', 2], ['public/', 0], ['launch.mp4', 1], ['launch-poster.jpg', 1]].map(([t, l]) => (
           <div key={t as string} style={{
             padding: '5px 8px', paddingLeft: 8 + (l as number) * 14, borderRadius: 6, marginBottom: 1,
-            background: t === 'useCart.ts' ? '#eef2fb' : 'transparent', color: t === 'useCart.ts' ? '#2c62c6' : undefined,
-            fontWeight: t === 'useCart.ts' ? 600 : 400,
+            background: t === 'Hero.tsx' ? '#eef2fb' : 'transparent', color: t === 'Hero.tsx' ? '#2c62c6' : undefined,
+            fontWeight: t === 'Hero.tsx' ? 600 : 400,
           }}>{t}</div>
         ))}
       </div>
       <div style={{ flex: 1, padding: '14px 0', fontFamily: FONT.mono, fontSize: 14.5, lineHeight: 1.85 }}>
-        <div style={{ padding: '0 20px 8px', fontSize: 12.5, color: '#8b9099', fontFamily: SANS }}>src/hooks/useCart.ts</div>
+        <div style={{ padding: '0 20px 8px', fontSize: 12.5, color: '#8b9099', fontFamily: SANS }}>src/landing/Hero.tsx</div>
         {CODE.map((r, i) => (
           <div key={i} style={{
             display: 'flex', whiteSpace: 'pre',
@@ -270,7 +270,7 @@ const LightCode: React.FC = () => (
           <div style={{ width: 30, height: 30, borderRadius: 15, background: '#e6e9f2', color: '#4a5577', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>MR</div>
           <div style={{ border: '1px solid #e6e8ec', borderRadius: 10, padding: '9px 14px', background: '#fafbfc' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#2a2c30', marginBottom: 2 }}>Mira R. <span style={{ fontWeight: 400, color: '#9aa0aa' }}>· approved</span></div>
-            <div style={{ fontSize: 13.5, color: '#4a4e56' }}>Memoizing this drops the re-render on every keystroke. Ship it.</div>
+            <div style={{ fontSize: 13.5, color: '#4a4e56' }}>Feels like a launch film from a real studio. Ship it.</div>
           </div>
         </div>
       </div>
@@ -279,12 +279,12 @@ const LightCode: React.FC = () => (
 );
 
 // 黑白相间的固定顺序（奇偶交替）
-// 第 k 个词配第 k+1 张卡：researches→研究长文、builds→构建流水线、codes→代码评审；
-// 第 0 张是开场的基准报告，第 4、5 张是上下露边的邻卡
+// 第 k 个词配第 k+1 张卡：frames→分镜脚本、builds→渲染流水线、ships→成片 PR 评审；
+// 第 0 张是开场的节奏报告，第 4、5 张是上下露边的邻卡
 const CARDS: React.FC[] = [DarkStats, LightArticle, DarkBuild, LightCode, DarkMri, LightTable];
 
-const WORDS = ['researches', 'builds', 'codes'];
-const NOTES = ['Research note · 1,240 papers traced', 'Build #1284 · 3 regions · 1m 42s', 'PR #482 · approved · +24 −9'];
+const WORDS = ['frames', 'builds', 'ships'];
+const NOTES = ['Storyboard · 12 shots on the beat', 'Render #1284 · 1080p30 · 1m 42s', 'PR #482 · approved · launch film'];
 const SWITCHES = [16, 66, 114];
 const SW_DUR = 18;
 const SERIF = '"Didot", "Bodoni 72", "Playfair Display", Georgia, serif';
@@ -379,9 +379,9 @@ export const WordRelayFilmstrip: React.FC = () => {
         <div style={{ position: 'absolute', left: WX + 6, top: BLOCK_TOP - 58, fontFamily: FONT.mono, fontSize: 28, color: L.ink3, letterSpacing: '0.04em' }}>
           <span style={{ color: L.accent2 }}>{String(idx).padStart(2, '0')}</span> / 03
         </div>
-        {/* 词块：Atlas 恒定 + 动词接力；两行行盒各 154，整块中心 = 540 */}
+        {/* 词块：Shotcraft 恒定 + 动词接力；两行行盒各 154，整块中心 = 540 */}
         <div style={{ position: 'absolute', left: WX, top: BLOCK_TOP, fontFamily: SERIF, fontSize: FS, lineHeight: `${LINE}px`, letterSpacing: '-0.01em' }}>
-          <div style={{ height: LINE, color: L.ink2, whiteSpace: 'pre' }}>Atlas</div>
+          <div style={{ height: LINE, color: L.ink2, whiteSpace: 'pre' }}>{BRAND.short}</div>
           <div style={{ position: 'relative', height: LINE, width: 760, overflow: 'hidden', fontStyle: 'italic', padding: '0 0.2em 0 0', margin: '0 -0.2em 0 0' }}>
             {WORDS.map((w, i) => (
               <Verb key={w} word={w} frame={frame} inAt={IN_AT[i]} outAt={i + 1 < SWITCHES.length ? SWITCHES[i + 1] : null} />

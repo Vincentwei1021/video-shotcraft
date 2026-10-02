@@ -1,0 +1,12 @@
+{
+  "stem": "DroneDiveLanding",
+  "changed": false,
+  "brand": [
+    "本 demo 源码无改动：画面就是 FakeDashboard，其侧栏标志与名字已由主控在 Fixtures 统一换成 video-shotcraft（终版渲染已带新标志）"
+  ],
+  "brandEn": [
+    "No source change: the shot is FakeDashboard, whose sidebar logo and name were already switched to video-shotcraft in the shared fixture (final render shows the new mark)"
+  ],
+  "styleKey": "drone-dive-landing",
+  "mdChanged": true
+}

@@ -1,15 +1,15 @@
 // 对开门裂幕（barn-door-split-reveal）——旧页从正中裂成两扇门向外加速让位，新页从门缝里迎上来。
 //
 // 第二轮重设计（余烬 · 版本更替发布）：
-// - look = ember（暖黑 · 橙）。语义是"新旧交替"：旧页 = 虚构构建平台 Kiln 的现行版「Kiln 3」，
-//   冷灰、无强调色、像一块熄了火的金属板；新页 = 「Kiln 4」发布海报，暖黑舞台 + 余烬橙。
+// - look = ember（暖黑 · 橙）。语义是"新旧交替"：旧页 = video-shotcraft 的现行版「Shotcraft 3」（示意版本号），
+//   冷灰、无强调色、像一块熄了火的金属板；新页 = 「Shotcraft 4」发布海报，暖黑舞台 + 余烬橙，眉题前挂镜刻标志。
 //   两页同一版式、同一槽位（眉题 / 220px 字标 / 副题 / 三枚数据），所以门一开，"3"的位置上站着"4"——取代关系一眼可读。
 // - 门是有厚度的实体板：内缘 10px 切面在门缝光里被照亮（橙色轮廓光），门面靠近裂缝处被光染暖；
 //   门缝里透出的是新页的光——先是一条发丝亮线自中点向上下描出（预告裂点），再撑开一道光缝，
 //   门滑走时新页带着一次过曝光束（屏幕混合，随门远去衰减）显影。
 // - 运动：裂缝预张 ease-in（预备）接门 ease-in 加速 1000px（"让位"不是"被推走"），按速度挂横向运动模糊；
 //   新页 1.08→1 迎上来（snappy，晚门 2f 起跳）；落定后副题逐词升起、三枚数据从旧值滚到新值
-//   （64s → 11.8s：数字本身讲出"新版更快"）。
+//   （渲染 64s → 11.8s、手 K 关键帧 12 → 0：数字本身讲出"新版更省事"，均为示意值）。
 //
 // 时间表（30fps，共 150f）：
 //   0–24    旧页建立：冷灰海报，相机极缓推近 1→1.015；第 0 帧即完整画面
@@ -23,6 +23,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, bezier, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, TextReveal, alpha, glow, stagger, type } from '../../_fixtures/Look';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const BARN_DOOR_SPLIT_DURATION = 150;
 
@@ -40,11 +41,11 @@ const gapAt = (f: number) => 16 * ramp(f, GAP, 10, EASE.exit);
 const slideAt = (f: number) => 1000 * ramp(f, SLIDE, SLIDE_D, SLIDE_EASE);
 const doorAt = (f: number) => gapAt(f) / 2 + slideAt(f); // 单扇外移量
 
-// 三枚数据：旧值 → 新值
+// 三枚数据：旧值 → 新值（示意值）
 const STATS = [
-  { from: 64, to: 11.8, dec: 1, unit: 's', label: 'Median build' },
-  { from: 12, to: 0, dec: 0, unit: '', label: 'Config files' },
-  { from: 6, to: 32, dec: 0, unit: '', label: 'Edge regions' },
+  { from: 64, to: 11.8, dec: 1, unit: 's', label: 'Median render' },
+  { from: 12, to: 0, dec: 0, unit: '', label: 'Manual keyframes' },
+  { from: 6, to: 30, dec: 0, unit: '', label: 'Preview fps' },
 ];
 
 // 两页共用的版式骨架：眉题 / 字标 / 副题 / 数据行（同槽位 = 取代关系）
@@ -70,15 +71,15 @@ const StatRow: React.FC<{ cells: { value: string; label: string; color: string; 
   </div>
 );
 
-// 旧页：Kiln 3（冷灰海报）
+// 旧页：Shotcraft 3（冷灰海报）
 const OldPage: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 70% 60% at 50% 30%, #25272c 0%, ${OLD.bg0} 45%, ${OLD.bg1} 100%)` }}>
     {/* 板面的细横纹：拉丝金属的质地（极淡） */}
     <div style={{ position: 'absolute', inset: 0, opacity: 0.5, background: 'repeating-linear-gradient(180deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 4px)' }} />
     <Layout
       kicker={<span style={{ ...type(30, 650, { caps: true }), letterSpacing: '0.22em', color: OLD.ink3 }}>Current release</span>}
-      mark={<span style={{ ...type(220, 760), color: OLD.ink, letterSpacing: '-0.055em' }}>Kiln 3</span>}
-      sub={<span style={{ ...type(48, 450), color: OLD.ink2 }}>Reliable builds for growing teams.</span>}
+      mark={<span style={{ ...type(220, 760), color: OLD.ink, letterSpacing: '-0.055em' }}>Shotcraft 3</span>}
+      sub={<span style={{ ...type(48, 450), color: OLD.ink2 }}>Shot recipes for product films.</span>}
       stats={<StatRow cells={STATS.map((s) => ({
         value: `${s.from.toFixed(s.dec)}${s.unit}`, label: s.label, color: OLD.ink, labelColor: OLD.ink3, line: OLD.line,
       }))} />}
@@ -86,7 +87,7 @@ const OldPage: React.FC = () => (
   </div>
 );
 
-// 新页：Kiln 4（余烬舞台上的发布海报）
+// 新页：Shotcraft 4（余烬舞台上的发布海报）
 const NewPage: React.FC<{ frame: number }> = ({ frame }) => {
   const statP = (k: number) => ramp(frame, 72 + stagger(k, 3, 12, EASE.out), 26, EASE.snappy);
   const breath = 0.85 + 0.15 * Math.sin(frame / 16);
@@ -94,11 +95,14 @@ const NewPage: React.FC<{ frame: number }> = ({ frame }) => {
     <>
       <Layout
         kicker={
-          <span style={{ ...type(30, 700, { caps: true }), letterSpacing: '0.22em', color: L.accent }}>Introducing</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 18 }}>
+            <ShotcraftMark size={44} tone="dark" />
+            <span style={{ ...type(30, 700, { caps: true }), letterSpacing: '0.22em', color: L.accent }}>Introducing</span>
+          </span>
         }
         mark={
           <span style={{ ...type(220, 800), letterSpacing: '-0.055em', color: L.ink, position: 'relative' }}>
-            Kiln{' '}
+            Shotcraft{' '}
             <span style={{
               backgroundImage: `linear-gradient(180deg, ${L.accent2} 0%, ${L.accent} 70%, #e0471a 100%)`,
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
@@ -108,7 +112,7 @@ const NewPage: React.FC<{ frame: number }> = ({ frame }) => {
         }
         sub={
           <span style={{ ...type(48, 450), color: L.ink2 }}>
-            <TextReveal text="Builds in seconds, not minutes." start={64} by="word" variant="rise" each={18} gap={3} />
+            <TextReveal text="One prompt to a finished promo." start={64} by="word" variant="rise" each={18} gap={3} />
           </span>
         }
         stats={<StatRow cells={STATS.map((s, k) => {

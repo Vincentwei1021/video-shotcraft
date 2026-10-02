@@ -1,0 +1,18 @@
+{
+  "stem": "MultiplaneReal",
+  "changed": true,
+  "brand": [
+    "眉题虚构品牌「AI Field Lab · All projects」→ video-shotcraft 标志 + 字标 — 2.5D camera moves",
+    "标题「Ten bets. One lab.」→「Your page, in depth.」",
+    "副句「Every experiment the team is running, side by side.」→「Screenshots, split into layers and flown in 2.5D.」",
+    "截图纹理页头的站点名「AI Foundation Lab / AI Field Lab」→ 镜刻标志 + video-shotcraft 字标（主控直接改了纹理图，导航项顺延）"
+  ],
+  "brandEn": [
+    "Kicker with fictional brand 'AI Field Lab · All projects' → video-shotcraft mark + wordmark — 2.5D camera moves",
+    "Headline 'Ten bets. One lab.' → 'Your page, in depth.'",
+    "Subline 'Every experiment the team is running, side by side.' → 'Screenshots, split into layers and flown in 2.5D.'",
+    "The site name 'AI Foundation Lab / AI Field Lab' in the screenshot textures' header → Frame Chisel mark + video-shotcraft wordmark (the coordinator edited the texture images directly; nav items shifted to fit)"
+  ],
+  "styleKey": "multiplane",
+  "mdChanged": true
+}

@@ -7,9 +7,11 @@
 // —— 质感层（改版）：与 neon-frame-forerun 同步升级——灰条面板换成出版级工作台首页（面板高 900→790）；
 // 同形软影改纯剪影、越高越大越虚越淡；悬空本体按高度微放大；面板补深色落地影；
 // 整体机位缩一档（原 scale 0.9–1.0 弧线中段面板左上角出画）；暗角 + 颗粒；补导出时长 140f。
+// —— 品牌轮：Northwind → video-shotcraft 标志 + 字标，页面内容换成镜头/渲染的世界。
 import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const NEON_FRAME_FORERUN_ORBIT_DURATION = 140; // 描框 0.5s + 旋转&同时贴落 3.8s + 落定
 
@@ -75,19 +77,19 @@ const Glyph: React.FC<{ k: number; c?: string }> = ({ k, c = INK2 }) => {
   );
 };
 
-const NAV = ['Home', 'Inbox', 'My Tasks', 'Docs', 'Dashboards', 'Goals'];
-const SPACES: [string, string][] = [['Product', '#8b7cf0'], ['Marketing', '#e48aa8'], ['Engineering', '#5aa5e6'], ['Design', '#e8a35c'], ['Operations', '#5bbf95']];
+const NAV = ['Home', 'Inbox', 'My Shots', 'Recipes', 'Renders', 'Goals'];
+const SPACES: [string, string][] = [['Launch film', '#8b7cf0'], ['Promo reel', '#e48aa8'], ['Explainers', '#5aa5e6'], ['Sound design', '#e8a35c'], ['Page captures', '#5bbf95']];
 const RECENTS: [string, string, number][] = [
-  ['Q4 roadmap', 'Doc · 2h ago', 3], ['Launch checklist', 'List · 4h ago', 2], ['Revenue overview', 'Dashboard · Yesterday', 4],
-  ['Hiring plan', 'Doc · Yesterday', 3], ['Sprint 42', 'Board · Mon', 2], ['Brand refresh', 'Whiteboard · Mon', 5], ['OKRs · H2', 'Goal · Last week', 5],
+  ['Launch film v3', 'Storyboard · 2h ago', 3], ['Shot list', 'List · 4h ago', 2], ['Render queue', 'Dashboard · Yesterday', 4],
+  ['Crash zoom recipe', 'Doc · Yesterday', 3], ['Beat grid', 'Board · Mon', 2], ['Hero frames', 'Whiteboard · Mon', 5], ['Ship the promo', 'Goal · Last week', 5],
 ];
 const TASKS: [string, string, string, string][] = [
-  ['Finalize pricing tiers for launch', '#e05c5c', 'In review', 'Today'],
-  ['Ship onboarding email sequence', '#e8a23c', 'In progress', 'Tomorrow'],
-  ['QA payment flow on mobile', '#e05c5c', 'Blocked', 'Today'],
-  ['Draft press release v2', '#5aa5e6', 'In progress', 'Fri'],
-  ['Record product walkthrough', '#5aa5e6', 'To do', 'Mon'],
-  ['Update help center articles', '#9a9ca4', 'To do', 'Next week'],
+  ['Add shot: crash zoom on pricing', '#e05c5c', 'In review', 'Today'],
+  ['Sync cuts to the soundtrack beat', '#e8a23c', 'In progress', 'Tomorrow'],
+  ['Capture checkout page at 2x', '#e05c5c', 'Blocked', 'Today'],
+  ['Tune the 2.5D camera move', '#5aa5e6', 'In progress', 'Fri'],
+  ['Render launch film at 1080p', '#5aa5e6', 'To do', 'Mon'],
+  ['Export JianYing project', '#9a9ca4', 'To do', 'Next week'],
 ];
 const AV = ['#e4e1da', '#dde0e8', '#e8e2e8', '#dce6e1'];
 
@@ -122,8 +124,9 @@ const HomePage: React.FC<{ t?: number }> = ({ t = 1 }) => {
     <div style={{ width: 290, background: '#f0f0ee', borderRadius: '6px 0 0 6px', boxShadow: `inset -1px 0 0 ${HAIR}`, padding: '26px 22px', boxSizing: 'border-box' }}>
       <FloatWrap h={L(0.24, 84)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 26, padding: '0 4px' }}>
-          <div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(150deg, #8f7ff2, ${ACC})`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 6px rgba(106,90,224,0.35)', color: '#fff', fontWeight: 700, fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>N</div>
-          <div style={{ fontSize: 17, fontWeight: 650, color: INK, letterSpacing: '-0.015em' }}>Northwind</div>
+          {/* 品牌：镜刻标志（亮底版）+ video-shotcraft 字标 */}
+          <ShotcraftMark size={30} tone="light" />
+          <div style={{ fontFamily: BRAND.font, fontSize: 17, fontWeight: 700, color: INK, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>{BRAND.name}</div>
           <svg width={12} height={12} viewBox="0 0 12 12" style={{ marginLeft: 2 }}><path d="M3 4.5 L6 7.5 L9 4.5" fill="none" stroke={INK3} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" /></svg>
         </div>
       </FloatWrap>
@@ -164,7 +167,7 @@ const HomePage: React.FC<{ t?: number }> = ({ t = 1 }) => {
           boxShadow: `0 0 0 1px rgba(20,22,28,0.11), 0 1px 2px rgba(16,18,24,0.05)`,
         }}>
           <svg width={17} height={17} viewBox="0 0 18 18"><circle cx={8} cy={8} r={5.2} fill="none" stroke={INK3} strokeWidth={1.8} /><path d="M12 12 L15.5 15.5" stroke={INK3} strokeWidth={1.8} strokeLinecap="round" /></svg>
-          <div style={{ fontSize: 15, color: INK3, marginLeft: 12 }}>Search tasks, docs and people…</div>
+          <div style={{ fontSize: 15, color: INK3, marginLeft: 12 }}>Search shots, recipes and renders…</div>
           <div style={{ marginLeft: 'auto', fontSize: 12, fontFamily: FONT.mono, color: INK3, background: '#f3f3f1', borderRadius: 6, padding: '3px 7px', boxShadow: `inset 0 0 0 1px ${HAIR}` }}>⌘K</div>
         </div>
       </FloatWrap>

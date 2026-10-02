@@ -1,0 +1,18 @@
+{
+  "stem": "AssembleThenTypeFlyin",
+  "changed": true,
+  "brand": [
+    "导航条点阵 logo + 「Obscura」→ 镜刻标志（作为骨架件飞入）+ video-shotcraft 字标；导航项 → Shots / Workbench / Gallery / Install",
+    "大标题「Grade every frame / like it was film.」→ 品牌短句「Frame motion. / Craft the shot.」（shot. 金色斜体）；眉题 → AGENT SKILL · BUILT ON REMOTION",
+    "说明句 / 按钮 → Cinematic product videos, crafted by your agent. / Make a promo / Watch the reel",
+    "指标 12-bit / 4K 120 / 0.8 ms → 1 prompt / 2.5D / 30 fps（TO A FULL PROMO / CAMERA MOVES / BEAT-SYNCED CUTS）；胶片标注 → SHOT 04 · DOLLY IN"
+  ],
+  "brandEn": [
+    "Dot-grid logo + \"Obscura\" in the nav → Frame Chisel mark (flies in as a skeleton piece) + video-shotcraft wordmark; nav items → Shots / Workbench / Gallery / Install",
+    "Headline \"Grade every frame / like it was film.\" → brand motto \"Frame motion. / Craft the shot.\" (gold italic shot.); eyebrow → AGENT SKILL · BUILT ON REMOTION",
+    "Subline / buttons → Cinematic product videos, crafted by your agent. / Make a promo / Watch the reel",
+    "Stats 12-bit / 4K 120 / 0.8 ms → 1 prompt / 2.5D / 30 fps (TO A FULL PROMO / CAMERA MOVES / BEAT-SYNCED CUTS); film label → SHOT 04 · DOLLY IN"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

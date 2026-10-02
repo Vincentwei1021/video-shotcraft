@@ -4,8 +4,8 @@
 // - look = paper（暖白纸 · 墨 · 朱红）。整个画面是一张动画作画纸：顶部定位孔（peg holes）、淡蓝铅笔的
 //   安全框/十字（field guide）当纹理；底部是一行真正的「摄影表」（タイムシート）——一拍三时只有每 3 格写
 //   原画号 ①④⑦…、中间格画竖线（摄影表里竖线 = 沿用上一张），一拍一时格格都有号。观众直接"看见"每秒画了几张。
-// - 主体是一张赛璐珞风格的产品卡（虚构 CI 产品 Sprig）：5px 墨线描边、平涂纸色、无模糊的硬边赛璐珞投影，
-//   卡里是 150px 的「2.4×」——所以运动本身就是"指标冲刺"。
+// - 主体是一张赛璐珞风格的 video-shotcraft 产品卡：5px 墨线描边、平涂纸色、无模糊的硬边赛璐珞投影，
+//   卡里是 150px 的「30fps」+「every frame, crafted」——运动本身就是"逐帧作画"的冲刺，与一拍一的 30 张/秒呼应。
 // - 手法：0–48f 驱动帧 q = floor(f/3)·3，16 张原画手翻书式横移（每步 65px），每张姿势不同（摆角 ±5°、
 //   挤压/拉伸交替、一高一低的小跳）；48f 一拍一 + 两帧「冲击帧」（画面反相成墨底、集中线炸开 = 日式作画的高潮标记），
 //   50–68f 逐帧丝滑冲刺折返中央（out-poly(4)），身后挂按速度生成的横向速度线，过冲 40px 后回弹落位。
@@ -20,6 +20,7 @@ import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const SAKUGA_TIMING_SHIFT_DURATION = 150; // 一拍三 48f + 冲刺落位 32f + hold 70f
 
@@ -72,14 +73,14 @@ const CelCard: React.FC = () => (
     {/* 赛璐珞的"影色"：右下一块硬边暗面 */}
     <div style={{ position: 'absolute', right: -60, bottom: -80, width: 360, height: 220, borderRadius: '50%', background: alpha(L.ink, 0.045) }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ width: 30, height: 30, borderRadius: 15, background: L.accent, border: `4px solid ${L.ink}`, boxSizing: 'border-box' }} />
-      <div style={{ ...type(32, 800), color: L.ink }}>Sprig CI</div>
-      <div style={{ marginLeft: 'auto', ...type(22, 600, { mono: true }), color: L.ink2 }}>build 2048</div>
+      <ShotcraftMark size={38} tone="light" frameColor={L.ink} />
+      <div style={{ ...type(32, 800), fontFamily: BRAND.font, color: L.ink, letterSpacing: '0.01em' }}>{BRAND.name}</div>
+      <div style={{ marginLeft: 'auto', ...type(22, 600, { mono: true }), color: L.ink2 }}>render 2048</div>
     </div>
     <div style={{ ...type(160, 900), color: L.ink, marginTop: 22, letterSpacing: '-0.05em', lineHeight: 0.9 }}>
-      2.4<span style={{ color: L.accent, fontSize: 120, marginLeft: 6 }}>x</span>
+      30<span style={{ color: L.accent, fontSize: 120, marginLeft: 6 }}>fps</span>
     </div>
-    <div style={{ ...type(38, 600), color: L.ink2, marginTop: 18 }}>faster deploys, same pipeline</div>
+    <div style={{ ...type(38, 600), color: L.ink2, marginTop: 18 }}>every frame, crafted</div>
   </div>
 );
 

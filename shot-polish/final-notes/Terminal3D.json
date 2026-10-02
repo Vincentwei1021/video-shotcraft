@@ -1,0 +1,16 @@
+{
+  "stem": "Terminal3D",
+  "changed": true,
+  "brand": [
+    "虚构 CLI「forge」与项目「orbit」→ video-shotcraft 的三步出片：shotcraft init / render / export（窗口标题 storyboard / render / export，路径 ~/promo）",
+    "输出改成出片内容：模板 ink-press、12 张镜头配方卡、120 bpm 节拍网格；测试计数 0→128 + PASS 行 → 镜头渲染计数 0→24 + 三幕 DONE 行；部署检查 → 混音 / h264 编码 / 剪映草稿导出",
+    "收尾泛光「● LIVE orbit.forge.run」→「● READY launch-film.mp4」"
+  ],
+  "brandEn": [
+    "Fictional CLI \"forge\" and project \"orbit\" → a three-step video-shotcraft film run: shotcraft init / render / export (window titles storyboard / render / export, path ~/promo)",
+    "Output now shows filmmaking: ink-press template, 12 shot recipe cards, 120 bpm beat grid; test counter 0→128 with PASS rows → shot render counter 0→24 with three act DONE rows; deploy checks → mix / h264 encode / JianYing draft export",
+    "Closing highlight \"● LIVE orbit.forge.run\" → \"● READY launch-film.mp4\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

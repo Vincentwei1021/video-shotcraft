@@ -94,7 +94,8 @@ export const BeforeAfterSliderScrub: React.FC = () => {
       {/* after：正常清晰版，杆左侧揭出；After 角标长在这一层，随分割线一起被裁 */}
       <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${W - x}px 0 0)` }}>
         <FakeDashboard variant="A" />
-        <Tag label="After" x={628} accent />
+        {/* x 随 FakeDashboard 品牌化后变长的面包屑（video-shotcraft › Overview）右移，两侧（时段切换 / 定格时的分割杆）各留 ~20px */}
+        <Tag label="After" x={646} accent />
       </div>
 
       {/* 揭示边沿：after 一侧 24px 极淡的接触暗影，让两层有前后关系（裁进 after 内） */}

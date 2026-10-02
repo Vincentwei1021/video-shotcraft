@@ -12,9 +12,10 @@ name: assemble-then-type-flyin
 只有平面位移——两段的运动维度必须不同，否则观众读不出"这是第二步"。
 
 ## 动效核心
-- demo 成形后是虚构调色软件「Obscura 3」的暗场发布页（graphite look，胶片金 accent2 是唯一强调色），
+- demo 成形后是 video-shotcraft 的暗场发布页（graphite look，胶片金 accent2 是唯一强调色；导航条是镜刻标志 +
+  video-shotcraft 字标，大标题是品牌短句「Frame motion. / Craft the shot.」），
   1920×1080 原生坐标；开场第 1 帧先有 12 栏版式参考线，骨架齐后退淡
-- 10 个骨架件（导航条、调色台卡 + 胶片画面色块、logo 点阵、三只色轮圈、分隔线、CTA、次按钮、三枚指标块）
+- 10 个骨架件（导航条、调色台卡 + 胶片画面色块、镜刻标志、三只色轮圈、分隔线、CTA、次按钮、三枚指标块）
   按起飞帧 6/10/15/19/23/27/31/35/39/44 依次飞入，每件 16f `EASE.overshoot` 过冲贴合，
   `from` 位移 120–420px + ±7° 旋转（旋转晚 4f 收敛）
 - 骨架运动中按真实速度（px/帧）给方向性运动模糊（`SpeedBlur` ×0.32，上限 18px），静止即为 0
@@ -52,7 +53,7 @@ name: assemble-then-type-flyin
   否则 inline-block 的空 span 宽度归零，词间距消失
 - `start` 是手写的 19 个数值，换文案（尤其字符数变化大时）要回看
   最后一块是否仍在 f128 前落完；`step` 只保证块内，不保证块间
-- 内容是虚构品牌 Obscura 的示例页（标题 / 指标 / 色轮标注），落地全部替换；
+- 内容是 video-shotcraft 的示例发布页（标题 / 指标 / 色轮标注），落地换成项目自己的；
   GOLD（graphite 的 accent2 `#e4c58a`）为强调色槽位，CTA 字色随通电由金转深要一起换
 - 与 `scanline-assemble-flyin` 的区别是**没有扫描线**：那张靠扫描线
   解释顺序，这张靠"先骨架后文字"的两段式解释顺序，两者不要混用

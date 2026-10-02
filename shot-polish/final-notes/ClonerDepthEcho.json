@@ -1,0 +1,18 @@
+{
+  "stem": "ClonerDepthEcho",
+  "changed": true,
+  "brand": [
+    "主卡「checkout-api」边缘函数实例卡（柠檬绿状态点）→ video-shotcraft 渲染卡：顶栏换成 video-shotcraft 标志 +「launch-film」",
+    "大读数「18ms · p95」→「30fps · 1080P」；区域码 iad1/sfo1… → 镜头号 S01–S08（克隆体顶栏与卡底 8 格同步）",
+    "标题「Deploy once. / Run everywhere.」→「One prompt. / Eight shots.」",
+    "计数器标签「regions live · one deploy」→「shots rendered · one prompt」"
+  ],
+  "brandEn": [
+    "Hero card \"checkout-api\" edge-function instance (lime status dot) → a video-shotcraft render card: header is now the video-shotcraft mark + \"launch-film\"",
+    "Big readout \"18ms · p95\" → \"30fps · 1080P\"; region codes iad1/sfo1… → shot numbers S01–S08 (clone headers and the 8 bottom slots)",
+    "Title \"Deploy once. / Run everywhere.\" → \"One prompt. / Eight shots.\"",
+    "Counter label \"regions live · one deploy\" → \"shots rendered · one prompt\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

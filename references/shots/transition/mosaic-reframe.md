@@ -19,8 +19,9 @@ name: mosaic-reframe
   瓦片晚 4f 才开始重排（父先动、子跟随）
 - 错峰：A→B 按序号先密后疏扫过（10f 跨度）；B→C 像发牌一样等间隔依次摊开（14f 跨度），
   B→C 起叠放次序切换为"后发的压上面"（B 态无重叠，切换不可见）
-- 三态三种语气：B 态主图压衬线大字图注（Featured set / Golden Hour / Lisbon · 24 photos 逐词升起）；
+- 三态三种语气：B 态主图压衬线大字图注（Featured shot / Golden Hour / Shot 01 · Crash zoom · 4.5 s 逐词升起）；
   C 态瓦片长出 14px 相纸白边，左下留白处升起衬线大标题 + 副行，尾帧是完整海报
+  （demo 是 video-shotcraft 的 12 镜分镜板：页眉标志 + 字标 + Storyboard，收尾「Every shot, in sequence.」+ 品牌 tagline）
 - 开场：12 张照片沿对角线错峰升起（16f snappy），全程相机极缓推近 1→1.025
 
 ## 参数表

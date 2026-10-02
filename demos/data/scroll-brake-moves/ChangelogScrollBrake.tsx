@@ -11,6 +11,7 @@ import React from 'react';
 import { useCurrentFrame, interpolate } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
 import { Backdrop, EASE, FONT, Grain, SpeedBlur, bezier, innerHighlight, softShadow, tracking } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CHANGELOG_SCROLL_BRAKE_DURATION = 150; // 静置 14f + 滚动 50f + 抬升 14f + 静止 66f
 
@@ -49,14 +50,14 @@ const BRAKE_EASE = bezier(0.45, 0, 0.06, 1);
 const scrollAt = (f: number): number =>
   interpolate(f, [SCROLL0, SCROLL1], [START_T, END_T], { easing: BRAKE_EASE, ...CL });
 
-// ── 假内容：一整年的发布记录（自上而下时间递增），停点后为路线图 ──
+// ── 假内容：video-shotcraft 一整年的发布记录（自上而下时间递增），停点 = Motion workbench，之后为路线图 ──
 const TITLES = [
-  'Keyboard shortcuts for every view', 'Faster search indexing', 'Fix: duplicate notifications',
-  'Custom fields on issues', 'Dark mode for the editor', 'Bulk edit in table view', 'Fix: timezone drift in cycles',
-  'Slack thread sync', 'Saved filters', 'GitHub PR linking', 'Improved import from Jira', 'Fix: drag handle on Safari',
-  'Project templates', 'Inline image resize', 'Audit log export', 'Sub-issue progress bars', 'Fix: stale cache on reconnect',
-  'Roadmap zoom levels', 'SAML single sign-on', 'Markdown tables', 'Faster cold start', 'Fix: emoji picker focus',
-  'Triage inbox', 'Webhooks v2', 'Granular permissions', 'Offline drafts', 'Fix: cursor jump on paste', 'Calendar view',
+  'Crash zoom shot card', 'Faster Remotion renders', 'Fix: audio drift on long renders',
+  'Beat grid from any BGM', 'Dolly zoom shot card', 'Real page captures', 'Fix: caption timing at 60 fps',
+  'Gallery style filters', 'Whip pans', 'Ink Press template', 'Improved SFX ducking', 'Fix: blur seam on 4K export',
+  'Storyboard from a prompt', 'Inline shot previews', 'Poster frame picker', 'Parallax depth layers', 'Fix: font fallback in titles',
+  'Beat-synced flash cuts', 'Film grain overlay', 'Lower thirds', 'Faster cold render', 'Fix: mask edge on Safari',
+  'Showcase gallery', 'Light leaks', 'Per-shot color looks', 'Offline asset cache', 'Fix: cursor path smoothing', 'JianYing export',
 ];
 const KINDS = ['Feature', 'Improved', 'Fix'] as const;
 const KIND_STYLE: Record<string, { bg: string; fg: string }> = {
@@ -70,17 +71,17 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
 const entry = (i: number) => {
   if (i === TARGET)
     return {
-      v: 'v2.41', kind: 'Launch', title: 'Realtime collaboration',
-      desc: 'Live cursors and presence in every doc.', date: 'Today',
+      v: 'v2.41', kind: 'Launch', title: 'Motion workbench',
+      desc: 'Every shot, tuned in one place.', date: 'Today',
     };
   if (i > TARGET)
-    return { v: '—', kind: 'Planned', title: ['Public API v3', 'Mobile offline mode', 'AI triage suggestions', 'Custom dashboards', 'Data residency (EU)'][(i - TARGET - 1) % 5], desc: 'On the roadmap for Q4.', date: 'Q4' };
+    return { v: '—', kind: 'Planned', title: ['Vertical 9:16 cuts', 'Brand kit import', 'Shot A/B compare', 'Multi-track SFX', 'Batch renders'][(i - TARGET - 1) % 5], desc: 'On the roadmap for Q4.', date: 'Q4' };
   const kind = TITLES[i].startsWith('Fix') ? 'Fix' : KINDS[i % 2];
   return {
     v: `v2.${13 + i}`,
     kind,
     title: TITLES[i].replace(/^Fix: (.)/, (_, c: string) => c.toUpperCase()),
-    desc: 'Rolled out to all workspaces with no action required.',
+    desc: 'Rolled out to every project with no action required.',
     date: `${MONTHS[Math.min(8, Math.floor((i / TARGET) * 9))]} ${1 + ((i * 11) % 27)}`,
   };
 };
@@ -219,10 +220,11 @@ export const ChangelogScrollBrake: React.FC = () => {
           </div>
         </SpeedBlur>
       </div>
-      {/* 固定页眉 */}
+      {/* 固定页眉：镜刻标志 + Changelog + 品牌名 */}
       <div style={{ position: 'absolute', left: COL_X, top: 64, width: COL_W, display: 'flex', alignItems: 'baseline', gap: 22 }}>
+        <ShotcraftMark size={50} tone="light" style={{ alignSelf: 'center', marginRight: -4 }} />
         <div style={{ fontSize: 52, fontWeight: 720, letterSpacing: tracking(52), color: G.ink1 }}>Changelog</div>
-        <div style={{ fontSize: 30, fontWeight: 500, color: G.ink3, letterSpacing: tracking(30) }}>28 releases in 2026</div>
+        <div style={{ fontFamily: BRAND.font, fontSize: 30, fontWeight: 600, color: G.ink3, letterSpacing: '0.03em' }}>{BRAND.name}</div>
       </div>
       <Grain opacity={0.05} />
     </div>

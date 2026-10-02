@@ -1,7 +1,8 @@
 // aurora-bloom-bg-flip — Aurora Bloom 极光升腾底色反转（motion-lab 定稿转原生 Remotion）
 // 浅灰底从底部升起紫橙柔焦 blob，随后整个底色 0.35s 内压暗到近黑、blob 压成余晖；
 // 文案同步 blur-out → 换句 blur-in（强调色→白收色），换句间留空档不 cross-fade。
-// 文案为中性占位；blob/文字的紫橙是这个效果本体的光色（DEEPP 常量），落地时可整组换成项目色。
+// 文案是 video-shotcraft 的叙事转折（Promos took weeks → Meet video-shotcraft）；blob/文字的紫橙是这个效果
+// 本体的光色（DEEPP 常量），落地时可整组换成项目色。
 // 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
 //
 // 质感升级：极光拆成"主紫 + 橙核 + 品红过渡 + 白色融边"四层、各自有相对漂移，橙核真正透出来；
@@ -12,6 +13,7 @@
 import React from 'react';
 import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
 import { EASE, FONT as PF, Grain, Vignette } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const AURORA_BLOOM_BG_FLIP_DURATION = 156; // 5200ms @30fps
 
@@ -24,9 +26,10 @@ const LIGHT = [236, 236, 236]; // 亮场底色
 const DARK = [10, 10, 18]; // 暗场底色
 const INK = [22, 23, 28]; // 亮场文字（带冷调的近黑）
 
-// 占位文案（词数/字长贴近原片，逐词错相节奏依赖这个）
-const WA = 'For many years'.split(' ');
-const WB = 'everything changed'.split(' ');
+// 文案（词数/字长贴近原片 For many years / everything changed，逐词错相节奏依赖这个）：
+// A 句 3 词讲旧痛点，B 句 2 词亮出品牌名（字标全小写）
+const WA = 'Promos took weeks'.split(' ');
+const WB = ['Meet', BRAND.name];
 
 // 时间轴（归一化 t）
 const RISE: [number, number] = [0.04, 0.56]; // 极光升起

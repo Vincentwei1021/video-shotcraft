@@ -1,0 +1,18 @@
+{
+  "stem": "Basic3DScene",
+  "changed": true,
+  "brand": [
+    "卡头右侧虚构品牌「Meridian」→ video-shotcraft 标志 + 字标",
+    "三章节 Capture / Connect / Ship（笔记工具文案）→ 品牌短句拆成的 Frame / Craft / Ship，说明句换成真实页面实拍 / 镜头配方卡 / 一句话出片",
+    "总览眉题「Meridian 3 · Three chapters, one canvas」→ 标志 + video-shotcraft · Three chapters, one film",
+    "落版「Think in space.」+ 副句 → 「Craft the shot.」+「Shot recipes for cinematic product films.」"
+  ],
+  "brandEn": [
+    "Fictional 'Meridian' brand in each card header → video-shotcraft mark + wordmark",
+    "Chapters Capture / Connect / Ship (note-app copy) → Frame / Craft / Ship from the brand motto, with lines about real page captures, shot recipe cards and one-prompt promos",
+    "Overview kicker 'Meridian 3 · Three chapters, one canvas' → mark + video-shotcraft · Three chapters, one film",
+    "End plate 'Think in space.' + subline → 'Craft the shot.' + 'Shot recipes for cinematic product films.'"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

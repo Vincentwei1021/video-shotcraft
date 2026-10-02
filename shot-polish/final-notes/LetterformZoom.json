@@ -1,0 +1,18 @@
+{
+  "stem": "LetterformZoom",
+  "changed": true,
+  "brand": [
+    "章节字「SHIFT」→「EDITS」（I 竖笔居中，推进锚点按渲染帧重新实测为 973,515）；副标 Deploys, rebuilt from the ground up. → Your product, in motion.",
+    "后景发布页品牌 Kiln（火焰方块 logo）→ 墨色圆角底 + 镜刻标志 + video-shotcraft；导航 Product/Pricing/Changelog/Deploy → Shots/Workbench/Gallery/Render",
+    "眉题与标题 Shift · New in Kiln 4.0 / Every region. One push. → Launch film · Final cut / Every shot. One prompt.；正文 → Storyboard, animate, sound-design and deliver — cut to the beat.",
+    "部署卡 $ kiln deploy --all · 0→32 regions live · 四城延迟 · LIVE → 渲染卡 launch-film.mp4 · 0→12 shots rendered · 四个镜头帧数（Invisible cut 110f 等）· DONE"
+  ],
+  "brandEn": [
+    "Chapter word \"SHIFT\" → \"EDITS\" (I stem centred; push anchor re-measured from a rendered frame at 973,515); subline Deploys, rebuilt from the ground up. → Your product, in motion.",
+    "Background landing-page brand Kiln (flame-tile logo) → ink rounded tile + Frame Chisel mark + video-shotcraft; nav Product/Pricing/Changelog/Deploy → Shots/Workbench/Gallery/Render",
+    "Eyebrow and headline Shift · New in Kiln 4.0 / Every region. One push. → Launch film · Final cut / Every shot. One prompt.; body → Storyboard, animate, sound-design and deliver — cut to the beat.",
+    "Deploy card $ kiln deploy --all · 0→32 regions live · four city latencies · LIVE → render card launch-film.mp4 · 0→12 shots rendered · four shot frame counts (Invisible cut 110f …) · DONE"
+  ],
+  "styleKey": "letterform-zoom",
+  "mdChanged": true
+}

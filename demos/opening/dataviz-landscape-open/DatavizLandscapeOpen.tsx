@@ -7,9 +7,10 @@
  *   一条荧光黄绿主干从镜头脚下蜿蜒奔向画面右 1/3 处的消失点（汇点），11 条灰绿支流从两侧画外切向汇入。
  *   景深 / 视差 / 雾全部由投影深度算出来：近处线条又宽又虚（按深度分进模糊层）、中景锐利、远处变细隐入地平线。
  * - 相机低空沿河道前飞 + 横向缓移（dolly + truck），整段 bezier 减速：开场即在飞、收尾缓停接字标，不急刹。
- * - 中景支流上钉 7 枚虚构 issue 标签（立杆图钉 + 等宽 ID 胶囊），随透视逐渐变大、向两侧散开；
+ * - 中景支流上钉 6 枚 video-shotcraft 镜头标签（立杆图钉 + 等宽镜头号胶囊 + 运镜名），随透视逐渐变大、向两侧散开；
+ *   隐喻：每条支流是一个镜头，汇成主干这一支成片；
  *   生长完成后沿线有亮脉冲低速流向汇点（数据在流）。
- * - 收尾：消失点亮起一团黄绿光（交棒亮部），天空里落一行大标题「Every thread, / one release.」，
+ * - 收尾：消失点亮起一团黄绿光（交棒亮部），天空里落一行大标题「Every shot, / one film.」（眉题 video-shotcraft 字标小写），
  *   结尾帧是完整的海报。
  *
  * 时间表（30fps，共 180f）：
@@ -25,6 +26,7 @@ import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {EASE, FONT, bezier, mix, ramp} from '../../_fixtures/Polish';
 import {Dust, LOOKS, Stage, TextReveal, alpha, type} from '../../_fixtures/Look';
+import {BRAND} from '../../_fixtures/Brand';
 
 const DUR = 180; // 6s @30fps
 export const DATAVIZ_LANDSCAPE_OPEN_DURATION = DUR;
@@ -158,16 +160,16 @@ const emitLine = (
   return null;
 };
 
-// ───────────── 标签（中景，全部虚构 ID）─────────────
+// ───────────── 标签（中景，video-shotcraft 的镜头号 + 运镜名；字数与原 issue 标签相当，投影位置不变）─────────────
 // 位置按投影逐帧核过：起止两端都错开（不叠、不压汇点、不出画），近处一枚随前飞明显变大
 type LabelSpec = {trib: number; u: number; id: string; note: string; appear: number};
 const LABELS: LabelSpec[] = [
-  {trib: 2, u: 0.6, id: 'ENG-2184', note: 'merged', appear: 44},
-  {trib: 1, u: 0.75, id: 'DES-0931', note: 'shipped', appear: 53},
-  {trib: 3, u: 0.6, id: 'API-4417', note: 'in review', appear: 62},
-  {trib: 6, u: 0.3, id: 'OPS-1208', note: 'merged', appear: 73},
-  {trib: 7, u: 0.45, id: 'WEB-3390', note: 'in review', appear: 84},
-  {trib: 8, u: 0.45, id: 'ML-0762', note: 'merged', appear: 96},
+  {trib: 2, u: 0.6, id: 'SHOT-01', note: 'dolly in', appear: 44},
+  {trib: 1, u: 0.75, id: 'SHOT-02', note: 'crash zoom', appear: 53},
+  {trib: 3, u: 0.6, id: 'SHOT-03', note: 'whip pan', appear: 62},
+  {trib: 6, u: 0.3, id: 'SHOT-04', note: 'beat cut', appear: 73},
+  {trib: 7, u: 0.45, id: 'SHOT-05', note: 'tilt up', appear: 84},
+  {trib: 8, u: 0.45, id: 'SHOT-06', note: 'lockup', appear: 96},
 ];
 const LABEL_PTS = LABELS.map((l) => {
   const pts = TRIBS[l.trib].pts;
@@ -337,17 +339,18 @@ export const DatavizLandscapeOpen: React.FC = () => {
 
       {/* 标题：天空左上，收尾落字 */}
       <div style={{position: 'absolute', left: 120, top: 128}}>
+        {/* 眉题：品牌名按字标规范全小写（不走大写科技字标） */}
         <div style={{
-          fontFamily: FONT.mono, fontSize: 28, fontWeight: 600, color: L.accent, letterSpacing: '0.16em',
+          fontFamily: FONT.mono, fontSize: 28, fontWeight: 600, color: L.accent, letterSpacing: '0.12em',
           opacity: ramp(frame, 104, 14, EASE.out), transform: `translateY(${(1 - ramp(frame, 104, 18, EASE.snappy)) * 12}px)`,
         }}>
-          1,284 ISSUES · 46 TEAMS
+          {BRAND.name} · shot recipes
         </div>
         <div style={{...type(108, 650), color: L.ink, marginTop: 26}}>
-          <TextReveal text="Every thread," by="word" variant="rise" start={110} each={20} gap={5} />
+          <TextReveal text="Every shot," by="word" variant="rise" start={110} each={20} gap={5} />
         </div>
         <div style={{...type(108, 650), color: L.accent, marginTop: 4}}>
-          <TextReveal text="one release." by="word" variant="rise" start={121} each={20} gap={5} />
+          <TextReveal text="one film." by="word" variant="rise" start={121} each={20} gap={5} />
         </div>
       </div>
     </AbsoluteFill>

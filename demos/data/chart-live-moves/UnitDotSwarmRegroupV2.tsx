@@ -1,13 +1,13 @@
-// unit-dot-swarm-regroup-v2 —— 单位点阵重组：320 个点（每点 ≈ 40 位客户）三幕迁徙——
-// 散布 → 按套餐聚成三簇 → 列队成柱 → 拼成大数字「12,847」。同一批点，观众能跟着某一颗看它归队。
+// unit-dot-swarm-regroup-v2 —— 单位点阵重组：320 个点（每点 ≈ 40 次渲染）三幕迁徙——
+// 散布 → 按片型聚成三簇 → 列队成柱 → 拼成大数字「12,847」。同一批点，观众能跟着某一颗看它归队。
 //
 // 第二轮重设计（瓷白 · 信息图发布镜头）：
-// - look = porcelain（冷白 · 钴蓝）。三组配色只用一个强调色：Free 雾蓝灰 / Pro 钴蓝（主角）/ Enterprise 深海军蓝。
+// - look = porcelain（冷白 · 钴蓝）。三组配色只用一个强调色：Promo 雾蓝灰 / Launch film 钴蓝（主角）/ Explainer 深海军蓝。
 // - 点改成 20px 实心小珠（顶部受光微渐变 + 贴地软影），高速迁徙时按速度沿运动方向拉成胶囊（速度感），停下变回圆。
-// - 文字层级：左上眉题（虚构产品 Tidewell · Customers · Q3 2026）+ 84px 叙事标题，每幕换一句
-//   （Every dot is 40 customers → Split by plan → Stacked by plan → Total customers），旧句上推出、新句从线下升起；
-//   簇标签 / 柱顶数值 60px，套餐名 32px。
-// - 终幕：数字点按弧长连续分配给三组（Free 拼出 12,8 / Pro 接上 4 / Enterprise 收尾 7），
+// - 文字层级：左上眉题（video-shotcraft 标志 + 字标 · Renders · Q3 2026）+ 84px 叙事标题，每幕换一句
+//   （Every dot is 40 renders → Split by format → Stacked by format → Total renders），旧句上推出、新句从线下升起；
+//   簇标签 / 柱顶数值 60px，片型名 32px。
+// - 终幕：数字点按弧长连续分配给三组（Promo 拼出 12,8 / Launch film 接上 4 / Explainer 收尾 7），
 //   数字本身就是一根构成条；下方三枚图例把颜色含义留在海报上。
 //
 // 时间表（30fps，共 192f）：
@@ -20,6 +20,7 @@ import React from 'react';
 import { AbsoluteFill, spring, useCurrentFrame } from 'remotion';
 import { EASE, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const UNIT_DOT_SWARM_REGROUP_V2_DURATION = 192;
 
@@ -33,14 +34,14 @@ const M3 = 100;
 const DUR = 24;
 const STAG = 8;
 
-// 三组：Free 180 / Pro 102 / Enterprise 38
+// 三组：Promo 180 / Launch film 102 / Explainer 38
 const GROUP_N = [180, 102, 38];
-const GROUP_NAME = ['Free', 'Pro', 'Enterprise'];
+const GROUP_NAME = ['Promo', 'Launch film', 'Explainer'];
 const GROUP_VAL = ['7,210', '4,102', '1,535'];
 const COL: Array<[string, string]> = [
-  ['#b9c3da', '#97a3c0'], // Free：雾蓝灰
-  ['#5b80ff', '#2348e8'], // Pro：钴蓝（主角）
-  ['#2b3554', '#121a33'], // Enterprise：深海军蓝
+  ['#b9c3da', '#97a3c0'], // Promo：雾蓝灰
+  ['#5b80ff', '#2348e8'], // Launch film：钴蓝（主角）
+  ['#2b3554', '#121a33'], // Explainer：深海军蓝
 ];
 const groupOf = (i: number) => (i < 180 ? 0 : i < 282 ? 1 : 2);
 const idxIn = (i: number) => (i < 180 ? i : i < 282 ? i - 180 : i - 282);
@@ -184,14 +185,16 @@ export const UnitDotSwarmRegroupV2: React.FC = () => {
 
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: '50% 52%' }}>
         {/* 眉题 + 叙事标题 */}
-        <div style={{ position: 'absolute', left: 96, top: 92, ...type(32, 650, { caps: true }), color: L.ink3, opacity: ramp(frame, 0, 12, EASE.out) }}>
-          <span style={{ color: L.accent }}>Tidewell</span> · Customers · Q3 2026
+        <div style={{ position: 'absolute', left: 96, top: 92, display: 'flex', alignItems: 'center', gap: 12, ...type(32, 650, { caps: true }), color: L.ink3, opacity: ramp(frame, 0, 12, EASE.out) }}>
+          <ShotcraftMark size={38} tone="light" style={{ marginTop: -2 }} />
+          <span style={{ fontFamily: BRAND.font, fontWeight: 700, textTransform: 'none', letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
+          <span>· Renders · Q3 2026</span>
         </div>
         <div style={{ position: 'absolute', left: 90, top: 152, ...type(84, 760), color: L.ink }}>
-          <Headline text="Every dot is 40 customers" inF={2} outF={M1 + 4} />
-          <Headline text="Split by plan" inF={M1 + 14} outF={M2 + 2} />
-          <Headline text="Stacked by plan" inF={M2 + 12} outF={M3 + 2} />
-          <Headline text="Total customers" inF={M3 + 14} />
+          <Headline text="Every dot is 40 renders" inF={2} outF={M1 + 4} />
+          <Headline text="Split by format" inF={M1 + 14} outF={M2 + 2} />
+          <Headline text="Stacked by format" inF={M2 + 12} outF={M3 + 2} />
+          <Headline text="Total renders" inF={M3 + 14} />
         </div>
 
         {/* 簇标签 */}
@@ -267,7 +270,7 @@ export const UnitDotSwarmRegroupV2: React.FC = () => {
           position: 'absolute', left: 0, right: 0, top: 862, textAlign: 'center', ...type(32, 500), color: L.ink3,
           opacity: ramp(frame, 132, 14, EASE.out),
         }}>
-          Each dot ≈ 40 customers
+          Each dot ≈ 40 renders
         </div>
       </div>
     </AbsoluteFill>

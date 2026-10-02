@@ -6,8 +6,9 @@
 // - 主角是一张 1100×600 的磨砂玻璃卡（backdrop 模糊 + 提饱和）：光斑从卡后游过时，颜色真的透过玻璃
 //   染进卡面——卡和光斑"认识"彼此不再只靠外发光。外缘辉光取最近光斑的颜色与距离，另有一道发丝线宽的
 //   定向轮廓光，角度跟着主导光斑转、只在受光一侧亮。
-// - 内容是一款助眠白噪音 app「Nocta」的正在播放卡：160px 标题「Low tide」、36px 声景说明、
-//   64 根随潮汐缓慢起伏的声波条 + 64px 等宽剩余时间（每秒跳一次）——画面在呼吸，但都是慢动作。
+// - 内容是 video-shotcraft 的成片预览卡（品牌轮由助眠 app「Nocta」换来）：镜刻标志 + 字标、160px 标题
+//   「Launch film」、36px 卖点说明、64 根随潮汐缓慢起伏的音轨波形条 + 64px 等宽剩余时间（每秒跳一次）——
+//   画面在呼吸，但都是慢动作。
 // - 节奏：快入场、长呼吸、缓收敛。卡片 8–34f 由虚到实升起（snappy），字逐行跟进；光斑与声波共享一条
 //   "潮汐时间"，115–145f 按 out-sine 减速收敛（起始斜率 = 1，速度连续），之后真静止 25f。
 //
@@ -22,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, ramp } from '../../_fixtures/Polish';
 import { TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const GLOW_ORB_AMBIENT_DURATION = 170; // ~5.7s：亮起 → 漂移 → 115–145f 收敛 → 末 25f 真静止
 
@@ -73,15 +75,6 @@ const barH = (i: number, t: number) => {
   return Math.max(0.08, env * w);
 };
 
-const MoonMark: React.FC = () => (
-  <div style={{
-    width: 52, height: 52, borderRadius: 16, position: 'relative', overflow: 'hidden',
-    background: `linear-gradient(145deg, ${C.teal} 0%, ${C.blue} 100%)`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.4), 0 6px 18px ${alpha(C.teal, 0.35)}`,
-  }}>
-    <div style={{ position: 'absolute', left: 13, top: 11, width: 26, height: 26, borderRadius: 13, background: '#f4fffc' }} />
-    <div style={{ position: 'absolute', left: 21, top: 7, width: 24, height: 24, borderRadius: 12, background: `linear-gradient(145deg, #27b8b6 0%, #2b7fe6 100%)` }} />
-  </div>
-);
 
 export const GlowOrbAmbient: React.FC = () => {
   const f = useCurrentFrame();
@@ -106,8 +99,8 @@ export const GlowOrbAmbient: React.FC = () => {
   const ang = (Math.atan2(lp.x - CX, -(lp.y - CY)) * 180) / Math.PI;
   const gAng = (ang + 180).toFixed(1); // 渐变 0% 落在朝光一侧
 
-  // 剩余时间：每秒跳一次（收敛后停在 41:08）
-  const secs = 41 * 60 + 12 - Math.floor(Math.min(f, 145) / 30);
+  // 剩余时间：每秒跳一次（一支 ~45s 的发布片，收敛后停在 00:38）
+  const secs = 42 - Math.floor(Math.min(f, 145) / 30);
   const mm = String(Math.floor(secs / 60)).padStart(2, '0');
   const ss = String(secs % 60).padStart(2, '0');
 
@@ -150,8 +143,8 @@ export const GlowOrbAmbient: React.FC = () => {
 
             {/* 顶栏 */}
             <div style={{ position: 'absolute', left: 64, right: 64, top: 56, display: 'flex', alignItems: 'center', gap: 18, opacity: ramp(f, 14, 14, EASE.out) }}>
-              <MoonMark />
-              <div style={{ ...type(36, 650), color: C.ink }}>Nocta</div>
+              <ShotcraftMark size={56} tone="dark" />
+              <div style={{ ...type(36, 650), fontFamily: BRAND.font, letterSpacing: '0.03em', color: C.ink }}>{BRAND.name}</div>
               <div style={{
                 marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 22px', borderRadius: 40,
                 background: 'rgba(255,255,255,0.07)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', ...type(32, 550), color: C.ink2,
@@ -163,10 +156,10 @@ export const GlowOrbAmbient: React.FC = () => {
 
             {/* 标题 + 说明 */}
             <div style={{ position: 'absolute', left: 60, top: 150 }}>
-              <TextReveal text="Low tide" by="char" variant="blur" start={18} each={20} gap={2.2} style={{ ...type(160, 650), letterSpacing: '-0.045em', color: C.ink }} />
+              <TextReveal text="Launch film" by="char" variant="blur" start={18} each={20} gap={2.2} style={{ ...type(160, 650), letterSpacing: '-0.045em', color: C.ink }} />
             </div>
             <div style={{ position: 'absolute', left: 66, top: 334 }}>
-              <TextReveal text="Brown noise · distant swell · 38 dB" by="word" variant="blur" start={32} each={16} gap={2.5} style={{ ...type(36, 450), color: C.ink2 }} />
+              <TextReveal text="Beat-synced cuts · film-grade SFX" by="word" variant="blur" start={32} each={16} gap={2.5} style={{ ...type(36, 450), color: C.ink2 }} />
             </div>
 
             {/* 声波条 + 剩余时间 */}

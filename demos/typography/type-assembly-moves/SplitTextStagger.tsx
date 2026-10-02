@@ -1,5 +1,5 @@
 // 逐字遮罩裂升（split-text-stagger）——GSAP SplitText 惯用入场。
-// 标题 "MOTION SYSTEM" 按字符拆 span，每字外包 overflow:hidden 的行高盒，
+// 标题 "FRAME MOTION."（video-shotcraft 品牌短句前半句）按字符拆 span，每字外包 overflow:hidden 的行高盒，
 // 内层从 translateY(115%) 升到 0，各 14f Easing.out(cubic)，带 10% 过冲
 // 再 6f 回落（原案 6% 过冲，按可感性红线加码到 10%）。delay = 字符索引×2f。
 // 底部基线细线在首字起跳同帧从左向右生长，暗示裁切线存在。
@@ -17,7 +17,7 @@ import { Backdrop, EASE, FONT as PFONT, ramp } from '../../_fixtures/Polish';
 
 export const SPLIT_TEXT_STAGGER_DURATION = 130;
 
-const TEXT = 'MOTION SYSTEM';
+const TEXT = 'FRAME MOTION.'; // 品牌短句 Frame motion. Craft the shot. 的前半句（13 字符，与原文等长）
 const START = 12; // 首字起跳帧
 const RISE = 14; // 升起时长
 const SETTLE = 6; // 过冲回落时长

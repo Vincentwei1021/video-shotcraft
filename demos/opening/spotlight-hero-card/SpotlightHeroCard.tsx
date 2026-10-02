@@ -10,7 +10,7 @@
 // - 卡：rise（过冲）→ 悬停 sin bob → reseat（落地微压 + 一圈香槟色落地光）。悬浮时卡投在页面上的影子
 //   偏离光源方向、随高度变大变虚（主光方向统一：光从上方偏右来）。
 // - 轮廓光束改为香槟金 + 白芯（graphite 的 accent2），只给主角两圈（Q4）：lap1 快而亮、lap2 慢而弱。
-// - 3D 注记（C3：同一 3D 空间、同一台相机）：暗页上的白色粗黑体「One card, / one project.」，
+// - 3D 注记（C3：同一 3D 空间、同一台相机）：暗页上的白色粗黑体「Your product, / in motion.」（video-shotcraft 宣传语），
 //   关键词后长出香槟色马克条（字变墨色）；卡 reseat 时注记也一起"落"回页面平面（translateZ 92→4），
 //   不再提前退场——结尾是一张完整的海报：聚光里的卡 + 页面上的一句话。
 //
@@ -278,10 +278,10 @@ export const SpotlightHeroCard: React.FC = () => {
                 opacity: noteIn, filter: noteIn < 1 ? `blur(${((1 - noteIn) * 4).toFixed(2)}px)` : undefined,
                 fontFamily: FONT.sans, letterSpacing: '-0.035em', lineHeight: 1.1,
               }}>
-                <div style={{ fontSize: 34, fontWeight: 760, color: '#f6f3ec', textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>One card,</div>
+                <div style={{ fontSize: 34, fontWeight: 760, color: '#f6f3ec', textShadow: '0 2px 18px rgba(0,0,0,0.6)' }}>Your product,</div>
                 <div style={{ position: 'relative', display: 'inline-block', marginTop: 2 }}>
                   <div style={{ position: 'absolute', left: -6, top: '8%', bottom: '2%', width: `calc(${hl.toFixed(4)} * (100% + 12px))`, background: GOLD, borderRadius: 4 }} />
-                  <div style={{ position: 'relative', fontSize: 34, fontWeight: 760, color: hl > 0.55 ? '#14110c' : '#f6f3ec' }}>one project.</div>
+                  <div style={{ position: 'relative', fontSize: 34, fontWeight: 760, color: hl > 0.55 ? '#14110c' : '#f6f3ec' }}>in motion.</div>
                 </div>
               </div>
             </div>

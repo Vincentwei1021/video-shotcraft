@@ -5,7 +5,7 @@
 // 第二轮重设计（瓷白 · 结账页的一次"决定"）：
 // - look = porcelain（冷白 · 墨蓝黑 · 钴蓝）。按 1080p 原生排版重写（不再用 480×270 设计坐标放大）：
 //   眉题 + 84px 问句「How would you like to pay?」、96px 高的实体 chip（36px 字，发丝线 + 顶部内高光 + 两层软阴影），
-//   主体占画宽 ~62%。虚构产品 Tessel 的 Pro 方案结账。
+//   主体占画宽 ~62%。眉题挂 video-shotcraft 标志 + 名字：这是它的结账页。
 // - 选中两级状态拆开演（本卡命门，参数不变）：56f 单帧灰闪（:active）→ 57–62f 线性反黑（:selected，不加缓动）
 //   + sin 回弹 0.04；其余 chip 只降不透明度、transform 恒为 none。新增一只光标从右下走弧线点中它，因果更明确。
 // - 黑 chip 被选中后底下亮起一圈极淡的钴蓝落地光（只给主角一次）；收束时上移 + 缩到 0.88 + 横向回中线，
@@ -27,6 +27,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CHIP_GRID_SINGLE_SELECT_BLACKOUT_DURATION = 165;
 
@@ -118,10 +119,15 @@ export const ChipGridSingleSelectBlackout: React.FC = () => {
       <AbsoluteFill style={{ transform: `scale(${cam.toFixed(4)})`, transformOrigin: '50% 50%' }}>
         {/* 眉题 + 问句 */}
         <div style={{ position: 'absolute', left: 0, right: 0, top: 168, textAlign: 'center', opacity: 1 - titleOut, transform: `translateY(${(-30 * titleOut).toFixed(2)}px)` }}>
-          <div style={{
-            ...type(22, 650, { caps: true }), color: L.accent,
-            letterSpacing: `${(0.24 + 0.3 * (1 - ramp(frame, 0, 18, EASE.snappy))).toFixed(3)}em`, opacity: ramp(frame, 0, 10, EASE.out),
-          }}>Tessel Pro · Billing cycle</div>
+          {/* 眉题：标志 + 小写品牌名（不随字距动画）+ caps 标签（字距收拢） */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 14, opacity: ramp(frame, 0, 10, EASE.out) }}>
+            <ShotcraftMark size={32} tone="light" />
+            <span style={{ ...type(26, 680), letterSpacing: '0.01em', color: L.ink }}>{BRAND.name}</span>
+            <span style={{
+              ...type(22, 650, { caps: true }), color: L.accent,
+              letterSpacing: `${(0.24 + 0.3 * (1 - ramp(frame, 0, 18, EASE.snappy))).toFixed(3)}em`,
+            }}>· Billing cycle</span>
+          </div>
           <div style={{ marginTop: 22 }}>
             <TextReveal text="How would you like to pay?" by="word" variant="rise" start={3} each={16} gap={2.5}
               style={{ ...type(84, 700), color: L.ink }} />
@@ -179,7 +185,8 @@ export const ChipGridSingleSelectBlackout: React.FC = () => {
 
         {/* ── 结算：原价划掉 → 现价 → Save 18% ── */}
         <div style={{ position: 'absolute', left: 0, right: 0, top: 452, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 44 }}>
-          <div style={{ height: 82, overflow: 'hidden', marginBottom: 0 }}>
+          {/* 起播前隐藏：未升起的「$42.00」字顶（$ 尖、数字上缘）会从 82px 遮罩框底露出几道细痕，压在第二行 chip 左边 */}
+          <div style={{ height: 82, overflow: 'hidden', marginBottom: 0, opacity: frame >= 108 ? 1 : 0 }}>
             <div style={{ position: 'relative', transform: `translateY(${((1 - oldIn) * 110).toFixed(1)}%)`, ...type(60, 500), color: mixC(strike, L.ink2, L.ink3) }}>
               $42.00
               <div style={{

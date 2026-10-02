@@ -1,0 +1,16 @@
+{
+  "stem": "TimelineTravel",
+  "changed": true,
+  "brand": [
+    "页眉「Release history / Five years of shipping」→ 镜刻标志 + Release history /「Shipping every month」",
+    "四张里程碑卡（Public launch / Cycles & roadmaps / Insights / AI agents）→ video-shotcraft 版本史：Public launch / Camera & sound / Motion workbench / One-prompt promos（Direct the film. Let the agent shoot it.）",
+    "年份 2021–2026 与「1.2k teams」等用户数 → 2026 年 Jul–Oct 月份（背景视差大字同步）与功能标签（Remotion render / Beat-synced cuts / Live preview / Claude Code & Codex）"
+  ],
+  "brandEn": [
+    "Header \"Release history / Five years of shipping\" → Frame Chisel mark + Release history / \"Shipping every month\"",
+    "Four milestone cards (Public launch / Cycles & roadmaps / Insights / AI agents) → video-shotcraft history: Public launch / Camera & sound / Motion workbench / One-prompt promos (Direct the film. Let the agent shoot it.)",
+    "Years 2021–2026 and user counts like \"1.2k teams\" → Jul–Oct 2026 (parallax backdrop follows) and feature tags (Remotion render / Beat-synced cuts / Live preview / Claude Code & Codex)"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

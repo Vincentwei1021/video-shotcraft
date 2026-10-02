@@ -2,27 +2,28 @@
 // 冲击环 + 碎屑迸发 + 震屏；冲击波前沿扫到左右邻卡的那一帧（按半径-距离反解 = 落点后 3f），
 // 早已驻场的邻卡被可见地向外推开、再阻尼弹回——"这一下震到了邻居"。
 //
-// 第二轮重设计（瓷白定价页 · Pro 方案砸入）：
-// - look = porcelain（冷白 · 钴蓝）。页面是虚构文档工具「Inkwell」的定价区：标题「Plans that grow with your docs.」，
-//   三张 470×600 方案卡——Starter / Team 两张白卡开场就在，中间是一个虚线空槽；主角 Pro 卡是深墨蓝底
-//   （全片唯一的暗面 = 视觉重心），112px 价格、钴蓝 CTA，落定后头顶弹出「MOST POPULAR」签。
-// - 节奏「悬 — 砸 — 震 — 传 — 落」：0–16f Pro 卡悬在槽位上方的镜头前（scale 1.55→1.6、上提 20px、景深虚化，
+// 第二轮重设计（瓷白规格页 · Launch film 砸入）：
+// - look = porcelain（冷白 · 钴蓝）。页面是 video-shotcraft 的成片规格区：眉题标志 + 标题「One prompt to a finished promo.」，
+//   三张 470×600 规格卡——Teaser / Walkthrough 两张白卡开场就在，中间是一个虚线空槽；主角 Launch film 卡是深墨蓝底
+//   （全片唯一的暗面 = 视觉重心），112px 时长、钴蓝 CTA，落定后头顶弹出「DIRECTOR'S CUT」签。
+// - 节奏「悬 — 砸 — 震 — 传 — 落」：0–16f 主卡悬在槽位上方的镜头前（scale 1.55→1.6、上提 20px、景深虚化，
 //   槽位里的接触影随高度变实）→ 16–22f 六帧 ease-in 加速砸落 → 22f 落点帧：卡片压扁 3f 再弹簧回正 +
 //   钴蓝冲击环（白色压力盘打底，扩散 out-cubic / 消散线性解耦）+ 18 片碎屑 + 8px 震屏 4f →
 //   25f 环前沿过邻卡中心：邻卡外推 34px + 旋转 ±3.5°，包络 cos(t/2)·e^(−t/8)，40f 硬钳 0，推开那一下给水平拖影。
-// - 落定后 28f「MOST POPULAR」签弹簧弹出，邻卡 ~65f 归位，此后整版真静止（只留极缓推镜）。
+// - 落定后 28f「DIRECTOR'S CUT」签弹簧弹出，邻卡 ~65f 归位，此后整版真静止（只留极缓推镜）。
 //
 // 时间表（30fps，共 140f）：
-//   0–16    邻卡驻场 ≥15f；Pro 卡悬停蓄力（上提 + 放大 + 虚化），空槽可见
+//   0–16    邻卡驻场 ≥15f；主卡悬停蓄力（上提 + 放大 + 虚化），空槽可见
 //   16–22   砸落（主动作 6f，ease-in）
 //   22–38   落点：压扁回弹、冲击环 16f、碎屑 22f、震屏 4f
 //   25–65   邻卡被波及：外推 → 阻尼弹回 → 硬钳归零
-//   28–40   MOST POPULAR 签弹出
+//   28–40   DIRECTOR'S CUT 签弹出
 //   65–140  hold（75f）
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, bezier, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const IMPACT_BURST_KIT_DURATION = 140;
 
@@ -71,10 +72,11 @@ const Check: React.FC<{ c: string }> = ({ c }) => (
 );
 
 type Plan = { name: string; price: string; unit: string; blurb: string; feats: string[]; cta: string; hero?: boolean };
+// video-shotcraft 的三种成片规格：大数字是片长（演示值），主角是 Launch film
 const PLANS: Plan[] = [
-  { name: 'Starter', price: '$0', unit: 'free forever', blurb: 'For your own notes.', feats: ['3 shared docs', 'Basic search', 'Community help'], cta: 'Start free' },
-  { name: 'Pro', price: '$24', unit: '/ seat / mo', blurb: 'For teams that write a lot.', feats: ['Unlimited docs', 'AI answers', 'Version history'], cta: 'Upgrade to Pro', hero: true },
-  { name: 'Team', price: '$48', unit: '/ seat / mo', blurb: 'For the whole company.', feats: ['SSO & SCIM', 'Audit log', 'Priority support'], cta: 'Talk to sales' },
+  { name: 'Teaser', price: '15s', unit: '9:16 social', blurb: 'For a social drop.', feats: ['Crash-zoom open', 'Beat-synced cuts', 'Logo sting'], cta: 'Cut a teaser' },
+  { name: 'Launch film', price: '60s', unit: '16:9 · 1080p', blurb: 'Your product, in motion.', feats: ['Real page captures', '2.5D camera moves', 'Film-grade SFX'], cta: 'Render launch film', hero: true },
+  { name: 'Walkthrough', price: '90s', unit: 'with voiceover', blurb: 'Every feature, shot by shot.', feats: ['Cursor flyovers', 'Callout zooms', 'JianYing export'], cta: 'Storyboard it' },
 ];
 
 const PlanCard: React.FC<{ p: Plan }> = ({ p }) => {
@@ -114,7 +116,7 @@ const PlanCard: React.FC<{ p: Plan }> = ({ p }) => {
 export const ImpactBurstKit: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // ── 主卡：0–16 悬停蓄力 → 16–22 加速砸落 → 22 起压扁回弹
+  // ── 主卡（Launch film）：0–16 悬停蓄力 → 16–22 加速砸落 → 22 起压扁回弹
   const wind = ramp(frame, 0, DROP0, EASE.smooth);
   const drop = ramp(frame, DROP0, IMPACT - DROP0, EASE_IN_CUBIC);
   const hoverScale = 1.55 + 0.05 * wind;
@@ -166,8 +168,12 @@ export const ImpactBurstKit: React.FC = () => {
       <div style={{ position: 'absolute', inset: 0, transform: `translate(${shakeX.toFixed(2)}px, ${shakeY.toFixed(2)}px) scale(${push.toFixed(5)})` }}>
         {/* 页面标题区：本来就在 */}
         <div style={{ position: 'absolute', left: X0, top: 104, fontFamily: FONT.sans, color: L.ink }}>
-          <div style={{ font: `700 24px ${FONT.mono}`, letterSpacing: '0.14em', color: L.accent }}>INKWELL · PRICING</div>
-          <div style={{ marginTop: 14, font: `780 76px ${FONT.sans}`, letterSpacing: '-0.045em', lineHeight: 1 }}>Plans that grow with your docs.</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, font: `700 24px ${FONT.mono}`, letterSpacing: '0.06em', color: L.accent }}>
+            <ShotcraftMark size={34} tone="light" />
+            <span style={{ color: L.ink }}>{BRAND.name}</span>
+            <span>· formats</span>
+          </div>
+          <div style={{ marginTop: 14, font: `780 76px ${FONT.sans}`, letterSpacing: '-0.045em', lineHeight: 1 }}>One prompt to a finished promo.</div>
         </div>
 
         {/* 中间空槽：虚线槽位 + 随下落变实的接触影 */}
@@ -201,7 +207,7 @@ export const ImpactBurstKit: React.FC = () => {
           }} />
         )}
 
-        {/* 主卡 Pro */}
+        {/* 主卡 Launch film */}
         <div style={{
           position: 'absolute', left: X0 + CW + GAP, top: Y + mDy, width: CW, height: CH, borderRadius: 30, opacity: mOp,
           background: `linear-gradient(170deg, #1a2550 0%, ${NAVY} 55%, #0a1026 100%)`,
@@ -214,14 +220,14 @@ export const ImpactBurstKit: React.FC = () => {
             <div style={{ position: 'absolute', left: -80, right: -80, top: -260, height: 420, background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(L.accent, 0.45)} 0%, ${alpha(L.accent, 0)} 70%)` }} />
           </div>
           <PlanCard p={PLANS[1]} />
-          {/* MOST POPULAR 签：落定后弹出，骑在卡顶缘 */}
+          {/* DIRECTOR'S CUT 签：落定后弹出，骑在卡顶缘 */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: -24, display: 'flex', justifyContent: 'center' }}>
             <div style={{
               height: 48, padding: '0 22px', borderRadius: 24, background: L.accent, color: '#ffffff', display: 'flex', alignItems: 'center',
               font: `800 22px ${FONT.mono}`, letterSpacing: '0.12em', transform: `scale(${badge.toFixed(4)})`, opacity: Math.min(1, badge * 2),
               boxShadow: `0 10px 24px -8px ${alpha(L.accent, 0.8)}, inset 0 1px 0 rgba(255,255,255,0.35)`,
             }}>
-              MOST POPULAR
+              {"DIRECTOR'S CUT"}
             </div>
           </div>
         </div>

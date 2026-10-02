@@ -26,8 +26,8 @@ import {
 export const LEAD_WORD_ZOOM_ASSEMBLE_DURATION = 84; // 2.8s @30fps
 
 // ---- 编舞常量 ----
-const TEXT = 'Introducing Lumen Deck';
-const HIGHLIGHT_WORD = 'Lumen'; // 精确匹配的词换强调色：品牌词落位那一下自带高亮
+const TEXT = 'Introducing video-shotcraft';
+const HIGHLIGHT_WORD = 'video-shotcraft'; // 精确匹配的词换强调色：品牌词落位那一下自带高亮
 const FONT_SIZE = 96;
 const INITIAL_SCALE = 2.3; // 首词起手放大倍数
 const INTRO_DURATION = 6; // f：首词淡入

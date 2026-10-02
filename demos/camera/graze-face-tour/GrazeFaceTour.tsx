@@ -5,7 +5,9 @@
 // v3 质感升级：
 // - 灰阶骨架 UI（Helvetica 回退、5px 粗边框图标、CSS 三角）→ 出版级浅色产品 UI：系统字体栈、
 //   字重层级、统一线性 SVG 图标、3px 发丝线（界面按 ~2.7x 排版，等效 1px）、单一靛紫强调色
-//   （选中行 / List 视图 / 徽标），与霓虹缘光同色系。品牌名换成虚构的 "Orbit"。
+//   （选中行 / List 视图 / 徽标），与霓虹缘光同色系。
+// - 品牌轮：界面就是 video-shotcraft 的工作区——侧栏标志 + 字标、活动 tab 的标志图标，
+//   树 / 卡片 / 任务行的内容换成镜头配方卡、分镜、渲染队列（行数与文字长度按原版保持）。
 // - 运镜不再"段段刹停"：中段匀速巡航、首段缓起、末段缓落，交叉淡化窗口里相机继续外推
 //   （旧版淡化期 t 被钳住 = 每次接力都有 7f 静止），并带 ±1° 的缓慢滚转，持续"低飞"。
 // - 同形软影改纯色压暗（不再是灰字重影），落地瞬间收成贴地接触影；背景霓虹框改发光描边、
@@ -13,6 +15,7 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { FONT, Grain, Vignette, bezier } from '../../_fixtures/Polish';
+import { ShotcraftMark, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const GRAZE_FACE_TOUR_DURATION = 150; // 三段 × 50f
 
@@ -106,7 +109,7 @@ const TreeRow: React.FC<{
     {icon === 'doc' && <Icon name="doc" color={INK3} />}
     {icon === 'folder' && <Icon name="folder" color={INK3} />}
     {icon === 'dash' && <Icon name="square" color={INK3} dashed />}
-    {chip && <SpaceChip letter={chip} hue={{ E: '#8a7cf0', P: '#4fb39a', D: '#e39a5b' }[chip] ?? '#9a9ca5'} />}
+    {chip && <SpaceChip letter={chip} hue={{ O: '#8a7cf0', C: '#4fb39a', T: '#e39a5b' }[chip] ?? '#9a9ca5'} />}
     <div style={{ fontFamily: SANS, fontSize: size, color: INK, fontWeight: 500, letterSpacing: '-0.012em' }}>{label}</div>
     {count && (
       <div style={{
@@ -163,20 +166,20 @@ const ViewSwitch: React.FC<{ size: number }> = ({ size }) => (
 const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
   const L = (i: number, n = 14) => liftOf(t, 0.22 + (i / n) * 0.62, 130);
   const rows: [number, string, RowIcon, string | undefined, string | undefined][] = [
-    [0, 'People & Teams', 'doc', undefined, undefined],
-    [0, 'Goals', 'doc', undefined, undefined],
-    [0, 'Docs', 'doc', undefined, undefined],
+    [0, 'Shot recipes', 'doc', undefined, undefined],
+    [0, 'Storyboards', 'doc', undefined, undefined],
+    [0, 'Renders', 'doc', undefined, undefined],
     [0, 'More', 'dash', undefined, undefined],
-    [0, 'EPD', 'tri', 'E', undefined],
-    [0, 'Product roadmap', 'tri', 'P', undefined],
-    [0, 'Design', 'triOpen', 'D', undefined],
-    [1, 'Designer handbook', 'doc', undefined, undefined],
-    [1, '3.0', 'folder', undefined, undefined],
-    [1, 'Design system', 'folder', undefined, undefined],
-    [2, 'Design system', 'doc', undefined, undefined],
-    [2, 'Components', 'dash', undefined, '56'],
-    [2, 'Patterns', 'dash', undefined, '8'],
-    [2, 'Tokens', 'dash', undefined, '256'],
+    [0, 'Opening', 'tri', 'O', undefined],
+    [0, 'Camera moves', 'tri', 'C', undefined],
+    [0, 'Transitions', 'triOpen', 'T', undefined],
+    [1, 'Recipe handbook', 'doc', undefined, undefined],
+    [1, 'Whip pans', 'folder', undefined, undefined],
+    [1, 'Match cuts', 'folder', undefined, undefined],
+    [2, 'Match cuts', 'doc', undefined, undefined],
+    [2, 'Takes', 'dash', undefined, '56'],
+    [2, 'Demos', 'dash', undefined, '8'],
+    [2, 'Frames', 'dash', undefined, '256'],
   ];
   return (
     <div style={{ width: 2900, height: 2400, background: SURF, display: 'flex' }}>
@@ -204,10 +207,10 @@ const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
         <div style={{ height: 70 }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
           <FloatWrap h={liftOf(t, 0.42, 170)}>
-            <RecentCard title="Logo" sub="Brand refresh" meta="Edited 2h ago" />
+            <RecentCard title="Launch film" sub="Storyboard v3" meta="Edited 2h ago" />
           </FloatWrap>
           <FloatWrap h={liftOf(t, 0.55, 170)}>
-            <RecentCard title="Access request · Oleg" sub="Team credentials" meta="Yesterday" />
+            <RecentCard title="Add shot · crash zoom" sub="Camera moves" meta="Yesterday" />
           </FloatWrap>
         </div>
         <div style={{ height: 110 }} />
@@ -224,7 +227,7 @@ const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
 };
 
 /* 场景 B：顶部 tab 条 + 左上侧栏导航
- * tab 条、logo、Home 行、侧栏项先后从空中贴落 */
+ * tab 条、video-shotcraft 字标、Home 行、侧栏项先后从空中贴落 */
 const NAV: [IconName, string][] = [['inbox', 'Inbox'], ['building', 'Company'], ['users', 'People & Teams'], ['target', 'Goals'], ['doc', 'Docs']];
 const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
   <div style={{ width: 3000, height: 2100, background: SURF, borderRadius: 48 }}>
@@ -232,7 +235,7 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
       height: 150, borderBottom: `3px solid ${LINE}`, display: 'flex', alignItems: 'center',
       gap: 110, paddingLeft: 90, fontFamily: SANS, fontSize: 52, color: INK, background: SIDE, borderRadius: '48px 48px 0 0',
     }}>
-      {['Product analytics', 'Orbit 3.0', 'Widget brainstorm', 'Design system'].map((tb, i) => (
+      {['Shot recipe cards', 'Launch film', 'Beat-synced cuts', 'Render queue'].map((tb, i) => (
         <FloatWrap key={tb} h={liftOf(t, 0.2 + i * 0.1, 140)}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 22, fontWeight: i === 1 ? 650 : 500, color: i === 1 ? INK : INK2,
@@ -240,7 +243,7 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
             ...(i === 1 ? { background: '#fff', padding: '18px 34px', borderRadius: 18, border: `3px solid ${LINE}`, boxShadow: '0 6px 16px -8px rgba(16,18,24,0.18)' } : {}),
           }}>
             {i === 1
-              ? <div style={{ width: 36, height: 36, borderRadius: 11, background: `linear-gradient(135deg, #9b84ff, ${ACC})` }} />
+              ? <ShotcraftMark size={40} tone="light" />
               : <Icon name="doc" size={44} color={INK3} />}
             {tb}
           </div>
@@ -251,8 +254,7 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
       <div style={{ width: 1250, padding: '70px 70px 0', background: SIDE, height: 1950, boxSizing: 'border-box', borderBottomLeftRadius: 48 }}>
         <FloatWrap h={liftOf(t, 0.34, 150)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-            <div style={{ width: 76, height: 76, borderRadius: 22, background: `linear-gradient(135deg, #9b84ff, ${ACC})`, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3)' }} />
-            <div style={{ fontFamily: SANS, fontSize: 64, fontWeight: 750, color: INK, letterSpacing: '-0.03em' }}>Orbit</div>
+            <ShotcraftWordmark size={56} tone="light" markScale={1.5} gap={24} />
             <div style={{
               marginLeft: 'auto', width: 120, height: 84, border: `3px solid ${LINE}`, borderRadius: 22, background: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -303,7 +305,7 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
             boxShadow: '0 3px 6px rgba(16,18,24,0.04), 0 18px 40px -14px rgba(16,18,24,0.14)',
           }}>
             <Icon name="search" size={50} color={INK3} />
-            <div style={{ fontFamily: SANS, fontSize: 46, color: INK3 }}>Search by app, filetype…</div>
+            <div style={{ fontFamily: SANS, fontSize: 46, color: INK3 }}>Search shots, recipes…</div>
             <div style={{
               marginLeft: 'auto', padding: '8px 18px', borderRadius: 12, border: `3px solid ${LINE}`,
               fontFamily: FONT.mono, fontSize: 34, color: INK3,
@@ -317,10 +319,10 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
 
 /* 场景 C：列表行（TODAY / TASK NAME 区）——Todo 头/TODAY 徽章/任务行自上而下先后贴落 */
 const TASKS = [
-  { n: 'New Bugs Per Week', who: '#8a7cf0', due: 'Today', p: 0.72 },
-  { n: 'Designer handbook', who: '#4fb39a', due: 'Today', p: 0.45 },
-  { n: 'Mobile screens', who: '#e39a5b', due: 'Tomorrow', p: 0.3 },
-  { n: 'Product roadmap', who: '#6aa6e8', due: 'Fri', p: 0.86 },
+  { n: 'Render launch film', who: '#8a7cf0', due: 'Today', p: 0.72 },
+  { n: 'Add shot: crash zoom', who: '#4fb39a', due: 'Today', p: 0.45 },
+  { n: 'Beat-sync the cuts', who: '#e39a5b', due: 'Tomorrow', p: 0.3 },
+  { n: 'Export JianYing draft', who: '#6aa6e8', due: 'Fri', p: 0.86 },
 ];
 const SceneListRows: React.FC<{ t?: number }> = ({ t = 1 }) => (
   <div style={{ width: 2900, height: 2200, background: SURF, paddingTop: 60 }}>

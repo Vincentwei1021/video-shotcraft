@@ -1,8 +1,9 @@
-// theme-sweep-toggle —— 深浅模式扫场（第二轮重设计：「Solstice」日历 · 昼 → 夜）
+// theme-sweep-toggle —— 深浅模式扫场（第二轮重设计：video-shotcraft 发布周排期 · 昼 → 夜）
 //
 // 设计决定：
-// - 主体：为镜头设计的周视图日历 Solstice（虚构品牌）——1680×912 浮窗，大字层级：
-//   64px 周标题、40px 日期数字、28px 事件标题；5 列 12 个事件、4 种日历色、一条"此刻"红线。
+// - 主体：video-shotcraft 的周视图制作排期（品牌轮由虚构日历 Solstice 换来，版式逐像素不变）——1680×912 浮窗，
+//   大字层级：64px 周标题、40px 日期数字、28px 事件标题；5 列 13 个制作日程（分镜 → 实拍 → 踩点 → 音效 → 渲染）、
+//   4 种日历色、一条"此刻"红线。顶栏标志 = 「镜刻」ShotcraftMark（昼夜各用亮 / 反白版）。
 // - look = custom（sand 的昼面 + 自定的夜面）：昼 = 暖象牙舞台 + 左上斜射的阳光窗格光；
 //   夜 = 墨蓝舞台 + 右上月光 + 星点。主题切换不只换 UI 皮，连舞台的"时辰"一起换——
 //   但两版布局逐像素一致（同一个 <World> 组件、只换色板），读作"同一个 UI 就地换肤"。
@@ -23,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, bezier, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const THEME_SWEEP_TOGGLE_DURATION = 140;
 
@@ -105,19 +107,19 @@ const TODAY = 2;
 const NOW = 13 + 40 / 60; // 13:40
 
 const EVENTS: { day: number; s: number; e: number; t: string; hue: Hue }[] = [
-  { day: 0, s: 9.5, e: 10.75, t: 'Design crit', hue: 'rose' },
-  { day: 0, s: 12.5, e: 14.5, t: 'Roadmap review', hue: 'blue' },
+  { day: 0, s: 9.5, e: 10.75, t: 'Storyboard crit', hue: 'rose' },
+  { day: 0, s: 12.5, e: 14.5, t: 'Shot list review', hue: 'blue' },
   { day: 1, s: 9, e: 10, t: 'Standup', hue: 'amber' },
-  { day: 1, s: 10.75, e: 12.5, t: 'Interview loop', hue: 'green' },
-  { day: 1, s: 14, e: 15.25, t: '1:1 · Theo', hue: 'amber' },
+  { day: 1, s: 10.75, e: 12.5, t: 'Page captures', hue: 'green' },
+  { day: 1, s: 14, e: 15.25, t: 'Voiceover · Theo', hue: 'amber' },
   { day: 2, s: 9.25, e: 10.5, t: 'Launch sync', hue: 'blue' },
-  { day: 2, s: 11, e: 12.75, t: 'Focus time', hue: 'green' },
-  { day: 2, s: 14.25, e: 15.75, t: 'Pricing workshop', hue: 'rose' },
-  { day: 3, s: 9.5, e: 11.25, t: 'Customer call', hue: 'amber' },
+  { day: 2, s: 11, e: 12.75, t: 'Camera moves', hue: 'green' },
+  { day: 2, s: 14.25, e: 15.75, t: 'Beat-sync pass', hue: 'rose' },
+  { day: 3, s: 9.5, e: 11.25, t: 'SFX design', hue: 'amber' },
   { day: 3, s: 12.5, e: 13.5, t: 'Lunch & learn', hue: 'green' },
-  { day: 3, s: 14.75, e: 16, t: 'Ship review', hue: 'blue' },
-  { day: 4, s: 10, e: 12.5, t: 'Deep work', hue: 'green' },
-  { day: 4, s: 13.5, e: 14.75, t: 'Retro', hue: 'rose' },
+  { day: 3, s: 14.75, e: 16, t: 'Render review', hue: 'blue' },
+  { day: 4, s: 10, e: 12.5, t: 'Final render', hue: 'green' },
+  { day: 4, s: 13.5, e: 14.75, t: 'Ship the film', hue: 'rose' },
 ];
 
 const fmt = (h: number) => {
@@ -219,12 +221,11 @@ const World: React.FC<{ th: Theme; knob: number; icon: number; lights: number; f
         {/* 顶栏 */}
         <div style={{ position: 'absolute', left: 0, top: 0, width: WIN.w, height: TOP_H, borderBottom: `1px solid ${th.line}`, display: 'flex', alignItems: 'center', padding: '0 40px', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 11, background: `linear-gradient(160deg, ${th.accent}, ${n ? '#c2562a' : '#b8401c'})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: n ? `0 0 ${(18 * todayLit).toFixed(1)}px ${alpha(th.accent, 0.45)}` : 'none' }}>
-              <div style={{ width: 16, height: 16, borderRadius: 8, border: '3px solid #fff', boxSizing: 'border-box' }} />
-            </div>
-            <span style={{ fontSize: 32, fontWeight: 720, letterSpacing: '-0.03em' }}>Solstice</span>
+            {/* 「镜刻」标志：昼用墨框、夜用反白框，琥珀斜切不变（标志本身不加底块 / 发光） */}
+            <ShotcraftMark size={44} tone={n ? 'dark' : 'light'} />
+            <span style={{ fontFamily: BRAND.font, fontSize: 32, fontWeight: 700, letterSpacing: '0.03em' }}>{BRAND.name}</span>
           </div>
-          <div style={{ marginLeft: 120, display: 'flex', gap: 4, padding: 5, borderRadius: 14, background: th.seg }}>
+          <div style={{ marginLeft: 72, display: 'flex', gap: 4, padding: 5, borderRadius: 14, background: th.seg }}>
             {['Day', 'Week', 'Month'].map((s, i) => (
               <div key={s} style={{
                 padding: '9px 22px', borderRadius: 10, fontSize: 24, fontWeight: i === 1 ? 650 : 500,
@@ -261,7 +262,7 @@ const World: React.FC<{ th: Theme; knob: number; icon: number; lights: number; f
         <div style={{ position: 'absolute', left: 40, top: TOP_H, height: HEAD_H, display: 'flex', alignItems: 'center', width: WIN.w - 80 }}>
           <span style={{ fontSize: 64, fontWeight: 760, letterSpacing: '-0.035em' }}>September 14 – 18</span>
           <span style={{ marginLeft: 26, fontSize: 26, fontWeight: 600, letterSpacing: '0.08em', color: th.ink3, transform: 'translateY(8px)' }}>WEEK 38</span>
-          <span style={{ marginLeft: 'auto', fontSize: 26, color: th.ink2, fontWeight: 500 }}>13 events · 2 free afternoons</span>
+          <span style={{ marginLeft: 'auto', fontSize: 26, color: th.ink2, fontWeight: 500 }}>Launch film · ships Friday</span>
         </div>
 
         {/* 星期 / 日期 */}

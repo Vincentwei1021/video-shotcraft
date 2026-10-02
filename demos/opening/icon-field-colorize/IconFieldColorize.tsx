@@ -8,19 +8,20 @@
 // - 色波是一组暖色日出渐变（金 → 琥珀 → 橙 → 珊瑚红）：4 道波依次从各自起始行向下快扫，后波覆盖更低的行带，
 //   终态四段横带由上到下由暖金过渡到珊瑚红——同色系分段，不是彩虹。
 // - 节奏：中心向外浮现（46f）→ 静置时整场轻轻"吸气"压暗 → 色波 ~28f 扫完 → 光稳定后中心起一层暗幕、
-//   落一行 132px 标题「Every tool, / one switch.」，结尾帧是一张海报。
+//   落 video-shotcraft 字标 + 两行 132px 标题「Every shot, / one place.」，结尾帧是一张品牌海报。
 //
 // 时间表（30fps，共 170f）：
 //   0–48    浮现：10 批按离中心距离（+噪声）错峰，批间 4f + 批内 ≤3f；每枚 0.6→1.06→1 过冲 + 上浮 10px
 //   48–66   静置（58–66 整场压暗 12% = 蓄力）
 //   66–96   翻色：4 道波（66/72/78/84f 起），行差 1.4f + 列微倾 0.25f + ≤1.5f 抖动，每枚 4f 翻转 + pop + 白闪
 //   96–118  余波：泛光与光溢出稳定
-//   118–140 暗幕 + 眉题 + 标题两行升起
+//   118–140 暗幕 + 字标 + 标题两行升起
 //   140–170 hold；全程极缓推近 4%
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { EASE, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 const mulberry32 = (a: number) => () => {
   let t = (a += 0x6d2b79f5);
@@ -180,18 +181,18 @@ export const IconFieldColorize: React.FC = () => {
         background: `radial-gradient(ellipse 46% 44% at 50% 50%, ${alpha('#0a0503', 0.9)} 0%, ${alpha('#0a0503', 0.78)} 45%, ${alpha('#0a0503', 0)} 100%)`,
       }} />
       <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+        {/* 眉题位：video-shotcraft 字标（原「400+ INTEGRATIONS」） */}
         <div style={{
-          fontFamily: FONT.sans, fontSize: 30, fontWeight: 700, letterSpacing: '0.32em', paddingLeft: '0.32em', color: L.accent2,
           opacity: ramp(frame, 120, 14, EASE.out), transform: `translateY(${((1 - ramp(frame, 120, 18, EASE.snappy)) * 12).toFixed(2)}px)`,
         }}>
-          400+ INTEGRATIONS
+          <ShotcraftWordmark size={36} tone="dark" />
         </div>
         <div style={{ ...type(132, 750), color: L.ink, marginTop: 30, textAlign: 'center' }}>
-          <TextReveal text="Every tool," by="word" variant="rise" start={124} each={20} gap={5} />
+          <TextReveal text="Every shot," by="word" variant="rise" start={124} each={20} gap={5} />
         </div>
         {/* 第二行用第一道波的暖金（background-clip:text 遇到逐词 transform 的子元素会整行消失，不用渐变字） */}
         <div style={{ ...type(132, 750), marginTop: 6, textAlign: 'center', color: css(WAVES[0].color) }}>
-          <TextReveal text="one switch." by="word" variant="rise" start={132} each={20} gap={5} />
+          <TextReveal text="one place." by="word" variant="rise" start={132} each={20} gap={5} />
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

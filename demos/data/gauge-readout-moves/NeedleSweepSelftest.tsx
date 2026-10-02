@@ -9,9 +9,11 @@
 // 0–100 刻度数字；去程扫过的刻度依次点亮再回落（"先亮量程"），盘面有一条跟随指针的琥珀亮弧；
 // 指针换成锥形发光针 + 金属轴帽，高速甩针时带角向拖影；回程改为按各表行程反算阻尼的弹簧，
 // 落过头 8° 一次回摆、速度连续无折点；数值 overshoot 弹出、下方标注指标名。
+// 品牌轮：卡头换成 video-shotcraft 渲染节点自检（标志 + "Render node health"，落定后 "Ready to render"）。
 import React from 'react';
 import { AbsoluteFill, spring, useCurrentFrame } from 'remotion';
 import { Backdrop, EASE, FONT, Grain, mix, ramp, softShadow, tracking } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const NEEDLE_SWEEP_SELFTEST_DURATION = 140; // f60 后真静止 80f
 
@@ -47,7 +49,7 @@ const arcPath = (d0: number, d1: number, r: number): string => {
 // 三表：点火 f12，错峰 4f
 const GAUGES = [
   { start: 12, target: 190, name: 'CPU' },
-  { start: 16, target: 120, name: 'Memory' },
+  { start: 16, target: 120, name: 'GPU' },
   { start: 20, target: 235, name: 'Network' },
 ];
 
@@ -254,9 +256,12 @@ export const NeedleSweepSelftest: React.FC = () => {
         }}
       >
         {/* 卡头：标题 + 自检状态胶囊 */}
-        <div style={{ position: 'absolute', left: 44, top: 36 }}>
-          <div style={{ fontSize: 32, fontWeight: 650, color: INK1, letterSpacing: tracking(32) }}>System health</div>
-          <div style={{ marginTop: 7, fontSize: 19, fontWeight: 500, color: INK3 }}>edge-cluster-02 · 3 sensors</div>
+        <ShotcraftMark size={62} tone="dark" style={{ position: 'absolute', left: 40, top: 30 }} />
+        <div style={{ position: 'absolute', left: 122, top: 36 }}>
+          <div style={{ fontSize: 32, fontWeight: 650, color: INK1, letterSpacing: tracking(32) }}>Render node health</div>
+          <div style={{ marginTop: 7, fontSize: 19, fontWeight: 500, color: INK3 }}>
+            <span style={{ fontFamily: BRAND.font, fontWeight: 600, color: '#a3a8b4' }}>{BRAND.name}</span> · render-node-02 · 3 sensors
+          </div>
         </div>
         <div
           style={{
@@ -286,7 +291,7 @@ export const NeedleSweepSelftest: React.FC = () => {
               opacity: done > 0.5 ? 1 : 0.45 + 0.55 * pulse,
             }}
           />
-          {done > 0.5 ? 'All systems nominal' : 'Running self-test…'}
+          {done > 0.5 ? 'Ready to render' : 'Running self-test…'}
         </div>
         {/* 分隔发丝线 */}
         <div style={{ position: 'absolute', left: 44, right: 44, top: 122, height: 1, background: 'rgba(255,255,255,0.06)' }} />

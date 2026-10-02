@@ -2,13 +2,13 @@
 // 手法不变：整页俯瞰 → 相机依次飞到四个功能区特写，光标同步到位指点、点击并留下涟漪，界面即时响应。
 //
 // 设计决定
-// - look：porcelain（冷白 + 钴蓝，SaaS 交互演示）。虚构产品「Paragon」分析台，按 1:1 原生排版画在
+// - look：porcelain（冷白 + 钴蓝，SaaS 交互演示）。产品是 video-shotcraft 的工作台总览，按 1:1 原生排版画在
 //   2400×1500 的世界画布上（不再是 480×270 设计坐标放大），俯瞰 0.66x 是全貌、特写 1.3x 字号 ≥40px 可读。
 // - 只留讲清手法的四个模块，每个都有一次"点了就有反应"的交互：
-//   ① Revenue：分段控件点 90D → 大数字换档（旧值上滑淡出、新值从线下升起）+ 12 根柱子错峰弹到新高度
-//   ② Active users：点曲线上的数据点 → 引导线下落、数据点放大、tooltip 过冲弹出
+//   ① Frames rendered：分段控件点 90D → 大数字换档（旧值上滑淡出、新值从线下升起）+ 12 根柱子错峰弹到新高度
+//   ② Shot previews：点曲线上的数据点 → 引导线下落、数据点放大、tooltip 过冲弹出
 //   ③ Release flags：点开关 → 滑块弹簧滑过去、轨道染钴蓝、灰度进度条 0→25% 走起
-//   ④ Top accounts：点第二行 → 行底染色 + 左侧强调条 + 勾选框描出对勾
+//   ④ Top shots：点第二行 → 行底染色 + 左侧强调条 + 勾选框描出对勾
 //   最后相机拉回俯瞰，四处状态同时在场——尾帧是一张"巡览结束"的全家福海报。
 // - 光标是"手"，相机是"眼"：光标先走（swift 16f，一条轻弧），相机晚 2f 起步、晚 6f 落定（smooth 20f），
 //   光标在目标上"瞄"一拍再按下（3f 缩到 0.84，过冲回弹）；途中相机额外拉远 ~8% 再推回（hop），
@@ -26,6 +26,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, bezier, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CURSOR_FLYOVER_DURATION = 240; // 8s @30fps
 
@@ -128,7 +129,7 @@ const Revenue: React.FC<{ f: number }> = ({ f }) => {
   const seg = ['7D', '30D', '90D'];
   const sel = ramp(f, clickAt(0), 8, EASE.snappy); // 分段滑块 30D → 90D
   return (
-    <Module m={MOD.rev} title="Revenue" meta={sel > 0.5 ? 'Last 90 days' : 'Last 30 days'} active={r}>
+    <Module m={MOD.rev} title="Frames rendered" meta={sel > 0.5 ? 'Last 90 days' : 'Last 30 days'} active={r}>
       {/* 分段控件：滑块平移 */}
       <div style={{ position: 'absolute', right: 40, top: 40, width: 360, height: 60, borderRadius: 16, background: L.surface2, border: `1.5px solid ${L.line}` }}>
         <div style={{ position: 'absolute', top: 5, left: 5 + mix(118, 236, sel), width: 114, height: 47, borderRadius: 12, background: '#ffffff', boxShadow: softShadow(3, { color: L.shadow }) }} />
@@ -141,7 +142,7 @@ const Revenue: React.FC<{ f: number }> = ({ f }) => {
       </div>
       {/* 大数字换档 */}
       <div style={{ position: 'absolute', left: 60, top: 168, height: 170, width: 700, overflow: 'hidden' }}>
-        {[{ v: '$2.48M', p: -r }, { v: '$7.31M', p: 1 - r }].map(({ v, p }, i) => (
+        {[{ v: '2.48M', p: -r }, { v: '7.31M', p: 1 - r }].map(({ v, p }, i) => (
           <div key={i} style={{
             position: 'absolute', left: 0, top: 0, ...type(150, 720), color: L.ink,
             transform: `translateY(${(p * 150).toFixed(1)}px)`, opacity: 1 - Math.abs(p) * 0.9,
@@ -188,7 +189,7 @@ const Users: React.FC<{ f: number }> = ({ f }) => {
   const hx = ptX(HOT), hy = ptY(HOT);
   const base = CH.y + CH.h;
   return (
-    <Module m={MOD.users} title="Active users" meta="Weekly · Sep" active={r}>
+    <Module m={MOD.users} title="Shot previews" meta="Weekly · Sep" active={r}>
       <div style={{ position: 'absolute', right: 64, top: 56, ...type(34, 700), color: L.ink }}>48.2k</div>
       <svg width={MOD.users.w} height={MOD.users.h} style={{ position: 'absolute', left: 0, top: 0 }}>
         <defs>
@@ -227,9 +228,9 @@ const Users: React.FC<{ f: number }> = ({ f }) => {
 
 // ③ Release flags
 const FLAGS = [
-  { n: 'Smart routing', d: 'Route queries to the cheapest model' },
-  { n: 'Usage alerts', d: 'Notify owners at 80% of budget' },
-  { n: 'Beta dashboard', d: 'Preview the new overview page' },
+  { n: 'Beat-synced cuts', d: 'Snap every cut to the music grid' },
+  { n: 'Film-grade SFX', d: 'Layer whooshes and hits per shot' },
+  { n: 'JianYing export', d: 'Open the edit as a JianYing draft' },
 ];
 const Toggle: React.FC<{ on: number }> = ({ on }) => (
   <div style={{ position: 'relative', width: 92, height: 54, borderRadius: 27, background: on > 0.5 ? ACC : '#d5dbe6' }}>
@@ -265,18 +266,18 @@ const Flags: React.FC<{ f: number }> = ({ f }) => {
   );
 };
 
-// ④ Top accounts
+// ④ Top shots（镜头卡 · 分类 · 本月渲染次数）
 const ACCTS = [
-  { n: 'Northfield Labs', p: 'Scale', v: '$42,800' },
-  { n: 'Harbor & Pine', p: 'Growth', v: '$31,250' },
-  { n: 'Quill Studio', p: 'Growth', v: '$18,900' },
-  { n: 'Ostra Health', p: 'Starter', v: '$9,410' },
+  { n: 'Crash zoom', p: 'Camera', v: '4,280' },
+  { n: 'Cursor flyover', p: 'Camera', v: '3,125' },
+  { n: 'Text as mask', p: 'Opening', v: '1,890' },
+  { n: 'Logo sting', p: 'Outro', v: '941' },
 ];
 const Accounts: React.FC<{ f: number }> = ({ f }) => {
   const r = resp(f, 3, 14);
   const tick = resp(f, 3, 12, EASE.out);
   return (
-    <Module m={MOD.accts} title="Top accounts" meta="By monthly revenue" active={r}>
+    <Module m={MOD.accts} title="Top shots" meta="By renders this month" active={r}>
       {ACCTS.map((a, i) => {
         const sel = i === 1 ? r : 0;
         return (
@@ -355,17 +356,15 @@ export const CursorFlyover: React.FC = () => {
           }} />
           {/* 顶栏 */}
           <div style={{ position: 'absolute', left: 60, top: 36, right: 60, height: 76, display: 'flex', alignItems: 'center' }}>
-            <div style={{ width: 52, height: 52, borderRadius: 16, background: `linear-gradient(135deg, ${ACC}, #6f8bff)`, boxShadow: `0 6px 16px ${alpha(ACC, 0.35)}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: 20, height: 20, borderRadius: 10, border: '4px solid #ffffff' }} />
-            </div>
-            <div style={{ marginLeft: 20, ...type(40, 750), color: L.ink }}>Paragon</div>
+            <ShotcraftMark size={60} tone="light" />
+            <div style={{ marginLeft: 18, fontFamily: BRAND.font, fontSize: 38, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1, color: BRAND.ink }}>{BRAND.name}</div>
             <div style={{ marginLeft: 72, display: 'flex', gap: 14 }}>
-              {['Overview', 'Revenue', 'Accounts', 'Releases'].map((t, i) => (
+              {['Overview', 'Shots', 'Renders', 'Releases'].map((t, i) => (
                 <div key={t} style={{ height: 56, padding: '0 26px', borderRadius: 16, display: 'flex', alignItems: 'center', ...type(28, i ? 520 : 650), color: i ? L.ink3 : L.ink, background: i ? 'transparent' : '#ffffff', boxShadow: i ? undefined : softShadow(3, { color: L.shadow }) }}>{t}</div>
               ))}
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 18 }}>
-              <div style={{ height: 56, width: 360, borderRadius: 16, background: '#ffffff', border: `1.5px solid ${L.line}`, display: 'flex', alignItems: 'center', padding: '0 22px', boxSizing: 'border-box', ...type(26, 450), color: L.ink3 }}>Search  ⌘K</div>
+              <div style={{ height: 56, width: 360, borderRadius: 16, background: '#ffffff', border: `1.5px solid ${L.line}`, display: 'flex', alignItems: 'center', padding: '0 22px', boxSizing: 'border-box', ...type(26, 450), color: L.ink3 }}>Search shots  ⌘K</div>
               <div style={{ width: 56, height: 56, borderRadius: 28, background: 'linear-gradient(135deg, #ffd2a8, #ff9f7a)', border: '3px solid #ffffff', boxShadow: softShadow(3, { color: L.shadow }) }} />
             </div>
           </div>

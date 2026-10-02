@@ -1,0 +1,16 @@
+{
+  "stem": "OutlineWordFill",
+  "changed": true,
+  "brand": [
+    "眉题「LUMEN RUNTIME 3」→ 小号 video-shotcraft 标志 + 全小写字标",
+    "副行「Every cold start. Every region.」→「One prompt to a finished promo.」",
+    "读数「BEFORE 38 ms / AFTER 4 ms」→「BEFORE 1 week / AFTER 4 hrs」（手 K 一周 vs 一下午出片），主词 Faster 保留"
+  ],
+  "brandEn": [
+    "Eyebrow 'LUMEN RUNTIME 3' → small video-shotcraft mark + lowercase wordmark",
+    "Subline 'Every cold start. Every region.' → 'One prompt to a finished promo.'",
+    "Readouts 'BEFORE 38 ms / AFTER 4 ms' → 'BEFORE 1 week / AFTER 4 hrs'; hero word 'Faster' kept"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

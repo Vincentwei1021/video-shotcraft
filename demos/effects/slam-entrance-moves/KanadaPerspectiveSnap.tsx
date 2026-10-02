@@ -1,10 +1,10 @@
 // 金田透视急停（kanada-perspective-snap）——金田伊功式夸张透视入场：卡片以鱼眼级透视姿态贴着镜头
 // 从左侧甩进画面中心，透视随减速从短焦收敛到长焦，落定瞬间"啪"地弹平（rotateY 过冲再回零）。
 //
-// 第二轮重设计（极光夜 · 动画番剧首播卡）：
-// - look = aurora（紫黑 · 紫 · 粉）。主角是虚构流媒体「Hikari」的新番首播卡（1000×580）：左半是程序化插画
-//   （霓虹黄昏天空 + 条纹落日 + 城市剪影 + 水面倒影），右半是 84px 片名「Neon Tide」、集数信息与 Watch now 按钮。
-//   顶部一条 168px 低透明大字带「NEON TIDE ✦ SEASON 2」做番剧主视觉式海报底，缓慢反向漂移（视差）。
+// 第二轮重设计（极光夜 · 发布片首映卡）：
+// - look = aurora（紫黑 · 紫 · 粉）。主角是一支用 video-shotcraft 拍的发布片首映卡（1000×580）：左半是程序化插画
+//   （霓虹黄昏天空 + 条纹落日 + 城市剪影 + 水面倒影），右半是 92px 片名「Launch Film」、片子信息与 Watch now 按钮。
+//   顶部一条 168px 低透明大字带「FRAME MOTION ✦ CRAFT THE SHOT」（品牌短句）做海报底，缓慢反向漂移（视差）。
 // - 甩入 18f（2→20f）：translateX −1350→0 + 轻微下弧、rotate3d(0.5,1,0.1) 62°→0、scale 1.8→1、
 //   perspective 260→1800px，全部 EASE.snappy（先猛后缓的急停）；按 x 速度给水平 SpeedBlur + 身后 7 条粉白速度线。
 // - "啪"在过冲：16–20f rotateY 冲到 +6°，20f 起弹簧（damping 16）回零；同帧 2f 震屏 8px、
@@ -16,12 +16,13 @@
 //   2–20    透视甩入（主动作 18f）
 //   16–26   rotateY 过冲 +6° → 弹簧回零；20f 震屏 2f + 集中线 8f
 //   23–36   跟随：卡内文字晚一拍滑入落定、片名 skew 收正
-//   34–56   字幕「Streams Friday · only on Hikari」逐词升起
+//   34–56   字幕「Premieres Friday · shot with video-shotcraft」逐词升起
 //   56–120  hold：极缓推镜 1→1.025、背景大字慢漂
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const KANADA_PERSPECTIVE_SNAP_DURATION = 120;
 
@@ -156,13 +157,13 @@ export const KanadaPerspectiveSnap: React.FC = () => {
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <Stage look={L} keyLight={{ x: 0.5, y: 0.18 }} fill={{ x: 0.14, y: 0.92 }} horizon={0.83} />
       <div style={{ position: 'absolute', inset: 0, transform: `translate(${shakeX.toFixed(2)}px, ${shakeY.toFixed(2)}px) scale(${push.toFixed(5)})` }}>
-        {/* 顶部低透明实心大字带（描边会露出可变字体的重叠轮廓，故用实心）：番剧主视觉式的片名跑马，画框两端裁切 */}
+        {/* 顶部低透明实心大字带（描边会露出可变字体的重叠轮廓，故用实心）：海报主视觉式的品牌短句跑马，画框两端裁切 */}
         <div style={{
           position: 'absolute', left: -400, top: 28, transform: `translateX(${bgX.toFixed(1)}px)`,
           font: `900 168px ${FONT.sans}`, letterSpacing: '-0.035em', lineHeight: 1, color: alpha('#c9b6ff', 0.085), whiteSpace: 'nowrap',
           opacity: ramp(frame, 0, 10, EASE.out),
         }}>
-          NEON TIDE <span style={{ color: alpha(PINK, 0.22) }}>✦</span> SEASON 2 <span style={{ color: alpha(PINK, 0.22) }}>✦</span> NEON TIDE
+          FRAME MOTION <span style={{ color: alpha(PINK, 0.22) }}>✦</span> CRAFT THE SHOT <span style={{ color: alpha(PINK, 0.22) }}>✦</span> FRAME MOTION
         </div>
 
         {/* 集中线 */}
@@ -215,17 +216,19 @@ export const KanadaPerspectiveSnap: React.FC = () => {
                   transform: `translateX(${mix(-36, 0, follow).toFixed(2)}px)`, opacity: mix(0.4, 1, follow),
                 }}>
                   <div style={{ position: 'absolute', top: 76, left: 0, height: 44, padding: '0 16px', borderRadius: 10, background: PINK, color: '#1a0614', display: 'flex', alignItems: 'center', font: `800 22px ${FONT.mono}`, letterSpacing: '0.1em' }}>
-                    NEW EPISODE
+                    PREMIERE
                   </div>
+                  {/* 出品方标志：与 PREMIERE 签同排右对齐 */}
+                  <ShotcraftMark size={44} tone="dark" style={{ position: 'absolute', top: 76, right: 0 }} />
                   <div style={{ position: 'absolute', top: 150, left: -4, font: `880 92px ${FONT.sans}`, letterSpacing: '-0.05em', lineHeight: 0.92, transform: `skewX(${skew.toFixed(2)}deg)`, transformOrigin: '0 100%' }}>
-                    Neon
+                    Launch
                     <br />
-                    Tide
+                    Film
                   </div>
                   <div style={{ position: 'absolute', top: 338, left: 0, font: `600 30px ${FONT.sans}`, color: L.ink2, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
-                    Season 2 · Episode 12
+                    Your product, in motion.
                   </div>
-                  <div style={{ position: 'absolute', top: 382, left: 0, font: `500 26px ${FONT.mono}`, color: L.ink3, letterSpacing: '0.04em' }}>24 MIN · 4K HDR</div>
+                  <div style={{ position: 'absolute', top: 382, left: 0, font: `500 26px ${FONT.mono}`, color: L.ink3, letterSpacing: '0.04em' }}>60 SEC · 16:9 · 1080P</div>
                   <div style={{ position: 'absolute', top: 452, left: 0, display: 'flex', gap: 14 }}>
                     <div style={{ height: 64, padding: '0 28px', borderRadius: 32, background: '#f7f2ff', color: '#140a24', display: 'flex', alignItems: 'center', gap: 12, font: `750 28px ${FONT.sans}`, letterSpacing: '-0.01em', boxShadow: `0 10px 30px -10px ${alpha(PINK, 0.7)}` }}>
                       <svg width={20} height={22} viewBox="0 0 20 22"><path d="M2 2 L18 11 L2 20 Z" fill="#140a24" /></svg>
@@ -243,12 +246,12 @@ export const KanadaPerspectiveSnap: React.FC = () => {
 
         {/* 字幕：落定后逐词升起 */}
         <div style={{ position: 'absolute', left: 0, right: 0, top: CY + CH + 64, textAlign: 'center', font: `600 44px ${FONT.sans}`, letterSpacing: '-0.02em', color: L.ink }}>
-          <TextReveal text="Streams Friday" by="word" variant="rise" start={34} each={16} gap={4} />
+          <TextReveal text="Premieres Friday" by="word" variant="rise" start={34} each={16} gap={4} />
           <span style={{ color: L.ink3 }}>
-            <TextReveal text="  ·  only on " by="word" variant="rise" start={40} each={16} gap={4} />
+            <TextReveal text="  ·  shot with " by="word" variant="rise" start={40} each={16} gap={4} />
           </span>
           <span style={{ color: PINK }}>
-            <TextReveal text="Hikari" by="word" variant="rise" start={46} each={16} gap={4} />
+            <TextReveal text={BRAND.name} by="word" variant="rise" start={46} each={16} gap={4} />
           </span>
         </div>
       </div>

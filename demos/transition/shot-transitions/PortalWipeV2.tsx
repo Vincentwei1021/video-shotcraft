@@ -2,12 +2,13 @@
 // 只 2 层视差（远景面板 0.08 + 近景 2 枚浮卡 0.3，不加 blur），穿窗完成后 8f 缓停 → 静止读清新景。
 //
 // 第二轮重设计（瓷白工作台 → 钴蓝预测世界）：
-// - look = porcelain（冷白 · 钴蓝）。不再用通用灰阶 FakeDashboard：外景是为镜头设计的「Workspace」主页——
-//   96px 问候标题 + 3×2 个「空间」卡，每张卡有自己的程序化封面（同心圆 / 柱 / 点阵 / 斜纹 / 弧 / 波形）、
-//   40px 标题与 32px 元信息。目标卡 = 第 2 行居中的「Northwind Forecast」（钴蓝封面 + 三道波形）。
+// - look = porcelain（冷白 · 钴蓝）。不再用通用灰阶 FakeDashboard：外景是为镜头设计的 video-shotcraft
+//   「Workspace」主页（眉题前挂字标）——96px 问候标题 + 3×2 张「影片项目」卡，每张卡有自己的程序化封面
+//   （同心圆 / 柱 / 点阵 / 斜纹 / 弧 / 波形）、40px 标题与 32px 元信息。目标卡 = 第 2 行居中的
+//   「Premiere Forecast」（发布片的观看量预测，钴蓝封面 + 三道波形）。
 // - 语义闭环：目标卡的**封面就是窗内世界的样子**——窗内是深钴蓝空间，三道同款波形放大成背景地貌；
 //   远景层 = 一块玻璃预测面板（64px 标题 + 面积图：实线历史 + 虚线预测区间 + TODAY 标线），
-//   近景层 = 两枚浮卡（+18.4% vs last quarter / 94% confidence 环），落点压住面板两角，做出前后景。
+//   近景层 = 两枚浮卡（+18.4% vs last launch / 94% confidence 环），落点压住面板两角，做出前后景。
 // - 运动：目标卡先悬浮抬起作预备（−10px、1.03×、阴影变大变虚），邻卡同时退暗；窗放大 40f 用
 //   bezier(0.7,0,0.3,1) 先慢后快再缓收；窗内整景 0.42→1 与窗几何同一个 t；面积图的线随 t 画出、
 //   与穿窗同时完成；视差散开 Easing.out(cubic) 在穿窗完成后 8f 内速度归零，之后画面真静止。
@@ -22,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { EASE, FONT, ramp, mix, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const PORTAL_WIPE_V2_DURATION = 140;
 
@@ -34,12 +36,12 @@ const GRID_X = (1920 - (3 * TILE.w + 2 * TILE.gap)) / 2;
 const GRID_Y = 330;
 type Space = { name: string; meta: string; art: 'rings' | 'bars' | 'dots' | 'stripes' | 'waves' | 'arcs'; c: [string, string] };
 const SPACES: Space[] = [
-  { name: 'Atlas Search', meta: 'Search · 12 members', art: 'rings', c: ['#ff9a6b', '#ff5f6d'] },
-  { name: 'Ledger', meta: 'Finance · 8 members', art: 'bars', c: ['#4fd1a5', '#1f9e89'] },
-  { name: 'Relay', meta: 'Messaging · 21 members', art: 'dots', c: ['#b9a2ff', '#7a5cff'] },
-  { name: 'Quarry', meta: 'Data lake · 5 members', art: 'stripes', c: ['#f2c879', '#d99a3e'] },
-  { name: 'Northwind Forecast', meta: 'Forecasting · 9 members', art: 'waves', c: ['#3d6bff', '#0f2a9e'] },
-  { name: 'Harbor', meta: 'Infra · 14 members', art: 'arcs', c: ['#5cc8e8', '#2a7fb8'] },
+  { name: 'Launch Film', meta: 'Promo · 12 shots', art: 'rings', c: ['#ff9a6b', '#ff5f6d'] },
+  { name: 'Changelog Reel', meta: 'Release · 8 shots', art: 'bars', c: ['#4fd1a5', '#1f9e89'] },
+  { name: 'Onboarding Tour', meta: 'Explainer · 21 shots', art: 'dots', c: ['#b9a2ff', '#7a5cff'] },
+  { name: 'Ink Press Teaser', meta: 'Template · 5 shots', art: 'stripes', c: ['#f2c879', '#d99a3e'] },
+  { name: 'Premiere Forecast', meta: 'Analytics · 9 films', art: 'waves', c: ['#3d6bff', '#0f2a9e'] },
+  { name: 'Render Queue', meta: 'Renders · 14 jobs', art: 'arcs', c: ['#5cc8e8', '#2a7fb8'] },
 ];
 const TARGET = 4;
 const slotOf = (i: number) => ({ x: GRID_X + (i % 3) * (TILE.w + TILE.gap), y: GRID_Y + Math.floor(i / 3) * (TILE.h + TILE.gap) });
@@ -103,10 +105,10 @@ const glass: React.CSSProperties = {
 
 const ForecastPanel: React.FC<{ draw: number }> = ({ draw }) => (
   <div style={{ position: 'absolute', left: 340, top: 200, width: 1240, height: 660, borderRadius: 30, overflow: 'hidden', ...glass }}>
-    <div style={{ position: 'absolute', left: 64, top: 52, ...type(28, 600, { mono: true }), color: COBALT.glow, letterSpacing: '0.16em' }}>SPACE · FORECASTING</div>
-    <div style={{ position: 'absolute', left: 64, top: 96, ...type(64, 700), color: '#f2f5ff' }}>Northwind Forecast</div>
+    <div style={{ position: 'absolute', left: 64, top: 52, ...type(28, 600, { mono: true }), color: COBALT.glow, letterSpacing: '0.16em' }}>PROJECT · ANALYTICS</div>
+    <div style={{ position: 'absolute', left: 64, top: 96, ...type(64, 700), color: '#f2f5ff' }}>Premiere Forecast</div>
     <div style={{ position: 'absolute', right: 64, top: 112, display: 'flex', gap: 34, ...type(32, 500), color: '#a9b8e8' }}>
-      <span><span style={{ display: 'inline-block', width: 28, height: 4, borderRadius: 2, background: COBALT.mint, verticalAlign: 'middle', marginRight: 12 }} />Demand</span>
+      <span><span style={{ display: 'inline-block', width: 28, height: 4, borderRadius: 2, background: COBALT.mint, verticalAlign: 'middle', marginRight: 12 }} />Views</span>
       <span><span style={{ display: 'inline-block', width: 28, height: 4, borderRadius: 2, borderTop: `3px dashed ${COBALT.glow}`, verticalAlign: 'middle', marginRight: 12 }} />Next 90 days</span>
     </div>
     <svg width={1240} height={660} style={{ position: 'absolute', inset: 0 }}>
@@ -159,7 +161,7 @@ const World: React.FC<{ spread: number; draw: number }> = ({ spread, draw }) => 
     <div style={{ position: 'absolute', inset: 0, transform: `scale(${(1 + spread * (NEAR_K - 1)).toFixed(4)})`, transformOrigin: '960px 540px' }}>
       <div style={{ position: 'absolute', left: CHIP_A.x, top: CHIP_A.y, width: 400 / NEAR_K, height: 200 / NEAR_K, borderRadius: 22 / NEAR_K, ...glass, background: 'linear-gradient(180deg, rgba(30,55,160,0.92), rgba(14,30,110,0.92))' }}>
         <div style={{ position: 'absolute', left: 30 / NEAR_K, top: 26 / NEAR_K, ...type(84 / NEAR_K, 750), color: COBALT.mint }}>+18.4%</div>
-        <div style={{ position: 'absolute', left: 32 / NEAR_K, top: 128 / NEAR_K, ...type(32 / NEAR_K, 500), color: '#c3cff5' }}>vs last quarter</div>
+        <div style={{ position: 'absolute', left: 32 / NEAR_K, top: 128 / NEAR_K, ...type(32 / NEAR_K, 500), color: '#c3cff5' }}>vs last launch</div>
       </div>
       <div style={{ position: 'absolute', left: CHIP_B.x, top: CHIP_B.y, width: 420 / NEAR_K, height: 180 / NEAR_K, borderRadius: 22 / NEAR_K, ...glass, background: 'linear-gradient(180deg, rgba(30,55,160,0.92), rgba(14,30,110,0.92))' }}>
         <svg width={120 / NEAR_K} height={120 / NEAR_K} viewBox="0 0 120 120" style={{ position: 'absolute', left: 28 / NEAR_K, top: 30 / NEAR_K }}>
@@ -199,9 +201,13 @@ export const PortalWipeV2: React.FC = () => {
       {t < 1 && (
         <>
           <Stage look={L} keyLight={{ x: 0.35, y: 0.0 }} fill={{ x: 0.9, y: 0.95 }} />
-          <div style={{ position: 'absolute', left: GRID_X, top: 120, ...type(30, 600, { mono: true }), color: L.accent, letterSpacing: '0.18em' }}>WORKSPACE</div>
+          <div style={{ position: 'absolute', left: GRID_X, top: 104, height: 52, display: 'flex', alignItems: 'center', gap: 24 }}>
+            <ShotcraftWordmark size={30} tone="light" color={L.ink} markScale={1.7} gap={14} />
+            <span style={{ width: 1.5, height: 30, background: L.line }} />
+            <span style={{ ...type(30, 600, { mono: true }), color: L.accent, letterSpacing: '0.18em' }}>WORKSPACE</span>
+          </div>
           <div style={{ position: 'absolute', left: GRID_X - 4, top: 168, ...type(96, 720), color: L.ink }}>Good morning, Mara.</div>
-          <div style={{ position: 'absolute', right: GRID_X, top: 196, ...type(36, 500), color: L.ink2 }}>6 spaces · 2 updated today</div>
+          <div style={{ position: 'absolute', right: GRID_X, top: 196, ...type(36, 500), color: L.ink2 }}>6 projects · 2 rendered today</div>
           {SPACES.map((s, i) => {
             if (i === TARGET) return null;
             const p = slotOf(i);

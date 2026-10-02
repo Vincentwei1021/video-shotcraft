@@ -5,12 +5,12 @@
 // 设计决定
 // - look：graphite（近单色暗场 · 白 · 一点香槟金）。桌面是深石墨哑光台面，三盏顶灯在台面上各打一个
 //   光池，页面像三张刚打印出来的样稿摆在评审桌上——暗桌白纸，反差即层次。台面有发丝网格 + 每张样稿下方
-//   一枚印刷标签（01 PRICING / 02 HOME / 03 CHANGELOG），横滑时它们是"相机在动"的参照。
-// - 内容：虚构产品「Fieldwork」官网的三页——定价、首页、更新日志。每页为镜头重新排版：大标题、少元素、
-//   真实感文案。目标是中间的首页，落版满屏时它就是一张海报：150px 两行大标题 + 右侧日程产品图。
+//   一枚印刷标签（01 SHOTS / 02 HOME / 03 CHANGELOG），横滑时它们是"相机在动"的参照。
+// - 内容：video-shotcraft 官网的三页——镜头库、首页、更新日志。每页为镜头重新排版：大标题、少元素、
+//   真实感文案。目标是中间的首页，落版满屏时它就是一张海报：150px 两行品牌短句 + 右侧分镜板产品图。
 // - 节奏：巡视（50f 缓入缓出）→ 选定（停 8f：目标稿离桌 16px、它的顶灯更亮、另外两盏灯暗下去）→
 //   骤降（28f，零速起步的不对称曲线，scale 带 ~5% 预备回缩）→ 软回落版（8f）→ 落版后页面里的
-//   产品图完成一个小动作：金色「Launch review」日程块滑入空槽、轻过冲落座 → hold。
+//   产品图完成一个小动作：金色「Hero shot」镜头块滑入分镜板空槽、轻过冲落座 → hold。
 // - Q2：卡片按落版尺寸 2× 布局栅格化、再在平面内缩回 0.5 摆上桌，扎入满屏时文字是原生分辨率。
 //
 // 时间表（30fps，共 140f）
@@ -18,12 +18,13 @@
 //   44–60   选定：目标稿离桌 16px、影子变大变虚；左右两盏顶灯降到 35%，目标灯 +25%
 //   58–86   骤降扎入：rotateX 62→−1.6、scale 1→2.04（预备回缩 ~5%）、translateX −360→0 三通道同跑
 //   86–94   软回 0° / 2.0 正视满屏；目标稿同时落回桌面
-//   98–118  页面内：金色日程块从右侧滑入空槽（snappy + 一次过冲），同列两块让位下移
-//   94–140  hold：极缓推近 1→1.012，尾帧是 Fieldwork 首页海报
+//   98–118  页面内：金色镜头块从右侧滑入空槽（snappy + 一次过冲），同列一块让位下移
+//   94–140  hold：极缓推近 1→1.012，尾帧是 video-shotcraft 首页海报
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { LOOKS, alpha, type } from '../../_fixtures/Look';
 import { EASE, FONT, Grain, Vignette, bezier, mix, ramp, softShadow } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const OVERHEAD_TABLETOP_DROP_DURATION = 140;
 
@@ -55,29 +56,27 @@ const DIVE_SCALE = bezier(0.45, -0.18, 0.12, 1); // 先回缩 ~5%（机位微抬
 
 const Nav: React.FC<{ active: string }> = ({ active }) => (
   <div style={{ position: 'absolute', left: 150, right: 150, top: 60, height: 64, display: 'flex', alignItems: 'center', fontFamily: FONT.sans }}>
-    <div style={{ width: 34, height: 34, borderRadius: 9, background: INK, position: 'relative', marginRight: 16 }}>
-      <div style={{ position: 'absolute', left: 9, top: 9, width: 16, height: 16, borderRadius: 8, border: `3px solid ${PAPER}`, boxSizing: 'border-box' }} />
-    </div>
-    <div style={{ ...type(32, 760), color: INK }}>Fieldwork</div>
+    <ShotcraftMark size={44} tone="light" style={{ marginRight: 14, flex: 'none' }} />
+    <div style={{ ...type(32, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: INK }}>{BRAND.name}</div>
     <div style={{ display: 'flex', gap: 46, marginLeft: 90, ...type(26, 550), color: INK2 }}>
-      {['Product', 'Pricing', 'Changelog', 'Company'].map((n) => (
+      {['Product', 'Shots', 'Changelog', 'Docs'].map((n) => (
         <span key={n} style={{ color: n === active ? INK : INK2, fontWeight: n === active ? 700 : 550 }}>{n}</span>
       ))}
     </div>
-    <div style={{ marginLeft: 'auto', padding: '16px 30px', borderRadius: 999, background: INK, color: PAPER, ...type(24, 650) }}>Get early access</div>
+    <div style={{ marginLeft: 'auto', padding: '16px 30px', borderRadius: 999, background: INK, color: PAPER, ...type(24, 650) }}>View on GitHub</div>
   </div>
 );
 
-// 首页右侧产品图：一周日程；slot = 金色「Launch review」块的滑入进度
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+// 首页右侧产品图：一支宣传片的分镜板（五幕 × 镜头块）；slot = 金色「Hero shot」块的滑入进度
+const DAYS = ['Open', 'Hook', 'Demo', 'Proof', 'Outro'];
 const BLOCKS: { d: number; y: number; h: number; t: string }[] = [
-  { d: 0, y: 40, h: 120, t: 'Roadmap sync' },
-  { d: 1, y: 190, h: 150, t: 'Design crit' },
-  { d: 2, y: 60, h: 100, t: 'Hiring loop' },
-  { d: 3, y: 230, h: 120, t: 'Pricing v2' },
-  { d: 4, y: 40, h: 140, t: 'Retro' },
-  { d: 0, y: 300, h: 110, t: '1:1 Ana' },
-  { d: 4, y: 290, h: 110, t: 'Ship notes' },
+  { d: 0, y: 40, h: 120, t: 'Tilt reveal' },
+  { d: 1, y: 190, h: 150, t: 'Crash zoom' },
+  { d: 2, y: 60, h: 100, t: 'Whip pan' },
+  { d: 3, y: 230, h: 120, t: 'Drone dive' },
+  { d: 4, y: 40, h: 140, t: 'Logo sting' },
+  { d: 0, y: 300, h: 110, t: 'Title card' },
+  { d: 4, y: 290, h: 110, t: 'End card' },
 ];
 const Planner: React.FC<{ slot: number }> = ({ slot }) => {
   const colW = 126;
@@ -88,15 +87,15 @@ const Planner: React.FC<{ slot: number }> = ({ slot }) => {
       position: 'absolute', left: 1080, top: 250, width: 690, height: 600, borderRadius: 28, background: '#1a1a1c',
       boxShadow: '0 40px 80px -30px rgba(20,16,8,0.55), 0 0 0 1px rgba(0,0,0,0.2)', overflow: 'hidden', fontFamily: FONT.sans,
     }}>
-      <div style={{ position: 'absolute', left: 40, top: 32, ...type(30, 700), color: '#f4f4f2' }}>Week 38</div>
-      <div style={{ position: 'absolute', right: 40, top: 36, ...type(24, 550), color: '#8f8c86' }}>Sep 15 – 19</div>
+      <div style={{ position: 'absolute', left: 40, top: 32, ...type(30, 700), color: '#f4f4f2' }}>Launch film</div>
+      <div style={{ position: 'absolute', right: 40, top: 36, ...type(24, 550), color: '#8f8c86' }}>0:42 · 30 fps</div>
       {DAYS.map((d, i) => (
         <div key={d} style={{ position: 'absolute', left: x0 + i * colW, top: 96, width: colW - 12, ...type(22, 650, { caps: true }), color: '#8f8c86', letterSpacing: '0.12em' }}>{d}</div>
       ))}
       <div style={{ position: 'absolute', left: 40, right: 40, top: 132, height: 1, background: 'rgba(255,255,255,0.1)' }} />
       <div style={{ position: 'absolute', left: 0, top: 150, width: 700, height: 440 }}>
         {BLOCKS.map((b, i) => {
-          // 周三列（d=2）的块在金色块落座时让位下移
+          // Demo 列（d=2）的块在金色块落座时让位下移
           const push = b.d === 2 ? 150 * s : 0;
           return (
             <div key={i} style={{
@@ -106,13 +105,13 @@ const Planner: React.FC<{ slot: number }> = ({ slot }) => {
             }}>{b.t}</div>
           );
         })}
-        {/* 金色日程块：从右侧画外滑入周三的空槽 */}
+        {/* 金色镜头块：从右侧画外滑入 Demo 列的空槽 */}
         <div style={{
           position: 'absolute', left: mix(760, x0 + 2 * colW, slot), top: 60, width: colW - 12, height: 136, borderRadius: 14,
           background: 'linear-gradient(180deg, #e8c983 0%, #d4a85a 100%)', padding: '14px 14px', boxSizing: 'border-box',
           boxShadow: `0 ${12 + 18 * (1 - s)}px ${26 + 20 * (1 - s)}px -8px rgba(212,168,90,0.45), inset 0 1px 0 rgba(255,255,255,0.5)`,
           ...type(22, 750), color: '#2a1e08', lineHeight: 1.18,
-        }}>Launch review<div style={{ ...type(19, 650), color: 'rgba(42,30,8,0.65)', marginTop: 8 }}>2:00 PM</div></div>
+        }}>Hero shot<div style={{ ...type(19, 650), color: 'rgba(42,30,8,0.65)', marginTop: 8 }}>120f</div></div>
       </div>
     </div>
   );
@@ -123,16 +122,16 @@ const HomePage: React.FC<{ slot: number }> = ({ slot }) => (
     <Nav active="Product" />
     <div style={{ position: 'absolute', left: 150, top: 290 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, ...type(24, 700, { caps: true }), color: GOLD, letterSpacing: '0.18em' }}>
-        <div style={{ width: 36, height: 2, background: GOLD }} />Introducing Fieldwork 2
+        <div style={{ width: 36, height: 2, background: GOLD }} />For Claude Code &amp; Codex
       </div>
       <div style={{ ...type(148, 800), color: INK, marginTop: 34, lineHeight: 0.98, letterSpacing: '-0.05em' }}>
-        Plan the work.<br /><span style={{ fontFamily: SERIF_STACK, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.03em' }}>Not the meeting.</span>
+        Frame motion.<br /><span style={{ fontFamily: SERIF_STACK, fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.03em' }}>Craft the shot.</span>
       </div>
       <div style={{ ...type(34, 450), color: INK2, marginTop: 44, width: 860, lineHeight: 1.4 }}>
-        One calendar for every project, decision and deadline your team cares about.
+        Cinematic product videos, crafted by your agent. From screenshot to showreel.
       </div>
       <div style={{ display: 'flex', gap: 22, marginTop: 52 }}>
-        <div style={{ padding: '22px 40px', borderRadius: 999, background: INK, color: PAPER, ...type(28, 650) }}>Start for free</div>
+        <div style={{ padding: '22px 40px', borderRadius: 999, background: INK, color: PAPER, ...type(28, 650) }}>Get the skill</div>
         <div style={{ padding: '22px 40px', borderRadius: 999, boxShadow: `inset 0 0 0 2px ${RULE}`, color: INK, ...type(28, 600) }}>Watch the film →</div>
       </div>
     </div>
@@ -140,16 +139,17 @@ const HomePage: React.FC<{ slot: number }> = ({ slot }) => (
   </div>
 );
 
+// 镜头库页：三张镜头配方卡（名字 / 时长 / 一句话），版式沿用三栏卡
 const PLANS = [
-  { n: 'Solo', p: '$0', d: 'For one person and a lot of ideas.' },
-  { n: 'Team', p: '$12', d: 'Shared calendars, decisions and docs.', hi: true },
-  { n: 'Studio', p: '$29', d: 'SSO, audit log and priority support.' },
+  { n: 'Crash zoom', p: '2s', u: '60 frames', d: 'Punch in on the one number that matters.' },
+  { n: 'Drone dive', p: '4s', u: '120 frames', d: 'Fall from the overview straight into the hero.', hi: true },
+  { n: 'Whip pan', p: '1s', u: '30 frames', d: 'Cut between pages at full speed.' },
 ];
-const PricingPage: React.FC = () => (
+const ShotsPage: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: PAPER, fontFamily: FONT.sans }}>
-    <Nav active="Pricing" />
-    <div style={{ position: 'absolute', left: 0, right: 0, top: 200, textAlign: 'center', ...type(104, 800), color: INK, letterSpacing: '-0.045em' }}>Simple pricing.</div>
-    <div style={{ position: 'absolute', left: 0, right: 0, top: 336, textAlign: 'center', ...type(32, 450), color: INK2 }}>Free while you’re small. Fair when you grow.</div>
+    <Nav active="Shots" />
+    <div style={{ position: 'absolute', left: 0, right: 0, top: 200, textAlign: 'center', ...type(104, 800), color: INK, letterSpacing: '-0.045em' }}>Pick a shot.</div>
+    <div style={{ position: 'absolute', left: 0, right: 0, top: 336, textAlign: 'center', ...type(32, 450), color: INK2 }}>Shot recipes for cinematic product films.</div>
     <div style={{ position: 'absolute', left: 200, right: 200, top: 450, display: 'flex', gap: 40 }}>
       {PLANS.map((pl) => (
         <div key={pl.n} style={{
@@ -160,7 +160,7 @@ const PricingPage: React.FC = () => (
           <div style={{ ...type(30, 650), color: pl.hi ? '#e4c58a' : INK2 }}>{pl.n}</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 30 }}>
             <div style={{ ...type(120, 800), letterSpacing: '-0.05em' }}>{pl.p}</div>
-            <div style={{ ...type(26, 500), opacity: 0.6 }}>/ seat / mo</div>
+            <div style={{ ...type(26, 500), opacity: 0.6 }}>/ {pl.u}</div>
           </div>
           <div style={{ ...type(28, 450), opacity: 0.72, marginTop: 30, lineHeight: 1.4 }}>{pl.d}</div>
         </div>
@@ -170,9 +170,9 @@ const PricingPage: React.FC = () => (
 );
 
 const LOG = [
-  { v: '2.4', d: 'Sep 12', t: 'Decisions you can link to', b: 'Every decision gets a permalink, an owner and a date it expires.' },
-  { v: '2.3', d: 'Aug 28', t: 'Calendar holds, finally', b: 'Tentative blocks that release themselves when plans change.' },
-  { v: '2.2', d: 'Aug 09', t: 'Faster everything', b: 'Week view renders 3× faster on large teams.' },
+  { v: '2.4', d: 'Sep 12', t: 'Motion workbench', b: 'Tune every shot on a timeline, then render in one click.' },
+  { v: '2.3', d: 'Aug 28', t: 'JianYing export', b: 'Hand the finished cut to your editor as a native draft.' },
+  { v: '2.2', d: 'Aug 09', t: 'Beat-synced cuts', b: 'Every cut lands on the music, frame-accurate.' },
 ];
 const ChangelogPage: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: PAPER, fontFamily: FONT.sans }}>
@@ -271,10 +271,10 @@ export const OverheadTabletopDrop: React.FC = () => {
               `linear-gradient(180deg, ${L.bg[0]}, ${L.bg[1]})`,
             ].join(', '),
           }} />
-          <DeskTag x={-PITCH} n="01" label="PRICING" on={0} />
+          <DeskTag x={-PITCH} n="01" label="SHOTS" on={0} />
           <DeskTag x={0} n="02" label="HOME" on={pick} />
           <DeskTag x={PITCH} n="03" label="CHANGELOG" on={0} />
-          <PageCard x={-PITCH}><PricingPage /></PageCard>
+          <PageCard x={-PITCH}><ShotsPage /></PageCard>
           <PageCard x={0} lift={lift}><HomePage slot={slot} /></PageCard>
           <PageCard x={PITCH}><ChangelogPage /></PageCard>
           {/* 左右样稿随顶灯变暗：盖一层台面色 */}

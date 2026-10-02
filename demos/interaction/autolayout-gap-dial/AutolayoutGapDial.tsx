@@ -6,7 +6,7 @@
 //   间距测量线/徽章/拨盘指针用 accent2 香槟金——画面里只有"被拨动的那个数"是有颜色的。
 // - 主角是"数"：顶部 196px 超大 tabular 读数（GAP 眉题 + 数值 + px 单位），下面一把 760px 拨盘刻度尺，
 //   刻度随 gap 横向滚过中心金针；拨动时读数由白转金、松手后回白——数值就是缰绳。
-// - 布局主体：一排 120px 高的导航块（虚构站点 Plinth 的顶部导航），占画宽 ~64–86%；激活项白底黑字，
+// - 布局主体：一排 120px 高的导航块（video-shotcraft 站点的顶部导航），占画宽 ~64–86%；激活项白底黑字，
 //   其余是带色相深灰面板 + 发丝线 + 顶部内高光；块按自身速度做横向运动模糊（外侧块位移最大，拖影最长）。
 // - 节奏「预备—拉开—屏息—回弹」：开场先把 gap 往里收一点（anticip 预备，12→6），再 swift 不对称曲线
 //   拉到 104；hold 一拍屏息；松手后欠阻尼弹簧过冲到比起点更紧再回稳（过冲段 ×0.45 压缩，gap 永不为负）。
@@ -31,7 +31,7 @@ const FPS = 30;
 const SEL = 'rgba(244,244,242,0.92)'; // 选择白：框选描边 / 手柄
 const GOLD = L.accent2; // 测量金：间距线 / 徽章 / 指针 / 拨动中的读数
 
-const LABELS = ['Product', 'Pricing', 'Customers', 'Changelog', 'Careers'];
+const LABELS = ['Recipes', 'Gallery', 'Workbench', 'Showcase', 'Install']; // video-shotcraft 站点导航
 const BLOCK_WIDTHS = [252, 206, 278, 268, 220]; // 不等宽才像真导航
 const BLOCK_H = 120;
 const ROW_Y = 684; // 行中心
@@ -208,7 +208,7 @@ export const AutolayoutGapDial: React.FC = () => {
         </div>
         <Ruler gap={gap} op={rulerIn} hot={hot} />
 
-        {/* ── 导航块（Plinth 站点顶部导航） ── */}
+        {/* ── 导航块（video-shotcraft 站点顶部导航） ── */}
         {BLOCK_WIDTHS.map((w, i) => {
           const inP = ramp(frame, 1 + i * 2, 16, EASE.snappy);
           const active = i === 0;

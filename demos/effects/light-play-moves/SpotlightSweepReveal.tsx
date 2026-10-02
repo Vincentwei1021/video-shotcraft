@@ -2,7 +2,8 @@
 //
 // 第二轮重设计（剧场首演夜 · 天鹅绒幕布）：
 // - look = custom「velvet」：酒红黑天鹅绒幕布 + 钨丝暖白追光 + 香槟金点缀（库里没有的剧场色）。
-//   标题换成 220px 衬线「Opening night.」（roman + italic 混排，剧院海报感），虚构票务产品 Balcony。
+//   标题是 220px 衬线「Craft the shot.」（video-shotcraft 品牌短句，roman + italic 混排，剧院海报感），
+//   全亮后收在 video-shotcraft 字标上——一支宣传片的首映夜。
 // - 光是物理的：灯头在画外正上方；追光像钟摆——光斑沿一条下凹的弧线摆（中心最低），两个来回后阻尼收拢，
 //   x 与速度同时归零停在正中（不是纯 sin 急刹）。光斑照到哪里，哪里的字（亮版副本 + 柔晕）和
 //   幕布褶皱（亮版天鹅绒）一起被揭开——暗场里常驻的只有 0.07 的字影和几乎看不见的幕布。
@@ -21,6 +22,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { SERIF, alpha, type } from '../../_fixtures/Look';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const SPOTLIGHT_SWEEP_REVEAL_DURATION = 170;
 
@@ -72,7 +74,7 @@ const Title: React.FC<{ color: string; style?: React.CSSProperties }> = ({ color
     }}
   >
     <div style={{ fontFamily: SERIF, fontSize: 220, fontWeight: 500, letterSpacing: '-0.035em', lineHeight: 1, color, whiteSpace: 'nowrap' }}>
-      Opening <span style={{ fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.02em' }}>night.</span>
+      Craft the <span style={{ fontStyle: 'italic', fontWeight: 400, letterSpacing: '-0.02em' }}>shot.</span>
     </div>
   </div>
 );
@@ -203,7 +205,7 @@ export const SpotlightSweepReveal: React.FC = () => {
         }}
       >
         <span style={{ width: mix(0, 70, kicker), height: 1, background: alpha(V.gold, 0.6) }} />
-        Friday · 8 pm · Row F
+        Tonight · World premiere
         <span style={{ width: mix(0, 70, kicker), height: 1, background: alpha(V.gold, 0.6) }} />
       </div>
       <div
@@ -213,10 +215,10 @@ export const SpotlightSweepReveal: React.FC = () => {
         }}
       >
         <div style={{ ...type(44, 450), color: V.ink2 }}>
-          Every seat in the house, one tap away.
+          Cinematic product videos, crafted by your agent.
         </div>
-        <div style={{ marginTop: 22, ...type(30, 700), letterSpacing: '0.02em', color: V.ink, opacity: ramp(f, SWING_END + 22, 18, EASE.out) }}>
-          <span style={{ color: V.gold }}>◆</span> Balcony
+        <div style={{ marginTop: 22, display: 'flex', justifyContent: 'center', opacity: ramp(f, SWING_END + 22, 18, EASE.out) }}>
+          <ShotcraftWordmark size={30} tone="dark" color={V.ink} markScale={1.7} gap={14} />
         </div>
       </div>
 

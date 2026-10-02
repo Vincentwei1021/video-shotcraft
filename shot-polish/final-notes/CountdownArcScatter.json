@@ -1,0 +1,16 @@
+{
+  "stem": "CountdownArcScatter",
+  "changed": true,
+  "brand": [
+    "右上标签「HALYARD CLI 4.2」→ video-shotcraft 字标（小号标志 + 全小写字名）",
+    "命令行「$ npx halyard init」→ 真实安装命令「$ npx skills add Vincentwei1021/video-shotcraft」（字号 40→34px 以容纳更长命令）",
+    "标题「5 min to install」保留（表盘手法的量程论证，现在说的是安装 video-shotcraft）"
+  ],
+  "brandEn": [
+    "Top-right label 'HALYARD CLI 4.2' → video-shotcraft wordmark (small mark + lowercase name)",
+    "Command '$ npx halyard init' → real install command '$ npx skills add Vincentwei1021/video-shotcraft' (font 40→34px to fit the longer command)",
+    "Title '5 min to install' kept (the dial's range argument now refers to installing video-shotcraft)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

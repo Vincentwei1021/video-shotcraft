@@ -5,12 +5,12 @@
 // - look：porcelain（冷白 · 钴蓝）。Apple 发布会式的"拆给你看"：机位改成 3/4 轴测（rotateX 54° +
 //   rotateZ −32°），页面平躺像一块放在台面上的主板，层沿页面法线向上叠起——比原版正面微倾的
 //   "浮起"更像真正的爆炸图。
-// - 主体：为镜头设计的客服工作台「Relay」：外壳底板 → 侧栏 → 命令栏 → 三张指标卡 → 会话量图表 →
-//   AI 助手面板，6 层、每层都是真实 UI（大数字、钴蓝图表），底板上留着各构件的虚线插槽。
+// - 主体：video-shotcraft 的动效工作台：外壳底板 → 侧栏（品牌标志）→ 命令栏 → 三张渲染指标卡 →
+//   渲染量图表 → AI 助手面板，6 层、每层都是真实 UI（大数字、钴蓝图表），底板上留着各构件的虚线插槽。
 // - 标注：悬停时右侧一列编号标注（发布会式 callout）：锚点 → 折线引线描出 → 标题 44px + 说明 30px
 //   逐条升起；锚点按 3D 投影实时算出，跟着机位环绕走。
 // - 合体：标注先撤，层逆序 ease-in 砸回，落锤不做抖屏（Q3），改成整组 8px 下沉回弹 + 底板接触影
-//   一紧，合体后一道扫光掠过整页（Q4：只给主角一次）；最后左上角落一行标题，尾帧是海报。
+//   一紧，合体后一道扫光掠过整页（Q4：只给主角一次）；最后左上角落 video-shotcraft 字标 + 一行标题，尾帧是海报。
 //
 // 时间表（30fps，共 170f）
 //   0–24    建立：已合体的页面（0.56 倍），极缓推近 + 环绕起步；18–24 预备（层整体下压 6px，蓄力）
@@ -21,11 +21,12 @@
 //   104–114 标注撤出（ease-in，2f 错峰）
 //   108–132 合体：逆序 ease-in 每层 14f，间隔 3f；132f 最后一层落座
 //   132–142 落锤：整组下沉 8px 阻尼回弹、接触影收紧；136–160 扫光一次
-//   140–170 标题「Built in layers.」逐词升起 → hold，尾帧海报
+//   140–170 字标淡入、标题「Built in layers.」逐词升起 → hold，尾帧海报
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { LOOKS, Sheen, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const EXPLODED_VIEW_DURATION = 170;
 
@@ -48,11 +49,11 @@ type Layer = {
 
 // 层（页面坐标 + 炸开高度）；order = 数组下标（底 → 顶）
 const LAYERS: Layer[] = [
-  { key: 'side', x: 0, y: 0, w: 288, h: H, z: 150, r: R, side: 'L', label: { n: '01', t: 'Navigation', d: 'Every queue, one click away' } },
-  { key: 'chart', x: 320, y: 410, w: 860, h: 558, z: 270, r: 22, side: 'L', label: { n: '02', t: 'Insights', d: 'Volume, trends and spikes' } },
-  { key: 'ai', x: 1204, y: 410, w: 364, h: 558, z: 400, r: 22, side: 'R', label: { n: '03', t: 'Assistant', d: 'Drafts replies you approve' } },
+  { key: 'side', x: 0, y: 0, w: 288, h: H, z: 150, r: R, side: 'L', label: { n: '01', t: 'Navigation', d: 'Every shot, one click away' } },
+  { key: 'chart', x: 320, y: 410, w: 860, h: 558, z: 270, r: 22, side: 'L', label: { n: '02', t: 'Insights', d: 'Renders, timing and pace' } },
+  { key: 'ai', x: 1204, y: 410, w: 364, h: 558, z: 400, r: 22, side: 'R', label: { n: '03', t: 'Assistant', d: 'Drafts shots you approve' } },
   { key: 'kpi', x: 320, y: 130, w: W - 352, h: 250, z: 520, r: 22, side: 'R', label: { n: '04', t: 'Live metrics', d: 'Updated every second' } },
-  { key: 'top', x: 288, y: 0, w: W - 288, h: 100, z: 640, r: 0, side: 'R', label: { n: '05', t: 'Command bar', d: 'Ask Relay or jump anywhere' } },
+  { key: 'top', x: 288, y: 0, w: W - 288, h: 100, z: 640, r: 0, side: 'R', label: { n: '05', t: 'Command bar', d: 'Add a shot in one line' } },
 ];
 const N = LAYERS.length;
 
@@ -62,12 +63,10 @@ const ink = (c: string, s: number, w: number, extra: React.CSSProperties = {}): 
 const SideUI: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: '#f6f8fc', borderRight: `2px solid ${L.line}` }}>
     <div style={{ position: 'absolute', left: 34, top: 32, display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ width: 40, height: 40, borderRadius: 12, background: L.accent, position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 10, top: 10, width: 20, height: 20, borderRadius: '50% 50% 50% 4px', background: '#fff' }} />
-      </div>
-      <div style={ink(L.ink, 34, 760)}>Relay</div>
+      <ShotcraftMark size={44} tone="light" style={{ flex: 'none' }} />
+      <div style={{ ...ink(L.ink, 32, 700), fontFamily: BRAND.font, letterSpacing: '0.03em' }}>{BRAND.short}</div>
     </div>
-    {['Inbox', 'Assigned', 'Mentions', 'Automations', 'Reports', 'Settings'].map((n, i) => (
+    {['Shots', 'Storyboard', 'Timeline', 'Sound', 'Renders', 'Settings'].map((n, i) => (
       <div key={n} style={{
         position: 'absolute', left: 20, right: 20, top: 120 + i * 70, height: 56, borderRadius: 14, display: 'flex', alignItems: 'center',
         padding: '0 18px', gap: 14, background: i === 0 ? alpha(L.accent, 0.1) : undefined,
@@ -84,7 +83,7 @@ const TopUI: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: '#ffffff', borderBottom: `2px solid ${L.line}`, display: 'flex', alignItems: 'center', padding: '0 32px', gap: 24 }}>
     <div style={{ flex: 1, height: 58, borderRadius: 16, background: L.surface2, boxShadow: `inset 0 0 0 2px ${L.line}`, display: 'flex', alignItems: 'center', padding: '0 22px', gap: 14 }}>
       <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke={L.ink3} strokeWidth={2.4} strokeLinecap="round"><circle cx={11} cy={11} r={7} /><path d="M20 20l-4-4" /></svg>
-      <div style={ink(L.ink3, 26, 500)}>Ask Relay or search conversations…</div>
+      <div style={ink(L.ink3, 26, 500)}>Add a shot or search recipes…</div>
       <div style={{ marginLeft: 'auto', ...ink(L.ink3, 22, 600, { fontFamily: FONT.mono }), padding: '4px 12px', borderRadius: 8, boxShadow: `inset 0 0 0 2px ${L.line}` }}>⌘K</div>
     </div>
     <div style={{ width: 52, height: 52, borderRadius: 26, background: 'linear-gradient(135deg,#7aa2ff,#2f5bff)' }} />
@@ -92,9 +91,9 @@ const TopUI: React.FC = () => (
 );
 
 const KPIS = [
-  { k: 'First response', v: '1m 42s', d: '−31%' },
-  { k: 'Resolved today', v: '2,184', d: '+12%' },
-  { k: 'Satisfaction', v: '98.2%', d: '+0.6' },
+  { k: 'Avg. render time', v: '1m 42s', d: '−31%' },
+  { k: 'Shots rendered', v: '2,184', d: '+12%' },
+  { k: 'Cuts on the beat', v: '98.2%', d: '+0.6' },
 ];
 const KpiUI: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, display: 'flex', gap: 24 }}>
@@ -119,7 +118,7 @@ const ChartUI: React.FC = () => {
   return (
     <div style={{ position: 'absolute', inset: 0, borderRadius: 22, background: '#fff', boxShadow: `inset 0 0 0 2px ${L.line}`, padding: '34px 36px', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 18 }}>
-        <div style={ink(L.ink, 36, 750)}>Conversation volume</div>
+        <div style={ink(L.ink, 36, 750)}>Render volume</div>
         <div style={ink(L.ink3, 24, 550)}>Last 14 days</div>
       </div>
       <svg width={cw} height={ch + 10} style={{ position: 'absolute', left: 36, top: 150, overflow: 'visible' }}>
@@ -148,10 +147,10 @@ const AiUI: React.FC = () => (
       <div style={ink(L.ink, 30, 750)}>Assistant</div>
     </div>
     <div style={{ marginTop: 26, borderRadius: 18, background: L.surface2, padding: '18px 20px', ...ink(L.ink2, 24, 500), lineHeight: 1.35 }}>
-      Order #4821 shipped late. Offer a refund on shipping?
+      Hero shot lands 6f late. Snap the cut to the kick?
     </div>
     <div style={{ marginTop: 16, borderRadius: 18, background: '#fff', boxShadow: `inset 0 0 0 2px ${L.line}`, padding: '18px 20px', ...ink(L.ink, 24, 550), lineHeight: 1.35 }}>
-      “Hi Maya — sorry for the wait. I’ve refunded shipping and…”
+      “Moved the crash zoom to f240, right on the beat, and…”
     </div>
     <div style={{ position: 'absolute', left: 28, right: 28, bottom: 28, display: 'flex', gap: 12 }}>
       <div style={{ flex: 1, height: 58, borderRadius: 16, background: L.accent, ...ink('#fff', 24, 700), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Approve</div>
@@ -278,12 +277,12 @@ export const ExplodedView: React.FC = () => {
 
       {/* 收尾标题 */}
       <div style={{ position: 'absolute', left: 120, top: 104 }}>
-        <div style={{ ...type(26, 700, { caps: true }), color: L.accent, letterSpacing: '0.2em', opacity: ramp(f, 140, 14, EASE.out) }}>Relay 3</div>
+        <div style={{ opacity: ramp(f, 140, 14, EASE.out) }}><ShotcraftWordmark size={30} tone="light" markScale={1.6} gap={14} /></div>
         <div style={{ ...type(96, 780), color: L.ink, marginTop: 18 }}>
           <TextReveal text="Built in layers." by="word" variant="rise" start={144} each={18} gap={5} />
         </div>
         <div style={{ ...type(36, 450), color: L.ink2, marginTop: 22, opacity: ramp(f, 156, 14, EASE.out), transform: `translateY(${(1 - ramp(f, 156, 14, EASE.out)) * 16}px)` }}>
-          One surface for every conversation.
+          Every shot, tuned in one place.
         </div>
       </div>
     </AbsoluteFill>

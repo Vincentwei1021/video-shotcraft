@@ -3,8 +3,8 @@
 //
 // 第二轮重设计（颁奖夜 · 你就是那台相机）：
 // - look = graphite（近单色暗场，白为闪光，香槟金只给奖项信息）。画面是颁奖背板（step-and-repeat：
-//   OSTRA / GOLDEN PIXEL 字标砖砌平铺）前的一块年度大奖卡：「App of the Year」「No.1 in 38 countries」
-//   「Ostra Maps」。三个裁切层层逼近：全景 → 卡片 → 260px 的「No.1」。
+//   video-shotcraft 标志 / 字标砖砌平铺）前的一块年度大奖卡：「Shot of the Year」「Take 1 · first prompt,
+//   final cut.」「video-shotcraft」。三个裁切层层逼近：全景 → 卡片 → 280px 的「Take 1」。
 // - 取景器 HUD（屏幕层，不随裁切缩放）：四角取景框、曝光读数、张数计数、闪光灯充电指示。
 //   每一闪之前 8f，对焦框从大收到"下一张要拍的裁切范围"并在第 3f 前转香槟色锁定 = 预备拍；
 //   白闪 = 主动作；切入画面 1.03→1 回落 + 沉降 = 快门余韵；张数 +1、充电灯清零重充 = 跟随。
@@ -14,13 +14,14 @@
 // 时间表（30fps，共 140f）：
 //   0–30    活素材：缓推 + 背板上 6 次远处小闪光；22f 起对焦框锁卡片
 //   30      第一闪 → 全景定格（间隔 22f）；44–52 对焦框收向卡片裁切
-//   52      第二闪 → 卡片定格（间隔 18f）；62–70 对焦框收向「No.1」
+//   52      第二闪 → 卡片定格（间隔 18f）；62–70 对焦框收向「Take 1」
 //   70      第三闪 → 数字特写定格
 //   70–140  hold 70f：极缓 1→1.015 推近；84f 起右下「Saved」淡入，尾帧是一张完整的获奖照
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, alpha, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const PAPARAZZI_FLASH_DURATION = 140; // 活素材 30f + 三闪 40f + hold 70f
 
@@ -42,7 +43,7 @@ const hash = (i: number) => {
 
 // ───────────── 场景（1920×1080 全景坐标） ─────────────
 const CARD = { x: 610, y: 176, w: 700, h: 780 };
-const DIGIT = { cx: CARD.x + 350, cy: CARD.y + 412 }; // 「No.1」+ 右侧说明的中心
+const DIGIT = { cx: CARD.x + 350, cy: CARD.y + 412 }; // 「Take 1」+ 右侧说明的中心
 
 // 远处别家相机的小闪光（只在活素材段）
 const POPS = [
@@ -59,11 +60,13 @@ const Wall: React.FC = () => {
       {Array.from({ length: rows }, (_, r) => (
         <div key={r} style={{ position: 'absolute', left: (r % 2) * -170 - 60, top: 20 + r * 124, display: 'flex', gap: 0, whiteSpace: 'nowrap' }}>
           {Array.from({ length: cols + 1 }, (_, c) => {
-            const ostra = (r + c) % 2 === 0;
+            // 背板砖：video-shotcraft 标志 / 字标交错（整体压到 9%，标志按规范原色、只降透明度）
+            const mark = (r + c) % 2 === 0;
             return (
-              <div key={c} style={{ width: 340, textAlign: 'center', color: alpha('#ffffff', 0.09),
-                ...(ostra ? { ...type(40, 800), letterSpacing: '0.04em' } : { ...type(22, 700, { caps: true }), letterSpacing: '0.3em', lineHeight: '40px' }) }}>
-                {ostra ? 'OSTRA' : 'Golden Pixel'}
+              <div key={c} style={{ width: 340, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {mark ? <ShotcraftMark size={52} tone="dark" style={{ opacity: 0.1 }} /> : (
+                  <span style={{ fontFamily: BRAND.font, fontSize: 30, fontWeight: 700, letterSpacing: '0.03em', color: alpha('#ffffff', 0.09) }}>{BRAND.name}</span>
+                )}
               </div>
             );
           })}
@@ -115,26 +118,26 @@ const Scene: React.FC<{ f: number; live: boolean }> = ({ f, live }) => (
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 40% at 30% 0%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%)' }} />
       <div style={{ position: 'absolute', left: 60, top: 56, display: 'flex', alignItems: 'center', gap: 20 }}>
         <Laurel s={52} />
-        <div style={{ ...type(22, 700, { caps: true }), letterSpacing: '0.24em', color: GOLD }}>Golden Pixel · 2026</div>
+        <div style={{ ...type(22, 700, { caps: true }), letterSpacing: '0.24em', color: GOLD }}>Best in Motion · 2026</div>
       </div>
-      <div style={{ position: 'absolute', left: 58, top: 136, ...type(72, 720), letterSpacing: '-0.035em' }}>App of the Year</div>
+      <div style={{ position: 'absolute', left: 58, top: 136, ...type(72, 720), letterSpacing: '-0.035em' }}>Shot of the Year</div>
       <div style={{ position: 'absolute', left: 60, right: 60, top: 236, height: 1.5, background: alpha('#ffffff', 0.12) }} />
       <div style={{ position: 'absolute', left: 52, top: 262, display: 'flex', alignItems: 'flex-start', lineHeight: 0.86 }}>
-        <span style={{ ...type(110, 700), letterSpacing: '-0.04em', color: L.ink2, marginTop: 22, marginRight: 8 }}>No.</span>
+        <span style={{ ...type(110, 700), letterSpacing: '-0.04em', color: L.ink2, marginTop: 22, marginRight: 14 }}>Take</span>
         <span style={{ ...type(280, 820), letterSpacing: '-0.06em', lineHeight: 0.86 }}>1</span>
       </div>
       <div style={{ position: 'absolute', left: 430, top: 336, ...type(44, 580), color: L.ink2, lineHeight: 1.12, whiteSpace: 'nowrap' }}>
-        in 38<br />countries<br /><span style={{ color: GOLD }}>this year.</span>
+        first<br />prompt,<br /><span style={{ color: GOLD }}>final cut.</span>
       </div>
       <div style={{ position: 'absolute', left: 60, right: 60, top: 624, height: 1.5, background: alpha('#ffffff', 0.12) }} />
       <div style={{ position: 'absolute', left: 60, top: 660, display: 'flex', alignItems: 'center', gap: 22 }}>
-        <div style={{ width: 80, height: 80, borderRadius: 22, background: 'linear-gradient(150deg, #f4f4f2 0%, #bfc2c8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        <div style={{ width: 80, height: 80, borderRadius: 22, background: `linear-gradient(150deg, ${BRAND.paper} 0%, #d6d2c8 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: 'inset 0 1.5px 0 #fff, 0 10px 24px -10px rgba(0,0,0,0.8)' }}>
-          <svg width={40} height={40} viewBox="0 0 40 40"><path d="M20 4c-7 0-12 5.3-12 12 0 8.6 12 20 12 20s12-11.4 12-20c0-6.7-5-12-12-12z" fill="#131416" /><circle cx={20} cy={16} r={5} fill="#f4f4f2" /></svg>
+          <ShotcraftMark size={54} tone="light" />
         </div>
         <div>
-          <div style={{ ...type(44, 760), letterSpacing: '-0.03em' }}>Ostra Maps</div>
-          <div style={{ ...type(30, 450), color: L.ink3, marginTop: 4 }}>Maps that think ahead.</div>
+          <div style={{ fontFamily: BRAND.font, fontSize: 44, fontWeight: 700, letterSpacing: '0.01em', lineHeight: 1.3 }}>{BRAND.name}</div>
+          <div style={{ ...type(30, 450), color: L.ink3, marginTop: 4 }}>{PITCH.en.motto}</div>
         </div>
       </div>
     </div>

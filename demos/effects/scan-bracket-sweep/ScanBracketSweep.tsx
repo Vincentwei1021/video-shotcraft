@@ -3,7 +3,7 @@
 // 朝来向的渐变拖尾在文档上往复扫 5 趟，两端慢中间快，文档本身完全静止。
 // 设计坐标 480×270（DesignStage raster="zoom"：文档小字按成片尺寸栅格化，不糊）。
 //
-// 质感升级：骨架灰条换成出版级的合同明细表（标题 / 元信息 / 4 列 7 行 / 合计）；
+// 质感升级：骨架灰条换成出版级的明细表——video-shotcraft 宣传片的分镜清单（标题 / 元信息 / 4 列 7 行 / 合计）；
 // 光带从"黑线 + 灰泥拖尾"改成靛蓝扫描光——细亮芯 + 柔辉 + 正片叠底的色调拖尾，
 // 拖尾长度随扫描速度伸缩（趟末停顿时收成 0，换向不再"啪"地跳到另一侧）；
 // 光带经过的表格行被轻微照亮（光在读，文档不动）；括号改成圆头描边并带一次轻过冲落位；
@@ -12,6 +12,7 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
 import { Backdrop, EASE, FONT, Grain, softShadow } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const SCAN_BRACKET_SWEEP_DURATION = 150; // 5000ms @30fps
 
@@ -35,15 +36,16 @@ const DY = (240 - DH) / 2;
 const COLS = 4;
 const COL_W = (DW - 28 - (COLS - 1) * 10) / COLS;
 const colX = (c: number) => 14 + c * (COL_W + 10);
-const HEAD = ['Line item', 'Owner', 'Due', 'Amount'];
+// 分镜清单：镜头 / 配方卡 / 入点 / 帧数（入点 = 前面各镜帧数累加 @30fps，合计 828f = 27.6 s）
+const HEAD = ['Shot', 'Recipe', 'Cue', 'Frames'];
 const ROWS: [string, string, string, string][] = [
-  ['Cloud hosting', 'M. Chen', 'Jul 14', '$12,400'],
-  ['Data pipeline', 'A. Rossi', 'Jul 21', '$8,750'],
-  ['Security audit', 'J. Park', 'Aug 02', '$6,200'],
-  ['Support tier II', 'L. Novak', 'Aug 09', '$4,980'],
-  ['API overage', 'S. Iyer', 'Aug 16', '$3,140'],
-  ['Cold storage', 'D. Okafor', 'Aug 30', '$2,650'],
-  ['Onboarding', 'R. Silva', 'Sep 05', '$10,800'],
+  ['Cold open', 'Text mask', '0:00', '96 f'],
+  ['Hero reveal', 'Spotlight', '0:03', '120 f'],
+  ['Feature tour', 'Graze tour', '0:07', '150 f'],
+  ['Data beat', 'Riso hit', '0:12', '120 f'],
+  ['Workbench', 'Crash zoom', '0:16', '90 f'],
+  ['Gallery pass', 'Flyover', '0:19', '144 f'],
+  ['Logo sting', 'Brand snap', '0:24', '108 f'],
 ];
 const ROW_TOP = 58; // 第一行顶（与原骨架行距 13 一致）
 const ROW_H = 13;
@@ -139,10 +141,10 @@ export const ScanBracketSweep: React.FC = () => {
                 <path d="M5.5.6v2.9h2.9" fill="none" stroke={`rgb(${SCAN})`} strokeWidth={0.6} />
               </svg>
               <div style={{ position: 'absolute', left: 27, top: 11, fontSize: 8.6, fontWeight: 650, letterSpacing: '-0.01em', lineHeight: 1 }}>
-                Vendor Agreement — Q3
+                Launch Film — Shot List
               </div>
               <div style={{ position: 'absolute', left: 27, top: 23, fontSize: 5.4, color: INK2, lineHeight: 1, letterSpacing: '-0.01em' }}>
-                Northwind Supply Co. · Effective 1 Jul 2026
+                {BRAND.name} · Storyboard v3 · 1080p · 30 fps
               </div>
               <div
                 style={{
@@ -160,7 +162,7 @@ export const ScanBracketSweep: React.FC = () => {
                   lineHeight: 1,
                 }}
               >
-                PDF · 4 PAGES
+                7 SHOTS · 0:28
               </div>
               <div style={{ position: 'absolute', left: 14, right: 14, top: 36, height: 0.3, background: HAIR }} />
 
@@ -201,9 +203,9 @@ export const ScanBracketSweep: React.FC = () => {
 
               {/* 合计 */}
               <div style={{ position: 'absolute', left: 14, right: 14, top: 151, height: 0.3, background: HAIR }} />
-              {cell('Total due', 0, 158, { fontSize: 5.6, fontWeight: 600 })}
-              {cell('Net 30', 2, 158, { fontSize: 5.6, color: INK2 })}
-              {cell('$48,920.00', 3, 157.2, { fontSize: 7, fontWeight: 680, letterSpacing: '-0.01em' })}
+              {cell('Runtime', 0, 158, { fontSize: 5.6, fontWeight: 600 })}
+              {cell('30 fps', 2, 158, { fontSize: 5.6, color: INK2 })}
+              {cell('828 f · 27.6 s', 3, 157.2, { fontSize: 7, fontWeight: 680, letterSpacing: '-0.01em' })}
             </div>
 
             {/* 扫描光带（裁在文档同 10px 圆角内）：细亮芯 + 柔辉 + 朝来向的色调拖尾 */}

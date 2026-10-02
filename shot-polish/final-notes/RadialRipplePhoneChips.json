@@ -1,0 +1,18 @@
+{
+  "stem": "RadialRipplePhoneChips",
+  "changed": true,
+  "brand": [
+    "收尾品牌字标「Murmur」→ 镜刻标志 + video-shotcraft 字标（与标志同拍升起），副标「Podcasts, unhurried.」→「Every shot, tuned in one place.」",
+    "手机里的播客 App feed → video-shotcraft 镜头库：「Listen now」→「Shot library」，精选卡「Long Way Round」→ NEW RECIPE「Crash zoom punch」",
+    "单集列表 → 镜头配方卡列表（Graze face tour / Riso print hit / Text as mask…，分类 + 时长）；迷你播放条「The quiet hour」→「Launch film · preview」",
+    "两侧 chip「Offline listening / Smart chapters」→「Shot recipe cards / Remotion render」"
+  ],
+  "brandEn": [
+    "Closing wordmark \"Murmur\" → Frame Chisel mark + video-shotcraft wordmark (rising together); subline \"Podcasts, unhurried.\" → \"Every shot, tuned in one place.\"",
+    "Podcast feed on the phone → video-shotcraft shot library: \"Listen now\" → \"Shot library\", featured \"Long Way Round\" → NEW RECIPE \"Crash zoom punch\"",
+    "Episode list → shot recipe cards (Graze face tour / Riso print hit / Text as mask…, category + duration); mini player \"The quiet hour\" → \"Launch film · preview\"",
+    "Side chips \"Offline listening / Smart chapters\" → \"Shot recipe cards / Remotion render\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

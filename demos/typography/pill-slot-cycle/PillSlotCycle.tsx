@@ -1,6 +1,6 @@
 // pill-slot-cycle —— 句中词槽轮换：固定句干 + 句尾 pill 老虎机式滚一格
 // 源：notion-ai 4.5–8.5s。旧 pill 上飞淡出、新 pill 从下带运动模糊滑入，
-// 连换 6 次后 pill 消失、句子落成 "One AI tool to do it all." 收束。
+// 连换 6 次后 pill 消失、句子落成 "One skill to do it all." 收束（video-shotcraft 一条龙的六步）。
 //
 // 质感升级：
 // - pill 绕"滚筒"翻入翻出：入场 rotateX -38°→0 + 0.94→1，出场 0→34° + 1→0.94（perspective 1400），
@@ -16,15 +16,17 @@ import { Backdrop, EASE, FONT as PFONT, mix, ramp, softShadow, innerHighlight } 
 
 const FONT = PFONT.sans;
 
-type IconKey = 'ask' | 'drive' | 'slack' | 'sum' | 'pen' | 'agenda';
+// 槽内六个动词短语 = video-shotcraft 一条龙的六步（分镜 → 实拍页面 → 运镜 → 踩点 → 音效 → 渲染）
+type IconKey = 'board' | 'capture' | 'camera' | 'beat' | 'sound' | 'render';
 const PILLS: { label: string; icon: IconKey }[] = [
-  { label: 'Ask a question', icon: 'ask' },
-  { label: 'Find in Drive', icon: 'drive' },
-  { label: 'Find in Slack', icon: 'slack' },
-  { label: 'Summarize', icon: 'sum' },
-  { label: 'Improve writing', icon: 'pen' },
-  { label: 'Draft an agenda', icon: 'agenda' },
+  { label: 'Storyboard it', icon: 'board' },
+  { label: 'Capture the page', icon: 'capture' },
+  { label: 'Move the camera', icon: 'camera' },
+  { label: 'Cut on the beat', icon: 'beat' },
+  { label: 'Design the sound', icon: 'sound' },
+  { label: 'Render the film', icon: 'render' },
 ];
+const STEM = 'One skill to'; // 句干（结论句 = STEM + "do it all."）
 
 const BEAT = 21; // ~0.7s @30fps
 const INTRO = 12; // 句干入场
@@ -44,26 +46,35 @@ const Icon: React.FC<{ k: IconKey }> = ({ k }) => {
   const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
     <svg width={34} height={34} viewBox="0 0 24 24" style={{ display: 'block' }}>
-      {k === 'ask' && (
+      {k === 'board' && (
         <>
-          <circle cx="12" cy="12" r="9" {...p} />
-          <path d="M9.6 9.3a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2.2-2.4 3.7" {...p} />
-          <circle cx="12" cy="17.2" r="0.6" fill="currentColor" />
+          <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" {...p} />
+          <path d="M12 4.5v15M3.5 12h17" {...p} />
         </>
       )}
-      {k === 'drive' && <path d="M8.6 3.5h6.8l6.1 10.6-3.4 5.9H5.9l-3.4-5.9zM8.6 3.5l6.1 10.6h6.8M5.9 20l6.1-10.6" {...p} />}
-      {k === 'slack' && <path d="M9.5 3.5 7.8 20.5M16.2 3.5l-1.7 17M4 9h16.5M3.5 15H20" {...p} />}
-      {k === 'sum' && <path d="M4 6h16M4 10.5h16M4 15h10M4 19.5h6" {...p} />}
-      {k === 'pen' && (
+      {k === 'capture' && (
         <>
-          <path d="M14.5 4.8 19.2 9.5 9 19.7l-5.2.5.5-5.2z" {...p} />
-          <path d="M12.6 6.7l4.7 4.7" {...p} />
+          <path d="M4 8.5V5.5A1.5 1.5 0 0 1 5.5 4h3M15.5 4h3A1.5 1.5 0 0 1 20 5.5v3M20 15.5v3a1.5 1.5 0 0 1-1.5 1.5h-3M8.5 20h-3A1.5 1.5 0 0 1 4 18.5v-3" {...p} />
+          <rect x="8" y="9" width="8" height="6" rx="1" {...p} />
         </>
       )}
-      {k === 'agenda' && (
+      {k === 'camera' && (
         <>
-          <rect x="3.5" y="5" width="17" height="15" rx="2.5" {...p} />
-          <path d="M3.5 9.5h17M8 3v4M16 3v4M7.5 13.5h4M7.5 16.5h7" {...p} />
+          <rect x="3" y="7" width="12" height="10" rx="2" {...p} />
+          <path d="M15 10.5l5.5-3v9l-5.5-3z" {...p} />
+        </>
+      )}
+      {k === 'beat' && <path d="M5 10v4M8.5 7v10M12 4v16M15.5 8v8M19 10.5v3" {...p} />}
+      {k === 'sound' && (
+        <>
+          <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" {...p} />
+          <path d="M15.5 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" {...p} />
+        </>
+      )}
+      {k === 'render' && (
+        <>
+          <rect x="3.5" y="5" width="17" height="14" rx="2.5" {...p} />
+          <path d="M10 9.2v5.6l4.8-2.8z" {...p} />
         </>
       )}
     </svg>
@@ -133,7 +144,7 @@ const outYAt = (bf: number) => mix(0, -130, ramp(bf, 0, SWAP - 1, EASE.exit));
 export const PillSlotCycle: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // 量最终句宽（"One AI tool to" + gap + "do it all."），用于收束后居中
+  // 量最终句宽（STEM + gap + "do it all."），用于收束后居中
   const finalRef = useRef<HTMLDivElement>(null);
   const [finalW, setFinalW] = useState(1240);
   useLayoutEffect(() => {
@@ -273,7 +284,7 @@ export const PillSlotCycle: React.FC = () => {
       <Backdrop tone="light" light={{ x: 0.4, y: 0.3 }} accent="#5b63d3" grain={0.045} vignette={0.14} />
       {/* 隐藏量宽：完整结论句 */}
       <div ref={finalRef} style={{ position: 'absolute', visibility: 'hidden', display: 'flex', gap: WORD_GAP }}>
-        <span style={stemStyle}>One AI tool to</span>
+        <span style={stemStyle}>{STEM}</span>
         <span style={stemStyle}>do it all.</span>
       </div>
       {/* 句干固定不动：整行左端锚死，不随 pill 宽度居中重排（收束落位后才整体居中） */}
@@ -290,7 +301,7 @@ export const PillSlotCycle: React.FC = () => {
           filter: stemT < 0.98 ? `blur(${((1 - stemT) * 6).toFixed(2)}px)` : undefined,
         }}
       >
-        <span style={stemStyle}>One AI tool to</span>
+        <span style={stemStyle}>{STEM}</span>
         {slot}
       </div>
     </AbsoluteFill>

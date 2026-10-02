@@ -4,10 +4,11 @@
 // 质感层（改版）：补导出时长 75f（f42 划完后静止 33f ≥1s）；标题两行错峰 blur-slide
 // （snappy，第二行晚 4f）；笔画加确定性干笔肌理——feTurbulence 位移做毛糙边 + 细碎飞白镂空，
 // 墨色改带暖调的近黑并 multiply 进纸面；纸面 = 暖白低对比底 + 主光 + 颗粒；
-// 品牌名换成中性占位 "Lumen AI"；整段极缓推近 1→1.015。
+// 第二行 = video-shotcraft 品牌行（镜刻标志 + 小写品牌名）；整段极缓推近 1→1.015。
 import React, { useId } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { Backdrop, EASE, FONT, ramp } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const MARKER_UNDERLINE_TITLE_DURATION = 75; // 标题 22f 落定 → f32–42 划线 → 静止 33f
 
@@ -109,7 +110,10 @@ export const MarkerUnderlineTitle: React.FC = () => {
               </svg>
             </span>
           </div>
-          <div style={line(4)}>Lumen AI</div>
+          <div style={{ ...line(4), display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
+            <ShotcraftMark size={112} tone="light" />
+            <span>{BRAND.name}</span>
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

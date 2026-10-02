@@ -4,8 +4,8 @@
 // 第二轮重设计（瓷白舞台 · 暗色实时面板）：
 // - look = porcelain。冷白瓷舞台上切出一个 470px 的 Black 字重「SCALE」——字形是一扇窗：
 //   窗外的瓷白舞台有主光与暗角，窗下投一层带色相的软影（字像被"挖"进舞台）。
-// - 窗里是为镜头设计的暗色实时面板「Meridian · Throughput」：钴蓝→青的流式面积图一直在向左流、
-//   请求数在计数、柱状图在呼吸——大块的饱和色与亮线让笔画里一眼看出"里面有个活的产品"，
+// - 窗里是为镜头设计的暗色实时面板「video-shotcraft · Render throughput」（渲染农场看板）：钴蓝→青的流式面积图一直在向左流、
+//   渲染帧数在计数、渲染队列柱状图在呼吸——大块的饱和色与亮线让笔画里一眼看出"里面有个活的产品"，
 //   而不是原版那种白卡（白字里透白卡 = 普通白字）。
 // - 字的入场：遮罩从基线向上擦出（clip 从下往上收），字整体 1.04→1 落定；眉题字距收拢、副题升起。
 // - 接管：先吸一口气（字 1→0.965，副题与眉题退场，8f）→ 指数冲入（对数空间 t^1.8，24f 到 46×，
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
 import { EASE, FONT, bezier, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const TEXT_AS_MASK_DURATION = 165;
 
@@ -55,7 +56,7 @@ const RUSH1 = 128;
 const LAND1 = 132;
 const DASH_S0 = 1.32;
 
-// —— 窗里的产品：暗色实时面板（1920×1080 作画）——
+// —— 窗里的产品：video-shotcraft 的暗色渲染看板（1920×1080 作画）——
 const D = { bg: '#0a0f1e', panel: '#0f1730', panel2: '#131d3b', line: 'rgba(150,180,255,0.12)', ink: '#eef3ff', ink2: '#9aa8c8', ink3: '#5d6a8a', blue: '#4d7cff', teal: '#19d3b4' };
 
 // 确定性流式曲线：u = 横向样本位置（随帧递增 = 数据向左流）
@@ -74,7 +75,7 @@ const Dashboard: React.FC<{ frame: number }> = ({ frame }) => {
   const last = pts[pts.length - 1];
   const reqs = 1.92 + 0.56 * ramp(frame, 10, 96, EASE.out);
   const bars = Array.from({ length: 24 }, (_, i) => 0.3 + 0.6 * Math.abs(Math.sin(i * 1.7 + frame * 0.05)) * (0.6 + 0.4 * Math.sin(i * 0.45)));
-  const regions: [string, number][] = [['us-east', 0.92], ['eu-west', 0.74], ['ap-south', 0.58], ['sa-east', 0.41]];
+  const regions: [string, number][] = [['opening', 0.92], ['camera', 0.74], ['transition', 0.58], ['outro', 0.41]]; // 各类镜头渲染进度
   const Card: React.FC<{ x: number; y: number; w: number; h: number; children: React.ReactNode }> = ({ x, y, w, h, children }) => (
     <div style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 22, background: `linear-gradient(180deg, ${D.panel2}, ${D.panel})`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px ${D.line}`, boxSizing: 'border-box', padding: '26px 30px', overflow: 'hidden' }}>{children}</div>
   );
@@ -84,16 +85,16 @@ const Dashboard: React.FC<{ frame: number }> = ({ frame }) => {
       {/* 侧栏 */}
       <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 230, borderRight: `1px solid ${D.line}`, padding: '36px 30px', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, ${D.blue}, ${D.teal})` }} />
-          <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em' }}>Meridian</div>
+          <ShotcraftMark size={40} tone="dark" />
+          <div style={{ fontFamily: BRAND.font, fontSize: 28, fontWeight: 700, letterSpacing: '0.01em' }}>{BRAND.short}</div>
         </div>
-        {['Overview', 'Throughput', 'Latency', 'Regions', 'Alerts'].map((t, i) => (
+        {['Overview', 'Renders', 'Shots', 'Timeline', 'Gallery'].map((t, i) => (
           <div key={t} style={{ marginTop: i ? 14 : 54, fontSize: 24, fontWeight: i === 1 ? 650 : 500, color: i === 1 ? D.ink : D.ink3, padding: '10px 14px', borderRadius: 10, background: i === 1 ? 'rgba(77,124,255,0.16)' : 'transparent' }}>{t}</div>
         ))}
       </div>
       {/* 页眉 */}
       <div style={{ position: 'absolute', left: 290, top: 44, display: 'flex', alignItems: 'center', gap: 20 }}>
-        <div style={{ ...type(56, 720), color: D.ink }}>Throughput</div>
+        <div style={{ ...type(56, 720), color: D.ink }}>Render throughput</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', borderRadius: 999, background: 'rgba(25,211,180,0.14)', color: D.teal, fontSize: 24, fontWeight: 650 }}>
           <div style={{ width: 10, height: 10, borderRadius: 5, background: D.teal, boxShadow: `0 0 12px ${D.teal}`, opacity: 0.6 + 0.4 * Math.sin(frame / 5) }} />Live
         </div>
@@ -101,18 +102,18 @@ const Dashboard: React.FC<{ frame: number }> = ({ frame }) => {
       <div style={{ position: 'absolute', right: 60, top: 54, fontSize: 24, color: D.ink2, padding: '10px 18px', borderRadius: 12, boxShadow: `0 0 0 1px ${D.line}` }}>Last 24 hours</div>
       {/* KPI */}
       <Card x={290} y={150} w={520} h={200}>
-        <Label>Requests / sec</Label>
+        <Label>Frames rendered</Label>
         <div style={{ ...type(96, 760), marginTop: 14 }}>{reqs.toFixed(2)}M</div>
       </Card>
       <Card x={834} y={150} w={500} h={200}>
-        <Label>p99 latency</Label>
+        <Label>Avg shot render</Label>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginTop: 14 }}>
-          <div style={{ ...type(96, 760) }}>42<span style={{ fontSize: 48, color: D.ink2, marginLeft: 6 }}>ms</span></div>
+          <div style={{ ...type(96, 760) }}>42<span style={{ fontSize: 48, color: D.ink2, marginLeft: 6 }}>s</span></div>
           <div style={{ fontSize: 26, fontWeight: 650, color: D.teal }}>−18%</div>
         </div>
       </Card>
       <Card x={1358} y={150} w={502} h={200}>
-        <Label>Load</Label>
+        <Label>Render queue</Label>
         <svg width={440} height={100} style={{ marginTop: 16 }}>
           {bars.map((b, i) => <rect key={i} x={i * 18.5} y={100 - b * 100} width={12} height={b * 100} rx={3} fill={i > 17 ? D.teal : D.blue} opacity={0.5 + 0.5 * b} />)}
         </svg>
@@ -120,8 +121,8 @@ const Dashboard: React.FC<{ frame: number }> = ({ frame }) => {
       {/* 主图：流式面积图 */}
       <Card x={290} y={376} w={1570} h={470}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Label>Global throughput</Label>
-          <div style={{ fontSize: 22, color: D.ink3, fontFamily: FONT.mono }}>req/s · 1s buckets</div>
+          <Label>Frames / sec</Label>
+          <div style={{ fontSize: 22, color: D.ink3, fontFamily: FONT.mono }}>fps · 1s buckets</div>
         </div>
         <svg width={CW} height={CH} style={{ position: 'absolute', left: 4, top: 70, overflow: 'visible' }}>
           <defs>
@@ -227,13 +228,17 @@ export const TextAsMask: React.FC = () => {
 
       {/* 眉题 + 副题 */}
       <div style={{ position: 'absolute', top: 214, width: '100%', textAlign: 'center', opacity: eyebrow * out }}>
-        <span style={{ fontFamily: FONT.sans, fontSize: 28, fontWeight: 700, color: L.accent, letterSpacing: `${(0.32 + (1 - eyebrow) * 0.3).toFixed(3)}em` }}>MERIDIAN CLOUD</span>
+        {/* 眉题 = video-shotcraft 字标（全小写；字距收拢的入场保留） */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 14, verticalAlign: 'middle' }}>
+          <ShotcraftMark size={44} tone="light" />
+          <span style={{ fontFamily: BRAND.font, fontSize: 30, fontWeight: 700, color: L.ink, letterSpacing: `${(0.03 + (1 - eyebrow) * 0.3).toFixed(3)}em` }}>{BRAND.name}</span>
+        </span>
       </div>
       <div style={{
         position: 'absolute', top: BASE_Y + 92, width: '100%', textAlign: 'center', fontFamily: FONT.sans, fontSize: 40, fontWeight: 500,
         letterSpacing: '-0.015em', color: L.ink2, opacity: sub * out, transform: `translateY(${((1 - sub) * 16).toFixed(2)}px)`,
       }}>
-        From one service to <span style={{ color: L.ink, fontWeight: 700 }}>ten million requests</span> a second.
+        From one prompt to <span style={{ color: L.ink, fontWeight: 700 }}>a finished launch film</span>.
       </div>
     </AbsoluteFill>
   );

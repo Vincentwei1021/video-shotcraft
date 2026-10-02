@@ -3,7 +3,8 @@
 // 一次闪白完成"华丽演出 → 正式形象"的降维。
 //
 // 第二轮重设计（极光 · 液态金属 → 纸面定妆）：
-// - look = aurora（暗场演出段）；冲白后落到带一丝紫的冷白纸面。词标是虚构品牌「Vela.」，300px 800 字重，
+// - look = aurora（暗场演出段）；冲白后落到 video-shotcraft 的剪辑纸面（品牌色收编：纸 / 墨 / 琥珀）。
+//   词标是品牌字标「video-shotcraft」（全小写、字标字体 700 字重，15 字符故字号压到 FS），
 //   两个版本同字号同位置——观众读到的是"同一个字标被净化了"，不是换了一张图。
 // - 液态段的质感是"真材质"而不是一条渐变：①流动的虹彩底色（紫 → 粉 → 桃 → 冰蓝，background-size 300% 缓流）
 //   ②纵向明暗（顶亮底暗，读作有体积）③横贯字腰的镀铬地平线反光带 ④一次斜向高光扫过（Q4：只给主角一次，
@@ -11,38 +12,47 @@
 // - 白闪不是整屏均匀淡入，而是"光从字里炸出来"：蓄力段字标提亮、一条横向变形镜头眩光从字心拉开，
 //   随后白色径向光团从字心 6f 内撑满全屏（二次 ease-in，越来越快）。
 // - 定妆段用"曝光回落"代替淡入：白层 22f 内 quint-out 退去，像眼睛适应强光——底下扁平字标早已在位，
-//   只带 1.03→1 的对焦收束；随后一根强调色短线画出、副标逐词升起，完成锁定画面。
+//   只带 1.03→1 的对焦收束；随后字标上方镜刻标志描出（取景框先揭开、琥珀斜切后划入）、
+//   一根琥珀短线画出、品牌短句逐词升起，完成锁定画面（标志本身不上液态质感——品牌规范禁渐变/发光）。
 //
 // 时间表（30fps，共 120f）：
 //   0–34    演出：液态词标在场（第 0 帧即有）、虹彩缓流、高光 6–34f 扫过一次、整幅 1→1.035 缓推
 //   34–46   蓄力：字标 brightness 1→1.7、bloom 加强、横向眩光拉开（ease-in）
 //   44–50   冲白：径向白团从字心撑满（二次 ease-in），50–54 纯白 hold（呼吸位）
 //   54–76   曝光回落：白层 1→0（quint-out）；扁平字标 1.03→1 对焦
-//   72–96   锁定：强调色短线 72–86 画出、副标 78f 起逐词升起
+//   72–96   锁定：琥珀短线 72–86 画出、标志 74–96 描出、品牌短句 78f 起逐词升起
 //   96–120  hold：极缓前推 1→1.01 定格
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { EASE, FONT, Grain, Vignette, mix, ramp } from '../../_fixtures/Polish';
+import { EASE, Grain, Vignette, mix, ramp } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const WHITE_FLASH_LOGO_SIMPLIFY_CUT_DURATION = 120;
 
 const L = LOOKS.aurora;
-const WORD = 'Vela';
-const FS = 300;
+const WORD = BRAND.name; // 字标全小写
+const FS = 190; // 15 字符的字标按画宽压字号（原 4 字母占位字标是 300）
 const CY = 500; // 词标中心 y
 const FLASH0 = 44;
 const WHITE = 50; // 全白、换场帧
 const RECOVER = 54;
 
-// 扁平版的三个颜色：纸面 / 墨 / 强调紫（换品牌时只改这三个）
-const PAPER: [string, string] = ['#f8f6fc', '#ece8f4'];
-const FLAT_INK = '#16121f';
-const FLAT_ACCENT = '#6d4aff';
+// 扁平版的三个颜色：纸面 / 墨 / 强调色（换品牌时只改这三个）——video-shotcraft：剪辑纸 / 片场墨 / 镜琥珀
+const PAPER: [string, string] = ['#f7f5f0', '#ebe7de'];
+const FLAT_INK: string = BRAND.ink;
+const FLAT_ACCENT: string = BRAND.amber;
+const MARK = 124; // 锁定段字标上方的镜刻标志尺寸
 
 const wordStyle: React.CSSProperties = {
-  fontFamily: FONT.sans, fontSize: FS, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1, whiteSpace: 'nowrap',
+  fontFamily: BRAND.font, fontSize: FS, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1, whiteSpace: 'nowrap',
 };
+
+// 字标文本：「ft」处 f 后不加字距，让两道横笔重叠——+0.03em 字距下两道横笔恰好相接，
+// 大字号时接缝会露出一条抗锯齿亮线
+const wordText = (
+  <>{WORD.slice(0, WORD.lastIndexOf('f'))}<span style={{ letterSpacing: 0 }}>f</span>{WORD.slice(WORD.lastIndexOf('f') + 1)}</>
+);
 
 const IRIS = 'linear-gradient(100deg, #7c6bff 0%, #b18cff 16%, #f472b6 32%, #ffc6a8 46%, #8fdcff 62%, #7c6bff 78%, #c58cff 90%, #7c6bff 100%)';
 
@@ -75,7 +85,7 @@ const LiquidWord: React.FC<{ frame: number; bright: number }> = ({ frame, bright
       WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
       filter: bright > 1.001 ? `brightness(${bright.toFixed(3)}) saturate(${(1 / Math.sqrt(bright)).toFixed(3)})` : undefined,
       paddingBottom: 20,
-    }}>{WORD}.</span>
+    }}>{wordText}</span>
   );
 };
 
@@ -98,6 +108,8 @@ export const WhiteFlashLogoSimplifyCut: React.FC = () => {
   const focus = ramp(frame, RECOVER - 2, 26, EASE.snappy);
   const flatScale = mix(1.03, 1, focus) * (1 + 0.01 * ramp(frame, 96, 24, EASE.smooth));
   const rule = ramp(frame, 72, 14, EASE.snappy);
+  const mark = ramp(frame, 74, 14, EASE.snappy); // 标志取景框揭开
+  const cut = ramp(frame, 84, 12, EASE.snappy); // 琥珀斜切划入
 
   const dark = frame < WHITE;
 
@@ -117,7 +129,7 @@ export const WhiteFlashLogoSimplifyCut: React.FC = () => {
           <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: `50% ${CY}px` }}>
             {/* bloom：同色模糊副本 */}
             <div style={{ ...centered(CY), opacity: 0.42 + 0.4 * charge, filter: 'blur(38px)' }}>
-              <span style={{ ...wordStyle, backgroundImage: IRIS, backgroundSize: '300% 100%', backgroundPosition: `${(frame * 1.1) % 300}% 0`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{WORD}.</span>
+              <span style={{ ...wordStyle, backgroundImage: IRIS, backgroundSize: '300% 100%', backgroundPosition: `${(frame * 1.1) % 300}% 0`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{wordText}</span>
             </div>
             {/* 地面倒影：翻转 + 渐隐 */}
             <div style={{
@@ -156,25 +168,22 @@ export const WhiteFlashLogoSimplifyCut: React.FC = () => {
           {/* 纸面：冷白带一丝紫 + 顶部柔光 + 轻暗角 + 颗粒 */}
           <AbsoluteFill style={{ background: `linear-gradient(180deg, ${PAPER[0]} 0%, ${PAPER[1]} 100%)` }} />
           <AbsoluteFill style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 40%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%)' }} />
-          <Vignette strength={0.1} inner={0.5} color="#2a2440" />
+          <Vignette strength={0.1} inner={0.5} color="#2a2620" />
           <div style={{ position: 'absolute', inset: 0, transform: `scale(${flatScale.toFixed(5)})`, transformOrigin: `50% ${CY}px` }}>
             <div style={centered(CY)}>
-              <span style={{ ...wordStyle, color: FLAT_INK, paddingBottom: 20 }}>
-                {WORD}<span style={{ color: FLAT_ACCENT }}>.</span>
-              </span>
+              <span style={{ ...wordStyle, color: FLAT_INK, paddingBottom: 20 }}>{wordText}</span>
             </div>
-            {/* 锁定：强调色短线 + 副标 */}
+            {/* 锁定：镜刻标志（取景框揭开 → 琥珀斜切划入）+ 琥珀短线 + 品牌短句 */}
+            <div style={{ position: 'absolute', left: 960 - MARK / 2, top: CY - FS * 0.5 - 44 - MARK }}>
+              <ShotcraftMark size={MARK} tone="light" frameProgress={mark} cutProgress={cut} />
+            </div>
             <div style={{
-              position: 'absolute', left: 960 - 48, top: CY + 214, width: 96, height: 5, borderRadius: 3,
+              position: 'absolute', left: 960 - 48, top: CY + FS * 0.5 + 62, width: 96, height: 5, borderRadius: 3,
               background: FLAT_ACCENT, transform: `scaleX(${rule.toFixed(4)})`,
             }} />
-            <div style={{ position: 'absolute', left: 0, right: 0, top: CY + 258, textAlign: 'center', color: '#5b5470', ...type(46, 480) }}>
-              <TextReveal text="Interfaces, distilled." by="word" variant="rise" start={78} each={18} gap={4} />
+            <div style={{ position: 'absolute', left: 0, right: 0, top: CY + FS * 0.5 + 106, textAlign: 'center', color: '#716d64', ...type(46, 480) }}>
+              <TextReveal text={PITCH.en.motto} by="word" variant="rise" start={78} each={18} gap={4} />
             </div>
-            <div style={{
-              position: 'absolute', left: 0, right: 0, top: CY - 238, textAlign: 'center', color: '#8b84a0',
-              ...type(24, 700, { caps: true }), letterSpacing: '0.32em', opacity: ramp(frame, 86, 16, EASE.out),
-            }}>Vela Design System · 2.0</div>
           </div>
           <Grain opacity={0.04} />
         </>

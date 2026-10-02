@@ -1,0 +1,12 @@
+{
+  "stem": "WhipBrakeReal",
+  "changed": false,
+  "brand": [
+    "画面是真实项目卡截图纹理（字改不了）+ 计数器 / 刻度尺 / 分区名「Efficient Models」（对应纹理里的真实分区），没有我们自己画的 logo 或品牌名，不用换"
+  ],
+  "brandEn": [
+    "The frame is real project-card screenshot textures plus a counter, ruler and the section label \"Efficient Models\" (the texture's real section); no drawn logo or brand name to replace"
+  ],
+  "styleKey": "whip-pan",
+  "mdChanged": true
+}

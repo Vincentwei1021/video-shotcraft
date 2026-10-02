@@ -45,8 +45,6 @@ chip 降到 18% 而**位置绝不移动**：一旦重排，观众会以为页面
 - 其余 chip 的 `transform` 必须显式写 `'none'`，不能靠 flex 自动重排，否则余项归零时会横向滑动
 - 占位内容：5 条计费周期选项名（Annual billing … Nonprofit rate）+ 结算「$42.00 → $34.44/mo、Save 18%」，
   落地全部替换；选项名过长会撑破固定宽（第三条 "Two-year commitment" 是长名压力测试）
-- 与 `chip-lift-to-user-pill` 分工：那张选中后**横向生长成新对象**，
-  本卡选中后**上移收窄让位给结果**；同一片子里两者不要连用
 
 ## 参考实现
 demos/interaction/chip-grid-single-select-blackout/

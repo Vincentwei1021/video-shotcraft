@@ -14,30 +14,33 @@ import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
   durationInFrames={BLUR_SLIDE_DURATION} fps={30} width={1920} height={1080} />
 ```
 
-动画全部是帧的纯函数（无真随机 / 无 Date），逐帧确定性渲染。2026-10 全库按「只保留镜头手法、
-画面成片级重做」做过第二轮重设计：每个 demo 顶部注释写了 look、构图、时间表与关键曲线，
-画面里的品牌 / 产品 / 数据全部虚构（用真实页面截图的 demo 除外，见下）。
+动画全部是帧的纯函数（无真随机 / 无 Date），逐帧确定性渲染。2026-10 全库做过两轮改版对照，
+每个镜头由作者在原版 / 第一版（质感打磨）/ 第二版（成片级重设计）里择一落版，并去掉了 66 个镜头
+（决策记录 `shot-polish/decisions.json`）。随后做了品牌替换：画面里出现的 logo / 品牌名统一是
+video-shotcraft，合适的文案换成它的宣传语——拿去给自己的产品用时，把 `Brand.tsx` 的件换成你的标志与文案即可。
 
 共享依赖（copy demo 时把用到的一并带上并改 import 路径）：
 
-- `_fixtures/Look.tsx` — 视觉系统：8 套调色板 `LOOKS`（暗场 midnight / aurora / ember / graphite / lime，
+- `_fixtures/Brand.tsx` — video-shotcraft 品牌件：「镜刻」标志 `<ShotcraftMark>`（可分段描出）、字标
+  `<ShotcraftWordmark>`、品牌色 `BRAND`、宣传文案库 `PITCH`（规范见 `assets/brand/BRAND.md`）。仅依赖 react。
+- `_fixtures/Look.tsx` — 第二轮的视觉系统：8 套调色板 `LOOKS`（暗场 midnight / aurora / ember / graphite / lime，
   亮场 paper / porcelain / sand）、字号阶梯 `TYPE` 与 `type()`、带主光/余光/地平线光带/暗角/颗粒的
   舞台 `<Stage>`、透视网格地面 `<GridFloor>`、确定性浮尘 `<Dust>`、单次扫光 `<Sheen>`、
-  逐字/词/行揭示 `<TextReveal>`、`stagger` / `springAt` / `glow`。绝大多数 demo import 它；依赖 `./Polish`。
+  逐字/词/行揭示 `<TextReveal>`、`stagger` / `springAt` / `glow`。第二版 demo 都 import 它；依赖 `./Polish`。
 - `_fixtures/Polish.tsx` — 质感工具件：贝塞尔缓动 `EASE` / `ramp` / `mix` / `velocity`、按速度的方向性模糊
   `SpeedBlur`、`softShadow` / `hairline` / `surface` 材质 helper、`Grain` / `Vignette` / `Backdrop`。仅依赖 remotion + react。
-- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，self-contained）。
-  spotlight-hero-card / deck-deal-flyin 在用。
+- `_fixtures/Fixtures.tsx` — 假 UI 场景件（FakeDashboard / Card / TitleBlock / G 调色板），侧栏/顶栏是
+  video-shotcraft 标志与名字（依赖 `./Brand`）。第一版 / 原版落版的 demo 里有二十来个在用。
 - `_fixtures/Motion.tsx` — 480×270 设计坐标的 `DesignStage` + E 缓动表 / seg / lerp / rand / useT。
-  第二轮后只剩 bezier-source-converge-merge 在用，其余 Motion 系 demo 已改为原生 1920 坐标布局。
-- `_fixtures/Fixtures.tsx` — 旧版假 UI 场景件（FakeDashboard / Card / TitleBlock / G 调色板）。
-  第二轮后已没有 demo import 它，保留给自己工程里还在用的场景。
+  原版 / 第一版落版的 Motion 系 demo 在用（fracture、bezier-source-converge-merge、radial-wave 等十几个）。
+- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，self-contained）。
+  spotlight-hero-card / type-and-filter / row-embed / list-stack-press / outro-group-photo-launch 在用。
 - `_textures/` — 真实页面截图与 `live-layout.json`。用到 `staticFile('textures/live/xxx.png')` 的 demo
-  （crash-zoom-punch 两式 / depth-layer-moves 两式 / shot-transitions 六式 / speed-ramp-freeze 两式 /
+  （crash-zoom-punch 两式 / depth-layer-moves / shot-transitions 急刹甩镜 / speed-ramp-freeze 定格标注 /
   spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
   document-typewriter-reveal / page-waterfall-wall / outro-group-photo-launch）要求把 `_textures/` 下的同名文件
-  复制到你项目的 `public/textures/live/`。截图代表"产品既有页面"（审美准则 Q1），这些 demo 只重做了
-  运镜、舞台、光与配套文字，纹理本身未改。
+  复制到你项目的 `public/textures/live/`。截图代表"产品既有页面"（审美准则 Q1）；页头站名已改成
+  video-shotcraft 标志 + 字标（周报页标题为 Shotcraft Weekly），其余页面内容未动。
 
 个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
 `npm i @remotion/motion-blur`。名单（4 个文件 / 4 张卡）：
@@ -105,7 +108,7 @@ import { ClipCard } from './assets/lib/ClipCard';
    # 需要 template 依赖 + motion-blur（CI 里临时装）
    cd template && npm ci && npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
    cd .. && python3 assets/scripts/smoke-render-demos.py        # 全量
-   python3 assets/scripts/smoke-render-demos.py --subset BlurSlide,Scramble  # 子集
+   python3 assets/scripts/smoke-render-demos.py --subset BlurSlide,GlitchCycle  # 子集
    python3 assets/scripts/smoke-render-demos.py --list          # 列出可渲染 demo
    ```
 

@@ -5,7 +5,7 @@
 // 第二轮重设计（设计决定）
 // - look = graphite（近单色暗场，白为强调、香槟金点缀）。正面是暗色功能卡，背面是亮瓷白结论卡：
 //   翻面 = 从暗到亮的反相，"所以呢？"的答案被打亮，三张翻完画面从一排暗卡变成一排白色数字海报。
-// - 内容：虚构写作工具 Quill 的三项能力——Compose（续写建议）/ Summaries（会议纪要）/ Search（全局搜索），
+// - 内容：video-shotcraft 的三项能力——Prompt（一句话写片）/ Recipes（镜头配方）/ Library（配方库搜索），
 //   正面画成为镜头设计的大字 UI（≥ 28px），背面 158px 数字 3.2× / −41% / 0.2s + 34px 结论，上方一组「之前 / 用上之后」对照条在落定后收短。
 // - 卡片竖版 480×620（bento 比例），三卡 1536px 宽占画宽 80%；左上 84px 标题 + 金色眉题；
 //   卡片立在一面暗色镜面地板上——每张卡在地板里有一份同步翻转的倒影（遮罩渐隐），空间一下就成立了。
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const CARD_FLIP_REVEAL_DURATION = 150;
 
@@ -50,9 +51,9 @@ const angleAt = (f: number, i: number) => {
 };
 
 const FEATURES = [
-  { name: 'Compose', desc: 'Writes the next line with you.', value: '3.2×', label: 'faster first drafts', bars: [1, 0.31], unit: ['48 min', '15 min'] },
-  { name: 'Summaries', desc: 'Every meeting, in five lines.', value: '−41%', label: 'time spent in meetings', bars: [1, 0.59], unit: ['6.1 h', '3.6 h'] },
-  { name: 'Search', desc: 'One box for every doc.', value: '0.2s', label: 'to find anything', bars: [1, 0.06], unit: ['3.4 s', '0.2 s'] },
+  { name: 'Prompt', desc: 'One line in, a whole film out.', value: '3.2×', label: 'faster first cut', bars: [1, 0.31], unit: ['48 min', '15 min'] },
+  { name: 'Recipes', desc: 'Camera moves, pre-tuned.', value: '−41%', label: 'time spent keyframing', bars: [1, 0.59], unit: ['6.1 h', '3.6 h'] },
+  { name: 'Library', desc: 'Every shot, one search away.', value: '0.2s', label: 'to find the right move', bars: [1, 0.06], unit: ['3.4 s', '0.2 s'] },
 ];
 
 // ───────────── 正面 UI（暗色、大字） ─────────────
@@ -62,12 +63,12 @@ const FrontUI: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
     const caret = Math.floor(frame / 9) % 2 === 0;
     return (
       <div style={{ fontSize: 30, lineHeight: 1.42, color: ink2, fontWeight: 450 }}>
-        <div style={{ color: ink }}>Dear team, the launch is</div>
+        <div style={{ color: ink }}>Make a 30s launch film,</div>
         <div style={{ color: ink }}>
-          on track for Friday<span style={{ display: 'inline-block', width: 3, height: 34, verticalAlign: -6, background: caret ? GOLD : 'transparent', marginLeft: 2 }} />
+          open on a crash zoom<span style={{ display: 'inline-block', width: 3, height: 34, verticalAlign: -6, background: caret ? GOLD : 'transparent', marginLeft: 2 }} />
           <span style={{ color: alpha(ink, 0.32) }}> and</span>
         </div>
-        <div style={{ color: alpha(ink, 0.32) }}>every review is closed.</div>
+        <div style={{ color: alpha(ink, 0.32) }}>end on the logo sting.</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 26 }}>
           <div style={{ height: 40, padding: '0 14px', borderRadius: 10, boxShadow: `inset 0 0 0 2px ${alpha(ink, 0.22)}`, display: 'flex', alignItems: 'center', fontFamily: FONT.mono, fontSize: 22, fontWeight: 600, color: ink }}>Tab</div>
           <div style={{ fontSize: 24, color: ink3 }}>to accept</div>
@@ -82,9 +83,9 @@ const FrontUI: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
           {['#8a8f99', '#c9b48a', '#6f7480', '#a8acb4'].map((c, k) => (
             <div key={k} style={{ width: 48, height: 48, borderRadius: 24, background: c, marginLeft: k ? -12 : 0, boxShadow: `0 0 0 3px ${L.surface}` }} />
           ))}
-          <div style={{ marginLeft: 16, fontSize: 24, color: ink3 }}>Weekly sync · 42 min</div>
+          <div style={{ marginLeft: 16, fontSize: 24, color: ink3 }}>Recipe · crash zoom</div>
         </div>
-        {['Launch moves to Friday', 'Design signs off on v2', 'Ana owns the rollout'].map((t, k) => (
+        {['Push 1 → 1.6 in 6f', 'Blur rides the snap', 'Land on the downbeat'].map((t, k) => (
           <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: k ? 18 : 30 }}>
             <div style={{ width: 8, height: 8, borderRadius: 4, background: k === 0 ? GOLD : alpha(ink, 0.4) }} />
             <div style={{ fontSize: 30, color: ink, fontWeight: 500 }}>{t}</div>
@@ -97,9 +98,9 @@ const FrontUI: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
     <div>
       <div style={{ height: 70, borderRadius: 18, background: L.surface2, boxShadow: `inset 0 0 0 1.5px ${alpha(ink, 0.12)}`, display: 'flex', alignItems: 'center', gap: 14, padding: '0 22px' }}>
         <svg width={26} height={26} viewBox="0 0 26 26"><circle cx={11} cy={11} r={8} fill="none" stroke={ink2} strokeWidth={2.6} /><path d="M17 17l6 6" stroke={ink2} strokeWidth={2.6} strokeLinecap="round" /></svg>
-        <div style={{ fontSize: 30, color: ink, fontWeight: 500 }}>q3 roadmap</div>
+        <div style={{ fontSize: 30, color: ink, fontWeight: 500 }}>crash zoom</div>
       </div>
-      {[['Q3 Roadmap', 'Doc'], ['Roadmap review', 'Notes'], ['Q3 goals', 'Sheet']].map(([t, k2], k) => (
+      {[['Crash zoom punch', 'Card'], ['Zoom-through', 'Card'], ['Dolly zoom', 'Style']].map(([t, k2], k) => (
         <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: k ? 14 : 26, padding: '0 6px' }}>
           <div style={{ width: 36, height: 44, borderRadius: 7, background: alpha(ink, k === 0 ? 0.9 : 0.16) }} />
           <div style={{ fontSize: 28, color: k === 0 ? ink : ink2, fontWeight: k === 0 ? 650 : 450 }}>{t}</div>
@@ -176,7 +177,7 @@ const FlipCard: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
           </div>
           {/* 对照条：之前 / 用上之后（落定后才长出来） */}
           <div style={{ position: 'absolute', left: 40, right: 40, top: 112 }}>
-            {(['Before', 'With Quill'] as const).map((t, k) => {
+            {(['Before', `With ${BRAND.short}`] as const).map((t, k) => {
               const g = k === 0 ? 1 : ramp(frame, land + 4, 18, EASE.snappy);
               const w = k === 0 ? f.bars[0] : mix(f.bars[0], f.bars[1], g);
               return (
@@ -226,7 +227,7 @@ export const CardFlipReveal: React.FC = () => {
         {/* 标题 */}
         <div style={{ position: 'absolute', left: X0, top: 118, fontFamily: FONT.sans }}>
           <div style={{ ...type(26, 700, { caps: true }), color: GOLD, letterSpacing: '0.18em' }}>
-            <TextReveal text="Quill · Launch results" by="word" variant="blur" start={0} each={14} gap={2} />
+            <TextReveal text={`${BRAND.name} · Launch results`} by="word" variant="blur" start={0} each={14} gap={2} />
           </div>
           <div style={{ ...type(84, 760), color: L.ink, marginTop: 18 }}>
             <TextReveal text="Three features. Three outcomes." by="word" variant="rise" start={2} each={18} gap={2.5} />

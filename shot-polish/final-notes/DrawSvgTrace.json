@@ -1,0 +1,18 @@
+{
+  "stem": "DrawSvgTrace",
+  "changed": true,
+  "brand": [
+    "季度指标卡 → video-shotcraft 渲染报告卡：眉题「QUARTERLY REVIEW · Oct – Dec 2026」→「LAUNCH FILM · RENDER · v3 · 1080p30」",
+    "大标题「Revenue grew / 38%」→「Cuts on the beat / 100%」（四位数字号 212→188 给柱图留白），说明 →「Every cut snaps to the downbeat. Rendered by video-shotcraft.」",
+    "柱图「MRR · USD」+ 月份 J–D →「ENERGY · PER SHOT」+ 镜头 A–L",
+    "署名「MR 头像 · Maya Reyes · Finance」→ video-shotcraft 标志 + 字标「agent · rendered 2m ago」"
+  ],
+  "brandEn": [
+    "Quarterly metric card → a video-shotcraft render report: eyebrow \"QUARTERLY REVIEW · Oct – Dec 2026\" → \"LAUNCH FILM · RENDER · v3 · 1080p30\"",
+    "Headline \"Revenue grew / 38%\" → \"Cuts on the beat / 100%\" (number 212→188px so the four digits clear the chart); body → \"Every cut snaps to the downbeat. Rendered by video-shotcraft.\"",
+    "Chart \"MRR · USD\" with months J–D → \"ENERGY · PER SHOT\" with shots A–L",
+    "Byline \"MR avatar · Maya Reyes · Finance\" → video-shotcraft mark + wordmark, \"agent · rendered 2m ago\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

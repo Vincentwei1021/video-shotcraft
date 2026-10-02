@@ -1,0 +1,14 @@
+{
+  "stem": "OrbitRingTitleOpen",
+  "changed": true,
+  "brand": [
+    "副行「VIDEO-SHOTCRAFT · 216 SHOT CARDS」→ video-shotcraft 标志 + 小写字标 +「SHOT RECIPE CARDS」（去掉会过时的卡片数）",
+    "标题「让镜头卡替你想好 / 每一个动效」本就是 video-shotcraft 宣传语，保留"
+  ],
+  "brandEn": [
+    "Kicker “VIDEO-SHOTCRAFT · 216 SHOT CARDS” → video-shotcraft mark + lowercase wordmark + “SHOT RECIPE CARDS” (dropped the card count, which would go stale)",
+    "Headline “让镜头卡替你想好 / 每一个动效” already promotes video-shotcraft; kept"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

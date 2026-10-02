@@ -1,10 +1,10 @@
 // assemble-then-type-flyin — 先骨架后文字：页面"自己长出来"
 //
-// 第二轮重设计（石墨暗场 · 胶片金 · 调色软件发布页）：
-// - look = graphite（近单色暗场，accent2 胶片金作唯一强调色）。成形后的画面是虚构调色软件「Obscura 3」的
-//   发布页：玻璃导航条、112px 衬线大标题「Grade every frame / like it was film.」（film. 为金色斜体）、
-//   说明句、金色 CTA + 描边次按钮、三枚指标块；右侧是一张 640×760 的「调色台」卡（上半是一帧胶片画面，
-//   下半是 LIFT / GAMMA / GAIN 三只色轮）。
+// 第二轮重设计（石墨暗场 · 胶片金 · 发布页）：
+// - look = graphite（近单色暗场，accent2 胶片金作唯一强调色）。成形后的画面是 video-shotcraft 的
+//   发布页：玻璃导航条（镜刻标志 + video-shotcraft 字标）、112px 衬线大标题「Frame motion. / Craft the shot.」
+//   （shot. 为金色斜体）、说明句、金色 CTA + 描边次按钮、三枚指标块；右侧是一张 640×760 的「调色台」卡
+//   （上半是一帧胶片画面，下半是 LIFT / GAMMA / GAIN 三只色轮）。
 // - 两段式手法不变、维度分开：
 //   ① 骨架段 6–50f：10 个无字骨架件（框、色块、分隔线、色轮圈）从画外 120–420px 平面飞入，
 //      overshoot 过冲贴合 + ±7° 旋转回正，按真实速度给方向性运动模糊；开场画面里先有 12 栏版式参考线。
@@ -25,6 +25,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, ramp } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const ASSEMBLE_THEN_TYPE_FLYIN_DURATION = 168;
 
@@ -57,24 +58,24 @@ type Seg = { s: string; color?: string; italic?: boolean };
 type Block = { x: number; y: number; start: number; style: React.CSSProperties; segs: Seg[]; w?: number; align?: 'center' | 'right' };
 const MONO = FONT.mono;
 const BLOCKS: Block[] = [
-  { x: 120, y: 298, start: 58, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1 }, segs: [{ s: 'Grade every frame' }] },
-  { x: 120, y: 424, start: 66, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1, fontStyle: 'italic' }, segs: [{ s: 'like it was ' }, { s: 'film.', color: GOLD }] },
-  { x: 196, y: 82, start: 76, style: { ...type(34, 700), color: L.ink }, segs: [{ s: 'Obscura' }] },
-  { x: 1060, y: 86, start: 79, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Features' }] },
-  { x: 1215, y: 86, start: 80, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Film stocks' }] },
-  { x: 1405, y: 86, start: 81, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Pricing' }] },
-  { x: 1574, y: 86, w: 202, align: 'center', start: 84, style: { ...type(28, 650), color: L.ink }, segs: [{ s: 'Download' }] },
-  { x: 120, y: 246, start: 86, style: { fontFamily: MONO, fontSize: 24, fontWeight: 600, letterSpacing: '0.12em', color: GOLD }, segs: [{ s: 'OBSCURA 3 · PUBLIC BETA' }] },
-  { x: 120, y: 604, start: 88, style: { ...type(36, 400), color: L.ink2 }, segs: [{ s: 'Print-film color science for any timeline.' }] },
-  { x: 120, y: 719, w: 320, align: 'center', start: 92, style: { ...type(32, 650), color: '#16120a' }, segs: [{ s: 'Start grading' }] },
-  { x: 466, y: 719, w: 320, align: 'center', start: 95, style: { ...type(32, 550), color: L.ink }, segs: [{ s: 'Watch the film' }] },
-  { x: 150, y: 862, start: 96, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '12-bit' }] },
-  { x: 488, y: 862, start: 99, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '4K 120' }] },
-  { x: 826, y: 862, start: 102, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '0.8 ms' }] },
-  { x: 150, y: 934, start: 104, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'COLOR PIPELINE' }] },
-  { x: 488, y: 934, start: 106, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'LIVE PLAYBACK' }] },
-  { x: 826, y: 934, start: 108, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'PER FRAME' }] },
-  { x: 1196, y: 252, start: 110, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.1em', color: alpha('#ffffff', 0.85) }, segs: [{ s: 'FRAME 0412 · OB-50' }] },
+  { x: 120, y: 298, start: 58, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1 }, segs: [{ s: 'Frame motion.' }] },
+  { x: 120, y: 424, start: 66, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1, fontStyle: 'italic' }, segs: [{ s: 'Craft the ' }, { s: 'shot.', color: GOLD }] },
+  { x: 196, y: 82, start: 76, style: { ...type(34, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }, segs: [{ s: BRAND.name }] },
+  { x: 1104, y: 86, start: 79, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Shots' }] },
+  { x: 1224, y: 86, start: 80, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Workbench' }] },
+  { x: 1414, y: 86, start: 81, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Gallery' }] },
+  { x: 1574, y: 86, w: 202, align: 'center', start: 84, style: { ...type(28, 650), color: L.ink }, segs: [{ s: 'Install' }] },
+  { x: 120, y: 246, start: 86, style: { fontFamily: MONO, fontSize: 24, fontWeight: 600, letterSpacing: '0.12em', color: GOLD }, segs: [{ s: 'AGENT SKILL · BUILT ON REMOTION' }] },
+  { x: 120, y: 604, start: 88, style: { ...type(36, 400), color: L.ink2 }, segs: [{ s: 'Cinematic product videos, crafted by your agent.' }] },
+  { x: 120, y: 719, w: 320, align: 'center', start: 92, style: { ...type(32, 650), color: '#16120a' }, segs: [{ s: 'Make a promo' }] },
+  { x: 466, y: 719, w: 320, align: 'center', start: 95, style: { ...type(32, 550), color: L.ink }, segs: [{ s: 'Watch the reel' }] },
+  { x: 150, y: 862, start: 96, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '1 prompt' }] },
+  { x: 488, y: 862, start: 99, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '2.5D' }] },
+  { x: 826, y: 862, start: 102, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '30 fps' }] },
+  { x: 150, y: 934, start: 104, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'TO A FULL PROMO' }] },
+  { x: 488, y: 934, start: 106, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'CAMERA MOVES' }] },
+  { x: 826, y: 934, start: 108, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'BEAT-SYNCED CUTS' }] },
+  { x: 1196, y: 252, start: 110, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.1em', color: alpha('#ffffff', 0.85) }, segs: [{ s: 'SHOT 04 · DOLLY IN' }] },
   { x: 1160, y: 908, w: 213, align: 'center', start: 112, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'LIFT' }] },
   { x: 1373, y: 908, w: 214, align: 'center', start: 113, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'GAMMA' }] },
   { x: 1587, y: 908, w: 213, align: 'center', start: 114, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'GAIN' }] },
@@ -227,12 +228,8 @@ export const AssembleThenTypeFlyin: React.FC = () => {
           }} />,
         )}
         {shelled(SH.logo, { left: 140, top: 84, width: 40, height: 40 },
-          [0, 1, 2, 3].map((i) => (
-            <div key={i} style={{
-              position: 'absolute', width: 16, height: 16, borderRadius: 8, left: (i % 2) * 24, top: (i >> 1) * 24,
-              background: i === 3 ? GOLD : L.ink, boxShadow: i === 3 ? `0 0 10px ${alpha(GOLD, 0.6)}` : 'none',
-            }} />
-          )),
+          // 品牌标志（镜刻）：作为一件无字骨架件飞入，暗底反白版
+          <ShotcraftMark size={40} tone="dark" />,
         )}
         {shelled(SH.card, { ...PANEL, left: 1160, top: 220, width: 640, height: 760, borderRadius: 30, overflow: 'hidden' }, <>
           <div style={{ position: 'absolute', left: 0, top: 0, width: 640, height: 500, overflow: 'hidden' }}>

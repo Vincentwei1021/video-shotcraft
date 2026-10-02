@@ -24,13 +24,13 @@ name: outline-word-fill
   8–18f 淡入，`scale 2.8 → 1` 在 8–52f 慢收（EASE.out，**44f，全片最慢的一条曲线**）；主圈 0.22°/f 自转，
   点亮那一刻刹停（"锁定"），内圈继续慢转让 hold 段画面仍在呼吸
 - 左右水平虚线（`dasharray 14 12`）：28–46f 从画框边缘内伸到圆边外 28px，线端带准星点；
-  线上方 mono 读数「BEFORE 38 ms」/「AFTER 4 ms」——把"更快"讲成一组前后对比数据
+  线上方 mono 读数「BEFORE 1 week」/「AFTER 4 hrs」——把"更快"讲成一组前后对比数据（手 K 一周 vs video-shotcraft 一下午出片）
 - 描边预热：44–53f 暖灰 → 亮橙白并带一点外发光，给硬切一个"充能"前奏
 - **瞬时填充**：第 54 帧 `lit = frame >= 54 ? 1 : 0`，solid 与 outline 透明度硬切，不存在中间态；
   同帧圆 / 水平线锁定成橙色、右侧读数变橙
 - 一闪即逝的辉光：`flash = lit · (1 − ramp(f, 54, 8))`，白 14px + 橙 60px 两层 text-shadow，8f 衰完后
   只留极弱橙晕；一道冲击环从圆边外扩 160px、14f 消散（只此一次）；舞台主光同步脉冲一下
-- 落定：56–70f 圆内眉题（mono caps）/ 副行（40px）升起，70–90f hold，全程极缓推进 1→1.015
+- 落定：56–70f 圆内眉题（小号 video-shotcraft 标志 + 全小写 mono 字标）/ 副行（40px，"One prompt to a finished promo."）升起，70–90f hold，全程极缓推进 1→1.015
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |

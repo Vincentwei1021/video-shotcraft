@@ -16,6 +16,7 @@ import { AbsoluteFill } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { DesignStage, E, rand, seg, useT } from '../../_fixtures/Motion';
 import { bezier, Backdrop, FONT, Grain } from '../../_fixtures/Polish';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const FRACTURE_DURATION = 156; // 5200ms @30fps
 
@@ -69,7 +70,7 @@ const TILES = Array.from({ length: N * N }, (_, seed) => {
   };
 });
 
-// 海报上的字：眉题 + 主标题（印在海报上，随瓦片切片）
+// 海报上的字：眉题 + video-shotcraft 字标（标志 + 小写字标；印在海报上，随瓦片切片）
 const PosterType: React.FC<{ on: number }> = ({ on }) => (
   <div
     style={{
@@ -83,6 +84,9 @@ const PosterType: React.FC<{ on: number }> = ({ on }) => (
       alignItems: 'center',
       justifyContent: 'center',
       gap: 6,
+      // 底部垫 16（= 眉题高 + gap）：字标中心正落在第 3 行瓦片中心（y=115），标志不被横向拼缝切开
+      paddingBottom: 16,
+      boxSizing: 'border-box',
       fontFamily: FONT.sans,
       color: '#f3f5fb',
       opacity: on,
@@ -91,9 +95,8 @@ const PosterType: React.FC<{ on: number }> = ({ on }) => (
     <div style={{ fontSize: 8.5, fontWeight: 600, letterSpacing: '0.24em', color: `hsla(${h},70%,86%,0.85)` }}>
       INTRODUCING
     </div>
-    <div style={{ fontSize: 27, fontWeight: 700, letterSpacing: '-0.035em', lineHeight: 1.05, whiteSpace: 'nowrap' }}>
-      Every piece, in place.
-    </div>
+    {/* 字号 22 时整行居中，标志恰好落在第 2 列瓦片内（x≈76–119），不跨竖向拼缝 */}
+    <ShotcraftWordmark size={22} tone="dark" gap={9} />
   </div>
 );
 

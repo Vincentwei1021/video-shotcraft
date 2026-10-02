@@ -20,12 +20,13 @@
 //   10–40   上行逐字解糊下沉（错峰 1f）
 //   18–52   下行大字逐字解糊下沉（错峰 2f，更重更慢）
 //   50–64   荧光马克块横扫（弹簧，damping 20），扫过处字反白为墨
-//   60–76   mono 副行浮出
+//   60–76   副行（标志 + video-shotcraft + mono 代号）浮出
 //   76–150  hold：环持续匀速公转 + 整体极缓推近 2.5%；最后 2.5s 是一张完整海报
 import React from 'react';
 import { AbsoluteFill, Easing, Freeze, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const ORBIT_RING_TITLE_OPEN_DURATION = 150; // 5s @30fps
 
@@ -50,7 +51,8 @@ const LINE2 = '每一个动效';
 const S1 = 64;
 const S2 = 156;
 const MARKER_AT = 50; // 下行末字视觉到位那一刻起扫
-const KICKER = 'VIDEO-SHOTCRAFT  ·  216 SHOT CARDS';
+// 副行 = video-shotcraft 标志 + 小写字标 + mono 产品代号（不写卡片数：会过时）
+const KICKER = 'SHOT RECIPE CARDS';
 const HANDOFF_EXIT = false; // true = 末段整行失焦淡出、环继续转着交棒下一镜（成片里接下一镜时打开）
 const EXIT_AT = 118;
 
@@ -372,9 +374,14 @@ export const OrbitRingTitleOpen: React.FC = () => {
             <span aria-hidden style={{ position: 'absolute', left: 0, top: 0, display: 'inline-block', clipPath: `inset(-20% ${clipR}% -20% 0)` }}>{line2(L.onAccent)}</span>
           </div>
           <div style={{
-            marginTop: 40, fontFamily: MONO, fontSize: 30, fontWeight: 600, letterSpacing: '0.2em', color: DIM, whiteSpace: 'pre',
+            marginTop: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, whiteSpace: 'pre',
             opacity: kickerIn, transform: `translateY(${((1 - kickerIn) * 12).toFixed(2)}px)`,
-          }}>{KICKER}</div>
+          }}>
+            <ShotcraftMark size={44} tone="dark" />
+            <span style={{ fontFamily: BRAND.font, fontSize: 30, fontWeight: 700, letterSpacing: '0.03em', color: INK, lineHeight: 1 }}>{BRAND.name}</span>
+            <span style={{ fontFamily: MONO, fontSize: 26, fontWeight: 600, color: DIM, lineHeight: 1 }}>·</span>
+            <span style={{ fontFamily: MONO, fontSize: 26, fontWeight: 600, letterSpacing: '0.2em', marginRight: '-0.2em', color: DIM, lineHeight: 1 }}>{KICKER}</span>
+          </div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

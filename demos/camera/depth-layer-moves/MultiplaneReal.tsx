@@ -8,7 +8,7 @@
 //   远景：整页截图缩小一档、退焦 5px、降饱和、上浓下淡的暖色空气薄雾（退成环境）；
 //   中景：10 张真实项目卡（440px，主阅读层，绝对清晰，两层暖色软影落在"桌面"上）；
 //   近景：5 枚放大的赤陶 / 墨色标签胶囊（取自卡上的真实标签）掠过镜头，景深虚化 + 按速度横向拖影。
-// - 固定在画框上的字（0x 层）：左上眉题 + 120px 标题「Ten bets. One lab.」+ 副句，是全片的静止参照——
+// - 固定在画框上的字（0x 层）：左上眉题（video-shotcraft 标志 + 名字）+ 120px 标题「Your page, in depth.」+ 副句，是全片的静止参照——
 //   字不动、世界在动，视差反而更好读。
 // - 滑轨有终点：drive 落定时 card4 恰好停在画面中央，随后浮起（elevation 6→26、1.035x）+ 赤陶描边 +
 //   「In focus」角标，尾帧是一张完整海报。
@@ -24,6 +24,7 @@ import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
 import layout from '../../_textures/live-layout.json';
 import { EASE, SpeedBlur, bezier, mix, ramp, softShadow, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const MULTIPLANE_DUR = 165;
 
@@ -120,15 +121,17 @@ export const MultiplaneReal: React.FC = () => {
       {/* 0x 层：固定在画框上的标题 */}
       <div style={{ position: 'absolute', left: 120, top: 96 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, ...type(22, 700, { caps: true }), letterSpacing: `${mix(0.5, 0.18, kick).toFixed(3)}em`, color: L.accent, opacity: kick }}>
+          <ShotcraftMark size={34} tone="light" />
+          <span style={{ textTransform: 'none', fontFamily: BRAND.font, fontSize: 26, fontWeight: 700, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
           <span style={{ width: 28, height: 2, background: L.accent }} />
-          AI Field Lab · All projects
+          2.5D camera moves
         </div>
         <div style={{ marginTop: 18, ...type(120, 760), color: L.ink }}>
-          <TextReveal text="Ten bets. One lab." by="word" variant="rise" start={8} each={20} gap={4} />
+          <TextReveal text="Your page, in depth." by="word" variant="rise" start={8} each={20} gap={4} />
         </div>
       </div>
       <div style={{ position: 'absolute', right: 120, top: 196, width: 520, textAlign: 'right', ...type(34, 450), lineHeight: 1.35, color: L.ink2, opacity: sub, transform: `translateY(${((1 - sub) * 14).toFixed(1)}px)` }}>
-        Every experiment the team is running, side by side.
+        Screenshots, split into layers and flown in 2.5D.
       </div>
     </AbsoluteFill>
   );

@@ -1,0 +1,18 @@
+{
+  "stem": "OverheadTabletopDrop",
+  "changed": true,
+  "brand": [
+    "三页官网的「Fieldwork」圆点方块 logo + 名字 → video-shotcraft 标志 + 字标；导航 CTA「Get early access」→「View on GitHub」",
+    "首页海报：「Introducing Fieldwork 2 / Plan the work. Not the meeting.」→「For Claude Code & Codex / Frame motion. Craft the shot.」，副标题换成品牌 tagline，按钮「Get the skill」",
+    "首页产品图：周日程 → 「Launch film」分镜板（Open/Hook/Demo/Proof/Outro × 镜头块），金色「Launch review」块 →「Hero shot · 120f」",
+    "定价页 → 镜头库页「Pick a shot.」（Crash zoom / Drone dive / Whip pan 三张配方卡）；更新日志换成 Motion workbench / JianYing export / Beat-synced cuts；桌面标签 01 PRICING → 01 SHOTS"
+  ],
+  "brandEn": [
+    "\"Fieldwork\" logo + name on all three pages → video-shotcraft mark + wordmark; nav CTA \"Get early access\" → \"View on GitHub\"",
+    "Home poster: \"Introducing Fieldwork 2 / Plan the work. Not the meeting.\" → \"For Claude Code & Codex / Frame motion. Craft the shot.\", brand tagline as subhead, button \"Get the skill\"",
+    "Home product shot: weekly planner → \"Launch film\" storyboard (Open/Hook/Demo/Proof/Outro × shot blocks); gold \"Launch review\" block → \"Hero shot · 120f\"",
+    "Pricing page → shot library \"Pick a shot.\" (Crash zoom / Drone dive / Whip pan recipe cards); changelog → Motion workbench / JianYing export / Beat-synced cuts; desk tag 01 PRICING → 01 SHOTS"
+  ],
+  "styleKey": "overhead-tabletop-drop",
+  "mdChanged": true
+}

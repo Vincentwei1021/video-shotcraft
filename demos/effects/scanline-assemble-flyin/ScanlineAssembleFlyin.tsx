@@ -5,8 +5,8 @@
 // - look = midnight（深蓝 · 电光蓝 · 青）。画面是一张 1640×860 的蓝图画板：120px 主网格 + 24px 细网格、
 //   画板尺寸标注、每个组件的虚线槽位（带「NAV 1640×96」类小标）——第 1 帧就有完整的"施工图"，不是空黑屏。
 // - 扫描线是施工进度条：电光蓝光芯 + 身后被"刷出来"的页面底色（扫过之处蓝图变成真实页面表面）+ 网格余晖。
-// - 七个组件为镜头设计：虚构天文摄影 App「Umbra」的落地页——导航、徽章、120px 两行 H1（渐变强调词）、
-//   正文、CTA、程序化银河照片卡（确定性星点 + 银河带 + 山脊剪影）、三项数据。各自从所在方位的画外飞入：
+// - 七个组件为镜头设计：video-shotcraft 的落地页——导航（镜刻标志 + 字标）、徽章、120px 两行 H1「Shoot the / launch film.」
+//  （渐变强调词）、正文、CTA、样片镜头卡（程序化银河：确定性星点 + 银河带 + 山脊剪影）、三项数据。各自从所在方位的画外飞入：
 //   位移 380–900px、±2–7° 起始旋转，EASE.overshoot 过冲贴合；飞行中按速度沿方向 SpeedBlur，落定清零。
 // - 落定后：槽位虚线消失、四角咬合角标 2→12f 闪现收掉；全部装完后蓝图网格退到 30%、银河卡亮起，
 //   状态行停表「BUILT IN 2.9 s」。全程 1.000→1.03 极缓推镜。
@@ -21,6 +21,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, glow } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const SCANLINE_ASSEMBLE_FLYIN_DURATION = 156;
 
@@ -87,18 +88,16 @@ const BAND = Array.from({ length: 320 }, (_, i) => {
 // ───────────── 组件内容 ─────────────
 const Nav: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 72px', borderBottom: `1px solid ${L.line}`, fontFamily: FONT.sans }}>
-    <svg width={40} height={40} viewBox="0 0 40 40">
-      <circle cx={20} cy={20} r={17} fill="none" stroke={L.ink} strokeWidth={3} />
-      <path d="M20 3 A17 17 0 0 1 20 37 Z" fill={L.ink} />
-    </svg>
-    <div style={{ marginLeft: 14, font: `800 36px ${FONT.sans}`, letterSpacing: '-0.04em', color: L.ink }}>Umbra</div>
+    {/* 镜刻标志（暗底反白版；svg 四周 16/128 留白，左移 7px 让可见框对齐 72）+ 字标 */}
+    <ShotcraftMark size={56} tone="dark" style={{ marginLeft: -7 }} />
+    <div style={{ marginLeft: 10, font: `700 32px ${BRAND.font}`, letterSpacing: '0.01em', color: L.ink, whiteSpace: 'nowrap' }}>{BRAND.name}</div>
     <div style={{ marginLeft: 'auto', display: 'flex', gap: 44, font: `550 26px ${FONT.sans}`, color: L.ink2 }}>
-      <span>Features</span>
+      <span>Recipes</span>
       <span>Gallery</span>
-      <span>Pricing</span>
+      <span>Docs</span>
     </div>
     <div style={{ marginLeft: 48, height: 52, padding: '0 26px', borderRadius: 26, background: alpha(L.ink, 0.08), border: `1px solid ${alpha(L.ink, 0.16)}`, display: 'flex', alignItems: 'center', font: `650 24px ${FONT.sans}`, color: L.ink }}>
-      Get the app
+      Get the skill
     </div>
   </div>
 );
@@ -106,7 +105,7 @@ const Nav: React.FC = () => (
 const Badge: React.FC = () => (
   <div style={{ position: 'absolute', left: 0, top: 0, height: 56, padding: '0 24px 0 18px', borderRadius: 28, display: 'flex', alignItems: 'center', gap: 14, background: alpha(L.accent2, 0.1), border: `1px solid ${alpha(L.accent2, 0.35)}`, font: `600 26px ${FONT.sans}`, color: L.ink, whiteSpace: 'nowrap' }}>
     <span style={{ padding: '4px 10px', borderRadius: 8, background: L.accent2, color: L.onAccent, font: `750 20px ${MONO}`, letterSpacing: '0.06em' }}>NEW</span>
-    Deep-sky mode
+    Motion workbench
   </div>
 );
 
@@ -114,20 +113,20 @@ const H1: React.FC = () => (
   <div style={{ position: 'absolute', left: -4, top: 0, font: `820 120px ${FONT.sans}`, letterSpacing: '-0.048em', lineHeight: 1.02, color: L.ink, whiteSpace: 'nowrap' }}>
     Shoot the
     <br />
-    <span style={{ backgroundImage: `linear-gradient(90deg, ${L.accent} 0%, #9db8ff 55%, ${L.accent2} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>Milky Way.</span>
+    <span style={{ backgroundImage: `linear-gradient(90deg, ${L.accent} 0%, #9db8ff 55%, ${L.accent2} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>launch film.</span>
   </div>
 );
 
 const Body: React.FC = () => (
   <div style={{ position: 'absolute', left: 0, top: 0, width: 760, font: `450 34px ${FONT.sans}`, lineHeight: 1.36, color: L.ink2, letterSpacing: '-0.012em' }}>
-    Stack 300 exposures on your phone. Umbra lines up every star for you.
+    One prompt to a finished promo. Your agent lines up every cut for you.
   </div>
 );
 
 const Cta: React.FC = () => (
   <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', alignItems: 'center', gap: 34, fontFamily: FONT.sans }}>
     <div style={{ height: 76, padding: '0 38px', borderRadius: 38, background: `linear-gradient(180deg, #7aa2ff 0%, ${L.accent} 100%)`, color: L.onAccent, display: 'flex', alignItems: 'center', font: `700 30px ${FONT.sans}`, letterSpacing: '-0.01em', boxShadow: `0 14px 34px -12px ${alpha(L.accent, 0.8)}, inset 0 1px 0 rgba(255,255,255,0.45)` }}>
-      Download free
+      Start shooting
     </div>
     <div style={{ font: `600 30px ${FONT.sans}`, color: L.ink, display: 'flex', alignItems: 'center', gap: 12 }}>
       <svg width={30} height={30} viewBox="0 0 30 30"><circle cx={15} cy={15} r={13.5} fill="none" stroke={L.ink2} strokeWidth={2} /><path d="M12 9.5 L20.5 15 L12 20.5 Z" fill={L.ink} /></svg>
@@ -154,7 +153,7 @@ const Media: React.FC<{ lit: number }> = ({ lit }) => (
       <path d="M0 470 L70 430 L120 446 L190 392 L250 428 L320 380 L380 420 L440 398 L520 440 L580 418 L628 436" fill="none" stroke={alpha('#9db8ff', 0.35)} strokeWidth={1.5} />
     </svg>
     <div style={{ position: 'absolute', left: 26, bottom: 24, padding: '8px 14px', borderRadius: 10, background: alpha('#0b1226', 0.7), border: `1px solid ${L.line}`, font: `600 22px ${MONO}`, color: L.ink2 }}>
-      300 × 8s · ISO 3200
+      SHOT 04 · 2.5D push-in · 120f
     </div>
   </div>
 );
@@ -162,9 +161,9 @@ const Media: React.FC<{ lit: number }> = ({ lit }) => (
 const Stats: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, borderTop: `1px solid ${L.line}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: 18, paddingRight: 24 }}>
     {[
-      ['300', 'exposures, stacked'],
-      ['4.2 s', 'to align a sky'],
-      ['0', 'tripods required'],
+      ['1', 'prompt to a promo'],
+      ['30 fps', 'Remotion render'],
+      ['0', 'keyframes by hand'],
     ].map(([n, l], i) => (
       <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
         <span style={{ font: `780 52px ${FONT.sans}`, letterSpacing: '-0.04em', color: i === 0 ? L.accent : L.ink, fontVariantNumeric: 'tabular-nums' }}>{n}</span>
@@ -251,7 +250,7 @@ export const ScanlineAssembleFlyin: React.FC = () => {
           <span style={{ color: done > 0.5 ? L.accent2 : L.accent, letterSpacing: '0.06em', textShadow: done > 0.5 ? glow(L.accent2, 0.5) : 'none' }}>
             {done > 0.5 ? '✓ BUILT' : '▸ BUILDING'}
           </span>
-          <span style={{ marginLeft: 18, color: L.ink3, fontWeight: 500 }}>umbra.app / index</span>
+          <span style={{ marginLeft: 18, color: L.ink3, fontWeight: 500 }}>video-shotcraft / index</span>
           <span style={{ marginLeft: 'auto', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
             <span style={{ color: L.ink3, fontWeight: 500 }}>BLOCKS </span>
             <span style={{ color: placed === PLAN.length ? L.accent2 : L.ink }}>{String(placed).padStart(2, '0')}</span>

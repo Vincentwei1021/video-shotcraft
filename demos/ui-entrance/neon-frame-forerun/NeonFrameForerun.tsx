@@ -6,7 +6,7 @@
 //   两颗白热亮头从左缘中点出发，加速—制动地沿上下两路奔跑，在右缘中点相撞闪一下。
 // - 背景不再是随机斜框：是同一个框在纵深里的 7 层回声（translateZ 递退、逐层放大），组成一条通往页面的霓虹隧道——
 //   框一合拢，隧道由近到远逐层"打火"亮起（荧光管启辉的确定性闪烁）；终段从隧道中段先熄、再向两端熄灭，把亮度让给主角。
-// - 页面是"为镜头设计"的工作台首页：只留品牌 / 4 项导航 / 64px 问候 / 3 张大数字卡 / 4 行任务，字号 ≥30px。
+// - 页面是"为镜头设计"的 video-shotcraft 工作台首页：只留品牌 / 4 项导航 / 64px 问候 / 3 张大数字卡 / 4 行镜头任务，字号 ≥30px。
 //   组件真的在 3D 里悬空（preserve-3d + translateZ 110–170px），面板上落同形软影（越高越大越虚越淡），
 //   按"侧栏自上而下 → 主区自上而下"错峰贴落；贴落进程与页面点亮同步推进、晚 ~20f 收尾。
 // - 机位：强透视斜置（rotateY -30°）开场，随页面点亮缓和到 -12°（EASE.out 长减速），hold 段继续极缓转 1.5°。
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const NEON_FRAME_FORERUN_DURATION = 140;
 
@@ -76,13 +77,13 @@ const Icon: React.FC<{ k: number; c: string; s?: number }> = ({ k, c, s = 30 }) 
   );
 };
 
-const NAV = ['Home', 'Inbox', 'My tasks', 'Goals'];
-const STATS: [string, string, string][] = [['Due today', '6', '2 overdue'], ['In review', '3', 'Avg. 4h'], ['Shipped this week', '24', '+38%']];
+const NAV = ['Home', 'Inbox', 'My shots', 'Renders'];
+const STATS: [string, string, string][] = [['Shots today', '6', '2 to tune'], ['Rendering', '3', 'Avg. 4m'], ['Films this week', '24', '+38%']];
 const TASKS: [string, string, string, string][] = [
-  ['Finalize pricing tiers', '#e5484d', 'Today', 'DW'],
-  ['Ship onboarding emails', '#f5a524', 'In progress', 'MK'],
-  ['QA payment flow on mobile', '#e5484d', 'Blocked', 'JS'],
-  ['Record product walkthrough', '#7c5cf0', 'Fri', 'AL'],
+  ['Add shot: crash zoom', '#e5484d', 'Today', 'DW'],
+  ['Sync cuts to the beat', '#f5a524', 'In progress', 'MK'],
+  ['Capture the pricing page', '#e5484d', 'Blocked', 'JS'],
+  ['Render launch film', '#7c5cf0', 'Fri', 'AL'],
 ];
 
 type Part = { key: string; x: number; y: number; w: number; land: number; H: number; node: React.ReactNode };
@@ -91,10 +92,11 @@ type Part = { key: string; x: number; y: number; w: number; land: number; H: num
 const PARTS: Part[] = (() => {
   const parts: Part[] = [];
   parts.push({
-    key: 'brand', x: 40, y: 44, w: 260, land: 0.0, H: 150, node: (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ width: 52, height: 52, borderRadius: 15, background: `linear-gradient(150deg, #9d82ff, ${ACC})`, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 12px rgba(124,92,240,0.35)', color: '#fff', fontWeight: 800, fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>N</div>
-        <div style={{ fontSize: 32, fontWeight: 700, color: INK, letterSpacing: '-0.02em' }}>Northwind</div>
+    key: 'brand', x: 40, y: 44, w: 280, land: 0.0, H: 150, node: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* 品牌：镜刻标志（亮底版）+ video-shotcraft 字标 */}
+        <ShotcraftMark size={48} tone="light" />
+        <div style={{ fontFamily: BRAND.font, fontSize: 25, fontWeight: 700, color: INK, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>{BRAND.name}</div>
       </div>
     ),
   });

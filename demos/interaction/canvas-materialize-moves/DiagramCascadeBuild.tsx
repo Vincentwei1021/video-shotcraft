@@ -4,7 +4,7 @@
 // 第二轮重设计（极光暗场 · AI 画布"一句话长出一棵树"）：
 // - look = aurora（深紫夜 · 紫粉光）。主角是"生长"本身：每条连线都带一颗发光的彗星头领跑，
 //   线头到达子端口的那一帧子节点才从端口处"被拉出来"（缩放原点 = 节点顶边中点）——线牵节点，因果可见。
-// - 生成源头清楚：prompt 条（虚构产品 Arbor 的 AI 命令条，36px 大字）提交后描边变成流动的紫粉渐变（生成中），
+// - 生成源头清楚：prompt 条（video-shotcraft 的 AI 命令条，36px 大字）提交后描边变成流动的紫粉渐变（生成中），
 //   从 prompt 条底部先滴下一条线接到根节点——树是从这句话里长出来的；生成完毕描边落定、右侧状态变成"7 tables"。
 // - 节点做成为镜头设计的 ER 表卡：34px 表名 + 两行 mono 字段（PK/FK 小签），根节点用渐变描边当主角；
 //   其余是带色相的深紫玻璃面板 + 发丝线 + 顶部内高光 + 两层软阴影。
@@ -13,7 +13,7 @@
 //
 // 时间表（30fps，共 180f）：
 //   0–10    舞台 + prompt 条落下（空条 + 光标闪）
-//   8–44    打字 "Map the data model for our SaaS"（每字 1–2f 不均匀，像真人敲）
+//   8–44    打字 "Map the data model for Shotcraft"（每字 1–2f 不均匀，像真人敲）
 //   46–50   敲完：描边转紫确认；48f 按下提交键（scale 0.9 → 回弹）
 //   50–136  生成中：描边流光；50f 起相机 1.3→1.0 拉远（smooth，72f），prompt 条从画面中心升到顶部
 //   54      prompt 底部滴线 → 62f 根节点从端口拉出（spring damping 14）
@@ -32,7 +32,7 @@ const L = LOOKS.aurora;
 const A1 = L.accent; // 紫
 const A2 = L.accent2; // 粉（点缀：渐变另一端）
 
-const PROMPT = 'Map the data model for our SaaS';
+const PROMPT = 'Map the data model for Shotcraft'; // 与原句同节奏：提交帧仍是 50f
 const TYPE_START = 8;
 // 每个字符的敲击间隔（帧）：确定性"人手节奏"——词间空格多停半拍
 const charGap = (i: number) => (PROMPT[i] === ' ' ? 1.7 : 0.95 + 0.25 * Math.abs(Math.sin(i * 2.17)));
@@ -53,13 +53,14 @@ const NODE_H = 158;
 type Field = [string, string, '' | 'PK' | 'FK'];
 type Node = { id: number; x: number; y: number; level: number; parent: number; name: string; fields: Field[] };
 const NODES: Node[] = [
-  { id: 0, x: 960, y: 372, level: 0, parent: -1, name: 'Organization', fields: [['id', 'uuid', 'PK'], ['slug', 'text', '']] },
-  { id: 1, x: 540, y: 608, level: 1, parent: 0, name: 'Team', fields: [['id', 'uuid', 'PK'], ['org_id', 'uuid', 'FK']] },
-  { id: 2, x: 1380, y: 608, level: 1, parent: 0, name: 'Subscription', fields: [['id', 'uuid', 'PK'], ['org_id', 'uuid', 'FK']] },
-  { id: 3, x: 320, y: 852, level: 2, parent: 1, name: 'Member', fields: [['team_id', 'uuid', 'FK'], ['role', 'enum', '']] },
-  { id: 4, x: 760, y: 852, level: 2, parent: 1, name: 'Project', fields: [['team_id', 'uuid', 'FK'], ['due_at', 'date', '']] },
-  { id: 5, x: 1160, y: 852, level: 2, parent: 2, name: 'Invoice', fields: [['sub_id', 'uuid', 'FK'], ['total', 'money', '']] },
-  { id: 6, x: 1600, y: 852, level: 2, parent: 2, name: 'Plan', fields: [['id', 'uuid', 'PK'], ['seats', 'int', '']] },
+  // video-shotcraft 自己的数据模型：成片工程 → 分镜 / 渲染任务 → 镜头、配方卡、输出、预设
+  { id: 0, x: 960, y: 372, level: 0, parent: -1, name: 'Project', fields: [['id', 'uuid', 'PK'], ['title', 'text', '']] },
+  { id: 1, x: 540, y: 608, level: 1, parent: 0, name: 'Storyboard', fields: [['id', 'uuid', 'PK'], ['proj_id', 'uuid', 'FK']] },
+  { id: 2, x: 1380, y: 608, level: 1, parent: 0, name: 'RenderJob', fields: [['id', 'uuid', 'PK'], ['proj_id', 'uuid', 'FK']] },
+  { id: 3, x: 320, y: 852, level: 2, parent: 1, name: 'Shot', fields: [['board_id', 'uuid', 'FK'], ['frames', 'int', '']] },
+  { id: 4, x: 760, y: 852, level: 2, parent: 1, name: 'Recipe', fields: [['shot_id', 'uuid', 'FK'], ['move', 'enum', '']] },
+  { id: 5, x: 1160, y: 852, level: 2, parent: 2, name: 'Output', fields: [['job_id', 'uuid', 'FK'], ['codec', 'text', '']] },
+  { id: 6, x: 1600, y: 852, level: 2, parent: 2, name: 'Preset', fields: [['id', 'uuid', 'PK'], ['fps', 'int', '']] },
 ];
 const PROMPT_Y = 96; // prompt 条顶
 const PROMPT_H = 100;

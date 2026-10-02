@@ -7,8 +7,8 @@
 // - 叙事：慢爬顶到旧上限（虚线 "Old limit"（140k） 横在窗口正上方，读数被压在 122 停住）→ 升级生效，
 //   旧上限线断开淡出 → 预备回拉一下 → 刻度带冲刺（峰值 ~100px/f，按速度纵向运动模糊）→ 冲过 444 →
 //   弹簧刹车回摆到 416 → 落定 420，新上限标记（钴蓝三角 bug）恰好停进指针。
-// - 左侧排版：品牌眉题 + 84px 标题 "Rate limit"，落定后第二行 "tripled." 钴蓝升起（结论晚于数据到），
-//   再弹出 "▲ 200%" 胶囊 + "140k → 420k" 等宽小结。品牌 Tideway（虚构）。
+// - 左侧排版：品牌眉题（video-shotcraft · frames / hour）+ 124px 标题 "Throughput"，落定后第二行 "tripled." 钴蓝升起
+//   （结论晚于数据到），再弹出 "▲ 200%" 胶囊 + "140k → 420k" 等宽小结。
 //
 // 时间表（30fps，共 150f）：
 //   0–14    预备：舞台、刻度带停在 60、标题第一行升起
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, spring, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, bezier, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const TAPE_SCROLL_FIXED_POINTER_DURATION = 150;
 
@@ -190,10 +191,10 @@ export const TapeScrollFixedPointer: React.FC = () => {
       <div style={{ position: 'absolute', left: 150, top: 300, width: 760 }}>
         <div style={{ ...type(26, 650, { caps: true }), letterSpacing: '0.24em', color: L.accent, opacity: head, display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ width: 36, height: 3, background: L.accent, borderRadius: 2 }} />
-          Tideway API · requests / min
+          <span><span style={{ fontFamily: BRAND.font, fontWeight: 700, textTransform: 'none', letterSpacing: '0.03em' }}>{BRAND.name}</span> · frames / hour</span>
         </div>
         <div style={{ marginTop: 34, ...type(124, 750), color: L.ink }}>
-          <TextReveal text="Rate limit" by="word" variant="rise" start={2} each={18} gap={5} />
+          <TextReveal text="Throughput" by="word" variant="rise" start={2} each={18} gap={5} />
         </div>
         <div style={{ ...type(124, 750), color: L.accent, height: 130 }}>
           <TextReveal text="tripled." by="char" variant="rise" start={98} each={14} gap={1.6} />

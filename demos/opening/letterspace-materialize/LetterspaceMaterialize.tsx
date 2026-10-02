@@ -6,24 +6,36 @@
 // v4 质感：底景从"三块模糊色块"重做为暮色湖景——分层天空渐变 + 两层程序山脊（大气透视：远淡近深）
 //    + 宽幅地平线霞光（铺出画外，不露光带两端）+ 水面（天光倒影 + 缓慢漂移的细波光）+ 字标水面倒影；
 //    颗粒防渐变色带；背景极缓推近 3%（远山/近山不同速，微视差），字标本身不位移。
+// 品牌轮：SUPERHUMAN → video-shotcraft（全小写字标），字形库换成 13 个几何小写骨架字形（见 GLYPHS），
+//    描画节奏、同步齐收、底景与时长不变。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { bezier, ramp, EASE, Grain, Vignette } from '../../_fixtures/Polish';
 
-// 78x64 视框内的方正略宽细骨架字形（子笔画顺序=描画顺序）
-const GLYPHS: Record<string, string> = {
-  S: 'M 62 13 C 51 4, 18 3, 15 15 C 12 26, 29 29, 39 31 C 50 33, 66 37, 63 48 C 60 59, 21 61, 11 50',
-  U: 'M 12 5 L 12 40 C 12 59, 66 59, 66 40 L 66 5',
-  P: 'M 12 59 L 12 5 L 44 5 C 64 5, 64 32, 44 32 L 12 32',
-  E: 'M 62 5 L 12 5 L 12 59 L 62 59 M 12 31 L 56 31',
-  R: 'M 12 59 L 12 5 L 44 5 C 64 5, 64 31, 44 31 L 12 31 M 42 31 L 64 59',
-  H: 'M 12 5 L 12 59 M 66 5 L 66 59 M 12 31 L 66 31',
-  M: 'M 8 59 L 8 6 L 39 38 L 70 6 L 70 59',
-  A: 'M 7 59 L 39 5 L 71 59 M 17 41 L 61 41',
-  N: 'M 12 59 L 12 5 L 66 59 L 66 5',
+// 品牌轮：字标换成 video-shotcraft（品牌规范要求全小写），骨架字形重绘为几何小写单线体。
+// 统一 64 高视框：基线 y=59、x 高 y=22、升部 y=5（与原大写字面同高），每个字形有自己的宽度 w；
+// 渲染时整体 ×GLYPH_SCALE 放大（小写 x 高比大写矮，放大后与原 SUPERHUMAN 字标同等存在感、整行宽度相近），
+// 笔画宽度反向缩放，屏幕上仍是 5.5px 细线。子笔画顺序 = 描画顺序。
+const GLYPHS: Record<string, { w: number; d: string }> = {
+  v: { w: 42, d: 'M 4 22 L 21 59 L 38 22' },
+  i: { w: 14, d: 'M 7 22 L 7 59 M 7 9.5 L 7 10' },
+  d: { w: 46, d: 'M 41.5 40.5 A 18.5 18.5 0 0 0 4.5 40.5 A 18.5 18.5 0 0 0 41.5 40.5 M 41.5 5 L 41.5 59' },
+  e: { w: 46, d: 'M 4.5 40.5 L 41.5 40.5 A 18.5 18.5 0 1 0 37.2 52.4' },
+  o: { w: 46, d: 'M 23 22 A 18.5 18.5 0 0 0 23 59 A 18.5 18.5 0 0 0 23 22' },
+  '-': { w: 28, d: 'M 5 41 L 23 41' },
+  s: { w: 39, d: 'M 32.6 27.5 C 26.4 21.3, 7.9 20.6, 6.2 28.9 C 4.6 36.4, 14.1 38.4, 19.7 39.8 C 25.8 41.2, 34.8 43.9, 33.1 51.5 C 31.4 59, 9.6 60.4, 4 52.8' },
+  h: { w: 41, d: 'M 5 5 L 5 59 M 5 38 C 5 27, 12 22, 20.5 22 C 30 22, 36 27, 36 37 L 36 59' },
+  t: { w: 26, d: 'M 12 8 L 12 59 M 3 22 L 23 22' },
+  c: { w: 42, d: 'M 37.2 28.6 A 18.5 18.5 0 1 0 37.2 52.4' },
+  r: { w: 28, d: 'M 5 22 L 5 59 M 5 38 C 5 27, 13 22, 24 23' },
+  a: { w: 46, d: 'M 41.5 40.5 A 18.5 18.5 0 0 0 4.5 40.5 A 18.5 18.5 0 0 0 41.5 40.5 M 41.5 22 L 41.5 59' },
+  f: { w: 26, d: 'M 23 7 C 17 4, 11 6, 11 14 L 11 59 M 3 22 L 22 22' },
 };
 
-const WORD = 'SUPERHUMAN';
+const WORD = 'video-shotcraft';
+const GLYPH_SCALE = 1.3; // 视框 → 屏幕放大倍数
+const GLYPH_H = 64 * GLYPH_SCALE; // 字行高（屏幕 px）
+const TRACK = 30; // 字距（屏幕 px）：大字距是本卡身份
 const START = 16;   // 全字符统一起画帧（无错峰）
 const DUR = 52;     // 全字符统一画完帧数（pathLength 归一→同帧齐收）
 export const LETTERSPACE_MATERIALIZE_DURATION = 105; // 静置 16f + 描画 52f + 终态 hold 37f（>1s，R1）
@@ -64,27 +76,30 @@ const GLINTS = Array.from({ length: 22 }, (_, i) => {
 });
 
 const Word: React.FC<{ e: number; glowAmt: number }> = ({ e, glowAmt }) => (
-  <div style={{ display: 'flex', gap: 34, alignItems: 'center' }}>
-    {WORD.split('').map((ch, li) => (
-      <svg key={li} width={78} height={64} viewBox="0 0 78 64" style={{ overflow: 'visible', display: 'block' }}>
-        {e > 0 && (
-          <path
-            d={GLYPHS[ch]}
-            fill="none"
-            stroke="#f6f3fa"
-            strokeWidth={5.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            pathLength={1}
-            strokeDasharray={1}
-            strokeDashoffset={1 - e}
-            style={{
-              filter: `drop-shadow(0 0 ${5 + glowAmt * 10}px rgba(245,225,240,${0.3 + glowAmt * 0.38}))`,
-            }}
-          />
-        )}
-      </svg>
-    ))}
+  <div style={{ display: 'flex', gap: TRACK, alignItems: 'center' }}>
+    {WORD.split('').map((ch, li) => {
+      const g = GLYPHS[ch];
+      return (
+        <svg key={li} width={g.w * GLYPH_SCALE} height={GLYPH_H} viewBox={`0 0 ${g.w} 64`} style={{ overflow: 'visible', display: 'block' }}>
+          {e > 0 && (
+            <path
+              d={g.d}
+              fill="none"
+              stroke="#f6f3fa"
+              strokeWidth={5.5 / GLYPH_SCALE}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength={1}
+              strokeDasharray={1}
+              strokeDashoffset={1 - e}
+              style={{
+                filter: `drop-shadow(0 0 ${(5 + glowAmt * 10) / GLYPH_SCALE}px rgba(245,225,240,${0.3 + glowAmt * 0.38}))`,
+              }}
+            />
+          )}
+        </svg>
+      );
+    })}
   </div>
 );
 
@@ -171,7 +186,7 @@ export const LetterspaceMaterialize: React.FC = () => {
       {/* 字标水面倒影：以水天线为轴镜像，低透明 + 轻虚 + 向下渐隐 */}
       <div
         style={{
-          position: 'absolute', left: 0, right: 0, top: 2 * HORIZON - MARK_Y - 32, height: 64,
+          position: 'absolute', left: 0, right: 0, top: 2 * HORIZON - MARK_Y - GLYPH_H / 2, height: GLYPH_H,
           display: 'flex', justifyContent: 'center',
           transform: 'scaleY(-1)', opacity: 0.12, filter: 'blur(2.4px)',
           WebkitMaskImage: 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%)',
@@ -182,7 +197,7 @@ export const LetterspaceMaterialize: React.FC = () => {
       </div>
 
       {/* 大字距字标：全字符并行连续描画 */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: MARK_Y - 32, height: 64, display: 'flex', justifyContent: 'center' }}>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: MARK_Y - GLYPH_H / 2, height: GLYPH_H, display: 'flex', justifyContent: 'center' }}>
         <Word e={e} glowAmt={glowAmt} />
       </div>
 

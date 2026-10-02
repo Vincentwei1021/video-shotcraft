@@ -11,8 +11,8 @@
 //   追着越发越快的牌往板尾走、同时升高后仰 → 落在一张"跑道式"俯瞰：整块板沿对角线伸向远处，
 //   26 张卡全部在画，近大远小（满板的体量一眼可见）。俯瞰位只保留极缓推近（1.5%）。
 // - 景深：俯瞰位远端（板首）压暗 + 降对比，近端最亮——光跟着最后几张卡走到镜头前。
-// - 版式：满板后左下升起两行标题「Every project. / One board.」（120px 900/400 字重对比）+ 一行 mono 计数
-//   「26 PROJECTS · 4 TEAMS」——计数在发牌期间就跟着落地数跳（26 张卡 = 26）。
+// - 版式：满板后左下升起两行标题「Your product, / in motion.」（video-shotcraft 标语，120px 800/300 字重对比）+ 一行 mono 计数
+//   「video-shotcraft 标志 · 26 REAL PAGE CAPTURES」——计数在发牌期间就跟着落地数跳（26 张卡 = 26）。
 //
 // 时间表（30fps，共 150f）
 //   0–28    orbit：侧斜低机位绕牌堆（rotY −30°→+26°），顶光只打牌堆，板面暗
@@ -28,6 +28,7 @@ import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } f
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 import layout from '../../_textures/live-layout.json';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const DECK_DEAL_FLYIN_DURATION = 150;
 
@@ -284,10 +285,10 @@ export const DeckDealFlyin: React.FC = () => {
       {/* 左下：标题 + 计数行 */}
       <div style={{ position: 'absolute', left: 120, top: 664, color: L.ink }}>
         <div style={{ ...type(120, 800) }}>
-          <TextReveal text="Every project." by="word" variant="rise" start={100} each={16} gap={4} />
+          <TextReveal text="Your product," by="word" variant="rise" start={100} each={16} gap={4} />
         </div>
         <div style={{ ...type(120, 300), color: L.ink2, marginTop: 4 }}>
-          <TextReveal text="One board." by="word" variant="rise" start={106} each={16} gap={4} />
+          <TextReveal text="in motion." by="word" variant="rise" start={106} each={16} gap={4} />
         </div>
       </div>
       <div
@@ -296,9 +297,10 @@ export const DeckDealFlyin: React.FC = () => {
           ...type(30, 600, { mono: true }), letterSpacing: '0.14em', color: L.ink2,
         }}
       >
-        <span style={{ width: 10, height: 10, borderRadius: 5, background: L.accent2, boxShadow: `0 0 12px ${alpha(L.accent2, 0.7)}` }} />
+        {/* video-shotcraft 标志（暗底反白版，不加发光） */}
+        <ShotcraftMark size={34} tone="dark" style={{ margin: '-6px 0' }} />
         <span style={{ color: L.ink, fontVariantNumeric: 'tabular-nums', minWidth: '2.2ch' }}>{String(landed).padStart(2, '0')}</span>
-        PROJECTS · 4 TEAMS
+        REAL PAGE CAPTURES
       </div>
     </AbsoluteFill>
   );

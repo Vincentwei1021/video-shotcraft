@@ -45,9 +45,9 @@ name: picker-carousel-feature-cycle
 - 距离衰减写在 `fontSize` 上会触发逐帧重排（行高固定所以布局不跳），
   行高若改成 auto 就会抖；rowH 必须写死
 - 渐隐用 `mask-image` 做 alpha 遮罩，不要叠纸色色块：底色一旦是渐变/有光斑，色块遮罩就会露出矩形边界带
-- 左外侧 26×22 的方形 AI 徽标用 `margin:-11px 0 0 -186px` 相对画面中心
-  定位；改视口宽度必须同改 186px
-- ITEMS 是 7 条占位功能名（"Data Cleanup" 等），落地换真实功能名时
+- 左外侧 24×24 的方形 app 图标（深底 + video-shotcraft 标志反白版）用
+  `margin:-12px 0 0 -186px` 相对画面中心定位；改视口宽度必须同改 186px
+- ITEMS 是 video-shotcraft 的 7 条功能名（"Shot recipe cards" 等），换成别的功能名时
   字长变化会影响居中观感——单行超过 300px 就要缩字号而不是换行
 
 ## 参考实现

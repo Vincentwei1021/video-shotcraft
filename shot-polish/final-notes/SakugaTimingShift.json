@@ -1,0 +1,14 @@
+{
+  "stem": "SakugaTimingShift",
+  "changed": true,
+  "brand": [
+    "赛璐珞卡抬头：圆点 logo + 「Sprig CI」→ 镜刻标志 + video-shotcraft 字标（全小写）；角标 build 2048 → render 2048",
+    "卡内主数字「2.4x / faster deploys, same pipeline」→「30fps / every frame, crafted」，与一拍一「30 drawings per second」呼应"
+  ],
+  "brandEn": [
+    "Cel card header: dot logo + \"Sprig CI\" → Frame Chisel mark + lowercase video-shotcraft wordmark; tag build 2048 → render 2048",
+    "Card hero \"2.4x / faster deploys, same pipeline\" → \"30fps / every frame, crafted\", echoing the on-1s \"30 drawings per second\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

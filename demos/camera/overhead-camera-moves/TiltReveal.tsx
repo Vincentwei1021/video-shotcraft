@@ -4,7 +4,7 @@
 // 设计决定
 // - look：midnight（深蓝夜 · 电光蓝）。开场是黑夜里的一道"地平线"——平躺页面的远端上缘只剩一条
 //   发光的窄带（远端上沿一道白蓝亮线 + 宽幅蓝色泛光），像天际线上的第一道光。
-// - 主体：为镜头设计的暗场分析页「Meridian」——顶栏、120px 大标题「Revenue is up 38%」、
+// - 主体：为镜头设计的 video-shotcraft 暗场渲染看板——顶栏（品牌标志 + 字标）、120px 大标题「Renders are up 38%」、
 //   一张横贯全宽的发光面积图、三块 76px 大数字 KPI。元素少、字大、对比强，落定就是一张海报。
 //   页面落定在画面里留边（0.84 倍），四周能看到舞台光，脚下有一片蓝色光晕"地面反光"。
 // - 运镜：页面绕下沿铰链、正面朝上平躺（视点在页面上方，窄带里的字是正的），rotateX 86°→−2.2° 过冲→0° 抬正，
@@ -25,6 +25,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { Dust, LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
 import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const TILT_REVEAL_DURATION = 120;
 
@@ -58,7 +59,7 @@ const poseAt = (f: number) => {
   };
 };
 
-// ───────────── 页面：Meridian 暗场分析页（1920×1080 设计坐标） ─────────────
+// ───────────── 页面：video-shotcraft 暗场渲染看板（1920×1080 设计坐标） ─────────────
 
 // 面积图数据（确定性）：缓升 + 两次回落 + 末段冲高
 const SERIES = [22, 26, 24, 31, 35, 33, 38, 44, 41, 47, 52, 49, 55, 61, 58, 66, 71, 69, 78, 86];
@@ -84,26 +85,12 @@ const linePath = (() => {
 const areaPath = `${linePath} L${CH.w},${CH.h} L0,${CH.h} Z`;
 
 const KPIS = [
-  { k: 'Annual recurring revenue', v: '$4.82M', d: '+38%' },
-  { k: 'Active teams', v: '12,480', d: '+2.1k' },
-  { k: 'Net retention', v: '131%', d: '+6 pts' },
+  { k: 'Frames rendered', v: '4.82M', d: '+38%' },
+  { k: 'Shots rendered', v: '12,480', d: '+2.1k' },
+  { k: 'Cuts on the beat', v: '99.1%', d: '+1.4 pts' },
 ];
 
-const Mark: React.FC<{ size: number }> = ({ size }) => (
-  <svg width={size} height={size} viewBox="0 0 40 40" style={{ flex: 'none' }}>
-    <defs>
-      <linearGradient id="mer-mk" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#9db8ff" />
-        <stop offset="1" stopColor={L.accent} />
-      </linearGradient>
-    </defs>
-    <circle cx="20" cy="20" r="18" fill="none" stroke="url(#mer-mk)" strokeWidth="3" />
-    <path d="M2 20h36" stroke="url(#mer-mk)" strokeWidth="3" />
-    <circle cx="20" cy="20" r="5" fill={L.accent} />
-  </svg>
-);
-
-const MeridianPage: React.FC<{ draw: number; dot: number; rows: number[] }> = ({ draw, dot, rows }) => {
+const DashboardPage: React.FC<{ draw: number; dot: number; rows: number[] }> = ({ draw, dot, rows }) => {
   const [lx, ly] = pt(SERIES.length - 1);
   return (
     <div style={{
@@ -116,10 +103,10 @@ const MeridianPage: React.FC<{ draw: number; dot: number; rows: number[] }> = ({
         position: 'absolute', left: 0, right: 0, top: 0, height: 104, display: 'flex', alignItems: 'center',
         padding: '0 64px', gap: 22, background: 'rgba(160,190,255,0.035)',
       }}>
-        <Mark size={44} />
-        <div style={{ ...type(36, 700), color: L.ink }}>Meridian</div>
+        <ShotcraftMark size={48} tone="dark" style={{ flex: 'none' }} />
+        <div style={{ ...type(36, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</div>
         <div style={{ display: 'flex', gap: 44, marginLeft: 72, ...type(28, 550), color: L.ink3 }}>
-          <span style={{ color: L.ink }}>Overview</span><span>Signals</span><span>Reports</span><span>Teams</span>
+          <span style={{ color: L.ink }}>Overview</span><span>Shots</span><span>Renders</span><span>Gallery</span>
         </div>
         <div style={{
           marginLeft: 'auto', padding: '12px 26px', borderRadius: 999, border: `1.5px solid ${L.line}`,
@@ -135,9 +122,9 @@ const MeridianPage: React.FC<{ draw: number; dot: number; rows: number[] }> = ({
 
       {/* 标题区 */}
       <div style={{ position: 'absolute', left: 120, top: 168, opacity: rows[0], transform: `translateY(${(1 - rows[0]) * 18}px)` }}>
-        <div style={{ ...type(26, 650, { caps: true }), color: L.accent, letterSpacing: '0.2em' }}>FY 2026 · Q3 Overview</div>
+        <div style={{ ...type(26, 650, { caps: true }), color: L.accent, letterSpacing: '0.2em' }}>Render studio · Q3 Overview</div>
         <div style={{ ...type(TYPE_H1, 760), color: L.ink, marginTop: 26 }}>
-          Revenue is up <span style={{ color: L.accent, textShadow: `0 0 40px ${alpha(L.accent, 0.45)}` }}>38%</span>
+          Renders are up <span style={{ color: L.accent, textShadow: `0 0 40px ${alpha(L.accent, 0.45)}` }}>38%</span>
         </div>
       </div>
 
@@ -274,7 +261,7 @@ export const TiltReveal: React.FC = () => {
               </svg>
             )}
             <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, zoom: scale, filter: sigma > 0.5 ? 'url(#tilt-aa)' : undefined }}>
-              <MeridianPage draw={draw} dot={dot} rows={rows} />
+              <DashboardPage draw={draw} dot={dot} rows={rows} />
             </div>
             {/* 掠射受光：平躺时远端（页面下部，远离铰链）沉入夜色 */}
             <div style={{

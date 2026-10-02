@@ -1,0 +1,18 @@
+{
+  "stem": "IntegrationHubMap",
+  "changed": true,
+  "brand": [
+    "中枢页标题「Enterprise MQLs」→ 镜刻标志 + video-shotcraft 字标（中枢 = video-shotcraft 工作区）",
+    "五枚第三方 logo 瓷贴（Figma / GitHub / Salesforce 云 / Google Drive / Dropbox）→ video-shotcraft 的五种输入：页面实拍、代码仓库、镜头配方卡、配乐、音效库线性图标（墨色 + 琥珀点睛）",
+    "中枢页列表 / 标签页 / 筛选（Enterprise 线索、ClickUp、GDrive、Figma 等字样）→ 镜头配方卡、分镜、渲染队列（Launch Film v3、Shot 04 · Crash Zoom Punch、Render launch film - 1080p…）",
+    "翻面前旧页「Q3 Enterprise Deal」+ Northwind Retail 销售纪要 → 「Launch Film v3」分镜文档：video-shotcraft 用镜头配方卡起分镜、节拍锁定配乐、2.5D 运镜与音效"
+  ],
+  "brandEn": [
+    "Hub page title \"Enterprise MQLs\" → Frame Chisel mark + video-shotcraft wordmark (the hub is the video-shotcraft workspace)",
+    "Five third-party logo tiles (Figma / GitHub / Salesforce cloud / Google Drive / Dropbox) → line icons for video-shotcraft's five inputs: page capture, code repo, shot recipe card, music, SFX library (ink + amber accent)",
+    "Hub list / tabs / filters (enterprise leads, ClickUp, GDrive, Figma labels…) → recipe cards, storyboards and the render queue (Launch Film v3, Shot 04 · Crash Zoom Punch, Render launch film - 1080p…)",
+    "Pre-flip page \"Q3 Enterprise Deal\" + Northwind Retail deal notes → \"Launch Film v3\" storyboard doc: video-shotcraft drafts from shot recipe cards, beat grid locked to the soundtrack, 2.5D moves and SFX"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

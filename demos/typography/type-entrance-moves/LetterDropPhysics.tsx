@@ -1,16 +1,17 @@
 // 字符坠落堆积（letter-drop-physics）——FallingLetterAnimation。
-// "GRAVITY" 7 字符按字体自然字宽排成一行（flex 布局只管槽位，所有运动走 transform 不改排版），
-// 第 i 字符从帧 4+36·(1−(1−i/6)^1.5) 起下落（间隔 8.6→2.5f 越来越密，R2 硬加速）：
+// 品牌名 "Shotcraft"（BRAND.short）9 字符按字体自然字宽排成一行（flex 布局只管槽位，所有运动走 transform 不改排版），
+// 第 i 字符从帧 4+36·(1−(1−i/8)^1.5) 起下落（间隔 6.5→1.6f 越来越密，R2 硬加速）：
 // ① 重力加速 y = D*(t/24)^2 掉 720px 到地面，下落中按速度纵向拉伸 + 竖向运动模糊；
 // ② 落地后 2 次衰减弹跳（高度 30% / 9%，抛物线 4u(1-u) 拼段），每次触地挤压（squash）
 //    并阻尼回弹；落地瞬间 rotate 到 seed hash ±6° 小歪角并保持（歪歪扭扭站定）；
 //    每个字符脚下一枚接触影：离地越高越大越虚越淡，落地收成小而实的一抹；
 // ③ 帧 110 一拍：先 2f 吸气撑到 1.06，再 6f ease-out 全体齐整回正（rotate→0、错位→0、
-//    scale 1.06→1），副标题随后浮出；帧 116–150 真静止（≥34f）收尾。
+//    scale 1.06→1），副标题「Every shot lands on the beat.」随后浮出；帧 116–150 真静止（≥34f）收尾。
 import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
 import { Backdrop, EASE, FONT, Grain, SpeedBlur, mix, ramp, tracking } from '../../_fixtures/Polish';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const LETTER_DROP_PHYSICS_DURATION = 150;
 
@@ -20,7 +21,7 @@ const h = (n: number) => {
   return s - Math.floor(s);
 };
 
-const WORD = 'GRAVITY';
+const WORD = BRAND.short; // 'Shotcraft'（无下行字母，全员基线贴地）
 const SIZE = 176; // 字号
 const FLOOR_Y = 600; // 地面线（字符基线）
 const BASE = Math.round(SIZE * 0.886); // 字行盒顶到基线（SF Pro，lineHeight 1 实测）
@@ -163,7 +164,7 @@ export const LetterDropPhysics: React.FC = () => {
         fontSize: 36, fontWeight: 500, letterSpacing: tracking(36), color: G.ink2,
         opacity: sub, transform: `translateY(${((1 - sub) * 10).toFixed(2)}px)`,
       }}>
-        Everything lands somewhere.
+        Every shot lands on the beat.
       </div>
 
       <Grain opacity={0.05} />

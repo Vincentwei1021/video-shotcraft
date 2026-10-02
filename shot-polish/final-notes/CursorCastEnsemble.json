@@ -1,0 +1,18 @@
+{
+  "stem": "CursorCastEnsemble",
+  "changed": true,
+  "brand": [
+    "左上板名：四方块占位 logo + 「Q4 Beta Kickoff / Tessel board」→ ShotcraftMark +「Launch Film Kickoff / video-shotcraft」",
+    "简报卡标题「Ship the beta to 2,000 teams.」→「Ship a launch film by Friday.」（同为 29 字 5 空格，打字节奏不变）",
+    "6 张便签换成片子的分镜/制作待办（Open on a crash zoom、Logo sting outro、Beat map at 120 BPM、Real page captures、Renders: 214、SFX pass）；卡底「12 tasks」→「12 shots」",
+    "卡片 md 删去已去掉的 dialogue-duet 式，cast-ensemble 改为 A 式"
+  ],
+  "brandEn": [
+    "Top-left board: placeholder four-square logo + \"Q4 Beta Kickoff / Tessel board\" -> ShotcraftMark + \"Launch Film Kickoff / video-shotcraft\"",
+    "Brief title \"Ship the beta to 2,000 teams.\" -> \"Ship a launch film by Friday.\" (same 29 chars / 5 spaces, typing rhythm unchanged)",
+    "Six sticky notes now show the film's storyboard / production to-dos; card footer \"12 tasks\" -> \"12 shots\"",
+    "Card md: removed the dropped dialogue-duet style; cast-ensemble is now style A"
+  ],
+  "styleKey": "cast-ensemble",
+  "mdChanged": true
+}

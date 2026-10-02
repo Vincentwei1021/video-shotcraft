@@ -5,8 +5,8 @@
 // 第二轮重设计（制图 HUD · 白热点亮）：
 // - look = ember（暖黑 · 橙）。原生 1920 坐标重写（不再走 480×270 DesignStage）：220px / 500 的 Helvetica Neue
 //   空心字（2px 暖灰描边），r=410 虚线圆 + 内圈 72 格刻度环（每 30° 一根长刻度，反向慢转）+ 四个套准刻度，两侧水平虚线带 mono 读数
-//   「BEFORE 38 ms」/「AFTER 4 ms」——把"更快"讲成一组前后对比数据，瞄准的过程就有了内容。
-// - 点亮：第 54 帧硬切成白热实心字（#fff5ee），同帧圆与水平线"锁定"成橙色、右侧读数 4 ms 变橙；
+//   「BEFORE 1 week」/「AFTER 4 hrs」——把"更快"讲成一组前后对比数据（手 K 一周 vs video-shotcraft 一下午出片），瞄准的过程就有了内容。
+// - 点亮：第 54 帧硬切成白热实心字（#fff5ee），同帧圆与水平线"锁定"成橙色、右侧读数 4 hrs 变橙；
 //   辉光（白 + 橙两层）8f 衰完；一道冲击环从圆边外扩 14f 消散（只此一次）；舞台主光同步脉冲一下再回落。
 // - 主圈自转在点亮那一刻刹停（"锁定"），内圈刻度环继续反向慢转。
 // - 曲线：字急缩 11f（EASE.snappy，按 scale 速度给瞬时失焦）、圆慢收 44f（EASE.out，全片最慢的呼吸），
@@ -26,6 +26,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, mix, ramp } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const OUTLINE_WORD_FILL_DURATION = 90; // 3.0s @30fps
 
@@ -112,18 +113,20 @@ export const OutlineWordFill: React.FC = () => {
 
         {/* 读数：水平线上方，左 = 旧值（弱），右 = 新值（点亮时变橙） */}
         <div style={{ position: 'absolute', left: 120, top: CY - 74, opacity: ext, transform: `translateX(${((1 - ext) * -30).toFixed(2)}px)`, ...type(30, 500, { mono: true }), letterSpacing: '0.12em', color: L.ink3 }}>
-          BEFORE <span style={{ color: L.ink2 }}>38 ms</span>
+          BEFORE <span style={{ color: L.ink2 }}>1 week</span>
         </div>
         <div style={{ position: 'absolute', right: 120, top: CY - 74, opacity: ext, transform: `translateX(${((1 - ext) * 30).toFixed(2)}px)`, ...type(30, 500, { mono: true }), letterSpacing: '0.12em', color: L.ink3, textAlign: 'right' }}>
-          AFTER <span style={{ color: lit ? L.accent : L.ink2, textShadow: lit && flash > 0.02 ? `0 0 ${(18 * flash).toFixed(1)}px ${alpha(L.accent, 0.8)}` : undefined }}>4 ms</span>
+          AFTER <span style={{ color: lit ? L.accent : L.ink2, textShadow: lit && flash > 0.02 ? `0 0 ${(18 * flash).toFixed(1)}px ${alpha(L.accent, 0.8)}` : undefined }}>4 hrs</span>
         </div>
 
         {/* 眉题 / 副行：圆内、字上下 */}
-        <div style={{ position: 'absolute', left: 0, right: 0, top: CY - 196, textAlign: 'center', opacity: sub(0), transform: `translateY(${((1 - sub(0)) * 16).toFixed(2)}px)`, ...type(28, 600, { mono: true }), letterSpacing: '0.32em', color: L.ink2 }}>
-          LUMEN RUNTIME 3
+        {/* 眉题 = 品牌落款：小号反白标志 + 全小写 video-shotcraft（字标规范：不做全大写） */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: CY - 200, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, opacity: sub(0), transform: `translateY(${((1 - sub(0)) * 16).toFixed(2)}px)`, ...type(28, 600, { mono: true }), letterSpacing: '0.16em', color: L.ink2 }}>
+          <ShotcraftMark size={40} tone="dark" />
+          <span>{BRAND.name}</span>
         </div>
         <div style={{ position: 'absolute', left: 0, right: 0, top: CY + 128, textAlign: 'center', opacity: sub(3), transform: `translateY(${((1 - sub(3)) * 16).toFixed(2)}px)`, ...type(40, 450), letterSpacing: '-0.01em', color: L.ink2 }}>
-          Every cold start. Every region.
+          One prompt to a finished promo.
         </div>
 
         {/* 双层字：底层空心描边、顶层白热实心（硬切） */}

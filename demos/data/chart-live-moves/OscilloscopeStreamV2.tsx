@@ -5,7 +5,7 @@
 // - look = midnight（深蓝夜 · 电光蓝），事件色单独给一抹珊瑚红（只给尖峰）。不再是"卡片里的小图"：
 //   整个画面就是一块示波器屏——1728×520 的满版绘图区，示波器式刻度网（主格实线 + 次格点阵 + 中心十字刻度），
 //   电光蓝磷光迹线（实线 + 两层泛光），写入头在 86% 处：竖向扫描线 + 光斑 + 一条横向读数参考线。
-// - 文字层级：左上虚构可观测性产品「Sonde」眉题 + LIVE 灯、168px 实时读数（每 3 帧采样保持，像真的仪表）；
+// - 文字层级：左上 video-shotcraft 标志 + 字标眉题（渲染农场 · 帧/秒）+ LIVE 灯、168px 实时读数（每 3 帧采样保持，像真的仪表）；
 //   右上 p99 延迟 / 错误率两枚副读数，跟着尖峰一起跳。
 // - 尖峰事件：写入头经过时迹线该段整段变珊瑚红并加粗，大读数放大 + 变珊瑚红，p99 跳到 3 位数；
 //   写完后峰顶钉一枚「Burst」事件标签 + 竖向落线，随流向左带走。
@@ -22,6 +22,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const OSCILLOSCOPE_STREAM_V2_DURATION = 165;
 
@@ -60,7 +61,7 @@ const wave = (x: number) =>
   0.34 * Math.sin(x * 0.019) + 0.27 * Math.sin(x * 0.047 + 1.7) + 0.18 * Math.sin(x * 0.011 + 4.2) + 0.11 * Math.sin(x * 0.083 + 2.3);
 const inSpike = (x: number) => gauss(x, SC, SW * 0.45);
 const signal = (x: number) => wave(x) * (1 + 0.6 * inSpike(x)) + bump(x);
-const valueOf = (x: number) => 1350 + signal(x) * 560; // req/s
+const valueOf = (x: number) => 1350 + signal(x) * 560; // fps（渲染帧 / 秒）
 const MAXV = 3000;
 const yOf = (x: number) => PH - (valueOf(x) / MAXV) * PH;
 
@@ -134,8 +135,11 @@ export const OscilloscopeStreamV2: React.FC = () => {
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: `${camOX}px ${camOY}px` }}>
         {/* 眉题 + LIVE */}
         <div style={{ position: 'absolute', left: PX, top: 92, display: 'flex', alignItems: 'center', gap: 22, opacity: headIn }}>
-          <span style={{ ...type(32, 700, { caps: true }), color: L.ink }}>Sonde</span>
-          <span style={{ ...type(32, 500, { caps: true }), color: L.ink3 }}>api-gateway · prod · req/s</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <ShotcraftMark size={40} tone="dark" />
+            <span style={{ ...type(32, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
+          </span>
+          <span style={{ ...type(32, 500, { caps: true }), color: L.ink3 }}>render-farm · prod · fps</span>
           <span style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px 6px 12px', borderRadius: 99,
             background: live > 0.5 ? alpha(L.accent2, 0.12) : alpha('#ffffff', 0.06),
@@ -159,14 +163,14 @@ export const OscilloscopeStreamV2: React.FC = () => {
             ...type(176, 700), color: hexMix('#f2f5ff', HOT, hot),
             textShadow: hot > 0.02 ? `0 0 40px ${alpha(HOT, 0.35 * hot)}` : undefined,
           }}>{fmt(valueOf(held))}</span>
-          <span style={{ ...type(48, 500), color: hexMix('#a9b4d0', HOT, hot) }}>req/s</span>
+          <span style={{ ...type(48, 500), color: hexMix('#a9b4d0', HOT, hot) }}>fps</span>
         </div>
 
         {/* 右上副读数 */}
         <div style={{ position: 'absolute', right: 1920 - PX - PW, top: 150, display: 'flex', gap: 72, opacity: ramp(frame, 6, 14, EASE.out) }}>
           {[
-            { k: 'p99 latency', v: `${p99}`, u: 'ms', hotK: hot },
-            { k: 'Error rate', v: errRate, u: '%', hotK: hot * 0.8 },
+            { k: 'p99 frame time', v: `${p99}`, u: 'ms', hotK: hot },
+            { k: 'Failed jobs', v: errRate, u: '%', hotK: hot * 0.8 },
           ].map((s) => (
             <div key={s.k} style={{ textAlign: 'right' }}>
               <div style={{ ...type(32, 500), color: L.ink3 }}>{s.k}</div>
@@ -276,7 +280,7 @@ export const OscilloscopeStreamV2: React.FC = () => {
               transform: `scale(${tagIn.toFixed(4)})`, transformOrigin: '0% 50%', opacity: Math.min(1, tagIn * 1.5),
             }}>
               <span style={{ ...type(32, 800, { caps: true }), color: HOT }}>Burst</span>
-              <span style={{ ...type(32, 600), color: '#ffe3de' }}>{fmt(valueOf(PEAK_X))} req/s</span>
+              <span style={{ ...type(32, 600), color: '#ffe3de' }}>{fmt(valueOf(PEAK_X))} fps</span>
             </div>
           )}
         </div>

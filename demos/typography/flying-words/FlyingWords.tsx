@@ -13,6 +13,7 @@
 //   画面无一刻静止但不晃（滚转是周期的，首尾一致）。
 // - 前景：中段生命曲线压到 0.5 就是为前景让位——demo 在正中压一组静态字标（mono 眉题 + 112px 标题 +
 //   一层径向暗幕；飞进字标椭圆区的词压到 20%），证明隧道作背景层不打架；字标静止 = 循环无缝。
+// - 品牌：眉题 = 镜刻标志 + video-shotcraft 小字，标题 = 品牌短句；词表混入 video-shotcraft 的能力词。
 //
 // 时间轴：t = frame / DURATION（末帧的下一帧 = 第 0 帧，真正无缝 loop）；CYCLES = 2 整圈。
 //   每个元素 u = (t·CYCLES + 相位) mod 1：0 远处生成 → 0.25 亮到满 → 0.6 压到半透 → 1 擦身出画。
@@ -20,16 +21,17 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { FONT } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, alpha } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const FLYING_WORDS_DURATION = 180; // 6000ms @30fps
 
 const L = LOOKS.midnight;
 const CYCLES = 2; // 整数圈 → 首尾一致
 
-// 关键词表：换成项目自己的关键词即可，词数/字长接近就不影响节奏
+// 关键词表：换成项目自己的关键词即可，词数/字长接近就不影响节奏（这里是 video-shotcraft 的能力词）
 const WORDS = ['Timeline', 'Keyframes', 'Easing', 'Camera', 'Depth', 'Parallax', 'Motion blur', 'Springs',
-  'Layers', 'Masks', 'Typography', 'Lighting', 'Grain', 'Render', 'Beat grid', 'Stagger',
-  'Transitions', 'Color', 'Export', 'Audio sync', 'Templates', 'Orbit'];
+  'Layers', 'Shot cards', 'Typography', 'Lighting', 'Grain', 'Remotion', 'Beat grid', 'Stagger',
+  'Transitions', 'Color', 'Workbench', 'Audio sync', 'Storyboard', 'Orbit'];
 const N = WORDS.length;
 const ACCENT = new Set([3, 7, 12, 19]); // Camera / Springs / Grain / Audio sync
 const SERIF_IDX = new Set([1, 5, 10, 14, 17, 21]);
@@ -176,14 +178,18 @@ export const FlyingWords: React.FC = () => {
           background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha('#04060d', 0.7)} 0%, ${alpha('#04060d', 0.38)} 45%, ${alpha('#04060d', 0)} 72%)`,
         }} />
         <div style={{ position: 'relative', textAlign: 'center' }}>
-          <div style={{ fontFamily: FONT.mono, fontSize: 30, letterSpacing: '0.3em', color: L.accent, marginBottom: 30 }}>
-            HALYARD MOTION
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18,
+            fontFamily: FONT.mono, fontSize: 30, letterSpacing: '0.3em', color: L.accent, marginBottom: 30,
+          }}>
+            <ShotcraftMark size={42} tone="dark" />
+            <span>{BRAND.name}</span>
           </div>
           <div style={{
             fontFamily: FONT.sans, fontSize: 112, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1, color: L.ink,
             textShadow: `0 4px 40px ${alpha('#000', 0.6)}`,
           }}>
-            Every tool, one timeline.
+            {PITCH.en.motto}
           </div>
         </div>
       </AbsoluteFill>

@@ -10,7 +10,7 @@
 //   末段落位帧整块灯牌电流涌起：全部灯管 0.58→1 并冲到 1.25 再回落、灯牌自身的宽泛光涌起一次、墙面与地面被照亮。
 // - 空间：墙面的环境光 = 已点亮灯管数（物理：灯越多墙越亮）；下方是一块光亮地面，倒映灯牌下半截
 //   （模糊 + 渐隐）+ 一条地面光带；整个镜头 1→1.035 极缓推近。
-// - 揭晓后才浮出副题（不提前泄底）。
+// - 揭晓后才浮出副题（不提前泄底）：video-shotcraft 字标（全小写）● ONE PROMPT, ONE FILM。
 //
 // 时间表（30fps，共 165f）：
 //   0–12    暗墙 + 极淡的墙面光（开场不是死黑）
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, stagger } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const STROKE_SEGMENT_BUILD_DURATION = 165;
 
@@ -172,7 +173,9 @@ export const StrokeSegmentBuild: React.FC = () => {
           fontSize: 32, fontWeight: 600, letterSpacing: '0.34em', color: L.ink2, opacity: kicker,
           transform: `translateY(${((1 - kicker) * 14).toFixed(2)}px)`,
         }}>
-          VERSION 4.0 <span style={{ color: TUBE, margin: '0 0.5em' }}>●</span> AVAILABLE TODAY
+          {/* 字标按品牌规范全小写、收窄字距；后半句沿用原副题的宽字距大写 */}
+          <span style={{ fontFamily: BRAND.font, fontWeight: 700, letterSpacing: '0.06em', color: L.ink }}>{BRAND.name}</span>
+          <span style={{ color: TUBE, margin: '0 0.5em 0 0.8em' }}>●</span> ONE PROMPT, ONE FILM
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

@@ -11,7 +11,8 @@ name: paper-title-card
 在两段产品画面之间给观众一句话的喘息：说清"接下来看什么、它值什么"。letterpress 压印质感让字卡与纸墨风格的产品画面同属一个世界。
 
 ## 动效核心
-- 单句文案逐词入场：scale 从大压到 1 + blur→0 + opacity（letterpress 压印配方）
+- 单句文案逐词入场：scale 从大压到 1 + blur→0 + opacity（letterpress 压印配方）；demo 文案为 video-shotcraft 口号
+  "Direct the film. / Let the agent shoot it."（强调词 *shoot*），词表可标 `br` 强制换行，两行长度接近、不留孤词
 - 每句恰好一个重点词：italic + 强调色（模板片为琥珀）
 - 强调色短下划线 scaleX 0→1 收束
 - 尾部整卡淡出交棒；可挂 mono 小字副行 + DigitRoll 数字
@@ -24,7 +25,7 @@ name: paper-title-card
 | 下划线 | 16→34f scaleX 0→1，220×6px 强调色 | 下划线是收束信号，出现即预告本卡快结束 |
 | 时长 | 全片 4 张字卡均 50–55f（≈1.8s） | 字卡时长定式化——观众读一句话的时间，长了拖节奏短了读不完 |
 | 版式 | 字号 116/serif；纸底 oklch(97.5% 0.008 82) + 中心暖光 radial；尾部 8f 淡出 | 纸底+暖光与产品画面同色系，字卡才不像广告插播 |
-| 副行 | mono 小字 + DigitRoll（如 "5 of 31 fetched today"）；digit-roll 参数见 list-stack-press 卡计数器行 | 副行给具体数字最有说服力；数字滚动必须在本卡淡出前落定（教训）——排节拍从本卡淡出帧倒推 |
+| 副行 | mono 小字 + DigitRoll（demo "12 shots rendered today"）；digit-roll 参数见 list-stack-press 卡计数器行 | 副行给具体数字最有说服力；数字滚动必须在本卡淡出前落定（教训）——排节拍从本卡淡出帧倒推 |
 
 ## 声音
 字卡出场统一钉 swoosh-quick（模板片四张字卡钉在 f220/565/725/885 同音）——同类元素同音是词汇表纪律（S2）；字卡本身无落地重音，能量留给前后镜头。

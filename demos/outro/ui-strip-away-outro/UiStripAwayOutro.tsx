@@ -3,11 +3,13 @@
 // （每层 fade + 方向性位移 + 蒸发模糊，从外围到中心）→ 黑场只剩按钮 → 按钮淡出交棒字标。
 // 质感：编辑器是出版级假 UI（深色图层栏、属性面板真实字段、点阵画布、浏览器预览框里放
 // fixture 卡片），发丝线 + 双层软阴影；Publish 用强调色，升格到黑场后带同色光晕；
-// 黑场是带色相的深场（中心微光 + 暗角 + 颗粒）；字标是图形标 + 字标的 lockup，对焦式入场。
+// 黑场是带色相的深场（中心微光 + 暗角 + 颗粒）；字标是 video-shotcraft 标志 + 字标的 lockup，对焦式入场。
+// 品牌轮：编辑器即 video-shotcraft 工作台（图层 = 一支发布片的镜头），工具条 logo / 收尾 lockup 用「镜刻」标志。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, spring, useVideoConfig, Easing } from 'remotion';
 import { G, Card } from '../../_fixtures/Fixtures';
 import { EASE, FONT, Grain, Vignette, mix, ramp, hairline, softShadow, innerHighlight } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const UI_STRIP_AWAY_OUTRO_DURATION = 144; // 字标定版后 hold ≥1s（R1）
 
@@ -65,34 +67,18 @@ const IC = {
   group: 'M4 6h7v5H4zM13 6h7v5h-7zM4 13h16v5H4z',
 };
 
-// 图形标：深钢色圆角方块 + 白方块与强调色圆片错叠（本批 outro 共用的品牌语言）
-const Mark: React.FC<{ size: number }> = ({ size }) => {
-  const k = size / 132;
-  return (
-    <div style={{
-      width: size, height: size, borderRadius: 34 * k, position: 'relative', overflow: 'hidden', flex: 'none',
-      background: 'linear-gradient(150deg, #353843 0%, #1c1d23 62%, #16171c 100%)',
-      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), inset 0 0 0 1px rgba(255,255,255,0.06), 0 2px 6px rgba(0,0,0,0.5), 0 24px 60px -18px rgba(0,0,0,0.8)',
-    }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 45%)' }} />
-      <div style={{ position: 'absolute', left: 34 * k, top: 34 * k, width: 40 * k, height: 40 * k, borderRadius: 12 * k, background: 'rgba(255,255,255,0.95)' }} />
-      <div style={{ position: 'absolute', left: 56 * k, top: 56 * k, width: 42 * k, height: 42 * k, borderRadius: 21 * k, background: '#8088f0' }} />
-    </div>
-  );
-};
-
 const LAYERS: [string, string, number, boolean?][] = [
-  ['frame', 'Landing page', 0],
-  ['layer', 'Nav', 1],
-  ['group', 'Hero', 1],
-  ['textL', 'Headline', 2],
-  ['textL', 'Subhead', 2],
-  ['group', 'Feature grid', 1, true],
-  ['layer', 'Card — Analytics', 2],
-  ['layer', 'Card — Deploys', 2],
-  ['layer', 'Card — Team', 2],
-  ['layer', 'Card — Billing', 2],
-  ['layer', 'Footer', 1],
+  ['frame', 'Launch film', 0],
+  ['layer', 'Cold open', 1],
+  ['group', 'Hero shot', 1],
+  ['textL', 'Title card', 2],
+  ['textL', 'Subtitle', 2],
+  ['group', 'Feature shots', 1, true],
+  ['layer', 'Shot — Crash zoom', 2],
+  ['layer', 'Shot — Dolly push', 2],
+  ['layer', 'Shot — Whip pan', 2],
+  ['layer', 'Shot — Beat cut', 2],
+  ['layer', 'Logo sting', 1],
 ];
 
 const Field: React.FC<{ label: string; value: string; w?: number }> = ({ label, value, w }) => (
@@ -237,7 +223,7 @@ export const UiStripAwayOutro: React.FC = () => {
 
       {/* 顶部工具条左半（logo + 工具） */}
       <div style={{ ...toolbarBase, left: 0, width: 760, gap: 6, padding: '0 16px', ...topLeft }}>
-        <div style={{ marginRight: 14 }}><Mark size={32} /></div>
+        <div style={{ marginRight: 14 }}><ShotcraftMark size={34} tone="light" /></div>
         {[IC.cursor, IC.frame, IC.text, IC.pen, IC.image, IC.comp].map((d, i) => (
           <div key={i} style={{
             width: 36, height: 36, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -249,9 +235,9 @@ export const UiStripAwayOutro: React.FC = () => {
       </div>
       {/* 顶部工具条中段（标题） */}
       <div style={{ ...toolbarBase, left: 760, right: 400, justifyContent: 'center', gap: 10, ...toolbarShell }}>
-        <span style={{ fontSize: 14, color: G.ink3 }}>Acme</span>
+        <span style={{ fontSize: 14, color: G.ink3 }}>{BRAND.name}</span>
         <span style={{ fontSize: 14, color: G.ink3 }}>/</span>
-        <span style={{ fontSize: 14, color: G.ink1, fontWeight: 600, letterSpacing: '-0.01em' }}>Landing page</span>
+        <span style={{ fontSize: 14, color: G.ink1, fontWeight: 600, letterSpacing: '-0.01em' }}>Launch film</span>
         <span style={{ fontSize: 11.5, fontWeight: 500, color: G.ink2, padding: '3px 8px', borderRadius: 6, background: G.fill2 }}>Draft</span>
       </div>
       {/* 顶部工具条右段底板（头像 + Invite；Publish 单独渲染在最上层） */}
@@ -290,7 +276,7 @@ export const UiStripAwayOutro: React.FC = () => {
               padding: '0 12px', fontFamily: FONT.sans, fontSize: 12.5, color: G.ink2, gap: 6,
             }}>
               <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={G.ink3} strokeWidth={2.4}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
-              acme.com
+              {BRAND.repo}
             </div>
           </div>
         </div>
@@ -340,16 +326,16 @@ export const UiStripAwayOutro: React.FC = () => {
       {/* 字标接棒 */}
       {frame >= LOGO_IN && (
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 34, transform: `scale(${0.86 + 0.14 * logoP})` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 30, transform: `scale(${0.86 + 0.14 * logoP})` }}>
             <div style={{ opacity: Math.min(1, logoP * 1.4), filter: logoP < 0.995 ? `blur(${((1 - logoP) * 9).toFixed(2)}px)` : undefined }}>
-              <Mark size={112} />
+              <ShotcraftMark size={132} tone="dark" />
             </div>
             <div style={{
               opacity: Math.min(1, wordP * 1.4), transform: `translateX(${((1 - wordP) * -16).toFixed(2)}px)`,
               filter: wordP < 0.995 ? `blur(${((1 - wordP) * 9).toFixed(2)}px)` : undefined,
-              fontFamily: FONT.sans, fontWeight: 650, fontSize: 104, lineHeight: 1, letterSpacing: '-0.04em', color: '#f3f3f6', paddingBottom: 6,
+              fontFamily: BRAND.font, fontWeight: 700, fontSize: 68, lineHeight: 1, letterSpacing: '0.03em', color: BRAND.paper, paddingBottom: 4, whiteSpace: 'nowrap',
             }}>
-              Acme
+              {BRAND.name}
             </div>
           </div>
         </AbsoluteFill>

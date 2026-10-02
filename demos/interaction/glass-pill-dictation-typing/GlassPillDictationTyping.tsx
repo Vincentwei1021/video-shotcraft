@@ -6,7 +6,7 @@
 // 第二轮重设计（沙色日光 · 磨砂玻璃）：
 // - look = sand（米色 + 赤陶）。从近黑底换成午后日光的亮场：胶囊背后是一轮暖色"太阳"和几团柔光，
 //   胶囊用 backdrop-filter 真磨砂（背后的光被它晕开），顶沿白色高光线、上亮下暗的体积、暖色两层落地影。
-// - 主体放大到"看得见材质"：1240×132 的胶囊、56px 听写字、92px 圆形声波按钮；画面只有胶囊 + 底部一枚品牌小标。
+// - 主体放大到"看得见材质"：1240×132 的胶囊、56px 听写字、92px 圆形声波按钮；画面只有胶囊 + 底部一枚 video-shotcraft 品牌小标。
 // - 光的因果做满三层，都挂在同一个 g（1→0）上：胶囊内的赤陶→杏色渐层、背后那轮暖光、胶囊下方的地面反光，
 //   一起随打字退去；声波按钮从"实心暖色"退成"描边中性色"。
 // - 曲线：落位 scale 1.25→1 用强 ease-out（snappy，20f），opacity 前 2f 就满（先"在了"再落位），
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, ramp, mix } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const GLASS_PILL_DICTATION_TYPING_DURATION = 100;
 
@@ -37,7 +38,7 @@ const PX = (1920 - PW) / 2;
 const PY = 540 - PH / 2;
 const BTN = 92;
 const BARS = [30, 16, 24, 13, 20]; // 声波竖条基准高（左高右低的听写图标）
-const TEXT = 'Plan a slow Sunday in Lisbon';
+const TEXT = 'Cut a launch film for my app'; // 28 字，与原句同长：打字窗口 8–64f 不变
 const TYPE0 = 8;
 const CPF = 2; // 帧/字（匀速）
 
@@ -147,11 +148,8 @@ export const GlassPillDictationTyping: React.FC = () => {
         position: 'absolute', left: 0, right: 0, bottom: 112, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 14,
         opacity: ramp(f, 4, 16, EASE.out) * (0.9 + 0.1 * breathe),
       }}>
-        <svg width={30} height={30} viewBox="0 0 30 30">
-          <circle cx={15} cy={15} r={13} fill="none" stroke={L.ink2} strokeWidth={2} />
-          <path d="M9 13c2 4 4 4 6 0s4-4 6 0" fill="none" stroke={WARM} strokeWidth={2.4} strokeLinecap="round" />
-        </svg>
-        <span style={{ ...type(30, 650), color: L.ink2 }}>Wren</span>
+        <ShotcraftMark size={34} tone="light" />
+        <span style={{ ...type(30, 650), color: L.ink2 }}>{BRAND.name}</span>
         <span style={{ ...type(30, 450), color: L.ink3 }}>· speak or type</span>
       </div>
     </AbsoluteFill>

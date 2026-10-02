@@ -3,11 +3,11 @@
 // 停在中央简报卡上打字补完标题（cameo），最后全员聚拢到卡片四周围观。
 //
 // 第二轮重设计（瓷白 · 无限画布的"开工会"）：
-// - look = porcelain（冷白 + 钴蓝）。画面是一块做给镜头看的白板：左上板名、右上在线头像组、
+// - look = porcelain（冷白 + 钴蓝）。画面是 video-shotcraft 的一块分镜白板：左上标志 + 板名、右上在线头像组、
 //   底部浮动工具条，点阵画布上 6 张便签（34px 正文，读得清）+ 中央一张大简报卡。不再是灰阶道具。
 // - 身份编码贯穿全画面：五人五色（Ines 钴蓝 / Kofi 翠绿 / Mei 橘 / Tomás 紫 / Rita 洋红），
 //   便签底色是作者色的淡彩、角落有作者色圆点；右上头像组随每个人入场同帧弹出——"人到了"三处同时成立。
-// - Rita 的光标挂在打字光标上（行内锚点）：标题 "Ship the beta to 2,000 teams." 88px 逐字出现，
+// - Rita 的光标挂在打字光标上（行内锚点）：标题 "Ship a launch film by Friday." 88px 逐字出现，
 //   她的箭头始终跟着插入点走、换行也跟着换；打完后卡片状态 Draft → Ready。
 // - 空间：画布 / 便签 / 简报卡 / 光标四层，全程极缓推镜（1 → 1.045，焦点在卡片），远层便签视差更小、
 //   轻微虚化降对比，近层清晰；光标投影 + 名牌带色辉光。
@@ -24,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, ramp, mix } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt, type, TYPE } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CURSOR_CAST_ENSEMBLE_DURATION = 156;
 
@@ -55,7 +56,7 @@ const RITA = 4;
 
 // 简报卡（画布坐标）
 const CARD = { x: 432, y: 318, w: 1056, h: 432, pad: 56 };
-const TITLE = 'Ship the beta to 2,000 teams.';
+const TITLE = 'Ship a launch film by Friday.'; // 与原句同为 29 字 / 5 个空格：打字节奏与收尾帧不变
 const TITLE_FS = 88;
 const TITLE_TOP = CARD.y + CARD.pad + 66; // 眉题行之下
 const TYPE0 = 48;
@@ -76,12 +77,13 @@ const TYPE_END = TYPE_AT[TYPE_AT.length - 1];
 
 // 便签：作者 = ACTORS 下标；depth 0 近 / 1 远（远层小一点、虚一点、视差小）
 const NOTES = [
-  { x: 96, y: 156, rot: -3.2, owner: 0, depth: 1, title: 'Onboarding under 2 min', meta: '4 votes' },
-  { x: 1540, y: 150, rot: 2.6, owner: 1, depth: 1, title: 'Invite flow v2', meta: 'In review' },
-  { x: 60, y: 560, rot: 2.2, owner: 2, depth: 0, title: 'Beta FAQ draft', meta: '2 comments' },
-  { x: 1580, y: 560, rot: -2.4, owner: 3, depth: 0, title: 'Launch email copy', meta: 'Due Wed' },
-  { x: 560, y: 812, rot: -1.6, owner: 4, depth: 1, title: 'Waitlist: 2,140', meta: 'Live count' },
-  { x: 1090, y: 820, rot: 1.8, owner: 0, depth: 1, title: 'Pricing page', meta: 'Needs copy' },
+  // 便签 = 这支片子的分镜与制作待办（video-shotcraft 的世界）
+  { x: 96, y: 156, rot: -3.2, owner: 0, depth: 1, title: 'Open on a crash zoom', meta: '4 votes' },
+  { x: 1540, y: 150, rot: 2.6, owner: 1, depth: 1, title: 'Logo sting outro', meta: 'In review' },
+  { x: 60, y: 560, rot: 2.2, owner: 2, depth: 0, title: 'Beat map at 120 BPM', meta: '2 comments' },
+  { x: 1580, y: 560, rot: -2.4, owner: 3, depth: 0, title: 'Real page captures', meta: 'Due Wed' },
+  { x: 560, y: 812, rot: -1.6, owner: 4, depth: 1, title: 'Renders: 214', meta: 'Live count' },
+  { x: 1090, y: 820, rot: 1.8, owner: 0, depth: 1, title: 'SFX pass', meta: 'Needs mix' },
 ];
 
 const ARROW = 'M0.5 0.5 L0.5 17.2 L4.7 13.4 L7.3 19.5 L10 18.3 L7.4 12.3 L13 12.3 Z';
@@ -225,7 +227,7 @@ export const CursorCastEnsemble: React.FC = () => {
                 }}>{ACTORS[k].initial}</span>
               ))}
             </span>
-            <span style={{ ...type(30, 540), color: L.ink2 }}>3 owners · 12 tasks</span>
+            <span style={{ ...type(30, 540), color: L.ink2 }}>3 owners · 12 shots</span>
             <span style={{ marginLeft: 'auto', width: 260, height: 10, borderRadius: 5, background: L.surface2, overflow: 'hidden', border: `1px solid ${L.line}` }}>
               <span style={{ display: 'block', height: '100%', width: `${mix(38, 72, ready)}%`, borderRadius: 5, background: L.accent }} />
             </span>
@@ -243,10 +245,10 @@ export const CursorCastEnsemble: React.FC = () => {
       {/* 界面 chrome（不随推镜）：左上板名、右上在线头像组、底部工具条 */}
       <div style={{ position: 'absolute', left: 64, top: 48, display: 'flex', alignItems: 'center', gap: 18 }}>
         <span style={{ width: 48, height: 48, borderRadius: 14, background: L.ink, display: 'grid', placeItems: 'center' }}>
-          <svg width={26} height={26} viewBox="0 0 26 26"><rect x={4} y={4} width={8} height={8} rx={2} fill="#fff" /><rect x={14} y={4} width={8} height={8} rx={2} fill={alpha('#ffffff', 0.5)} /><rect x={4} y={14} width={8} height={8} rx={2} fill={alpha('#ffffff', 0.5)} /><rect x={14} y={14} width={8} height={8} rx={4} fill={L.accent} /></svg>
+          <ShotcraftMark size={34} tone="dark" />
         </span>
-        <span style={{ ...type(32, 700), color: L.ink }}>Q4 Beta Kickoff</span>
-        <span style={{ ...type(26, 500), color: L.ink3 }}>Tessel board</span>
+        <span style={{ ...type(32, 700), color: L.ink }}>Launch Film Kickoff</span>
+        <span style={{ ...type(26, 500), color: L.ink3 }}>{BRAND.name}</span>
       </div>
       <div style={{ position: 'absolute', right: 64, top: 46, display: 'flex', alignItems: 'center', gap: 18 }}>
         <span style={{ display: 'flex' }}>

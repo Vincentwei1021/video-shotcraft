@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { FakeDashboard } from '../../_fixtures/Fixtures';
+import { MARK_PATHS } from '../../_fixtures/Brand';
 import { Grain, Vignette } from '../../_fixtures/Polish';
 
 // wireframe-draw-on〔入场退场〕：界面先以蓝图细线描画成形（stroke-dashoffset
@@ -12,6 +13,8 @@ import { Grain, Vignette } from '../../_fixtures/Polish';
 // - 蓝图化：冷灰蓝细线（外框 1.6px、内件 1.25px）+ 淡蓝点阵底 + 卡角裁切标记，读作设计稿而不是灰色占位；
 // - 扫描前沿身后带一段渐隐暖光（实体层刚"显影"的余温），竖线与 clip 前沿同一 scan 值驱动；
 // - 补 WIREFRAME_DRAW_ON_DURATION = 150。
+// 品牌：FakeDashboard 侧栏/面包屑换成 video-shotcraft 后，线框同步重排——logo 方块里描出镜刻标志两段路径，
+// 侧栏名、面包屑（整组右移 30px）、分段控件、项目名的线长按新字宽对位。
 export const WIREFRAME_DRAW_ON_DURATION = 150;
 
 // FakeDashboard variant A 的几何（1920×1080）：
@@ -21,6 +24,9 @@ const CARD_W = 524;
 const CARD_H = 454;
 const CARD_X = [256, 808, 1360];
 const CARD_Y = [108, 590];
+const MARK_K = 26 / 128; // 侧栏 ShotcraftMark 26px ÷ viewBox 128
+// 侧栏项目名（Launch film / Feature tour / Release reel）与面包屑「video-shotcraft」按实体层实测字宽对位
+const PROJ_W = [72, 77, 76];
 const INK = '#6c7894'; // 蓝图线色
 const PAPER = '#eef0f2';
 
@@ -92,7 +98,12 @@ export const WireframeDrawOn: React.FC = () => {
         {/* 侧栏 */}
         <rect x={1} y={1} width={219} height={1078} rx={2} {...stroke(tSide, 1.6)} />
         <rect x={22} y={28} width={40} height={40} rx={10} {...stroke(draw(24))} />
-        <line x1={73} y1={40} x2={150} y2={40} {...stroke(draw(25))} />
+        {/* video-shotcraft 标志（26px 居中于 logo 方块）：取景框 + 斜切两段先后描出；线宽按缩放反算回 1.25px */}
+        <g transform={`translate(29 35) scale(${MARK_K})`}>
+          <path d={MARK_PATHS.frame} {...stroke(draw(25), 1.25 / MARK_K)} />
+          <path d={MARK_PATHS.cut} {...stroke(draw(28), 1.25 / MARK_K)} />
+        </g>
+        <line x1={73} y1={40} x2={188} y2={40} {...stroke(draw(25))} />
         <line x1={73} y1={58} x2={118} y2={58} {...stroke(draw(26))} />
         <rect x={22} y={96} width={176} height={34} rx={8} {...stroke(draw(26))} />
         {Array.from({ length: 7 }).map((_, i) => {
@@ -109,7 +120,7 @@ export const WireframeDrawOn: React.FC = () => {
         {[437, 475, 513].map((cy, i) => (
           <g key={`p${i}`}>
             <circle cx={40} cy={cy} r={4} {...stroke(draw(41 + i * 2))} />
-            <line x1={59} y1={cy} x2={59 + 30 + i * 6} y2={cy} {...stroke(draw(42 + i * 2))} />
+            <line x1={59} y1={cy} x2={59 + PROJ_W[i]} y2={cy} {...stroke(draw(42 + i * 2))} />
           </g>
         ))}
         <rect x={22} y={1001} width={176} height={50} rx={10} {...stroke(draw(46))} />
@@ -117,9 +128,9 @@ export const WireframeDrawOn: React.FC = () => {
 
         {/* 顶栏 */}
         <line x1={220} y1={72} x2={1920} y2={72} {...stroke(tTop, 1.6)} />
-        <line x1={252} y1={36} x2={328} y2={36} {...stroke(draw(33))} />
-        <line x1={358} y1={36} x2={424} y2={36} {...stroke(draw(34))} />
-        <rect x={456} y={20} width={136} height={32} rx={9} {...stroke(draw(35))} />
+        <line x1={252} y1={36} x2={358} y2={36} {...stroke(draw(33))} />
+        <line x1={388} y1={36} x2={454} y2={36} {...stroke(draw(34))} />
+        <rect x={486} y={20} width={136} height={32} rx={9} {...stroke(draw(35))} />
         <rect x={1512} y={18} width={320} height={36} rx={10} {...stroke(draw(36))} />
         <circle cx={1870} cy={36} r={18} {...stroke(draw(38))} />
 

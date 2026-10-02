@@ -1,0 +1,16 @@
+{
+  "stem": "ChangelogScrollBrake",
+  "changed": true,
+  "brand": [
+    "页眉「Changelog · 28 releases in 2026」→ 镜刻标志 + Changelog + video-shotcraft 字标",
+    "changelog 条目 → video-shotcraft 的更新记录（Crash zoom shot card / Ink Press template / JianYing export…），路线图换成 Vertical 9:16 cuts / Brand kit import 等",
+    "停点条目「Realtime collaboration · Live cursors and presence in every doc.」→「Motion workbench · Every shot, tuned in one place.」"
+  ],
+  "brandEn": [
+    "Header \"Changelog · 28 releases in 2026\" → Frame Chisel mark + Changelog + video-shotcraft wordmark",
+    "Changelog entries → video-shotcraft releases (Crash zoom shot card / Ink Press template / JianYing export…); roadmap rows become Vertical 9:16 cuts / Brand kit import etc.",
+    "Locked entry \"Realtime collaboration · Live cursors and presence in every doc.\" → \"Motion workbench · Every shot, tuned in one place.\""
+  ],
+  "styleKey": "changelog-scroll-brake",
+  "mdChanged": false
+}

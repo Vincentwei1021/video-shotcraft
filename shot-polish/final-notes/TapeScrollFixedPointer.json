@@ -1,0 +1,14 @@
+{
+  "stem": "TapeScrollFixedPointer",
+  "changed": true,
+  "brand": [
+    "眉题「Tideway API · requests / min」→「video-shotcraft · frames / hour」（字标小写）",
+    "标题「Rate limit tripled.」→「Throughput tripled.」，刻度带 / 读数 / ▲200% 不变"
+  ],
+  "brandEn": [
+    "Eyebrow \"Tideway API · requests / min\" → \"video-shotcraft · frames / hour\" (lowercase wordmark)",
+    "Headline \"Rate limit tripled.\" → \"Throughput tripled.\"; tape, readout and ▲200% unchanged"
+  ],
+  "styleKey": "tape-scroll-fixed-pointer",
+  "mdChanged": true
+}

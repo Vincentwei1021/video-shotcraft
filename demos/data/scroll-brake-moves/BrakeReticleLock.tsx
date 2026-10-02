@@ -15,6 +15,7 @@ import React from 'react';
 import { useCurrentFrame, interpolate, Easing } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
 import { Backdrop, FONT, Grain, SpeedBlur, innerHighlight, softShadow, tracking } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const SCROLL_START = 12;
 const BRAKE = 59;
@@ -48,19 +49,19 @@ const scrollAt = (f: number): number => {
   });
 };
 
-// ── 假内容：时间自上而下递增的发布记录，第 30 行 = v2.41 ──
+// ── 假内容：video-shotcraft 时间自上而下递增的发布记录，第 30 行 = v2.41 Motion workbench ──
 const TITLES = [
-  'Keyboard shortcuts for every view', 'Faster search indexing', 'Duplicate notifications', 'Custom fields on issues',
-  'Dark mode for the editor', 'Bulk edit in table view', 'Timezone drift in cycles', 'Slack thread sync', 'Saved filters',
-  'GitHub PR linking', 'Improved import from Jira', 'Drag handle on Safari', 'Project templates', 'Inline image resize',
-  'Audit log export', 'Sub-issue progress bars', 'Stale cache on reconnect', 'Roadmap zoom levels', 'SAML single sign-on',
-  'Markdown tables', 'Faster cold start', 'Emoji picker focus', 'Triage inbox', 'Webhooks v2', 'Granular permissions',
-  'Offline drafts', 'Cursor jump on paste', 'Calendar view', 'Workspace analytics', 'Command menu search',
-  'Realtime collaboration', 'Public API v3', 'Mobile offline mode', 'AI triage suggestions', 'Custom dashboards',
-  'Data residency (EU)', 'Guest access', 'Time tracking',
+  'Crash zoom shot card', 'Faster Remotion renders', 'Audio drift on long renders', 'Beat grid from any BGM',
+  'Dolly zoom shot card', 'Real page captures', 'Caption timing at 60 fps', 'Gallery style filters', 'Whip pans',
+  'Ink Press template', 'Improved SFX ducking', 'Blur seam on 4K export', 'Storyboard from a prompt', 'Inline shot previews',
+  'Poster frame picker', 'Parallax depth layers', 'Font fallback in titles', 'Beat-synced flash cuts', 'Film grain overlay',
+  'Lower thirds', 'Faster cold render', 'Mask edge on Safari', 'Showcase gallery', 'Light leaks', 'Per-shot color looks',
+  'Offline asset cache', 'Cursor path smoothing', 'Timeline markers', 'Typing code block card', 'JianYing export',
+  'Motion workbench', 'Vertical 9:16 cuts', 'Brand kit import', 'Shot A/B compare', 'Multi-track SFX',
+  'Batch renders', 'Review links', 'Voiceover sync',
 ];
 const DESCS = [
-  'Rolled out to all workspaces.', 'Now 3× faster on large teams.', 'Fixed for desktop and web.', 'Available on every plan.',
+  'Rolled out to every project.', 'Now 3× faster on long films.', 'Fixed for macOS and Linux.', 'Ships with the skill today.',
 ];
 // 类型：图标色 + 字形
 const KIND = [
@@ -119,7 +120,7 @@ const Row: React.FC<{ i: number; highlight: number; dim: number }> = ({ i, highl
           {TITLES[i % TITLES.length]}
         </div>
         <div style={{ marginTop: 6, fontSize: 24, color: G.ink2, whiteSpace: 'nowrap' }}>
-          {isTarget ? 'Live cursors and presence in every doc.' : later ? 'Planned for Q4.' : DESCS[i % DESCS.length]}
+          {isTarget ? 'Every shot, tuned in one place.' : later ? 'Planned for Q4.' : DESCS[i % DESCS.length]}
         </div>
       </div>
       <div style={{ flexShrink: 0, fontFamily: FONT.mono, fontSize: 22, color: G.ink3, fontVariantNumeric: 'tabular-nums' }}>
@@ -227,8 +228,8 @@ export const BrakeReticleLock: React.FC = () => {
           zIndex: 3,
         }}
       >
-        <div style={{ width: 30, height: 30, borderRadius: 9, background: `linear-gradient(135deg, #7178e6, ${G.accent})` }} />
-        <div style={{ fontSize: 24, fontWeight: 700, color: G.ink1, letterSpacing: tracking(24) }}>Acme</div>
+        <ShotcraftMark size={32} tone="light" />
+        <div style={{ fontFamily: BRAND.font, fontSize: 24, fontWeight: 700, color: G.ink1, letterSpacing: '0.03em' }}>{BRAND.name}</div>
         <div style={{ fontSize: 24, color: G.ink3 }}>/</div>
         <div style={{ fontSize: 24, fontWeight: 550, color: G.ink2 }}>Changelog</div>
         <div

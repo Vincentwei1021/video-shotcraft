@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const BULLET_TIME_FREEZE_ORBIT_DURATION = 170;
 
@@ -185,10 +186,13 @@ export const BulletTimeFreezeOrbit: React.FC = () => {
             border: `1.5px solid ${alpha('#a0beff', 0.18)}`,
             boxShadow: `inset 0 1.5px 0 ${alpha('#ffffff', 0.12)}, 0 50px 120px -30px ${alpha('#000208', 0.9)}`,
           }}>
-            {/* 头部 */}
+            {/* 头部：video-shotcraft 渲染面板（标志 + 眉题 + 指标名） */}
             <div style={{ position: 'absolute', left: 64, top: 52 }}>
-              <div style={{ ...type(26, 650, { caps: true }), letterSpacing: '0.2em', color: L.accent }}>Inference · eu-west</div>
-              <div style={{ ...type(52, 700), color: L.ink, marginTop: 14 }}>Tokens per second</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <ShotcraftMark size={40} tone="dark" style={{ margin: '-6px -2px -6px -5px' }} />
+                <div style={{ ...type(26, 650, { caps: true }), letterSpacing: '0.2em', color: L.accent }}>Render farm · promo</div>
+              </div>
+              <div style={{ ...type(52, 700), color: L.ink, marginTop: 14 }}>Frames rendered</div>
             </div>
             <div style={{ position: 'absolute', right: 64, top: 46 }}><Odometer e={e} /></div>
 

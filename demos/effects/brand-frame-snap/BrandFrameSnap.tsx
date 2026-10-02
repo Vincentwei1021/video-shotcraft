@@ -2,14 +2,16 @@
 // 一圈粗品牌色画框先于内容长出包住全屏 → 产品窗口落进框内 → 光标点下模式开关 →
 // 画框整圈钴蓝→橘红同帧硬翻色，窗口布局同帧 Design→Dev 换版，框带角标同帧换字。
 //
-// 第二轮重设计（瓷白工作室 · 双模式设计工具「Tessel」）：
+// 第二轮重设计（瓷白工作室 · 双模式设计工具）：品牌轮把产品换成 video-shotcraft——框带右上是镜刻标志 + 字标，
+// 画布上设计的是一张 video-shotcraft 推广卡（开源 $0 / 三条卖点 / Render launch film 按钮）。
 // - look = porcelain（冷白舞台）。画框是唯一的强色：Design = 钴蓝 #2F55FF、Dev = 橘红 #FF5B1F——
 //   色相对冲 + 明度差，翻了一眼就知道"换挡"；窗内 UI 全是中性墨色，强调色只跟着模式走（蓝段不出现橘，橘段不出现蓝）。
 // - 主体是为镜头设计的设计工具窗口（1560×864，原生像素布局不缩放）：左图层栏 / 中画布（一张大字号定价卡，
-//   选中的是 "Start free trial" 按钮）/ 右检查器。翻色同帧：右栏由浅色属性面板换成深色代码面板（CSS），
+//   选中的是 "Render launch film" 按钮）/ 右检查器。翻色同帧：右栏由浅色属性面板换成深色代码面板（CSS），
 //   左栏由图层树换成资产与 token，画布上的蓝色选框换成橘色标注线。版式整体换脸，"模式切换"砸实。
 // - 动机：光标从画布滑向标题栏的 Design | Dev 开关、按下（预备缩 0.9）→ 松开那一帧翻色。
-// - 框带 60px，模式角标 32px 粗体全大写（要读的字 ≥32px），右上角是产品字标。
+// - 框带 60px，模式角标 32px 粗体全大写（要读的字 ≥32px），右上角是 video-shotcraft 标志 + 字标
+//   （色带上用单色白版标志，琥珀斜切在橘红带上会糊掉）。
 //
 // 时间表（30fps，共 140f）：
 //   0–18    预备：画框从 0 长到 60px（snappy，2 帧内就有框）；角标 6f 起从框带下沿升入
@@ -23,6 +25,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const BRAND_FRAME_SNAP_DURATION = 140;
 
@@ -39,7 +42,7 @@ const RIGHT_W = 400;
 const INK = '#14161f';
 const MONO = FONT.mono;
 
-// 窗口内坐标（相对窗口左上）：画布区与定价卡、按钮
+// 窗口内坐标（相对窗口左上）：画布区与推广卡、按钮
 const CANVAS_X = LEFT_W;
 const CANVAS_W = WIN_W - LEFT_W - RIGHT_W; // 860
 const BODY_H = WIN_H - BAR_H; // 800
@@ -106,9 +109,9 @@ const TitleBar: React.FC<{ dev: boolean; color: string }> = ({ dev, color }) => 
       <div key={i} style={{ width: 14, height: 14, borderRadius: 7, background: '#d9dde5', boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.12)' }} />
     ))}
     <div style={{ marginLeft: 22, display: 'flex', alignItems: 'center', gap: 12, fontSize: 22, color: L.ink2, letterSpacing: '-0.01em' }}>
-      <span style={{ color: L.ink3 }}>Checkout</span>
+      <span style={{ color: L.ink3 }}>Landing</span>
       <span style={{ color: L.ink3 }}>/</span>
-      <span style={{ color: L.ink, fontWeight: 600 }}>Pricing card</span>
+      <span style={{ color: L.ink, fontWeight: 600 }}>Promo card</span>
     </div>
     {/* 模式开关：active 段 = 当前模式色（翻色帧同步换） */}
     <div style={{
@@ -146,8 +149,8 @@ const LeftPanel: React.FC<{ dev: boolean; color: string }> = ({ dev, color }) =>
       <>
         <PanelHead>Layers</PanelHead>
         {[
-          ['Pricing card', 0, false], ['Header', 1, false], ['Price', 1, false], ['Features', 1, false],
-          ['Start free trial', 1, true], ['Footnote', 1, false],
+          ['Promo card', 0, false], ['Header', 1, false], ['Price', 1, false], ['Features', 1, false],
+          ['Render launch film', 1, true], ['Footnote', 1, false],
         ].map(([n, d, sel]) => (
           <div key={n as string} style={{
             height: 46, display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 12 + (d as number) * 22, borderRadius: 10,
@@ -239,7 +242,7 @@ const RightPanel: React.FC<{ dev: boolean; color: string }> = ({ dev, color }) =
       <div style={{ height: 34 }} />
       <PanelHead>Prototype</PanelHead>
       <div style={{ height: 48, borderRadius: 10, background: '#f1f3f7', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', fontSize: 20, color: L.ink2, fontWeight: 550 }}>
-        On tap <span style={{ color: L.ink3 }}>→</span> <span style={{ color: L.ink, fontWeight: 650 }}>Checkout</span>
+        On tap <span style={{ color: L.ink3 }}>→</span> <span style={{ color: L.ink, fontWeight: 650 }}>Render queue</span>
       </div>
     </div>
   ) : (
@@ -273,7 +276,7 @@ const RightPanel: React.FC<{ dev: boolean; color: string }> = ({ dev, color }) =
     </div>
   );
 
-// ───────── 画布与定价卡 ─────────
+// ───────── 画布与推广卡（video-shotcraft 开源 skill） ─────────
 const PricingCard: React.FC = () => (
   <div style={{
     position: 'absolute', left: CARD_X, top: CARD_Y, width: CARD_W, height: CARD_H, borderRadius: 28, background: '#ffffff',
@@ -281,16 +284,18 @@ const PricingCard: React.FC = () => (
     boxShadow: `0 0 0 1px rgba(15,30,60,0.06), ${softShadow(18, { color: '#0c1a3a', strength: 0.9 })}`,
   }}>
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <span style={{ fontSize: 22, fontWeight: 750, letterSpacing: '0.14em' }}>PRO</span>
-      <span style={{ fontSize: 18, fontWeight: 650, color: L.ink2, background: '#f1f3f7', padding: '7px 14px', borderRadius: 99 }}>Most popular</span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: BRAND.font, fontSize: 22, fontWeight: 700, letterSpacing: '0.03em' }}>
+        <ShotcraftMark size={30} tone="light" />{BRAND.name}
+      </span>
+      <span style={{ fontSize: 18, fontWeight: 650, color: L.ink2, background: '#f1f3f7', padding: '7px 14px', borderRadius: 99 }}>Open source</span>
     </div>
     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginTop: 30 }}>
-      <span style={{ fontSize: 124, fontWeight: 800, letterSpacing: '-0.055em', lineHeight: 0.9 }}>$24</span>
-      <span style={{ fontSize: 26, color: L.ink2, fontWeight: 500 }}>/ month</span>
+      <span style={{ fontSize: 124, fontWeight: 800, letterSpacing: '-0.055em', lineHeight: 0.9 }}>$0</span>
+      <span style={{ fontSize: 26, color: L.ink2, fontWeight: 500 }}>/ forever</span>
     </div>
-    <div style={{ fontSize: 22, color: L.ink2, marginTop: 14 }}>Everything a growing team needs.</div>
+    <div style={{ fontSize: 22, color: L.ink2, marginTop: 14 }}>Your product, in motion.</div>
     <div style={{ marginTop: 34, display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {['Unlimited projects', 'Shared libraries', 'Priority support'].map((s) => (
+      {['Shot recipe cards', '2.5D camera moves', 'Beat-synced cuts'].map((s) => (
         <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 24, fontWeight: 550 }}><Check />{s}</div>
       ))}
     </div>
@@ -299,7 +304,7 @@ const PricingCard: React.FC = () => (
       background: 'linear-gradient(180deg,#22252f 0%,#14161f 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 14px rgba(12,20,40,0.22)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#fff', fontSize: 28, fontWeight: 650, letterSpacing: '-0.01em',
     }}>
-      Start free trial
+      Render launch film
       <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
     </div>
   </div>
@@ -458,7 +463,7 @@ export const BrandFrameSnap: React.FC = () => {
                   position: 'absolute', left: CANVAS_X, top: BAR_H, width: CANVAS_W, height: BODY_H,
                   backgroundImage: 'radial-gradient(circle, rgba(15,30,60,0.13) 1.2px, transparent 1.5px)', backgroundSize: '28px 28px',
                 }} />
-                <div style={{ position: 'absolute', left: CARD_X, top: CARD_Y - 38, fontSize: 19, fontWeight: 600, color: L.ink3 }}>Pricing card · 468 × 600</div>
+                <div style={{ position: 'absolute', left: CARD_X, top: CARD_Y - 38, fontSize: 19, fontWeight: 600, color: L.ink3 }}>Promo card · 468 × 600</div>
                 <PricingCard />
                 {!dev ? <Selection f={f} color={color} /> : <Redlines f={f} color={color} />}
                 <LeftPanel dev={dev} color={color} />
@@ -501,7 +506,7 @@ export const BrandFrameSnap: React.FC = () => {
           d={`M${inner} ${inner}H${1920 - inner}V${1080 - inner}H${inner}Z M${inner} ${inner + 22}A22 22 0 0 1 ${inner + 22} ${inner}H${1920 - inner - 22}A22 22 0 0 1 ${1920 - inner} ${inner + 22}V${1080 - inner - 22}A22 22 0 0 1 ${1920 - inner - 22} ${1080 - inner}H${inner + 22}A22 22 0 0 1 ${inner} ${1080 - inner - 22}Z`} />
       </svg>
 
-      {/* 框带角标：左上模式名（32px 粗体全大写），右上产品字标；翻色帧同帧换字 */}
+      {/* 框带角标：左上模式名（32px 粗体全大写），右上 video-shotcraft 标志 + 字标（全小写）；翻色帧同帧换字 */}
       <div style={{
         position: 'absolute', left: 66, top: 0, height: inner, display: 'flex', alignItems: 'center', gap: 14,
         fontWeight: 800, fontSize: 30, letterSpacing: '0.16em', color: '#fff', whiteSpace: 'nowrap',
@@ -512,11 +517,11 @@ export const BrandFrameSnap: React.FC = () => {
       </div>
       <div style={{
         position: 'absolute', right: 66, top: 0, height: inner, display: 'flex', alignItems: 'center', gap: 12,
-        fontWeight: 750, fontSize: 30, letterSpacing: '-0.02em', color: '#fff', whiteSpace: 'nowrap',
+        fontFamily: BRAND.font, fontWeight: 700, fontSize: 30, letterSpacing: '0.03em', color: '#fff', whiteSpace: 'nowrap',
         opacity: labelIn * 0.92, transform: `translateY(${((1 - labelIn) * 16).toFixed(2)}px)`,
       }}>
-        <svg width={28} height={28} viewBox="0 0 24 24"><path d="M3 3h8v8H3zM13 13h8v8h-8z" fill="#fff" /><path d="M13 3h8v8h-8zM3 13h8v8H3z" fill="rgba(255,255,255,0.45)" /></svg>
-        tessel
+        <ShotcraftMark size={40} frameColor="#ffffff" cutColor="#ffffff" />
+        {BRAND.name}
       </div>
 
       {/* 翻色白闪：从画框向内的径向闪（框带处最亮、中心约 1/3） */}

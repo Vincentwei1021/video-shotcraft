@@ -6,9 +6,12 @@
 // 质感升级：纸面底加一处柔和顶光 + 极弱暗角颗粒；unicode 杂牌符号换成同一套 1.5 描边线性图标
 // （焦点行图标用唯一强调色）；药丸补顶沿内高光 + 两层软影；走位快段给列表纵向速度拖影
 // （吸附减速段自动归零）；AI 徽标改深色渐变 + 内高光 + 小星芒。时间轴与参数表数值不变。
+// 品牌轮：7 条占位功能名换成 video-shotcraft 的真实功能（镜头配方卡 → 实拍 → 运镜 → 踩点 → 音效 →
+// 工作台 → 渲染），图标同套重画；左侧 "AI" 徽标换成深底 app 图标里的「镜刻」标志。
 import React from 'react';
 import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
 import { FONT, Grain, SpeedBlur, Vignette } from '../../_fixtures/Polish';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const PICKER_CAROUSEL_FEATURE_CYCLE_DURATION = 108; // 3600ms @30fps
 
@@ -17,24 +20,24 @@ const INK = '#111113';
 const MID = '#8A8A8F';
 const ROW_H = 34; // 单行高度
 const ITEMS = [
-  'Data Cleanup',
-  'Direct Message',
-  'Smart Segments',
-  'Batch Actions',
-  'Reward Program',
-  'Automated Flows',
-  'Variant Testing',
+  'Shot recipe cards',
+  'Real page captures',
+  '2.5D camera moves',
+  'Beat-synced cuts',
+  'Film-grade SFX',
+  'Motion workbench',
+  'Remotion render',
 ];
 const ACCENT = '#5b63d3';
-// 16 网格线性图标（与 ITEMS 一一对应）：清理 / 私信 / 分群 / 批量 / 奖励 / 自动流 / 对照实验
+// 16 网格线性图标（与 ITEMS 一一对应）：配方卡 / 截图取景 / 摄影机 / 节拍 / 扬声器 / 调参滑杆 / 渲染播放
 const ICONS: string[][] = [
-  ['M3 13 9.5 6.5', 'M10.5 2.5v2', 'M13.5 5.5h-2', 'M12.6 3.4l-1.3 1.3', 'M7.5 4.5 8 3l.5 1.5L10 5l-1.5.5L8 7l-.5-1.5L6 5z'],
-  ['M3 4.75c0-.7.55-1.25 1.25-1.25h7.5c.7 0 1.25.55 1.25 1.25v5c0 .7-.55 1.25-1.25 1.25H7.5L4.5 13v-2h-.25C3.55 11 3 10.45 3 9.75z'],
-  ['M8 2.75a5.25 5.25 0 1 0 5.25 5.25H8z', 'M10 2.9A5.3 5.3 0 0 1 13.1 6H10z'],
-  ['M8 2.5 13.5 5.5 8 8.5 2.5 5.5z', 'm2.5 8.25 5.5 3 5.5-3', 'm2.5 10.75 5.5 3 5.5-3'],
-  ['m8 2.5 1.7 3.45 3.8.55-2.75 2.7.65 3.8L8 11.2 4.6 13l.65-3.8L2.5 6.5l3.8-.55z'],
-  ['M8.75 2 3.75 9h4l-.5 5 5-7h-4z'],
-  ['M6.25 2.5h3.5', 'M6.75 2.5v3.75L3.4 12.1c-.4.7.1 1.4.9 1.4h7.4c.8 0 1.3-.7.9-1.4L9.25 6.25V2.5', 'M5 9.5h6'],
+  ['M4 2.5h8c.55 0 1 .45 1 1v9c0 .55-.45 1-1 1H4c-.55 0-1-.45-1-1v-9c0-.55.45-1 1-1z', 'M5.75 5.75h4.5', 'M5.75 8h4.5', 'M5.75 10.25h2.5'],
+  ['M2.5 5.5v-3h3', 'M10.5 2.5h3v3', 'M13.5 10.5v3h-3', 'M5.5 13.5h-3v-3', 'M5.5 6h5v4h-5z'],
+  ['M3.25 5h6c.4 0 .75.35.75.75v4.5c0 .4-.35.75-.75.75h-6c-.4 0-.75-.35-.75-.75v-4.5c0-.4.35-.75.75-.75z', 'M10 7.25 13.5 5.5v5L10 8.75'],
+  ['M3 7v2', 'M5.5 4.5v7', 'M8 2.5v11', 'M10.5 5.5v5', 'M13 7v2'],
+  ['M2.5 6.25h2.25L8 3.5v9L4.75 9.75H2.5z', 'M10.5 6a2.8 2.8 0 0 1 0 4', 'M12.25 4.25a5.3 5.3 0 0 1 0 7.5'],
+  ['M2.5 4.5h11', 'M2.5 11.5h11', 'M5.5 2.5v4', 'M10.5 9.5v4'],
+  ['M3.5 3h9c.55 0 1 .45 1 1v8c0 .55-.45 1-1 1h-9c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1z', 'M6.75 6v4l3.25-2z'],
 ];
 const Icon: React.FC<{ d: string[]; color: string }> = ({ d, color }) => (
   <svg width={13} height={13} viewBox="0 0 16 16" fill="none" style={{ display: 'block' }}>
@@ -171,34 +174,25 @@ export const PickerCarouselFeatureCycle: React.FC = () => {
           </div>
           </SpeedBlur>
         </div>
-        {/* 左外侧固定 AI 徽标：黑底白字方形圆角，开头略滞后淡入 */}
+        {/* 左外侧固定 app 图标：深色方形圆角里放 video-shotcraft「镜刻」标志（反白版），开头略滞后淡入 */}
         <div
           style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
-            margin: '-11px 0 0 -186px',
-            width: 26,
-            height: 22,
+            margin: '-12px 0 0 -186px',
+            width: 24,
+            height: 24,
             borderRadius: 6,
             background: 'linear-gradient(160deg, #2a2b31 0%, #111113 100%)',
             boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.22), 0 0 0 0.5px rgba(0,0,0,0.5), 0 2px 5px -1px rgba(16,18,24,0.25)',
-            color: '#fff',
-            gap: 1.5,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontWeight: 700,
-            fontSize: 10,
-            lineHeight: 1,
-            letterSpacing: 0.3,
             opacity: seg(t, 0.02, 0.09),
           }}
         >
-          <svg width={5} height={5} viewBox="0 0 10 10" style={{ display: 'block', marginTop: -3 }}>
-            <path d="M5 0 6.2 3.8 10 5 6.2 6.2 5 10 3.8 6.2 0 5 3.8 3.8z" fill="#a9afff" />
-          </svg>
-          AI
+          <ShotcraftMark size={16} tone="dark" />
         </div>
         <Vignette strength={0.12} inner={0.5} color="#2a2c36" />
         <Grain opacity={0.045} scale={0.25} />

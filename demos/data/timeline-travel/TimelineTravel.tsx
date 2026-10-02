@@ -12,6 +12,7 @@ import React from 'react';
 import { useCurrentFrame, interpolate, Easing, spring } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
 import { Backdrop, FONT, Grain, SpeedBlur, innerHighlight, softShadow, tracking } from '../../_fixtures/Polish';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const TIMELINE_TRAVEL_DURATION = 160;
 
@@ -19,10 +20,11 @@ const W = 1920;
 const AXIS_Y = 700;
 const TICK_GAP = 1400; // 刻度间距（世界坐标）
 const TICKS = [
-  { label: 'v1.0', year: '2021', x: 960, title: 'Public launch', desc: 'Issues, projects and a keyboard-first editor.', metric: '1.2k teams' },
-  { label: 'v2.0', year: '2023', x: 960 + TICK_GAP, title: 'Cycles & roadmaps', desc: 'Plan sprints and ship on a steady cadence.', metric: '9k teams' },
-  { label: 'v3.0', year: '2024', x: 960 + TICK_GAP * 2, title: 'Insights', desc: 'Live analytics across every team and project.', metric: '24k teams' },
-  { label: 'Today', year: '2026', x: 960 + TICK_GAP * 3, title: 'AI agents', desc: 'Agents triage, draft and ship alongside you.', metric: '61k teams' },
+  // video-shotcraft 的版本史（2026 年 7 月起，按月一个大版本）；year = 卡片/刻度上的日期，far = 背景视差大字（月份）
+  { label: 'v1.0', year: 'Jul 2026', far: 'Jul', x: 960, title: 'Public launch', desc: 'Shot recipe cards, a template and a gallery.', metric: 'Remotion render' },
+  { label: 'v2.0', year: 'Aug 2026', far: 'Aug', x: 960 + TICK_GAP, title: 'Camera & sound', desc: '2.5D camera moves with beat-synced SFX.', metric: 'Beat-synced cuts' },
+  { label: 'v3.0', year: 'Sep 2026', far: 'Sep', x: 960 + TICK_GAP * 2, title: 'Motion workbench', desc: 'Every shot, tuned in one place.', metric: 'Live preview' },
+  { label: 'Today', year: 'Oct 2026', far: 'Oct', x: 960 + TICK_GAP * 3, title: 'One-prompt promos', desc: 'Direct the film. Let the agent shoot it.', metric: 'Claude Code & Codex' },
 ];
 const WORLD_W = 960 + TICK_GAP * 3 + 960;
 
@@ -230,7 +232,7 @@ export const TimelineTravel: React.FC = () => {
                 fontVariantNumeric: 'tabular-nums',
               }}
             >
-              {t.year}
+              {t.far}
             </div>
           );
         })}
@@ -276,10 +278,11 @@ export const TimelineTravel: React.FC = () => {
       </div>
       {/* 固定页眉 */}
       <div style={{ position: 'absolute', left: 120, top: 96, opacity: headIn, transform: `translateY(${((1 - headIn) * 8).toFixed(2)}px)` }}>
-        <div style={{ fontSize: 30, fontWeight: 650, letterSpacing: tracking(30, true), textTransform: 'uppercase', color: G.accent }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 30, fontWeight: 650, letterSpacing: tracking(30, true), textTransform: 'uppercase', color: G.accent }}>
+          <ShotcraftMark size={36} tone="light" />
           Release history
         </div>
-        <div style={{ marginTop: 6, fontSize: 56, fontWeight: 720, letterSpacing: tracking(56), color: G.ink1 }}>Five years of shipping</div>
+        <div style={{ marginTop: 6, fontSize: 56, fontWeight: 720, letterSpacing: tracking(56), color: G.ink1 }}>Shipping every month</div>
       </div>
       <Grain opacity={0.05} />
     </div>

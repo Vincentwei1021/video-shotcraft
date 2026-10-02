@@ -1,0 +1,16 @@
+{
+  "stem": "GlowOrbAmbient",
+  "changed": true,
+  "brand": [
+    "助眠 app 标志（月亮方块）+「Nocta」→ 镜刻标志 + video-shotcraft 字标",
+    "标题「Low tide」→「Launch film」；说明「Brown noise · distant swell · 38 dB」→「Beat-synced cuts · film-grade SFX」",
+    "剩余时间 41:12→41:08（白噪音时长）→ 00:42→00:38（一支发布片的时长）"
+  ],
+  "brandEn": [
+    "Sleep-app logo (moon tile) + \"Nocta\" → Frame Chisel mark + video-shotcraft wordmark",
+    "Title \"Low tide\" → \"Launch film\"; subtitle \"Brown noise · distant swell · 38 dB\" → \"Beat-synced cuts · film-grade SFX\"",
+    "Remaining time 41:12→41:08 (a noise track) → 00:42→00:38 (a launch film's length)"
+  ],
+  "styleKey": "glow-orb-ambient",
+  "mdChanged": true
+}

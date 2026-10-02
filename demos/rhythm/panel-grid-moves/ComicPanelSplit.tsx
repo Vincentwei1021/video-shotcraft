@@ -4,11 +4,12 @@
 // - look = custom「漫画墨」：带红相的墨黑底（不是纯黑）+ 奶油纸色缝线 + 一种朱砂红强调（镜头的红圈 / 对焦指示 /
 //   标题里的一个词）。分格的漫画语言靠三样东西撑：12° 斜缝（奶油纸芯 + 墨边）、格角的漫画旁白框、
 //   末格弹入时的一圈速度线。
-// - 主体 = 虚构定焦镜头「SAROS 35mm f/1.2」，全部用 SVG 矢量画（铝筒、橡胶对焦环、距离刻度、红圈、
+// - 主体 = video-shotcraft 定焦镜头「35mm f/1.2」（镜名环刻 video-shotcraft + 品牌短句），全部用 SVG 矢量画（铝筒、橡胶对焦环、距离刻度、红圈、
 //   镜名环形字、镀膜反光、11 片光圈叶片），所以三格的 0.68x / 2.3x / 2.2x 机位都是矢量重绘、字边锐利。
 //   三格 = 同一支镜头的三个机位：① 3/4 侧拍全身（看得见筒身体积）② 对焦环特写（数字在转——手动对焦）
 //   ③ 镜片微距（光圈叶片在收——f/1.2 → f/2）。保活不是缓推，而是"镜头本身在工作"。
-// - 末格吃屏后成为结尾海报：镜片微距铺右半屏，左侧大标题「See in / the dark.」逐行升起。
+// - 三个旁白框按「Shot 01 / 02 / 03」编号（三格 = 三个镜头），第一格写品牌短句前半「Frame motion.」。
+// - 末格吃屏后成为结尾海报：镜片微距铺右半屏，左侧 video-shotcraft 字标 + 大标题「Craft / the shot.」逐行升起。
 //
 // 时间表（30fps，共 156f）：
 //   0–20    全屏 3/4 侧拍（缓推 1→1.04），镜头已在画面里，不从空白起
@@ -23,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, SpeedBlur, Vignette, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const COMIC_PANEL_SPLIT_DURATION = 156;
 
@@ -196,7 +198,7 @@ const Lens: React.FC<{ id: string; tilt?: number; focus: number; aperture: numbe
         {/* 镜名环 */}
         <circle r={219} fill="#111014" />
         <text fill={C.cream2} style={{ font: `600 15px ${FONT.sans}`, letterSpacing: '0.32em' }}>
-          <textPath href={`#${g('name')}`} startOffset="2%">SAROS 35mm 1:1.2 ASPH · ⌀ 62 · MADE FOR NIGHT · SAROS 35mm 1:1.2 ASPH</textPath>
+          <textPath href={`#${g('name')}`} startOffset="2%">{`${BRAND.name} 35mm 1:1.2 · FRAME MOTION · CRAFT THE SHOT · ${BRAND.name} 35mm 1:1.2`}</textPath>
         </text>
         <circle r={170} fill="#060508" />
         {/* 前镜片 */}
@@ -300,13 +302,15 @@ const SpeedLines: React.FC<{ f: number; at: number; cx: number; cy: number }> = 
 
 const Headline: React.FC<{ f: number }> = ({ f }) => (
   <div style={{ position: 'absolute', left: 120, top: 300, color: C.cream }}>
-    <div style={{ ...type(26, 750, { caps: true }), letterSpacing: '0.3em', color: C.red, opacity: ramp(f, TITLE - 2, 10, EASE.out) }}>Saros Optics · 35mm</div>
+    <div style={{ opacity: ramp(f, TITLE - 2, 10, EASE.out) }}>
+      <ShotcraftWordmark size={30} markScale={1.7} gap={16} tone="dark" color={C.cream} />
+    </div>
     <div style={{ ...type(150, 850), marginTop: 26, lineHeight: 0.98 }}>
-      <TextReveal text={'See in\nthe dark.'} by="line" variant="rise" start={TITLE} each={20} gap={6}
+      <TextReveal text={'Craft\nthe shot.'} by="line" variant="rise" start={TITLE} each={20} gap={6}
         unitStyle={(i) => (i === 1 ? { color: C.cream } : {})} />
     </div>
     <div style={{ ...type(38, 500), color: C.cream2, marginTop: 34, maxWidth: 640 }}>
-      <TextReveal text="f/1.2 · eleven blades · focus by hand" by="word" variant="blur" start={TITLE + 14} each={14} gap={3} />
+      <TextReveal text="Three angles, cut on the beat." by="word" variant="blur" start={TITLE + 14} each={14} gap={3} />
     </div>
   </div>
 );
@@ -400,10 +404,10 @@ export const ComicPanelSplit: React.FC = () => {
             {i === 2 && <SpeedLines f={f} at={cut(2)} cx={CAM3.cx} cy={540} />}
             {flash > 0.01 && <div style={{ position: 'absolute', inset: 0, background: C.cream, opacity: 0.55 * flash }} />}
             {/* 旁白框活在格子里：被末格吃屏时一起被盖掉（末格自己的框在吃屏起点淡出）*/}
-            {i === 0 && <Caption f={f} at={cut(0) + CAP} x={88} y={96} kicker="Saros 35" text="The night lens." tilt={-2} />}
-            {i === 1 && <Caption f={f} at={cut(1) + CAP} x={800} y={810} kicker="Focus by hand" text="0.3 m → ∞" tilt={1.5} />}
+            {i === 0 && <Caption f={f} at={cut(0) + CAP} x={88} y={96} kicker="Shot 01 · Wide" text="Frame motion." tilt={-2} />}
+            {i === 1 && <Caption f={f} at={cut(1) + CAP} x={800} y={810} kicker="Shot 02 · Close" text="0.3 m → ∞" tilt={1.5} />}
             {i === 2 && <div style={{ position: 'absolute', inset: 0, opacity: capOut }}>
-              <Caption f={f} at={cut(2) + CAP} x={92} y={96} kicker="Wide open" text="f/1.2" tilt={-1.5} anchor="right" />
+              <Caption f={f} at={cut(2) + CAP} x={92} y={96} kicker="Shot 03 · Macro" text="f/1.2" tilt={-1.5} anchor="right" />
             </div>}
           </div>
         );

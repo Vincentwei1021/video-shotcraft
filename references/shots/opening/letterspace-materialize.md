@@ -1,7 +1,7 @@
 ---
 name: letterspace-materialize
 一句话: 大字距字标全字符并行连续描画结晶——所有字母同帧起笔、笔画像手写一样连续生长、同帧齐收成词；氛围底景上的品牌字标显影
-适用: 片尾/片头品牌字标登场（SUPERHUMAN 式大字距全大写）；章节题字；needs 静谧/高级感的收束帧
+适用: 片尾/片头品牌字标登场（大字距细骨架字标；demo 为 video-shotcraft 全小写）；章节题字；needs 静谧/高级感的收束帧
 时长: 静置 ~15f + 描画 ~50f + 终态静置 ≥30f；全段 3–4s
 能量: 低（静谧仪式感，一次呼吸完成）
 标签: typography、outro
@@ -21,7 +21,9 @@ name: letterspace-materialize
 - 全字符共享同一进度 p：同帧起笔、pathLength 归一保证不同笔画
   长度的字母同帧齐收（不做 per-char delay/jitter）
 - 字形比例：方正略宽（字面宽高比 ≈1.07，实测判例：竖长字形被
-  裁"太竖长"）；细笔画+大字距（letterSpacing ≈0.6em）
+  裁"太竖长"）；细笔画+大字距（letterSpacing ≈0.6em）。demo 字标是
+  video-shotcraft（品牌规范要求全小写）：几何小写单线体，字碗为正圆，
+  64 高视框里基线 59 / x 高 22 / 升部 5，整体 ×1.3 放大、笔画反向缩放保持 5.5px
 - 描画曲线：整体 ease-in-out，中段略快首尾略缓（起笔收笔的手感）
 - 底景：氛围渐变/实拍空镜（暮色山景类），字标是画面唯一动作
 
@@ -43,7 +45,9 @@ name: letterspace-materialize
 - 与 type-assembly-moves 分工：那张是字块组装（位移拼合）；
   本卡笔画从无到有生长，字符不位移
 - 骨架字形需手绘 path（现成字体轮廓是双线勾边，描画观感不同）；
-  9 字形工作量 ≈1h，实战优先复用 demo 里的字形库
+  demo 的 13 个小写字形（v i d e o - s h t c r a f）每个带自己的宽度 w，
+  实战优先复用 demo 里的字形库；多子笔画字母（i 的点、t/f 的横）按
+  描画顺序排在路径末尾，pathLength 归一后仍同帧齐收
 - 原片（superhuman-promo）底景是实拍暮色山景+水面倒影；demo 为
   渐变近似，实战建议用实拍/AI 生成空镜
 

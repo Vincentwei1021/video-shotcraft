@@ -1,5 +1,6 @@
 // pill-chip-slot-cycle-handled — Chip Slot Cycle 胶囊滚轮挤开（motion-lab 定稿转原生 Remotion）
-// 白底句式 "Your [chip] Handled"：深色胶囊内词垂直滚轮轮换（Sales→Workflow→Admin→Reports），
+// 白底句式 "Your [chip] Handled"：深色胶囊内词垂直滚轮轮换（Shots→Camera→Sound→Renders，
+// video-shotcraft 替你包办的四件事：镜头 / 运镜 / 音效 / 渲染），
 // 上下露出灰色幽灵项，胶囊宽度随词长平滑变化，两侧文字被自然挤开收拢。
 // 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
 import React, { useLayoutEffect, useRef, useState } from 'react';
@@ -8,10 +9,10 @@ import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
 export const PILL_CHIP_SLOT_CYCLE_HANDLED_DURATION = 150; // 5000ms @30fps
 
 const WORDS = [
-  { w: 'Sales', e: '⚡' },
-  { w: 'Workflow', e: '📈' },
-  { w: 'Admin', e: '⚙️' },
-  { w: 'Reports', e: '📄' },
+  { w: 'Shots', e: '🎬' },
+  { w: 'Camera', e: '🎥' },
+  { w: 'Sound', e: '🔊' },
+  { w: 'Renders', e: '🎞️' },
 ];
 const FONT = '700 22px -apple-system,system-ui,sans-serif';
 // 兜底词宽（原 effect.js 未挂载时的估算：字符数×13，再加胶囊内留白 74）；

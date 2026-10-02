@@ -9,7 +9,7 @@
 //   不加色——"一词一世界"靠形状说话，不靠颜色。
 // - 版式：词 230px / 800 静态字库（Helvetica Neue，描边不露可变字体内部交叠线），画面正中；
 //   几何放大到画幅级（虚线环 r=400、三圆 r=230），字压在几何上；词下一行 40px 副句给出产品证据；
-//   左上 mono 计数「01 / 03」、底部三段进度条（label 级纹理字，不当内容读）。
+//   左上 mono 计数「01 / 03」、右上镜刻标志 + video-shotcraft 小写字标、底部三段进度条（label 级纹理字，不当内容读）。
 // - 节奏：三拍等长推进但每拍内部「快入—稳—决绝出」：入场 14f snappy、出场 10f exit；
 //   交接重叠 6f；第三拍收白后 hold 26f，镜头整体 1→1.025 极缓推进（不抖）。
 //
@@ -26,6 +26,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const WORD_RELAY_GEOMETRY_DURATION = 180; // 6000ms @30fps
 
@@ -41,9 +42,9 @@ const GOLD = L.accent2;
 
 type Slot = { word: string; sub: string; in0: number; out0: number | null };
 const SLOTS: Slot[] = [
-  { word: 'Faster', sub: 'Builds land in 9 seconds, not 9 minutes.', in0: 2, out0: 52 },
-  { word: 'Tighter', sub: 'Every service in one dependency graph.', in0: 56, out0: 112 },
-  { word: 'Stronger', sub: 'Zero-downtime deploys, by default.', in0: 116, out0: null },
+  { word: 'Faster', sub: 'One prompt to a finished promo.', in0: 2, out0: 52 },
+  { word: 'Tighter', sub: 'Every cut locked to the beat.', in0: 56, out0: 112 },
+  { word: 'Stronger', sub: 'Launch films that feel studio-made.', in0: 116, out0: null },
 ];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -251,8 +252,10 @@ export const WordRelayGeometry: React.FC = () => {
       <div style={{ position: 'absolute', left: 120, top: 96, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.18em', color: L.ink3, opacity: ramp(f, 0, 14, EASE.out) }}>
         <span style={{ color: L.ink }}>{`0${active + 1}`}</span> / 03
       </div>
-      <div style={{ position: 'absolute', right: 120, top: 96, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.18em', color: L.ink3, opacity: ramp(f, 4, 14, EASE.out) }}>
-        KESTREL · BUILD 4
+      {/* 右上品牌签：镜刻标志 + 小写字标（label 级，不抢词） */}
+      <div style={{ position: 'absolute', right: 120, top: 90, display: 'flex', alignItems: 'center', gap: 12, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink3, opacity: ramp(f, 4, 14, EASE.out) }}>
+        <ShotcraftMark size={34} tone="dark" />
+        {BRAND.name}
       </div>
       <div style={{ position: 'absolute', left: 120, right: 120, bottom: 96, display: 'flex', gap: 24 }}>
         {SLOTS.map((s, i) => {

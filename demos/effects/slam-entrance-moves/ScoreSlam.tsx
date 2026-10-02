@@ -4,13 +4,14 @@
 // 第二轮重设计（石墨夜场 · 杯赛终场比分）：
 // - look = graphite（近单色暗场，香槟金点缀）。舞台是夜场球场：画面顶缘四盏泛光灯 0–7f 依次"啪"地亮起
 //   （带下射光锥与雾），远处看台是一层虚化暖色光点。主角是一张 1240×400 的终场比分卡：
-//   两队徽章 + 队名、220px 粗体 tabular 比分「3 – 2」、顶部金色「FULL TIME · 90+4′」签、底部赛事信息行。
+//   两队徽章 + 队名（主队 Shotcraft 用 video-shotcraft 标志作队徽，客队 Keyframes）、220px 粗体 tabular 比分「3 – 2」、
+//   顶部金色「FULL TIME · 90+4′」签、底部赛事信息行。
 // - 节奏「悬 — 砸 — 炸 — 落 — 读」：0–9f 卡片悬在镜头前（2.75→2.6、虚化 10px、上提蓄力）→
 //   9–15f 六帧 ease-in 加速砸落（scale 2.6→0.965、rotate 5°→0、虚化归零）→ 15f 落点帧：
 //   冲击环（白芯 + 金辉，扩散 out-cubic、消散线性解耦）+ 14 片玻璃/金箔碎片抛物线飞散 + 16 道火花 +
 //   竖向偏置震屏 18px 指数衰减 5f + 2f 白闪 → 15–26f 弹簧回弹到 1。
 // - 跟随：两个比分数字晚 3f / 6f 各自"二次落地"（1.16→1 弹簧），胜方数字下划金线擦出；
-//   FULL TIME 签从卡顶滑出；之后标题「Norvik lift the Cup.」逐词升起、副句淡入。
+//   FULL TIME 签从卡顶滑出；之后标题「Shotcraft lifts the Cup.」逐词升起、副句（评价语）淡入。
 //
 // 时间表（30fps，共 135f）：
 //   0–9     预备：泛光灯依次亮起；比分卡悬在镜头前虚化、缓慢上提
@@ -23,6 +24,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, TextReveal, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const SCORE_SLAM_DURATION = 135;
 
@@ -54,7 +56,7 @@ const SPARKS = Array.from({ length: 16 }, (_, i) => ({
 }));
 const LIGHTS = [250, 600, 1320, 1670];
 
-const Crest: React.FC<{ code: string; filled: boolean }> = ({ code, filled }) => (
+const Crest: React.FC<{ code: React.ReactNode; filled: boolean }> = ({ code, filled }) => (
   <div style={{
     width: 108, height: 108, borderRadius: 54, display: 'flex', alignItems: 'center', justifyContent: 'center',
     background: filled ? 'linear-gradient(180deg, #f6f5f1, #cfcdc6)' : 'transparent',
@@ -200,13 +202,13 @@ export const ScoreSlam: React.FC = () => {
             </div>
             {/* 主队 */}
             <div style={{ position: 'absolute', left: 70, top: 88, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: 220 }}>
-              <Crest code="NRV" filled />
-              <div style={{ font: `750 44px ${FONT.sans}`, letterSpacing: '-0.03em' }}>Norvik</div>
+              <Crest code={<ShotcraftMark size={64} tone="light" />} filled />
+              <div style={{ font: `750 44px ${FONT.sans}`, letterSpacing: '-0.03em' }}>{BRAND.short}</div>
             </div>
             {/* 客队 */}
             <div style={{ position: 'absolute', right: 70, top: 88, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, width: 220 }}>
-              <Crest code="SLT" filled={false} />
-              <div style={{ font: `750 44px ${FONT.sans}`, letterSpacing: '-0.03em', color: L.ink2 }}>Saltmere</div>
+              <Crest code="KEY" filled={false} />
+              <div style={{ font: `750 44px ${FONT.sans}`, letterSpacing: '-0.03em', color: L.ink2, whiteSpace: 'nowrap' }}>Keyframes</div>
             </div>
             {/* 比分 */}
             <div style={{ position: 'absolute', left: 0, right: 0, top: 58, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 56, font: `860 220px ${FONT.sans}`, letterSpacing: '-0.05em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
@@ -219,7 +221,7 @@ export const ScoreSlam: React.FC = () => {
             </div>
             {/* 赛事信息行 */}
             <div style={{ position: 'absolute', left: 0, right: 0, bottom: 34, textAlign: 'center', font: `600 26px ${FONT.mono}`, letterSpacing: '0.14em', color: L.ink3 }}>
-              CUP FINAL · HARBOUR PARK · 61,204
+              MOTION CUP FINAL · BUILT ON REMOTION
             </div>
           </div>
 
@@ -243,13 +245,13 @@ export const ScoreSlam: React.FC = () => {
 
           {/* 标题 + 副句 */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: CY + CH / 2 + 92, textAlign: 'center', font: `800 84px ${FONT.sans}`, letterSpacing: '-0.04em', color: L.ink, lineHeight: 1 }}>
-            <TextReveal text="Norvik lift the" by="word" variant="rise" start={36} each={16} gap={4} />
+            <TextReveal text="Shotcraft lifts the" by="word" variant="rise" start={36} each={16} gap={4} />
             <span style={{ color: GOLD }}>
               <TextReveal text=" Cup." by="word" variant="rise" start={48} each={16} gap={4} />
             </span>
           </div>
           <div style={{ position: 'absolute', left: 0, right: 0, top: CY + CH / 2 + 200, textAlign: 'center', font: `500 36px ${FONT.sans}`, color: L.ink2, letterSpacing: '-0.01em', opacity: ramp(frame, 52, 14, EASE.out), transform: `translateY(${mix(12, 0, ramp(frame, 52, 16, EASE.out)).toFixed(2)}px)` }}>
-            First title in 41 years — decided in stoppage time.
+            Camera moves I would have keyframed for a week.
           </div>
         </div>
       </div>

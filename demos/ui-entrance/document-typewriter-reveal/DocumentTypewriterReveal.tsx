@@ -9,7 +9,8 @@
 // - 相机（单调 Hermite 样条，起止无速度突变）：开场 1.42x 斜侧（rotY −18°）特写标题，窗口左上角与舞台光同时入画；
 //   笔尖往下写时相机一路后撤、把斜侧角收小，到全窗（双栏完整入画，Q10）；最后微俯、上移让出底部给一行标语。
 // - 笔尖：深紫 3px caret + 同色柔光；人名标题的强调底改成极光紫 multiply（只染纸不洗字）。
-// - 收尾标语「The weekly brief / writes itself.」——第二行强调色，底部左对齐窗口左缘。
+// - 收尾标语「From screenshot / to showreel.」（video-shotcraft 宣传句：真实截图被拍成镜头）——第二段强调色，底部左对齐窗口左缘。
+//   截图纹理与历史条目是被拍摄的文档本身（与纹理里烤入的条目对齐），保持原样。
 //
 // 时间表（30fps，共 150f）
 //   0–8     标题特写已在画面（窗口 + 光），笔尖在标题起点
@@ -83,12 +84,12 @@ const cueFor = (i: number) => 8 + Math.floor(i / 2) * 4.4;
 const WIPE = 9;
 
 const PAST_WEEKS = [
-  { week: '2026 第 27 周', date: '7月3日', title: '2026-W27 · Foundation Lab Weekly' },
-  { week: '2026 第 26 周', date: '6月26日', title: '2026-W26 · Foundation Lab Weekly' },
-  { week: '2026 第 25 周', date: '6月19日', title: '2026-W25 · Foundation Lab Weekly' },
-  { week: '2026 第 24 周', date: '6月12日', title: '2026-W24 · Foundation Lab Weekly' },
-  { week: '2026 第 23 周', date: '6月5日', title: '2026-W23 · Foundation Lab Weekly' },
-  { week: '2026 第 22 周', date: '5月29日', title: '2026-W22 · Foundation Lab Weekly' },
+  { week: '2026 第 27 周', date: '7月3日', title: '2026-W27 · Shotcraft Weekly' },
+  { week: '2026 第 26 周', date: '6月26日', title: '2026-W26 · Shotcraft Weekly' },
+  { week: '2026 第 25 周', date: '6月19日', title: '2026-W25 · Shotcraft Weekly' },
+  { week: '2026 第 24 周', date: '6月12日', title: '2026-W24 · Shotcraft Weekly' },
+  { week: '2026 第 23 周', date: '6月5日', title: '2026-W23 · Shotcraft Weekly' },
+  { week: '2026 第 22 周', date: '5月29日', title: '2026-W22 · Shotcraft Weekly' },
 ];
 const WEEK_Y0 = 228;
 const WEEK_H = 56;
@@ -246,8 +247,8 @@ export const DocumentTypewriterReveal: React.FC = () => {
 
       {/* 收尾标语：底部，左对齐窗口左缘 */}
       <div style={{ position: 'absolute', left: 250, top: 930, display: 'flex', alignItems: 'baseline', gap: 0, ...type(84, 760), color: L.ink, opacity: tagIn > 0 ? 1 : 0 }}>
-        <TextReveal text="The weekly brief" by="word" variant="rise" start={100} each={16} gap={3} />
-        <TextReveal text="writes itself." by="word" variant="rise" start={108} each={16} gap={3} style={{ color: L.accent, marginLeft: '0.26em' }} />
+        <TextReveal text="From screenshot" by="word" variant="rise" start={100} each={16} gap={3} />
+        <TextReveal text="to showreel." by="word" variant="rise" start={108} each={16} gap={3} style={{ color: L.accent, marginLeft: '0.26em' }} />
       </div>
     </AbsoluteFill>
   );

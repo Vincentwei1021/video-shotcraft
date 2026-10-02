@@ -1,11 +1,11 @@
 // versus-slam 对撞开屏：左右两个半屏（78° 斜切边）从画外加速对冲，沿斜缝砰地撞合；
 // 撞击帧白闪 + 整机震屏指数衰减 + "VS" 圆章盖章压出，切点就是撞击本身，结尾静止 hold。
 //
-// 第二轮重设计（瑞士海报 · 对阵比较 "月结要多久"）：
+// 第二轮重设计（瑞士海报 · 对阵比较 "一支发布片要花多少"）：
 // - look = paper（暖白纸 · 墨 · 朱红），粗黑体海报排版，不用 dashboard。两方 = 两张色块海报：
-//   左「THE OLD WAY」墨黑底 + 纸白 340px「14 days」，右「WITH TALLO」朱红底 + 纸白「9 min」——
+//   左「THE OLD WAY」墨黑底 + 纸白 340px「14 days」，右「WITH VIDEO-SHOTCRAFT」朱红底 + 纸白「1 prompt」——
 //   一墨一朱撞在一起，数字本身就是对比结论；说明文字 44px、清单 32px，都按"能读"排。
-// - 建立段（0–18f）不是空屏：纸面上一行「How long does it take?」（124px，墨线在字带处留空），
+// - 建立段（0–18f）不是空屏：纸面上一行「What does a promo take?」（124px，墨线在字带处留空），
 //   斜缝位置一根墨线从中点向两端长出（预示撞线）；两半屏 ease-in(cubic) 10f 对冲，扫过时把设问吞掉。
 // - 撞击三件套同帧起跑（28f）：纸白闪 0.85→0 共 3f、整机震屏 16px·e^(−t/1.7)、VS 圆章弹簧压出
 //   （damping 12，一次可见过冲）；同帧再发一圈墨色冲击环 + 12 根放射速度线（6f 收）。
@@ -17,12 +17,13 @@
 //   18–28   对冲 10f（ease-in cubic：越来越快 = 砸）
 //   28      撞击：闪 / 震 / 章 / 冲击环 / 速度线
 //   30–44   数字回弹落座；36–60 两侧说明与清单错峰升起（左先右后，4f 错位）
-//   54–70   底部结论条「Close the month before lunch.」从下升起，压在斜缝上
+//   54–70   底部结论条（镜刻标志 +「Direct the film. Let the agent shoot it.」）从下升起，压在斜缝上
 //   70–105  hold 35f：整机 1 → 1.015 极缓推进
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const VERSUS_SLAM_DURATION = 105;
 
@@ -56,24 +57,24 @@ const Side: React.FC<{ side: 'L' | 'R'; f: number }> = ({ side, f }) => {
   const d = left ? 0 : 4;
   const cap = ramp(f, IMPACT + 8 + d, 18, EASE.snappy);
   const list = ramp(f, IMPACT + 14 + d, 18, EASE.snappy);
-  const items = left ? ['Export', 'Reconcile', 'Chase', 'Repeat'] : ['Feeds matched', 'Receipts read'];
+  const items = left ? ['Storyboard', 'Keyframe', 'Render', 'Repeat'] : ['Shots picked', 'Beats synced'];
   return (
     <>
       <div style={{ position: 'absolute', left: x0, top: 140, display: 'flex', alignItems: 'center', gap: 16, ...type(30, 800, { caps: true }), letterSpacing: '0.16em', color: left ? alpha(PAPER, 0.7) : INK }}>
         <span style={{ width: 16, height: 16, background: left ? alpha(PAPER, 0.7) : INK, borderRadius: left ? 0 : 8 }} />
-        {left ? 'The old way' : 'With Tallo'}
+        {left ? 'The old way' : `With ${BRAND.name}`}
       </div>
       <div style={{
         position: 'absolute', left: x0 - 14, top: 196, display: 'flex', alignItems: 'baseline', gap: 22,
         transform: `scale(${numScale.toFixed(4)})`, transformOrigin: 'left bottom',
       }}>
         <span style={{ fontFamily: FONT.sans, fontSize: 360, fontWeight: 900, letterSpacing: '-0.07em', lineHeight: 0.9, color: fg, fontVariantNumeric: 'tabular-nums' }}>
-          {left ? '14' : '9'}
+          {left ? '14' : '1'}
         </span>
-        <span style={{ ...type(96, 800), color: fg }}>{left ? 'days' : 'min'}</span>
+        <span style={{ ...type(96, 800), color: fg }}>{left ? 'days' : 'prompt'}</span>
       </div>
       <div style={{ position: 'absolute', left: x0, top: 590, width: left ? 640 : 620, ...type(44, 600), lineHeight: 1.18, color: fg, opacity: cap, transform: `translateY(${(1 - cap) * 26}px)` }}>
-        {left ? <>Spreadsheets, email threads and three people chasing paper.</> : <>The books close themselves while you sleep.</>}
+        {left ? <>Storyboards, keyframes and three rounds of render notes.</> : <>Your agent shoots, cuts and scores it to the beat.</>}
       </div>
       <div style={{ position: 'absolute', left: x0, top: 800, display: 'flex', gap: 30, width: left ? 680 : 620, opacity: list, transform: `translateY(${(1 - list) * 20}px)` }}>
         {items.map((it, i) => (
@@ -137,9 +138,9 @@ export const VersusSlam: React.FC = () => {
           <>
             <Stage look={P} keyLight={{ x: 0.5, y: 0.2 }} fill={null} vignette={0.14} grain={0} />
             <div style={{ position: 'absolute', left: 0, right: 0, top: 386, textAlign: 'center' }}>
-              <div style={{ ...type(30, 800, { caps: true }), letterSpacing: '0.2em', color: RED, marginBottom: 30 }}>Month-end close</div>
+              <div style={{ ...type(30, 800, { caps: true }), letterSpacing: '0.2em', color: RED, marginBottom: 30 }}>Product launch film</div>
               <div style={{ ...type(124, 880), color: INK }}>
-                <TextReveal text="How long does it take?" by="word" variant="rise" start={1} each={14} gap={3} />
+                <TextReveal text="What does a promo take?" by="word" variant="rise" start={1} each={14} gap={3} />
               </div>
             </div>
             <div style={{
@@ -202,8 +203,8 @@ export const VersusSlam: React.FC = () => {
               height: 84, padding: '0 44px', borderRadius: 42, background: PAPER, display: 'flex', alignItems: 'center', gap: 18, whiteSpace: 'nowrap',
               boxShadow: '0 20px 44px -14px rgba(10,6,4,0.55)', ...type(38, 800), color: INK,
             }}>
-              <span style={{ width: 14, height: 14, borderRadius: 7, background: RED }} />
-              Close the month before lunch.
+              <ShotcraftMark size={44} tone="light" />
+              Direct the film. Let the agent shoot it.
             </div>
           </>
         )}

@@ -3,9 +3,10 @@
 //
 // 第二轮重设计（暗场发布控制台 · "上线那一下"）：
 // - look = midnight（深蓝夜 · 电光蓝 · 青绿点缀），等宽技术感版式。A/B 是同一块发布控制台的两态：
-//   A「Rolling out Halo 4.0」进度卡在 99%、18 个区域格亮了 17 个、日志在滚；
-//   B「Halo 4.0 is live.」18/18 全亮青绿、p95 延迟大数字、三项上线指标。两页网格完全一致，
-//   撕裂扫过时读作"系统状态瞬间跳变"——故障语义正好服务"上线切换"。
+//   A「Rolling out Shotcraft」进度卡在 99%、18 个区域格亮了 17 个、日志在滚；
+//   B「Shotcraft is live.」18/18 全亮青绿、p95 延迟大数字、三项上线指标。两页网格完全一致，
+//   撕裂扫过时读作"系统状态瞬间跳变"——故障语义正好服务"上线切换"。顶栏是 video-shotcraft 的
+//   镜刻标志 + 字标（剪影重影里标志随页面一起单色化）；版本号 4.0.0 只是控制台示意值。
 // - 撕裂的专业讲究：条带不等高（最窄约最宽 1/3）；按条分"能量"（约两成不动、三成满幅、其余轻颤），
 //   位移值过一道指数推向两端；重影改成双色剪影（同一页内容的青绿 / 电光蓝单色副本，±12px 错开、screen 叠加），
 //   挂在条带里随条一起错位——比灰阶明暗重影更"信号"；错位条上沿 1px 亮线 = 撕口切边；
@@ -24,6 +25,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, ramp } from '../../_fixtures/Polish';
 import { LOOKS, alpha, glow, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const GLITCH_DISPLACE_DURATION = 135; // A 44 + 撕裂 16 + 余波/静止 75
 
@@ -159,11 +161,9 @@ const Page: React.FC<{ s: 'A' | 'B'; f: number; tint?: string }> = ({ s, f, tint
 
       {/* 顶栏 */}
       <div style={{ position: 'absolute', left: PAD, top: 76, display: 'flex', alignItems: 'center', gap: 20 }}>
-        <svg width={44} height={44} viewBox="0 0 44 44">
-          <circle cx={22} cy={22} r={18} fill="none" stroke={T.ink} strokeWidth={3.5} />
-          <circle cx={22} cy={22} r={7} fill={markC} />
-        </svg>
-        <span style={{ ...type(38, 700), color: T.ink }}>Halo</span>
+        {/* 品牌标志：正片用暗底反白版；剪影重影（tint）里随页面一起画成单色 */}
+        <ShotcraftMark size={48} tone="dark" frameColor={tint} cutColor={tint} />
+        <span style={{ fontFamily: BRAND.font, fontSize: 38, fontWeight: 700, letterSpacing: '0.03em', color: T.ink }}>{BRAND.name}</span>
         <span style={{ ...type(34, 450), color: T.ink3 }}>/</span>
         <span style={{ ...type(34, 500), color: T.ink2 }}>Releases</span>
       </div>
@@ -189,10 +189,10 @@ const Page: React.FC<{ s: 'A' | 'B'; f: number; tint?: string }> = ({ s, f, tint
         {live ? 'RELEASE 4.0.0 · 18 OF 18 REGIONS' : 'RELEASE 4.0.0 · BUILD 2047'}
       </div>
       <div style={{ position: 'absolute', left: PAD - 6, top: 298, ...type(132, 720), color: T.ink }}>
-        {live ? 'Halo 4.0' : 'Rolling out'}
+        {live ? 'Shotcraft' : 'Rolling out'}
         <br />
         <span style={{ color: live ? T.ink : T.ink2 }}>
-          {live ? <>is <span style={{ color: T.teal, textShadow: T.bg ? glow(M.accent2, 0.5) : undefined }}>live.</span></> : 'Halo 4.0'}
+          {live ? <>is <span style={{ color: T.teal, textShadow: T.bg ? glow(M.accent2, 0.5) : undefined }}>live.</span></> : 'Shotcraft'}
         </span>
       </div>
 
@@ -265,7 +265,7 @@ const Page: React.FC<{ s: 'A' | 'B'; f: number; tint?: string }> = ({ s, f, tint
         position: 'absolute', left: PAD, right: PAD, bottom: 64, display: 'flex', justifyContent: 'space-between',
         fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.08em', color: T.ink3, opacity: 0.8,
       }}>
-        <span>EDGE-RUNNER 4.0.0 · SHA 9F3C2E1</span>
+        <span>{BRAND.name} 4.0.0 · SHA 9F3C2E1</span>
         <span>{live ? 'ROLLOUT COMPLETE' : 'CANARY → GLOBAL'}</span>
       </div>
     </div>

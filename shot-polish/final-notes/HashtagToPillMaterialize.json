@@ -1,0 +1,16 @@
+{
+  "stem": "HashtagToPillMaterialize",
+  "changed": true,
+  "brand": [
+    "话题词「#music」+ 双八分音符图标 → 「#shots」+ 场记板图标（与原词等长，胶囊几何不变）",
+    "成品笔记页：面包屑「Notes / Music」→「Notes / Shots」，标题「My favorite bands」→「My favorite shots」",
+    "正文三行（最爱乐队 / 开车听的歌）→ 点名 video-shotcraft 的镜头：「A few camera moves I keep stealing from video-shotcraft: the crash zoom, the orbit, the whip pan. Welcome. Bring popcorn.」"
+  ],
+  "brandEn": [
+    "Hashtag \"#music\" + beamed-note icon → \"#shots\" + clapperboard icon (same length, pill geometry unchanged)",
+    "Finished note page: breadcrumb \"Notes / Music\" → \"Notes / Shots\", title \"My favorite bands\" → \"My favorite shots\"",
+    "Three body lines (favorite bands / driving songs) → video-shotcraft shots: \"A few camera moves I keep stealing from video-shotcraft: the crash zoom, the orbit, the whip pan. Welcome. Bring popcorn.\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

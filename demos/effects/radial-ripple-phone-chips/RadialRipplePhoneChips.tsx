@@ -1,16 +1,16 @@
 // radial-ripple-phone-chips — 同心波纹手机：四层同心圆错相呼吸如水波，中央手机屏内 feed 自动缓滚，
 // 两侧 chip 先后 spring pop 入场并悬浮。三层动作各自极慢，叠起来让产品定格镜头"活着"。
 //
-// 第二轮重设计（暖沙 · 播客 App「Murmur」）：
+// 第二轮重设计（暖沙 · 手机上的 video-shotcraft 镜头库）：
 // - look = sand。同心圆是四层由深到浅的暖沙色圆盘（2240/1760/1280/840px，铺满画面并出画），
 //   每层有受光上沿与发丝外缘，像沙地上被风吹出的一圈圈涟漪 / 声波；中心一团暖白柔光托住手机。
 // - 主体：按 1080p 原生尺寸搭的手机（430×900，占画高 83%），暖钛金属边框 + 黑边 + 灵动岛 + 侧键 +
-//   玻璃斜反光 + 两层落地投影。屏内是为镜头设计的播客 feed：大标题「Listen now」、带几何插画封面的
-//   单集卡（标题 / 节目 / 时长 / 收听进度）、底部常驻迷你播放条（进度在走、波形在跳）。
+//   玻璃斜反光 + 两层落地投影。屏内是为镜头设计的镜头配方 feed：大标题「Shot library」、带几何插画缩略图的
+//   镜头卡（镜头名 / 分类 / 时长 / 预览进度）、底部常驻迷你预览条（成片配乐在走、波形在跳）。
 //   feed 匀速自动滚动（自动播放语义，不加缓动）。
 // - 两侧 chip：白色大胶囊（36px 字 + 赤陶色图标圆），从手机侧边弹出（spring 过冲一次），
-//   落位后才渐渐介入 ±8px 的悬浮；左「Offline listening」先、右「Smart chapters」后，错开 30f。
-// - 收尾海报：左下角品牌字标「Murmur — Podcasts, unhurried.」在两枚 chip 都落定后升起。
+//   落位后才渐渐介入 ±8px 的悬浮；左「Shot recipe cards」先、右「Remotion render」后，错开 30f。
+// - 收尾海报：左下角镜刻标志 + 字标「video-shotcraft — Every shot, tuned in one place.」在两枚 chip 都落定后升起。
 //
 // 时间表（30fps，共 168f）：
 //   0–26    预备：同心圆第 1 帧就在呼吸；手机从下方 90px 升起落位（snappy，投影同步收紧）
@@ -23,6 +23,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const RADIAL_RIPPLE_PHONE_CHIPS_DURATION = 168; // 5600ms @30fps
 
@@ -49,17 +50,17 @@ const PX = (1920 - PW) / 2;
 const PY = (1080 - PH) / 2;
 const CHIP_GAP = 64; // chip 与手机外缘的间距
 
-// 播客 feed
+// 镜头库 feed（video-shotcraft 的镜头配方卡；prog = 预览进度）
 type Ep = { title: string; show: string; len: string; prog: number; art: number };
 const EPS: Ep[] = [
-  { title: 'The quiet hour', show: 'Slow Radio', len: '42 min', prog: 0.62, art: 0 },
-  { title: 'Why maps lie', show: 'Field Notes', len: '38 min', prog: 0, art: 1 },
-  { title: 'Bread & time', show: 'Kitchen Table', len: '27 min', prog: 0.18, art: 2 },
-  { title: 'Night trains', show: 'The Long Way', len: '51 min', prog: 0, art: 3 },
-  { title: 'Tea, briefly', show: 'Slow Radio', len: '33 min', prog: 0, art: 0 },
-  { title: 'Learning to listen', show: 'Field Notes', len: '46 min', prog: 0.4, art: 1 },
-  { title: 'Last lighthouse', show: 'The Long Way', len: '29 min', prog: 0, art: 3 },
-  { title: 'Sourdough II', show: 'Kitchen Table', len: '35 min', prog: 0, art: 2 },
+  { title: 'Graze face tour', show: 'Camera', len: '4.0 s', prog: 0.62, art: 0 },
+  { title: 'Riso print hit', show: 'Effects', len: '4.0 s', prog: 0, art: 1 },
+  { title: 'Text as mask', show: 'Opening', len: '3.2 s', prog: 0.18, art: 2 },
+  { title: 'Timeline travel', show: 'Data', len: '5.0 s', prog: 0, art: 3 },
+  { title: 'Grain dissolve', show: 'Outro', len: '3.6 s', prog: 0, art: 0 },
+  { title: 'Cursor flyover', show: 'Camera', len: '4.8 s', prog: 0.4, art: 1 },
+  { title: 'Logo sting', show: 'Outro', len: '3.0 s', prog: 0, art: 3 },
+  { title: 'Exploded view', show: 'Camera', len: '5.0 s', prog: 0, art: 2 },
 ];
 
 // 封面插画：四套几何（太阳 / 等高线 / 圆面包 / 轨道），配色限 sand 的赤陶 + 钴蓝 + 中性
@@ -104,16 +105,16 @@ const Art: React.FC<{ k: number; size: number }> = ({ k, size }) => {
 
 const Feed: React.FC = () => (
   <div style={{ padding: '76px 16px 0', fontFamily: SANS, color: L.ink }}>
-    <div style={{ fontSize: 17, fontWeight: 650, letterSpacing: '0.06em', color: L.ink3, textTransform: 'uppercase', marginLeft: 4 }}>Tuesday · 3 new</div>
-    <div style={{ fontSize: 44, fontWeight: 780, letterSpacing: '-0.035em', lineHeight: 1.05, marginLeft: 2, marginTop: 4 }}>Listen now</div>
+    <div style={{ fontSize: 17, fontWeight: 650, letterSpacing: '0.06em', color: L.ink3, textTransform: 'uppercase', marginLeft: 4 }}>Today · 3 new shots</div>
+    <div style={{ fontSize: 44, fontWeight: 780, letterSpacing: '-0.035em', lineHeight: 1.05, marginLeft: 2, marginTop: 4 }}>Shot library</div>
     {/* 精选大卡 */}
     <div style={{ position: 'relative', marginTop: 20, height: 210, borderRadius: 26, overflow: 'hidden', background: `linear-gradient(150deg, #3a2c22 0%, #6b4a33 100%)` }}>
       <div style={{ position: 'absolute', right: -40, top: -50, width: 230, height: 230, borderRadius: '50%', background: `radial-gradient(circle, ${alpha('#ffb27a', 0.9)} 0%, ${alpha(ACCENT, 0.6)} 45%, ${alpha(ACCENT, 0)} 70%)` }} />
-      <div style={{ position: 'absolute', left: 22, top: 22, fontSize: 15, fontWeight: 700, letterSpacing: '0.1em', color: alpha('#fbe7d3', 0.7) }}>NEW SEASON</div>
-      <div style={{ position: 'absolute', left: 22, bottom: 50, fontSize: 30, fontWeight: 760, letterSpacing: '-0.03em', color: '#fff6ec', lineHeight: 1.05, width: 260 }}>Long Way Round</div>
-      <div style={{ position: 'absolute', left: 22, bottom: 22, fontSize: 17, fontWeight: 500, color: alpha('#fbe7d3', 0.75) }}>Slow travel, told slowly · 12 eps</div>
+      <div style={{ position: 'absolute', left: 22, top: 22, fontSize: 15, fontWeight: 700, letterSpacing: '0.1em', color: alpha('#fbe7d3', 0.7) }}>NEW RECIPE</div>
+      <div style={{ position: 'absolute', left: 22, bottom: 50, fontSize: 30, fontWeight: 760, letterSpacing: '-0.03em', color: '#fff6ec', lineHeight: 1.05, width: 260 }}>Crash zoom punch</div>
+      <div style={{ position: 'absolute', left: 22, bottom: 22, fontSize: 17, fontWeight: 500, color: alpha('#fbe7d3', 0.75) }}>Camera move · 2 styles · 1.2 s</div>
     </div>
-    <div style={{ fontSize: 22, fontWeight: 720, letterSpacing: '-0.02em', margin: '26px 4px 12px' }}>Up next</div>
+    <div style={{ fontSize: 22, fontWeight: 720, letterSpacing: '-0.02em', margin: '26px 4px 12px' }}>Recipes</div>
     {EPS.map((e, i) => (
       <div key={i} style={{
         display: 'flex', alignItems: 'center', gap: 14, padding: 12, marginBottom: 12, borderRadius: 22,
@@ -256,7 +257,7 @@ export const RadialRipplePhoneChips: React.FC = () => {
               }}>
                 <Art k={0} size={62} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 19, fontWeight: 680, color: '#fff6ec', letterSpacing: '-0.015em', whiteSpace: 'nowrap' }}>The quiet hour</div>
+                  <div style={{ fontSize: 19, fontWeight: 680, color: '#fff6ec', letterSpacing: '-0.015em', whiteSpace: 'nowrap' }}>Launch film · preview</div>
                   {/* 波形：随帧轻跳（确定性） */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 3, height: 22, marginTop: 6 }}>
                     {Array.from({ length: 22 }, (_, k) => {
@@ -284,21 +285,26 @@ export const RadialRipplePhoneChips: React.FC = () => {
 
       {/* 两侧 chip：左先右后，从手机侧边弹出 */}
       <div style={{ ...chipBase, top: 330, right: 1920 - PX + CHIP_GAP, ...chip(37, 0, -1) }}>
-        <ChipIcon kind="download" />
-        Offline listening
+        <ChipIcon kind="chapters" />
+        Shot recipe cards
       </div>
       <div style={{ ...chipBase, top: 610, left: PX + PW + CHIP_GAP, ...chip(67, 1.8, 1) }}>
-        <ChipIcon kind="chapters" />
-        Smart chapters
+        <ChipIcon kind="download" />
+        Remotion render
       </div>
 
-      {/* 品牌字标（收尾海报） */}
+      {/* 品牌字标（收尾海报）：镜刻标志与字标同拍升起 */}
       <div style={{ position: 'absolute', left: 120, bottom: 104, color: L.ink }}>
-        <div style={{ ...type(54, 780), letterSpacing: '-0.035em' }}>
-          <TextReveal text="Murmur" by="word" variant="rise" start={wordmark} each={18} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+          <div style={{ opacity: ramp(f, wordmark, 10, EASE.out), transform: `translateY(${((1 - ramp(f, wordmark, 18, EASE.snappy)) * 30).toFixed(2)}px)` }}>
+            <ShotcraftMark size={86} tone="light" style={{ margin: '-10px 0' }} />
+          </div>
+          <div style={{ ...type(54, 700), fontFamily: BRAND.font, letterSpacing: '0.01em' }}>
+            <TextReveal text={BRAND.name} by="word" variant="rise" start={wordmark} each={18} />
+          </div>
         </div>
         <div style={{ ...type(32, 450), color: L.ink2, marginTop: 6 }}>
-          <TextReveal text="Podcasts, unhurried." by="word" variant="blur" start={wordmark + 8} each={16} gap={4} />
+          <TextReveal text="Every shot, tuned in one place." by="word" variant="blur" start={wordmark + 8} each={16} gap={4} />
         </div>
       </div>
     </div>

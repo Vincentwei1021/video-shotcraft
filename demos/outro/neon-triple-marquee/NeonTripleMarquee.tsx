@@ -6,7 +6,8 @@
 //   墙下是一条湿地面，亮着的那行在地上投出倒影与色光池。
 // - 灯管三层：暗态玻璃管（同色、低亮、常亮——三行结构永远在）→ 通电彩色管体 + 双层辉光 → 近白热芯；
 //   亮行的光同时溢到身后砖墙上（砖缝被照出来），这是"灯在墙上"而不是"字在屏上"。
-// - 字体换成粗体窄体（Avenir Next Condensed Heavy），三连词 DRAFT / DESIGN / DEPLOY（头韵，recap 用）；
+// - 字体换成粗体窄体（Avenir Next Condensed Heavy），三连词 FRAME / CRAFT / SHIP（video-shotcraft 的
+//   "取景 → 刻镜头 → 交片"，取自品牌短句 Frame motion. Craft the shot.，recap 用）；
 //   词距按 canvas 实测宽度排，分隔用空心菱形 ◇。
 // - 轮唱：周期 42f、相位差 14f，一亮俩暗；每次点亮先打 2 帧点火闪烁（真霓虹的启辉），再余弦软包络。
 //   开场三行按 0/5/10f 依次点火闪烁上电；尾段 124f 起自上而下逐行"断电"（闪两下熄灭），
@@ -62,9 +63,9 @@ const measure = (text: string) => {
 
 type Row = { word: string; color: string; core: string; dir: 1 | -1; speed: number };
 const ROWS: Row[] = [
-  { word: 'DRAFT', color: '#38d9ff', core: '#e9fbff', dir: 1, speed: 9 },
-  { word: 'DESIGN', color: '#ff3d9a', core: '#ffe6f3', dir: -1, speed: 11 },
-  { word: 'DEPLOY', color: '#ffae34', core: '#fff3dc', dir: 1, speed: 9 },
+  { word: 'FRAME', color: '#38d9ff', core: '#e9fbff', dir: 1, speed: 9 },
+  { word: 'CRAFT', color: '#ff3d9a', core: '#ffe6f3', dir: -1, speed: 11 },
+  { word: 'SHIP', color: '#ffae34', core: '#fff3dc', dir: 1, speed: 9 },
 ];
 
 // 点火闪烁序列（确定性）：0/1 门，6 帧后恒 1

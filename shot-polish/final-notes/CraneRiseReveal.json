@@ -1,0 +1,18 @@
+{
+  "stem": "CraneRiseReveal",
+  "changed": true,
+  "brand": [
+    "顶栏蓝色方块 logo +「Relay」→ 镜刻标志 + video-shotcraft 字标；导航 → Shots / Render queue / Timeline / Workbench / Gallery；搜索框 → Search shots…",
+    "页头「LIVE · EUROPE NETWORK / Shipments / 1,284 carriers · 312 hubs / in motion today」→「LIVE · RENDER FARM / Render queue / 1080p · 30 fps · 4 render workers / frames rendered today」",
+    "运单表 → 镜头渲染队列：SHOT（SH-0401…）/ CUT（Cold open → Logo…）/ RECIPE CARD（本库配方卡名）/ FRAMES；状态 In transit/Customs/Delivered/Loading → Rendering/In review/Rendered/Queued",
+    "收尾追踪行由「In transit」翻「Delivered」→ 由「Rendering」翻「Rendered」"
+  ],
+  "brandEn": [
+    "Blue square logo + 'Relay' in the top bar → Frame Chisel mark + video-shotcraft wordmark; nav → Shots / Render queue / Timeline / Workbench / Gallery; search → Search shots…",
+    "Header 'LIVE · EUROPE NETWORK / Shipments / 1,284 carriers · 312 hubs / in motion today' → 'LIVE · RENDER FARM / Render queue / 1080p · 30 fps · 4 render workers / frames rendered today'",
+    "Shipment table → shot render queue: SHOT (SH-0401…) / CUT (Cold open → Logo…) / RECIPE CARD (card names from this library) / FRAMES; statuses In transit/Customs/Delivered/Loading → Rendering/In review/Rendered/Queued",
+    "Closing beat: tracked row flips 'In transit' → 'Delivered' becomes 'Rendering' → 'Rendered'"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

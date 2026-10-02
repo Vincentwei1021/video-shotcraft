@@ -2,8 +2,8 @@
 // 12 根 160px 竖条从左到右错峰翻面，波扫过后整页由 A 换成 B。
 //
 // 第二轮重设计（纸 · 瑞士网格杂志的翻页）：
-// - look = paper。两页是同一本虚构排版季刊《FORMA》的连续两页：A 页暖白纸 + 墨色巨字「Grid.」，
-//   B 页整版朱红 + 奶白巨字「Rhythm.」。明暗与色相反差让波的每一叶都读得清。
+// - look = paper。两页是 video-shotcraft 刊物的连续两页（刊头是 video-shotcraft 字标）：A 页暖白纸 + 墨色巨字「Frame.」，
+//   B 页整版朱红 + 奶白巨字「Craft.」（合起来是品牌短句 Frame motion. Craft the shot.）。明暗与色相反差让波的每一叶都读得清。
 //   版面用 12 栏网格（每栏 160px，发丝线可见）——**栏 = 叶片**，百叶窗就是沿着版式网格翻页，形式与手法同构。
 // - 真 3D 叶片：每叶是 preserve-3d 的双面板（正面 A 切片、背面 B 切片，backface hidden），绕自身竖轴
 //   rotateY 0→180°，共享 1900px 透视——翻到 90° 时叶片侧立、露出叶后的暗槽，暗带随波扫过。
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, ramp } from '../../_fixtures/Polish';
 import { LOOKS, alpha, springAt, stagger, type } from '../../_fixtures/Look';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const BLINDS_SLICE_DURATION = 132;
 
@@ -51,9 +52,9 @@ const RED = '#e5432d';
 const CREAM = '#fffaf3';
 
 // ───────────── 两页版面 ─────────────
-type PageProps = { bg: string; ink: string; sub: string; accent: string; line: string; chapter: string; word: string; dot: string; body: string; page: string; rule?: number };
+type PageProps = { mark: 'dark' | 'light'; bg: string; ink: string; sub: string; accent: string; line: string; chapter: string; word: string; dot: string; body: string; page: string; rule?: number };
 
-const Page: React.FC<PageProps> = ({ bg, ink, sub, accent, line, chapter, word, dot, body, page, rule = 1 }) => (
+const Page: React.FC<PageProps> = ({ mark, bg, ink, sub, accent, line, chapter, word, dot, body, page, rule = 1 }) => (
   <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, background: bg, overflow: 'hidden' }}>
     {/* 12 栏网格发丝线 */}
     {Array.from({ length: STRIPS - 1 }, (_, i) => (
@@ -61,8 +62,11 @@ const Page: React.FC<PageProps> = ({ bg, ink, sub, accent, line, chapter, word, 
     ))}
     {/* 刊头 */}
     <div style={{ position: 'absolute', left: 96, right: 96, top: 92, display: 'flex', alignItems: 'baseline', color: ink }}>
-      <div style={{ ...type(30, 850, { caps: true }), letterSpacing: '0.18em', width: 480 }}>Forma</div>
-      <div style={{ ...type(28, 500), color: sub, flex: 1 }}>Type &amp; Layout Quarterly</div>
+      {/* 刊头字标：video-shotcraft（全小写）；标志按页底色取 tone */}
+      <div style={{ width: 480, alignSelf: 'center' }}>
+        <ShotcraftWordmark size={30} markScale={1.6} gap={14} tone={mark} color={ink} />
+      </div>
+      <div style={{ ...type(28, 500), color: sub, flex: 1 }}>Shot Recipe Journal</div>
       <div style={{ ...type(26, 500, { mono: true }), color: sub }}>Nº 07 — 2026</div>
     </div>
     <div style={{ position: 'absolute', left: 96, right: 96, top: 152, height: 2, background: ink, transform: `scaleX(${rule})`, transformOrigin: '0 50%' }} />
@@ -71,7 +75,7 @@ const Page: React.FC<PageProps> = ({ bg, ink, sub, accent, line, chapter, word, 
       <div style={{ ...type(28, 800, { caps: true }), letterSpacing: '0.2em', color: accent }}>{chapter}</div>
       <div style={{ ...type(52, 560), lineHeight: 1.14, letterSpacing: '-0.025em', marginTop: 26, whiteSpace: 'pre-line' }}>{body}</div>
     </div>
-    {/* 巨字：第 1 栏起；「Rhythm」的 y 下伸部也留 ≥96px 底边距 */}
+    {/* 巨字：第 1 栏起（底边距按原「Rhythm」的下伸部留足） */}
     <div style={{
       position: 'absolute', left: 84, bottom: 156, color: ink, fontFamily: FONT.sans, fontSize: 400, fontWeight: 850,
       letterSpacing: '-0.065em', lineHeight: 0.8, whiteSpace: 'nowrap',
@@ -83,12 +87,12 @@ const Page: React.FC<PageProps> = ({ bg, ink, sub, accent, line, chapter, word, 
 );
 
 const PageA: React.FC = () => (
-  <Page bg="#f3eee4" ink={L.ink} sub={L.ink2} accent={RED} line={alpha(L.ink, 0.07)} chapter="Chapter 01"
-    word="Grid" dot={RED} body={"Every great layout starts\nwith a structure you never see."} page="01 / 02" />
+  <Page mark="light" bg="#f3eee4" ink={L.ink} sub={L.ink2} accent={RED} line={alpha(L.ink, 0.07)} chapter="Chapter 01"
+    word="Frame" dot={RED} body={"Shot recipes for\ncinematic product films."} page="01 / 02" />
 );
 const PageB: React.FC<{ rule?: number }> = ({ rule }) => (
-  <Page bg={RED} ink={CREAM} sub={alpha(CREAM, 0.72)} accent={L.ink} line={alpha(CREAM, 0.13)} chapter="Chapter 02"
-    word="Rhythm" dot={L.ink} body={"Motion is just a grid,\nlaid out in time."} page="02 / 02" rule={rule} />
+  <Page mark="dark" bg={RED} ink={CREAM} sub={alpha(CREAM, 0.72)} accent={L.ink} line={alpha(CREAM, 0.13)} chapter="Chapter 02"
+    word="Craft" dot={L.ink} body={"Direct the film.\nLet the agent shoot it."} page="02 / 02" rule={rule} />
 );
 
 // 一叶的切片：外层 160 宽裁剪，内层整页负偏移对位

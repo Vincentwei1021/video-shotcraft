@@ -5,8 +5,8 @@
 // 第二轮重设计（沙色制图 · Saul Bass 平面海报）：
 // - look = sand（米色纸 + 墨 + 赤陶）。线是 8px 墨色硬线、方头直角，笔头是全片唯一的赤陶色点——
 //   观众的眼睛只需要追这一个点。
-// - 叙事：A = 印刷工作室 App 的「导出海报」进度卡（160px 百分比随线计数，走满 = 线出发的理由）；
-//   B = 线围出的 720×480 画框里长出那张海报（赤陶太阳 + 海军蓝山丘 + 粗黑体字），左侧是展签式标题，
+// - 叙事：A = video-shotcraft 的「渲染发布片」进度卡（160px 百分比随线计数，走满 = 线出发的理由）；
+//   B = 线围出的 720×480 画框里长出这支片的海报（赤陶太阳 + 海军蓝山丘 + 粗黑体品牌短句），左侧是展签式标题，
 //   线的水平段在 B 里刚好成了展签下的基线。
 // - 世界宽 3840（A 左半 / B 右半），一条折线 path 全程 dashoffset 生长：
 //   M 336,760 → H 2880（画框左下角）→ V 280 → H 3600 → V 760 → H 2880 闭合，总长 4944。
@@ -17,7 +17,7 @@
 // 时间表（30fps，共 190f）：
 //   0–4     A 进度卡静置（第 0 帧即在画面里），空轨道
 //   4–40    进度条 0→100%（36f ease-out），百分比与 MB 同步计数
-//   40–46   满格停一拍：状态变「Ready to print」，对勾弹出（弹簧）
+//   40–46   满格停一拍：状态变「Ready to ship」，对勾弹出（弹簧）
 //   46–56   冲出段：线从条尾冲出卡缘到画面 x=1480（两端零速）
 //   56–112  镜头左移 1920px（56f smooth in-out），线同速延伸；~92f 线到画框左下角、开始向上拐
 //   100–126 B 展签标题逐行升起（框外，可以先到）
@@ -29,6 +29,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp, softShadow, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TYPE, alpha, springAt, stagger, type } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const LINE_CARRY_TRANSITION_DURATION = 190;
 
@@ -92,20 +93,20 @@ const Poster: React.FC<{ w: number; h: number; f: number; mini?: boolean }> = ({
       {!mini && (
         <div style={{ position: 'absolute', left: 44 * k, top: 38 * k, overflow: 'hidden' }}>
           <div style={{ transform: `translateY(${((1 - txt) * 110).toFixed(2)}%)`, ...type(72, 900), color: L.ink, lineHeight: 0.9, letterSpacing: '-0.035em' }}>
-            SUNDAY<br />MARKET
+            FRAME<br />MOTION
           </div>
         </div>
       )}
       {!mini && (
         <div style={{ position: 'absolute', left: 44, bottom: 14, ...type(22, 600, { mono: true }), color: CREAM, opacity: txt, letterSpacing: '0.08em' }}>
-          06.10 — RIVER HALL
+          CRAFT THE SHOT.
         </div>
       )}
     </div>
   );
 };
 
-// 场景 A：导出进度卡（760×500 @ 280,300；进度条轨道在卡内 y=760）
+// 场景 A：渲染进度卡（760×500 @ 280,300；进度条轨道在卡内 y=760）
 const ExportCard: React.FC<{ pct: number; f: number }> = ({ pct, f }) => {
   const done = pct >= 99.95;
   const check = springAt(f, 40, { damping: 14, stiffness: 220 });
@@ -121,8 +122,8 @@ const ExportCard: React.FC<{ pct: number; f: number }> = ({ pct, f }) => {
           <Poster w={120} h={80} f={f} mini />
         </div>
         <div>
-          <div style={{ ...type(38, 680), color: L.ink }}>sunday-market.pdf</div>
-          <div style={{ ...type(28, 500), color: L.ink3, marginTop: 8 }}>A2 · 300 dpi · 3 inks</div>
+          <div style={{ ...type(38, 680), color: L.ink }}>launch-film.mp4</div>
+          <div style={{ ...type(28, 500), color: L.ink3, marginTop: 8 }}>1920×1080 · 30 fps · h264</div>
         </div>
       </div>
       <div style={{ position: 'absolute', left: 56, right: 56, top: 236, display: 'flex', alignItems: 'flex-end' }}>
@@ -134,7 +135,7 @@ const ExportCard: React.FC<{ pct: number; f: number }> = ({ pct, f }) => {
                 <path d="M8.5 15.5 13 20l8.5-9" stroke="#fff" strokeWidth={3.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
-            {done ? 'Ready to print' : 'Exporting…'}
+            {done ? 'Ready to ship' : 'Rendering…'}
           </div>
           <div style={{ ...type(170, 780), color: L.ink, marginTop: 4 }}>
             {Math.round(pct)}<span style={{ ...type(TYPE.h3, 650), color: L.ink3, marginLeft: 6 }}>%</span>
@@ -182,23 +183,23 @@ export const LineCarryTransition: React.FC = () => {
             }} />
             {/* A 眉题 */}
             <div style={{ position: 'absolute', left: 280, top: 214, display: 'flex', gap: 18, alignItems: 'baseline', ...type(TYPE.label + 4, 700, { caps: true }), letterSpacing: '0.24em' }}>
-              <span style={{ color: L.accent }}>01</span><span style={{ color: L.ink2 }}>Export</span>
+              <span style={{ color: L.accent }}>01</span><span style={{ color: L.ink2 }}>Render</span>
             </div>
             <ExportCard pct={pct} f={f} />
             {/* B 展签：框外标题，镜头到位前后逐行升起 */}
             <div style={{ position: 'absolute', left: 2080, top: 300, width: 720 }}>
               <div style={{ display: 'flex', gap: 18, alignItems: 'baseline', ...type(TYPE.label + 4, 700, { caps: true }), letterSpacing: '0.24em', opacity: capIn(0) }}>
-                <span style={{ color: L.accent }}>02</span><span style={{ color: L.ink2 }}>Print</span>
+                <span style={{ color: L.accent }}>02</span><span style={{ color: L.ink2 }}>Premiere</span>
               </div>
               <div style={{ ...type(TYPE.h1, 820), color: L.ink, marginTop: 26 }}>
-                {['Sunday', 'Market.'].map((t, k) => (
+                {['Launch', 'film.'].map((t, k) => (
                   <div key={t} style={{ overflow: 'hidden', padding: '0.04em 0 0.14em', margin: '-0.04em 0 -0.14em' }}>
                     <div style={{ transform: `translateY(${((1 - capIn(k + 0.5)) * 115).toFixed(2)}%)` }}>{t}</div>
                   </div>
                 ))}
               </div>
               <div style={{ ...type(TYPE.small, 500), color: L.ink2, marginTop: 30, opacity: capIn(2.2) }}>
-                A2 risograph · three inks · 40 copies
+                Crafted with {BRAND.name} · 30 fps
               </div>
             </div>
             {/* B 画框内：框闭合后才长出海报 */}

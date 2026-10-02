@@ -1,0 +1,18 @@
+{
+  "stem": "PaparazziFlash",
+  "changed": true,
+  "brand": [
+    "颁奖背板 OSTRA / GOLDEN PIXEL 字标平铺 → video-shotcraft 标志与字标交错平铺",
+    "奖牌卡「Golden Pixel · 2026 / App of the Year」→「Best in Motion · 2026 / Shot of the Year」",
+    "特写主信息「No.1 in 38 countries this year.」→「Take 1 first prompt, final cut.」（不写不实排名数字）",
+    "卡底 App「Ostra Maps · Maps that think ahead.」+ 地图钉图标 → video-shotcraft 标志 + 字标 +「Frame motion. Craft the shot.」"
+  ],
+  "brandEn": [
+    "Step-and-repeat backdrop OSTRA / GOLDEN PIXEL wordmarks → alternating video-shotcraft marks and wordmarks",
+    "Award card \"Golden Pixel · 2026 / App of the Year\" → \"Best in Motion · 2026 / Shot of the Year\"",
+    "Close-up line \"No.1 in 38 countries this year.\" → \"Take 1 first prompt, final cut.\" (no unverifiable ranking)",
+    "Card footer app \"Ostra Maps · Maps that think ahead.\" + map-pin icon → video-shotcraft mark + wordmark + \"Frame motion. Craft the shot.\""
+  ],
+  "styleKey": "paparazzi-flash",
+  "mdChanged": true
+}

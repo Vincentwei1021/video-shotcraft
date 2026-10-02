@@ -1,10 +1,10 @@
 // card-stack — 一组卡从屏幕下方逐张 spring 弹入叠成一摞，全员落位后整摞一次性展成扇面——
 // 每张按序号偏转 6.5°、横移 138px、向后退一层 z；扇柄在卡片下缘之外（transform-origin 50% 130%）。
 //
-// 第二轮重设计（瓷白 · 模板库发布）：
+// 第二轮重设计（瓷白 · 模板库发布；品牌轮：video-shotcraft 镜头配方库）：
 // - look = porcelain（冷白 + 墨 + 钴蓝，青绿只做点缀）。卡片放大到 320×440 原生像素（不再走 480×270 设计坐标），
 //   每张是一张为镜头设计的"模板封面"：上 58% 生成式封面图（甘特 / 柱图 / 折线 / 圆环 / 表格 / 日历 / 看板 / 大数字），
-//   下部 30px 标题 + mono 元信息；只有中心那张「Q4 Launch」用钴蓝实色封面——它是结尾被抽出来的主角。
+//   下部 30px 标题 + mono 元信息（每张是一种镜头 / 模板）；只有中心那张「Launch film」用钴蓝实色封面——它是结尾被抽出来的主角。
 // - 卡数 9（奇数）：中心卡独占中位，扇面左右对称；叠压次序 = 序号（像手里摊开的一手牌，左压右），
 //   全程不换 zIndex，避免从"一摞"到"扇面"时顶牌跳变。
 // - 重量感：入场按"越来越快"分布（EASE.exit 错峰，砰——砰—砰-砰砰），每张落座时整摞被压低 5px 再回弹；
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Sheen, Stage, TextReveal, alpha, springAt, stagger, type } from '../../_fixtures/Look';
+import { BRAND, MARK_PATHS, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CARD_STACK_DURATION = 150; // 5000ms @30fps
 
@@ -38,15 +39,15 @@ const FEATURED = 4;
 
 type Kind = 'gantt' | 'bars' | 'line' | 'rings' | 'hero' | 'table' | 'calendar' | 'kanban' | 'metric';
 const CARDS: { title: string; meta: string; kind: Kind; tint: string }[] = [
-  { title: 'Launch plan', meta: 'ROADMAP · 6 WEEKS', kind: 'gantt', tint: '#e9eeff' },
-  { title: 'Weekly report', meta: 'REPORT · 12 SECTIONS', kind: 'bars', tint: '#eef1f6' },
-  { title: 'Growth model', meta: 'MODEL · LIVE DATA', kind: 'line', tint: '#e3f5f1' },
-  { title: 'Team OKRs', meta: 'GOALS · Q4', kind: 'rings', tint: '#e9eeff' },
-  { title: 'Q4 Launch brief', meta: 'BRIEF · FEATURED', kind: 'hero', tint: L.accent },
-  { title: 'Customer CRM', meta: 'DATABASE · 2,418 ROWS', kind: 'table', tint: '#eef1f6' },
-  { title: 'Content calendar', meta: 'PLANNER · OCTOBER', kind: 'calendar', tint: '#e3f5f1' },
-  { title: 'Sprint board', meta: 'BOARD · 3 COLUMNS', kind: 'kanban', tint: '#e9eeff' },
-  { title: 'Revenue', meta: 'DASHBOARD · KPI', kind: 'metric', tint: '#eef1f6' },
+  { title: 'Beat-synced cuts', meta: 'EDIT · 6 TRACKS', kind: 'gantt', tint: '#e9eeff' },
+  { title: 'Bar chart rise', meta: 'DATA · 7 BARS', kind: 'bars', tint: '#eef1f6' },
+  { title: 'Growth line draw', meta: 'CHART · LIVE DRAW', kind: 'line', tint: '#e3f5f1' },
+  { title: 'Gauge readout', meta: 'DATA · 3 RINGS', kind: 'rings', tint: '#e9eeff' },
+  { title: 'Launch film', meta: 'TEMPLATE · FEATURED', kind: 'hero', tint: L.accent },
+  { title: 'Render queue', meta: 'QUEUE · 6 JOBS', kind: 'table', tint: '#eef1f6' },
+  { title: 'Storyboard grid', meta: 'BOARD · 35 FRAMES', kind: 'calendar', tint: '#e3f5f1' },
+  { title: 'Shot list', meta: 'PLAN · 3 ACTS', kind: 'kanban', tint: '#e9eeff' },
+  { title: 'Stat count-up', meta: 'DATA · KPI', kind: 'metric', tint: '#eef1f6' },
 ];
 
 const rand = (n: number) => {
@@ -82,8 +83,8 @@ export const CardStack: React.FC = () => {
 
       {/* 眉题（画框装饰，不随相机） */}
       <div style={{ position: 'absolute', left: 120, top: 96, display: 'flex', alignItems: 'center', gap: 14, opacity: ramp(f, 0, 12, EASE.out) }}>
-        <div style={{ width: 12, height: 12, borderRadius: 3, background: L.accent }} />
-        <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink2 }}>PARCEL · TEMPLATES</div>
+        <ShotcraftMark size={30} tone="light" />
+        <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink2 }}>{`${BRAND.name} · shot recipes`}</div>
       </div>
       <div style={{ position: 'absolute', right: 120, top: 96, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink3, opacity: ramp(f, 4, 12, EASE.out) }}>
         {`${String(START.filter((s) => f >= s + 6).length).padStart(2, '0')} / ${String(N).padStart(2, '0')}`}
@@ -92,7 +93,7 @@ export const CardStack: React.FC = () => {
       {/* 标题：中心卡抽出时升起 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 150, textAlign: 'center' }}>
         <div style={{ ...type(88, 700), color: L.ink }}>
-          <TextReveal text="Start from a template." by="word" variant="rise" start={106} each={18} gap={3} />
+          <TextReveal text="Start from a shot recipe." by="word" variant="rise" start={106} each={18} gap={3} />
         </div>
       </div>
 
@@ -156,7 +157,7 @@ export const CardStack: React.FC = () => {
         position: 'absolute', left: 0, right: 0, top: 268, textAlign: 'center', ...type(34, 450), color: L.ink2,
         opacity: ramp(f, 116, 14, EASE.out), transform: `translateY(${(1 - ramp(f, 116, 18, EASE.snappy)) * 16}px)`,
       }}>
-        Nine starting points. Every one ready to ship.
+        Nine shot recipes. Every one ready to render.
       </div>
     </AbsoluteFill>
   );
@@ -178,7 +179,7 @@ const CardFace: React.FC<{ c: (typeof CARDS)[number]; i: number }> = ({ c, i }) 
           {[0, 1, 2].map((k) => (
             <div key={k} style={{ width: 26, height: 26, borderRadius: 13, marginLeft: k ? -14 : 0, border: `2px solid ${L.surface}`, background: ['#c9d3ea', '#b8e3d9', '#dfe3ec'][(k + i) % 3] }} />
           ))}
-          <div style={{ fontFamily: FONT.sans, fontSize: 17, color: L.ink3, marginLeft: 4 }}>{`Used by ${(1.2 + rand(i) * 8).toFixed(1)}k teams`}</div>
+          <div style={{ fontFamily: FONT.sans, fontSize: 17, color: L.ink3, marginLeft: 4 }}>{`${(2 + rand(i) * 4).toFixed(1)}s · 30 fps`}</div>
         </div>
       </div>
     </div>
@@ -251,7 +252,11 @@ const Cover: React.FC<{ kind: Kind; seed: number }> = ({ kind, seed }) => {
           {[0, 1, 2, 3, 4].map((k) => (
             <circle key={k} cx={250} cy={40} r={60 + k * 44} fill="none" stroke="#ffffff" strokeOpacity={0.22 - k * 0.035} strokeWidth={2} />
           ))}
-          <text x={24} y={200} fontFamily={FONT.sans} fontSize={64} fontWeight={800} fill="#ffffff" letterSpacing="-0.04em">Q4</text>
+          {/* 主角模板的封面主字换成镜刻标志反白版（取景框剪辑纸色 + 琥珀斜切），128 视框缩到 64px，占原「Q4」大字的位置 */}
+          <g transform="translate(14 140) scale(0.5)">
+            <path d={MARK_PATHS.frame} fill={BRAND.paper} />
+            <path d={MARK_PATHS.cut} fill={BRAND.amber} />
+          </g>
           <text x={24} y={234} fontFamily={FONT.sans} fontSize={30} fontWeight={600} fill="#ffffff" fillOpacity={0.85} letterSpacing="-0.02em">Launch</text>
         </svg>
       );

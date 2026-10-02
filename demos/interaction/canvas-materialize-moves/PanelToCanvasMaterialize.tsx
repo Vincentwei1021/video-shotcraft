@@ -2,14 +2,14 @@
 // 侧面板列表行逐个打勾 → 按钮按下 → 三行沿上抛弧线错峰飞出面板、跨容器变形成画布上的三张卡（行→卡形态迁移）。
 //
 // 第二轮重设计（沙色暖场 · 研究洞察上墙）：
-// - look = sand（米色纸面 · 赤陶强调 · 藏青点缀）。虚构研究工具 Fieldnote：右侧「Highlights」面板列着 5 条用户研究
-//   高光（32px 行标题、真实感的标签与作者），左侧是一块开放的讨论板（衬线大标题「Q3 discovery」+ 淡点阵画布）。
+// - look = sand（米色纸面 · 赤陶强调 · 藏青点缀）。产品即 video-shotcraft：右侧「Shot recipes」面板列着 5 张镜头配方卡
+//   （32px 行标题、分类标签与挑卡人），左侧是一块开放的分镜板（标志 + 衬线大标题「Launch film」+ 淡点阵画布）。
 // - 动作链有因果：光标逐个点三个复选框（赤陶色勾 spring 弹出、勾线描出）→ 移到「Add 3 to board」按下 →
 //   三行先"拔起"（预备：放大 2% + 阴影加深 4f）再沿二次贝塞尔上抛弧线飞向画布，错峰 6f。
 // - 形态迁移（本式命门）：位置走弧线先到，宽高 / 圆角晚 3f 收敛（父先子后）；行内容在 u<0.4 淡出、卡内容 u>0.5 淡入，
 //   中段两态绝不同显；飞行中按速度做方向性运动模糊，阴影随弧线抬高变大变虚，落地 4f 压扁回弹 + 接触影收紧。
 // - 行槽不复原：飞走的行塌成赤陶虚线留白「On board」，"迁移"不是"复制"。
-// - 相机：起飞后整体极缓推近（总 2.5%）；落定后板头计数「3 highlights」升起，hold 成海报。
+// - 相机：起飞后整体极缓推近（总 2.5%）；落定后板头计数「3 shots pinned」升起，hold 成海报。
 //
 // 时间表（30fps，共 150f）：
 //   0–18    面板从右滑入（snappy）、5 行错峰；板头衬线标题逐词升起
@@ -17,11 +17,12 @@
 //   48      光标到按钮，52f 按下（scale 0.94 → 回弹）
 //   56/62/68 三行拔起 4f → 起飞 40f（spring damping 17，弧线中点上抬 220px）
 //   ~104–112 三卡依次落地（压扁回弹、倾角 −2.5/1.8/−1.2°），行槽塌成虚线
-//   112–150 hold：板头「3 highlights」计数升起，相机极缓推进
+//   112–150 hold：板头「3 shots pinned」计数升起，相机极缓推进
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const PANEL_TO_CANVAS_MATERIALIZE_DURATION = 150;
 
@@ -57,11 +58,12 @@ const FLY_DUR = 40;
 
 type Item = { title: string; tag: string; who: string; name: string; quote: string; meta: string };
 const ITEMS: Item[] = [
-  { title: 'Setup takes too long', tag: 'Interview', who: 'AO', name: 'Ama Owusu', quote: '“I gave up at the import step — twice.”', meta: '12 clips' },
-  { title: 'Teams share one login', tag: 'Survey', who: 'LB', name: 'Lars Berg', quote: '', meta: '' },
-  { title: 'Exports feed the Monday sync', tag: 'Diary', who: 'PS', name: 'Priya Sethi', quote: '“The CSV is our real weekly report.”', meta: '6 entries' },
-  { title: 'Annual toggle confuses', tag: 'Analytics', who: 'TM', name: 'Tomás Mena', quote: '41% switch plans at the yearly price.', meta: '2 charts' },
-  { title: 'Mobile is read-only', tag: 'Support', who: 'AO', name: 'Ama Owusu', quote: '', meta: '' },
+  // 镜头配方卡（库里真有的卡名）；quote = 挑卡人的备注，meta = 示意时长
+  { title: 'Crash zoom punch-in', tag: 'Camera', who: 'AO', name: 'Ama Owusu', quote: '“Lands right on the beat drop.”', meta: '24 frames' },
+  { title: 'Text as mask opener', tag: 'Opening', who: 'LB', name: 'Lars Berg', quote: '', meta: '' },
+  { title: 'Cursor flyover tour', tag: 'Interaction', who: 'PS', name: 'Priya Sethi', quote: '“Reads like a real screen take.”', meta: '96 frames' },
+  { title: 'Chart axis rescale shock', tag: 'Data', who: 'TM', name: 'Tomás Mena', quote: 'Rescales on the cut, holds two beats.', meta: '72 frames' },
+  { title: 'Grain dissolve outro', tag: 'Outro', who: 'AO', name: 'Ama Owusu', quote: '', meta: '' },
 ];
 const SLOTS = [0, 2, 3]; // 被勾选的行（不连续：读作"挑选"而非"全选"）
 const AV = ['#c4552d', '#3d5a80', '#7c6a4f', '#9a5b3f'];
@@ -214,16 +216,20 @@ export const PanelToCanvasMaterialize: React.FC = () => {
       <AbsoluteFill style={{ transform: `scale(${camS.toFixed(4)})`, transformOrigin: '52% 50%' }}>
         {/* ── 板头 ── */}
         <div style={{ position: 'absolute', left: 120, top: 92 }}>
-          <div style={{ ...type(22, 650, { caps: true }), letterSpacing: '0.2em', color: ACC, opacity: ramp(frame, 2, 12, EASE.out) }}>Fieldnote · Board</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, opacity: ramp(frame, 2, 12, EASE.out) }}>
+            <ShotcraftMark size={34} tone="light" />
+            <span style={{ ...type(26, 680), letterSpacing: '0.01em', color: L.ink }}>{BRAND.name}</span>
+            <span style={{ ...type(22, 650, { caps: true }), letterSpacing: '0.2em', color: ACC }}>· Storyboard</span>
+          </div>
           <div style={{ marginTop: 10, display: 'flex', alignItems: 'baseline', gap: 26 }}>
-            <TextReveal text="Q3 discovery" by="word" variant="rise" start={4} each={18} gap={5}
+            <TextReveal text="Launch film" by="word" variant="rise" start={4} each={18} gap={5}
               style={{ fontFamily: SERIF, fontSize: 84, fontWeight: 600, letterSpacing: '-0.03em', color: L.ink, lineHeight: 1 }} />
             <div style={{ height: 44, overflow: 'hidden' }}>
               <div style={{
                 ...type(32, 500), color: L.ink2, whiteSpace: 'nowrap',
                 transform: `translateY(${((1 - ramp(frame, LIFT_AT[0] + LIFT + 30, 14, EASE.snappy)) * 110).toFixed(1)}%)`,
               }}>
-                <span style={{ color: ACC, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{Math.max(1, doneCount)}</span> highlight{doneCount === 1 ? '' : 's'} pinned
+                <span style={{ color: ACC, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{Math.max(1, doneCount)}</span> shot{doneCount === 1 ? '' : 's'} pinned
               </div>
             </div>
           </div>
@@ -238,10 +244,10 @@ export const PanelToCanvasMaterialize: React.FC = () => {
         }}>
           <div style={{ position: 'absolute', left: 32, top: 34, right: 32 }}>
             <div style={{ display: 'flex', alignItems: 'baseline' }}>
-              <span style={{ ...type(44, 700), color: L.ink }}>Highlights</span>
-              <span style={{ marginLeft: 'auto', ...type(24, 500), color: L.ink3 }}>5 from 14 sessions</span>
+              <span style={{ ...type(44, 700), color: L.ink }}>Shot recipes</span>
+              <span style={{ marginLeft: 'auto', ...type(24, 500), color: L.ink3 }}>5 suggested</span>
             </div>
-            <div style={{ marginTop: 14, ...type(26, 450), color: L.ink2 }}>Pick the ones worth discussing.</div>
+            <div style={{ marginTop: 14, ...type(26, 450), color: L.ink2 }}>Pick the shots for this cut.</div>
           </div>
           {/* 按钮 */}
           <div style={{

@@ -1,7 +1,7 @@
 // beat-step-list-theme-cycle（bear 22.3–24.6s）——三通道节拍器：形容词列表逐拍上移一行、
 // 视口中央固定胶囊"接住"新词并换色、整场底色同拍跟换；行 / 色 / 场锁同一个拍点。
 //
-// 第二轮重设计（look = custom「五套深场换肤」·品牌 Quire 的主题预设片）：
+// 第二轮重设计（look = custom「五套深场换肤」·video-shotcraft 的主题预设片）：
 // - 版式改成一句话：左侧静止的细体「Make it」(132px / 300) + 右侧 960px 胶囊里的形容词 (132px)，
 //   读作"Make it modern → playful → expressive → BOLD → yours."，最后一拍落在口号上。
 // - 每个主题 = 胶囊色 + 场底色 + 胶囊上的字色 + **选中词的字体气质**（无衬线 / 圆体 / 衬线斜体 /
@@ -17,12 +17,13 @@
 //   0–16    入场：「Make it」与列表由虚到实上浮，胶囊横向展开（snappy）
 //   16–30   铺垫静置（极缓推镜 1.0→1.03 全程），观众读清"这是个列表"
 //   30/48/66/84  四拍（BEAT_LEN 18f ≈ 100BPM）：拍头 6f 陡 ease-out 跳变 + squash，其余 12f 静置
-//   84–96   末拍余波：口号行「One system. Every mood.」逐词升起
+//   84–96   末拍余波：口号行「Your product, in motion.」逐词升起
 //   96–140  hold：停在 "Make it yours." 黄 / 深海军蓝的终态海报
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { FONT, Grain, SpeedBlur, Vignette, mix, ramp, velocity, EASE } from '../../_fixtures/Polish';
 import { SERIF, TextReveal, alpha } from '../../_fixtures/Look';
+import { PITCH, ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const BEAT_STEP_LIST_THEME_CYCLE_DURATION = 140; // 铺垫 30f + 4 拍 × 18f + 末拍后 hold 38f
 
@@ -94,18 +95,6 @@ const clock = (frame: number) => {
   const step = beat === 0 ? 0 : beat - 1 + tInBeat; // 连续步进量
   return { beat, tInBeat, step, sinceBeat: beat === 0 ? 99 : frame - beatStart };
 };
-
-const QuireMark: React.FC<{ color: string; accent: string }> = ({ color, accent }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-    <svg width={34} height={34} viewBox="0 0 34 34">
-      <rect x={1} y={1} width={14} height={14} rx={4} fill={color} />
-      <rect x={19} y={1} width={14} height={14} rx={7} fill={color} opacity={0.55} />
-      <rect x={1} y={19} width={14} height={14} rx={7} fill={color} opacity={0.55} />
-      <rect x={19} y={19} width={14} height={14} rx={4} fill={accent} />
-    </svg>
-    <span style={{ fontFamily: FONT.sans, fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', color }}>Quire</span>
-  </div>
-);
 
 export const BeatStepListThemeCycle: React.FC = () => {
   const frame = useCurrentFrame();
@@ -231,7 +220,7 @@ export const BeatStepListThemeCycle: React.FC = () => {
 
       {/* 顶栏：品牌 + 主题计数（挂同一个整数拍，拍头 6f 竖向滚一格） */}
       <div style={{ position: 'absolute', left: MARGIN, top: 96, opacity: ramp(frame, 0, 12, EASE.out) }}>
-        <QuireMark color="rgba(255,255,255,0.92)" accent={css(pill)} />
+        <ShotcraftWordmark size={30} markScale={1.6} gap={14} tone="dark" />
       </div>
       <div style={{
         position: 'absolute', right: MARGIN, top: 98, display: 'flex', alignItems: 'baseline', gap: 18,
@@ -271,7 +260,7 @@ export const BeatStepListThemeCycle: React.FC = () => {
         position: 'absolute', right: MARGIN, top: 896, fontSize: 40, fontWeight: 500,
         color: 'rgba(255,255,255,0.72)', letterSpacing: '-0.015em', whiteSpace: 'nowrap',
       }}>
-        <TextReveal text="One system. Every mood." by="word" variant="rise" start={LAST + 6} each={16} gap={3} />
+        <TextReveal text={PITCH.en.taglines[5]} by="word" variant="rise" start={LAST + 6} each={16} gap={3} />
       </div>
 
       <Vignette strength={0.5} inner={0.42} color="#020306" />

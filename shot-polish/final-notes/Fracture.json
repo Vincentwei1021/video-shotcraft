@@ -1,0 +1,14 @@
+{
+  "stem": "Fracture",
+  "changed": true,
+  "brand": [
+    "海报主标题「Every piece, in place.」→ video-shotcraft 字标（镜刻标志 + 小写字标），眉题 INTRODUCING 保留",
+    "字标字号与位置按瓦片网格对齐，标志整块落在一片瓦片里，聚合 / 飞散时随碎片完整进出"
+  ],
+  "brandEn": [
+    "Poster headline “Every piece, in place.” → video-shotcraft wordmark (Frame Chisel mark + lowercase name); INTRODUCING eyebrow kept",
+    "Wordmark sized and placed on the tile grid so the mark sits inside a single tile and flies in/out intact"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

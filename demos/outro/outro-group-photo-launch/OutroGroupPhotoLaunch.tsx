@@ -7,16 +7,18 @@
 // 190px 延长线射出；crane 运镜 perspective rotateX(4°→0) + scale 落下后缓推；
 // 发布会三件套：开场光带扫过、字标背后舞台光、20 颗确定性金尘上飘；背景页 blur 化
 // 景深；落定后 sign-off hold 30f。outro 不加解说 caption 保持干净。
+// 品牌轮：字标 = video-shotcraft「镜刻」标志 + 全小写字标（品牌字体），标志与字母同一套 letterpress
+// 入场（标志先压 4f）；下方眉题换成品牌短句。背景页 / 合影元素是真实截图纹理，里面的字保留。
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { PageCam2D } from '../../_fixtures/PageCam2D';
 import { EASE, Grain, SpeedBlur, ramp, velocity } from '../../_fixtures/Polish';
 import layout from '../../_textures/live-layout.json';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const OUTRO_GROUP_PHOTO_LAUNCH_DURATION = 145;
 
-const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
-const LETTERS = 'AI Foundation Lab'.split('');
+const LETTERS = BRAND.name.split('');
 const PAGE_H = layout.projects.pageH;
 const WBR_PAGE_H = layout.wbr.pageH;
 
@@ -279,10 +281,25 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', pointerEvents: 'none' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
-            fontFamily: SERIF, fontSize: 148, fontWeight: 600, color: 'oklch(18% 0.006 82)', letterSpacing: `${wordSpacing}em`, display: 'flex',
+            fontFamily: BRAND.font, fontSize: 118, fontWeight: 700, lineHeight: 1.18, color: BRAND.ink, letterSpacing: `${0.03 + wordSpacing}em`, display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
             // letterpress：下沿 1px 纸面高光 + 一层极软的环境影，让字标"压"在合影之上而不是浮在纸上
             textShadow: '0 1px 0 rgba(255,253,248,0.75), 0 14px 36px rgba(60,44,24,0.14)',
           }}>
+            {(() => {
+              // 标志先压：比首字母早 4f，同一套 letterpress（上抬 + 放大 + 虚焦 → 落定）
+              const t = interpolate(frame, [38, 46], [0, 1], {
+                extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.2, 0.75, 0.3, 1),
+              });
+              return (
+                <div style={{
+                  marginRight: 36, opacity: t, transform: `translateY(${(1 - t) * 28}px) scale(${1.35 - 0.35 * t})`,
+                  filter: t < 0.995 ? `blur(${(1 - t) * 8}px)` : undefined,
+                }}>
+                  <ShotcraftMark size={154} tone="light" />
+                </div>
+              );
+            })()}
             {LETTERS.map((ch, i) => {
               const delay = Math.round(42 + i * 1.8);
               const t = interpolate(frame, [delay, delay + 8], [0, 1], {
@@ -314,7 +331,7 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
             fontFamily: MONO, fontSize: 32, letterSpacing: '0.16em', color: 'oklch(42% 0.008 82)', marginTop: 30, textTransform: 'uppercase',
             opacity: tag, transform: `translateY(${(1 - tag) * 6}px)`,
           }}>
-            Team Research Console
+            {PITCH.en.motto}
           </div>
         </div>
       </AbsoluteFill>

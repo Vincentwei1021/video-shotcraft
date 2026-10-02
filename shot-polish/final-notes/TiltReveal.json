@@ -1,0 +1,16 @@
+{
+  "stem": "TiltReveal",
+  "changed": true,
+  "brand": [
+    "顶栏「Meridian」圆环 logo + 名字 → video-shotcraft 标志（暗底反白版）+ 字标",
+    "导航 Signals / Reports / Teams → Shots / Renders / Gallery；眉题「FY 2026 · Q3 Overview」→「Render studio · Q3 Overview」",
+    "大标题「Revenue is up 38%」→「Renders are up 38%」；KPI 换成 Frames rendered / Shots rendered / Cuts on the beat（示意值）"
+  ],
+  "brandEn": [
+    "Top bar \"Meridian\" ring logo + name → video-shotcraft mark (reversed for dark) + wordmark",
+    "Nav Signals / Reports / Teams → Shots / Renders / Gallery; eyebrow \"FY 2026 · Q3 Overview\" → \"Render studio · Q3 Overview\"",
+    "Headline \"Revenue is up 38%\" → \"Renders are up 38%\"; KPIs → Frames rendered / Shots rendered / Cuts on the beat (sample values)"
+  ],
+  "styleKey": "tilt-reveal",
+  "mdChanged": false
+}

@@ -1,0 +1,16 @@
+{
+  "stem": "TextColumnConverge",
+  "changed": true,
+  "brand": [
+    "末词「RAYCAST」→ 全小写字标 video-shotcraft，合拢成「NEW video-shotcraft」（咬合终点按字符数重算，仍居中于 960）",
+    "8 个 Raycast 特性词 → video-shotcraft 特性（SHOT RECIPE CARDS / PAGE CAPTURES / 2.5D CAMERA MOVES / BEAT-SYNCED CUTS / FILM-GRADE SFX / MOTION WORKBENCH / REMOTION RENDER / JIANYING EXPORT）",
+    "小字「COMING 2026」→ 品牌短句后半「CRAFT THE SHOT.」"
+  ],
+  "brandEn": [
+    "Final word 'RAYCAST' → lowercase wordmark video-shotcraft, converging into 'NEW video-shotcraft' (merge end recomputed from char count, still centered on 960)",
+    "8 Raycast feature words → video-shotcraft features (SHOT RECIPE CARDS … JIANYING EXPORT)",
+    "Subline 'COMING 2026' → motto half 'CRAFT THE SHOT.'"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

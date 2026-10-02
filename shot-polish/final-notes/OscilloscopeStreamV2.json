@@ -1,0 +1,16 @@
+{
+  "stem": "OscilloscopeStreamV2",
+  "changed": true,
+  "brand": [
+    "眉题虚构产品「Sonde」→ video-shotcraft 标志 + 字标",
+    "「api-gateway · prod · req/s」→「render-farm · prod · fps」，读数与 Burst 标签单位 req/s → fps",
+    "副读数「p99 latency / Error rate」→「p99 frame time / Failed jobs」"
+  ],
+  "brandEn": [
+    "Fictional product \"Sonde\" in the eyebrow → video-shotcraft mark + wordmark",
+    "\"api-gateway · prod · req/s\" → \"render-farm · prod · fps\"; readout and Burst tag unit req/s → fps",
+    "Side readouts \"p99 latency / Error rate\" → \"p99 frame time / Failed jobs\""
+  ],
+  "styleKey": "oscilloscope-stream",
+  "mdChanged": true
+}

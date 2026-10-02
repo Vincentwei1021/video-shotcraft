@@ -1,15 +1,15 @@
 // mosaic-reframe — 12 张瓦片在三种排版间连续变形：规则网格 → feature mosaic → 对角瀑布串。
 // 位置 / 宽高 / 旋转各自独立插值（不走 transform 整体缩放），逐片错峰，段间留 hold。
 //
-// 第二轮重设计（暖沙 · 胶片相册 Folio）：
-// - look = sand（米色 · 赤陶）。主体是虚构相册产品「Folio」的一个夏日影集：12 张程序绘制的
+// 第二轮重设计（暖沙 · 胶片分镜板）：
+// - look = sand（米色 · 赤陶）。主体是 video-shotcraft 的一块分镜板（12 个镜头的定帧）：12 张程序绘制的
 //   "胶片照片"（落日海面 / 沙丘 / 拱门 / 雾山 / 泳池 / 柑橘静物 / 棕榈影 / 麦田八式，暖调统一），
 //   1920 原生坐标直接排版（不再从 480 设计坐标放大）。
 // - 因果：右上角分段控件 Grid / Mosaic / Cascade 是"布局的开关"——赤陶色指示胶囊先滑到下一档
 //   （父先动），瓦片晚 4f 开始重排（子跟随），让观众看见"一次切换 → 整版重新思考"。
 // - 三态三种语气：A 规则网格（档案）→ B feature mosaic（首图占 3×2，压上衬线大字图注 = 策展）
 //   → C 对角瀑布（每张变成带白边的相纸，-15° 起每张 +3° 递增旋转，像一手牌被摊开 = 态度），
-//   C 态左下留白处升起衬线大标题「Summer, in sequence.」，尾帧是一张完整的影集海报。
+//   C 态左下留白处升起衬线大标题「Every shot, in sequence.」，尾帧是一张完整的分镜海报。
 // - 运动：每片 x/y 用强 in-out（0.75,0,0.15,1）果断换位，w/h 晚 2f、旋转晚 4f 收敛（位置先到）；
 //   换位途中按段进度 sin 包络"抬起"（放大 3.5% + 阴影变大变虚），落位贴回；B→C 旋转带一次轻过冲。
 // - 错峰：A→B 自左上主图起按序号波浪扫过（先密后疏）；B→C 像发牌一样按序号依次摊开。
@@ -27,6 +27,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, bezier, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, TextReveal, alpha, stagger, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const MOSAIC_REFRAME_DURATION = 214;
 
@@ -282,20 +283,21 @@ export const MosaicReframe: React.FC = () => {
       <Stage look={L} keyLight={{ x: 0.28, y: 0.02 }} fill={{ x: 0.9, y: 0.95 }} />
 
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: '50% 46%' }}>
-        {/* 页眉：字标 + 影集名 */}
-        <div style={{ position: 'absolute', left: 96, top: 96, display: 'flex', alignItems: 'baseline', gap: 22, color: L.ink }}>
-          <span style={{ ...type(48, 760), letterSpacing: '-0.035em' }}>
-            Folio<span style={{ color: L.accent }}>.</span>
-          </span>
-          <span style={{ ...type(32, 450), color: L.ink2 }}>Summer Archive</span>
-          <span style={{ ...type(32, 450), color: L.ink3 }}>· 12 sets</span>
+        {/* 页眉：品牌标志 + 小写字标 + 分镜板名（标志按亮底 light 版；字标与分镜名同一基线）。
+            总宽压在 x≈620 以内——C 态首张相纸的左上角在 x≈650，页眉再长会被它盖住 */}
+        <div style={{ position: 'absolute', left: 96, top: 92, height: 72, display: 'flex', alignItems: 'center', gap: 18, color: L.ink }}>
+          <ShotcraftMark size={50} tone="light" />
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 20 }}>
+            <span style={{ fontFamily: BRAND.font, fontSize: 36, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1 }}>{BRAND.name}</span>
+            <span style={{ ...type(32, 450), color: L.ink2 }}>Storyboard</span>
+          </div>
         </div>
         <Segmented frame={frame} />
 
         {/* C 态大标题（左下留白处） */}
         <div style={{ position: 'absolute', left: 96, top: 676, color: L.ink }}>
           <div style={{ ...type(124, 500, { serif: true }), letterSpacing: '-0.035em', lineHeight: 1.0 }}>
-            <TextReveal text="Summer," start={HEAD} by="word" variant="rise" each={20} gap={5} />
+            <TextReveal text="Every shot," start={HEAD} by="word" variant="rise" each={20} gap={5} />
             <br />
             <TextReveal text="in sequence." start={HEAD + 6} by="word" variant="rise" each={20} gap={5}
               unitStyle={() => ({ fontStyle: 'italic', color: L.accent })} />
@@ -303,7 +305,7 @@ export const MosaicReframe: React.FC = () => {
           <div style={{
             ...type(32, 450), color: L.ink2, marginTop: 26,
             opacity: ramp(frame, HEAD + 14, 16, EASE.out), transform: `translateY(${mix(12, 0, ramp(frame, HEAD + 14, 18, EASE.snappy)).toFixed(2)}px)`,
-          }}>284 photographs · Lisbon to Marfa</div>
+          }}>{PITCH.en.taglines[4]}</div>
         </div>
 
         {tiles.map(({ i, cx, cy, w, h, rot, lift, pBC }) => {
@@ -337,13 +339,13 @@ export const MosaicReframe: React.FC = () => {
               {i === 0 && frame >= T_AB + LAG + 20 && capOut < 1 && (
                 <div style={{ position: 'absolute', left: 44, bottom: 36, color: '#fff8ee', opacity: 1 - capOut }}>
                   <div style={{ ...type(30, 650, { caps: true }), letterSpacing: '0.16em', color: '#ffd9b8', marginBottom: 10 }}>
-                    <TextReveal text="Featured set" start={T_AB + LAG + 22} by="word" variant="blur" each={14} />
+                    <TextReveal text="Featured shot" start={T_AB + LAG + 22} by="word" variant="blur" each={14} />
                   </div>
                   <div style={{ ...type(84, 500, { serif: true }), letterSpacing: '-0.03em', textShadow: '0 2px 18px rgba(30,15,5,0.35)' }}>
                     <TextReveal text="Golden Hour" start={T_AB + LAG + 26} by="word" variant="rise" each={18} gap={5} />
                   </div>
                   <div style={{ ...type(32, 450), color: 'rgba(255,248,238,0.82)', marginTop: 8, opacity: ramp(frame, T_AB + LAG + 34, 14, EASE.out) }}>
-                    Lisbon · 24 photos
+                    Shot 01 · Crash zoom · 4.5 s
                   </div>
                 </div>
               )}

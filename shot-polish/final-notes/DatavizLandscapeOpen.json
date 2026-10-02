@@ -1,0 +1,16 @@
+{
+  "stem": "DatavizLandscapeOpen",
+  "changed": true,
+  "brand": [
+    "大标题「Every thread, / one release.」→「Every shot, / one film.」",
+    "眉题「1,284 ISSUES · 46 TEAMS」→「video-shotcraft · shot recipes」（品牌名小写）",
+    "6 枚虚构 issue 标签（ENG-2184 merged…）→ 镜头标签 SHOT-01 dolly in / SHOT-02 crash zoom / SHOT-03 whip pan / SHOT-04 beat cut / SHOT-05 tilt up / SHOT-06 lockup（支流 = 镜头，主干 = 成片）"
+  ],
+  "brandEn": [
+    "Headline 'Every thread, / one release.' → 'Every shot, / one film.'",
+    "Eyebrow '1,284 ISSUES · 46 TEAMS' → 'video-shotcraft · shot recipes' (brand name lowercase)",
+    "Six fictional issue tags (ENG-2184 merged…) → shot tags SHOT-01 dolly in / SHOT-02 crash zoom / SHOT-03 whip pan / SHOT-04 beat cut / SHOT-05 tilt up / SHOT-06 lockup (tributaries = shots, trunk = the film)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

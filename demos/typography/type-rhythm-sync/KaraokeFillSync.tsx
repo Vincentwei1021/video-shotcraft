@@ -1,9 +1,10 @@
 // 卡拉OK填色随读（karaoke-fill-sync）——旁白读到哪个词，哪个词就从左到右被填亮。
-// 两行居中标语 "SHIP FASTER / BREAK NOTHING"，每个词双层同文本叠放：底层低透明墨色未读字，
+// 两行居中标语 "FRAME MOTION / CRAFT SHOTS"（video-shotcraft 短句 Frame motion. Craft the shot. 的四词版），
+// 每个词双层同文本叠放：底层低透明墨色未读字，
 // 上层用 mask 按词内进度线性揭开（逐词独立叠层，揭开百分比即词内进度，无需量测词宽；
 // 揭开前沿是 ±4% 的柔边而不是硬切口）。正在读的词填强调色，读完 10f 内退成主墨色——
-// 强调色只属于"此刻"。词级时间表模拟语速：SHIP 20–38、FASTER 42–75（长词慢读）、
-// BREAK 85–103、NOTHING 107–130，词间停顿（换气）。
+// 强调色只属于"此刻"。词级时间表模拟语速：FRAME 20–38、MOTION 42–75（长词慢读）、
+// CRAFT 85–103、SHOTS 107–130，词间停顿（换气）。
 // 读指：正在填的词底下 8px 强调色圆角下划线，右缘跟随填充前沿；读完从左往右收掉（6f），不留线。
 // 底部一条旁白波形作静音预览的参照：词内起伏、换气处回落，已播部分着色。
 // 0–19f hold；130–149f 真静止（最后的退色 / 收线在 f140 前完成）。
@@ -18,12 +19,12 @@ type Word = { text: string; start: number; end: number };
 
 const LINES: Word[][] = [
   [
-    { text: 'SHIP', start: 20, end: 38 },
-    { text: 'FASTER', start: 42, end: 75 },
+    { text: 'FRAME', start: 20, end: 38 },
+    { text: 'MOTION', start: 42, end: 75 },
   ],
   [
-    { text: 'BREAK', start: 85, end: 103 },
-    { text: 'NOTHING', start: 107, end: 130 },
+    { text: 'CRAFT', start: 85, end: 103 },
+    { text: 'SHOTS', start: 107, end: 130 },
   ],
 ];
 const ALL = LINES.flat();

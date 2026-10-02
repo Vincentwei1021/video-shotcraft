@@ -2,8 +2,8 @@
 // 扫过哪个区块的下缘，哪块就被一组取景角标"收拢对准"，随后贴一枚机器标签把它命名；顶部状态行实时计数。
 //
 // 第二轮重设计（暖沙官网 × 钴蓝机器视线）：
-// - look = sand（米色 · 赤陶）。被分析的是一张虚构陶器工作室「Hollis」的官网：大号粗黑体 H1、手绘感陶瓶产品图、
-//   赤陶色 CTA、四色釉色板——页面本身就是一张好看的品牌页（原版是占位文案 + 8px 小字）。
+// - look = sand（米色 · 赤陶）。被分析的是 video-shotcraft 的官网：镜刻标志 + 字标、大号粗黑体 H1「Your product, in motion.」、
+//   一支样片（陶器品牌 Tide Vase 的发布片封面，手绘感陶瓶）、赤陶色 CTA、四色色板——页面本身就是一张好看的品牌页。
 // - 两套颜色严格分工：赤陶 = 品牌（页面内容），钴蓝 = 机器（扫描线 / 角标 / 标签 / 状态行）。
 //   标签照设计工具的选中标签惯例做成钴蓝底白字小签，32px 等宽字，任何底上都读得清。
 // - 页面放进一扇有两层软阴影的浏览器窗（1560×840），状态行在窗外上方；全程 1.000→1.035 极缓推镜。
@@ -23,6 +23,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const SCANLINE_ANNOTATE_FOCUS_DURATION = 150;
 
@@ -51,12 +52,12 @@ type Tag = 'right' | 'above' | 'below' | 'belowRight';
 type Target = { key: string; x: number; y: number; w: number; h: number; head: string; detail: string; tag: Tag; ft: number };
 const TARGETS: Target[] = (() => {
   const ts: Target[] = [
-    { key: 'logo', x: 48, y: 64, w: 186, h: 66, head: 'LOGO', detail: 'Monogram mark', tag: 'right', ft: 0 },
+    { key: 'logo', x: 48, y: 64, w: 344, h: 66, head: 'LOGO', detail: 'Frame Chisel', tag: 'right', ft: 0 },
     { key: 'nav', x: 1000, y: 64, w: 512, h: 66, head: 'NAV', detail: '4 items', tag: 'belowRight', ft: 0 },
-    { key: 'h1', x: 48, y: 222, w: 700, h: 262, head: 'H1', detail: 'Grotesk 850 · −4%', tag: 'above', ft: 0 },
-    { key: 'cta', x: 48, y: 632, w: 392, h: 88, head: 'CTA', detail: '#C4552D', tag: 'right', ft: 0 },
-    { key: 'hero', x: 892, y: 216, w: 620, h: 532, head: 'HERO', detail: 'Product shot', tag: 'below', ft: 0 },
-    { key: 'palette', x: 48, y: 756, w: 220, h: 66, head: 'PALETTE', detail: '4 glazes', tag: 'right', ft: 0 },
+    { key: 'h1', x: 48, y: 222, w: 722, h: 262, head: 'H1', detail: 'Grotesk 850 · −4%', tag: 'above', ft: 0 },
+    { key: 'cta', x: 48, y: 632, w: 408, h: 88, head: 'CTA', detail: '#C4552D', tag: 'right', ft: 0 },
+    { key: 'hero', x: 892, y: 216, w: 620, h: 532, head: 'HERO', detail: 'Sample film', tag: 'below', ft: 0 },
+    { key: 'palette', x: 48, y: 756, w: 220, h: 66, head: 'PALETTE', detail: '4 swatches', tag: 'right', ft: 0 },
   ];
   // 触发 = 扫描线越过 bbox 下缘的那一帧；按下缘排序后钳制最小间隔 4f（两块同高的不会同帧弹）
   let prev = -99;
@@ -68,7 +69,7 @@ const TARGETS: Target[] = (() => {
 })();
 const LAST_FIRE = Math.max(...TARGETS.map((t) => t.ft));
 
-// ───────────── 页面内容：Hollis 陶器工作室官网 ─────────────
+// ───────────── 页面内容：video-shotcraft 官网（产品图位放一支样片封面：陶器品牌的发布片） ─────────────
 const Vase: React.FC = () => (
   <svg width={620} height={580} viewBox="0 0 620 580" style={{ position: 'absolute', left: 0, top: 0 }}>
     <defs>
@@ -131,35 +132,35 @@ const Page: React.FC = () => (
       {[0, 1, 2].map((i) => (
         <div key={i} style={{ position: 'absolute', left: 24 + i * 22, top: 20, width: 12, height: 12, borderRadius: 6, background: alpha(L.ink, 0.16) }} />
       ))}
-      <div style={{ position: 'absolute', left: WW / 2 - 170, top: 11, width: 340, height: 30, borderRadius: 8, background: alpha('#ffffff', 0.7), border: `1px solid ${L.line}`, font: `500 18px ${MONO}`, color: L.ink3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        hollis.studio
+      <div style={{ position: 'absolute', left: WW / 2 - 260, top: 11, width: 520, height: 30, borderRadius: 8, background: alpha('#ffffff', 0.7), border: `1px solid ${L.line}`, font: `500 18px ${MONO}`, color: L.ink3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {BRAND.repo}
       </div>
     </div>
-    {/* logo：圆形单字母印章 + 字标 */}
-    <div style={{ position: 'absolute', left: 64, top: 76, display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ width: 46, height: 46, borderRadius: 23, background: L.ink, color: '#f8f2e9', display: 'flex', alignItems: 'center', justifyContent: 'center', font: `800 26px ${FONT.sans}`, letterSpacing: '-0.04em' }}>H</div>
-      <div style={{ font: `800 40px ${FONT.sans}`, letterSpacing: '-0.045em' }}>Hollis</div>
+    {/* logo：镜刻标志 + video-shotcraft 字标（标志 svg 四周有 16/128 留白，左移 7px 让可见框对齐 64） */}
+    <div style={{ position: 'absolute', left: 57, top: 70, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <ShotcraftMark size={56} tone="light" />
+      <div style={{ font: `700 34px ${BRAND.font}`, letterSpacing: '0.01em', color: BRAND.ink, whiteSpace: 'nowrap' }}>{BRAND.name}</div>
     </div>
     {/* 导航 */}
     <div style={{ position: 'absolute', right: 64, top: 84, display: 'flex', gap: 46, font: `550 28px ${FONT.sans}`, color: L.ink2, letterSpacing: '-0.01em' }}>
-      <span>Shop</span>
-      <span>Studio</span>
-      <span>Journal</span>
-      <span style={{ color: L.ink }}>Cart (2)</span>
+      <span>Recipes</span>
+      <span>Gallery</span>
+      <span>Docs</span>
+      <span style={{ color: L.ink }}>GitHub</span>
     </div>
     {/* H1 */}
     <div style={{ position: 'absolute', left: 60, top: 236, font: `850 120px ${FONT.sans}`, letterSpacing: '-0.045em', lineHeight: 1, whiteSpace: 'nowrap' }}>
-      Made slowly.
+      Your product,
       <br />
-      <span style={{ color: TERRA }}>Used</span> daily.
+      in <span style={{ color: TERRA }}>motion.</span>
     </div>
     {/* 正文 */}
     <div style={{ position: 'absolute', left: 64, top: 512, width: 700, font: `450 34px ${FONT.sans}`, lineHeight: 1.36, color: L.ink2, letterSpacing: '-0.012em' }}>
-      Stoneware thrown by hand in small batches, glazed in colours pulled from the coast.
+      Cinematic product videos, crafted by your agent. From screenshot to showreel.
     </div>
     {/* CTA */}
     <div style={{ position: 'absolute', left: 64, top: 644, height: 64, padding: '0 34px', borderRadius: 32, background: TERRA, color: L.onAccent, display: 'flex', alignItems: 'center', gap: 14, font: `650 30px ${FONT.sans}`, letterSpacing: '-0.01em', boxShadow: `0 10px 24px -10px ${alpha('#7a2a10', 0.55)}, inset 0 1px 0 rgba(255,255,255,0.25)` }}>
-      Shop the collection <span style={{ fontWeight: 500 }}>→</span>
+      Render a launch film <span style={{ fontWeight: 500 }}>→</span>
     </div>
     {/* 釉色板 */}
     <div style={{ position: 'absolute', left: 64, top: 768, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -174,7 +175,7 @@ const Page: React.FC = () => (
         <Vase />
       </div>
       <div style={{ position: 'absolute', left: 28, bottom: 26, padding: '10px 18px', borderRadius: 14, background: alpha('#fbf6ef', 0.86), font: `600 24px ${FONT.sans}`, color: L.ink, letterSpacing: '-0.01em' }}>
-        Tide Vase <span style={{ color: L.ink3, fontWeight: 500 }}>· $68</span>
+        ▶ Tide Vase launch film <span style={{ color: L.ink3, fontWeight: 500 }}>· 0:30</span>
       </div>
     </div>
   </div>
@@ -266,7 +267,7 @@ export const ScanlineAnnotateFocus: React.FC = () => {
         <div style={{ position: 'absolute', left: WX, top: 84, width: WW, height: 48, opacity: statusIn, font: `600 30px ${MONO}`, color: L.ink, display: 'flex', alignItems: 'center' }}>
           <div style={{ width: 14, height: 14, borderRadius: 7, marginRight: 16, background: done > 0.5 ? MACHINE : alpha(MACHINE, 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(frame / 3))), boxShadow: `0 0 0 6px ${alpha(MACHINE, 0.12)}` }} />
           <span style={{ color: done > 0.5 ? MACHINE : L.ink, letterSpacing: '0.06em' }}>{done > 0.5 ? 'BRAND READ' : 'READING'}</span>
-          <span style={{ color: L.ink3, marginLeft: 18, fontWeight: 500 }}>hollis.studio</span>
+          <span style={{ color: L.ink3, marginLeft: 18, fontWeight: 500 }}>{BRAND.name}</span>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 20 }}>
             <div style={{ width: 220, height: 6, borderRadius: 3, background: alpha(L.ink, 0.1), overflow: 'hidden' }}>
               <div style={{ width: `${(scanProg * 100).toFixed(2)}%`, height: '100%', background: MACHINE, borderRadius: 3 }} />

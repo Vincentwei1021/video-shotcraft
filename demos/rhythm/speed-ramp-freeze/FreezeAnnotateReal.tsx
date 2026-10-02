@@ -26,6 +26,7 @@ import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
 import layout from '../../_textures/live-layout.json';
 import { EASE, FONT, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const FREEZEANNOTATE_DUR = 158;
 
@@ -261,9 +262,11 @@ export const FreezeAnnotateReal: React.FC = () => {
         </div>
         <span style={{ ...type(30, 600, { mono: true }), color: frozen ? INK : L.ink2 }}>{timecode(frame)}</span>
       </div>
-      <div style={{ position: 'absolute', right: 96, top: 102, display: 'flex', alignItems: 'baseline', gap: 16, opacity: 1 - focus }}>
-        <span style={{ ...type(32, 700), color: L.ink }}>Larkspur</span>
-        <span style={{ ...type(30, 450), color: L.ink3 }}>Weekly review</span>
+      {/* 右上：video-shotcraft 字标 + 评审场次（定格时退场，让位给批注） */}
+      <div style={{ position: 'absolute', right: 96, top: 96, display: 'flex', alignItems: 'center', gap: 16, opacity: 1 - focus }}>
+        <ShotcraftMark size={44} tone="light" />
+        <span style={{ ...type(32, 700), fontFamily: BRAND.font, letterSpacing: '0.02em', color: L.ink }}>{BRAND.name}</span>
+        <span style={{ ...type(30, 450), color: L.ink3 }}>Shot review</span>
       </div>
 
       {/* 墨迹：圈 + 箭头 + 下划线 */}

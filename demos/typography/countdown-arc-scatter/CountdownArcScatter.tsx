@@ -13,8 +13,8 @@
 // - 落位："5" 在回弹落定的同一刻起飞（不留静置），20f 不对称 in-out 平移 + 112→150px 放大到
 //   标题首字符槽；其余数字原地失焦淡出（不位移，不和 "5" 抢戏），刻度/指针同步退场。
 // - 标题「5 min to install」150px，逐词 blur 淡入（窗重叠 = 一句话），末词 install 转朱红是全片
-//   唯一的颜色事件；下方 mono 40px 命令行 `$ npx halyard init` 补一句产品事实。
-// - 瑞士网格框：顶部发丝线 + 左右两枚标签（SETUP TIME / HALYARD CLI 4.2），全程 0.6% 极缓推近。
+//   唯一的颜色事件；下方 mono 34px 命令行 `$ npx skills add Vincentwei1021/video-shotcraft`（README 里的真实安装命令）补一句产品事实。
+// - 瑞士网格框：顶部发丝线 + 左标签 SETUP TIME / 右侧 video-shotcraft 字标，全程 0.6% 极缓推近。
 //
 // 时间表（30fps，共 100f）：
 //   0–5     预备：盘面已在画面里（第 0 帧有数字/刻度），反向蓄力 3°
@@ -28,6 +28,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, ramp, mix } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const COUNTDOWN_ARC_SCATTER_DURATION = 100;
 
@@ -107,17 +108,16 @@ export const CountdownArcScatter: React.FC = () => {
 
       {/* 瑞士网格框：顶部发丝线 + 标签 */}
       <div style={{ position: 'absolute', left: 120, right: 120, top: 150, height: 1.5, background: alpha(L.ink, 0.5), transform: `scaleX(${frameIn})`, transformOrigin: 'left' }} />
-      {[
-        { text: 'SETUP TIME', side: 'left' as const },
-        { text: 'HALYARD CLI 4.2', side: 'right' as const },
-      ].map((l) => (
-        <div key={l.text} style={{
-          position: 'absolute', top: 104, [l.side]: 120, fontFamily: GROT, fontSize: 28, fontWeight: 700,
-          letterSpacing: '0.14em', color: L.ink, opacity: frameIn,
-        }}>
-          {l.text}
-        </div>
-      ))}
+      <div style={{
+        position: 'absolute', top: 104, left: 120, fontFamily: GROT, fontSize: 28, fontWeight: 700,
+        letterSpacing: '0.14em', color: L.ink, opacity: frameIn,
+      }}>
+        SETUP TIME
+      </div>
+      {/* 右上：video-shotcraft 字标（全小写），与左标签同一基线带 */}
+      <div style={{ position: 'absolute', top: 104, right: 120, opacity: frameIn }}>
+        <ShotcraftWordmark size={28} markScale={1.3} gap={12} tone="light" color={L.ink} />
+      </div>
 
       <AbsoluteFill style={{ transform: `scale(${push})`, transformOrigin: '50% 50%' }}>
         {/* 盘面：随盘转的细刻度 + 静止发丝弧 + 0.35 倍差速的朱红指针 */}
@@ -205,10 +205,10 @@ export const CountdownArcScatter: React.FC = () => {
           opacity: cmd, transform: `translateY(${(1 - cmd) * 24}px)`,
         }}>
           <div style={{
-            fontFamily: FONT.mono, fontSize: 40, color: L.ink2, letterSpacing: '0.01em', padding: '14px 30px',
+            fontFamily: FONT.mono, fontSize: 34, color: L.ink2, letterSpacing: '0.01em', padding: '14px 30px',
             border: `1.5px solid ${alpha(L.ink, 0.18)}`, borderRadius: 12, background: alpha('#ffffff', 0.35),
           }}>
-            <span style={{ color: L.accent }}>$</span> npx halyard init
+            <span style={{ color: L.accent }}>$</span> npx skills add Vincentwei1021/video-shotcraft
           </div>
         </div>
       </AbsoluteFill>

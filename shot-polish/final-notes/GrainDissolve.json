@@ -1,0 +1,14 @@
+{
+  "stem": "GrainDissolve",
+  "changed": true,
+  "brand": [
+    "整行字「{ ACME. Now Live }」→「{ video-shotcraft. Now Live }」（33→26px 收进选区框）",
+    "凝聚短字标「ACME」→ video-shotcraft 字标（54→44px，全小写），游离砂粒落点同步放宽"
+  ],
+  "brandEn": [
+    "Line \"{ ACME. Now Live }\" → \"{ video-shotcraft. Now Live }\" (33→26px to fit the selection box)",
+    "Condensed short mark \"ACME\" → video-shotcraft wordmark (54→44px, lowercase); sand-grain targets widened to match"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

@@ -50,7 +50,7 @@ name: doc-park-left-pill-deal
   末句留到底，把末张的 `ce` 改成 >1 并去掉 out
 - 药丸位置写死为 `left:214px, top:54+k*48`、宽 172px，是 480 宽画布下与驻留后文档
   （露出约 87px）配套的一组数字。改文档驻留幅度必须同步改 PX，否则两者重叠
-- 三条药丸文案（Quick Start / Bundle Plan / Starter Kit）与三句字幕都是占位，且字幕
+- 三条药丸文案（demo 里是 video-shotcraft 宣传片简报推荐的三张镜头卡 Crash Zoom / Deck Deal / Logo Sting）与三句字幕都是示意，且字幕
   长度直接影响"逐词加深"读起来快慢——换真实文案后要按新句长重调 `inn` 行程
 - 药丸数写死为 3（`T0` 的长度）。加到 4 条时间就不够：末张起点会超过 0.9，字幕根本
   走不完；4 条以上应考虑缩短单句而不是硬塞

@@ -1,8 +1,9 @@
-// 组合：命令面板 × 深浅涟漪（palette-theme-ripple）——第二轮重设计：「Overtone」音乐库 · 关灯
+// 组合：命令面板 × 深浅涟漪（palette-theme-ripple）——第二轮重设计：video-shotcraft 样片画廊 · 关灯
 //
 // 设计决定：
-// - 主体：为镜头设计的满屏音乐库 Overtone（虚构品牌）——112px「Library」大标题、5 张 259px 程序化专辑封面
-//   （同一批封面在深浅两版里完全不变，只换 UI 外壳——真实产品的深色模式就是这样）、底部正在播放条。
+// - 主体：满屏的 video-shotcraft 样片画廊（品牌轮由虚构音乐库 Overtone 换来，版式逐像素不变）——
+//   112px「Gallery」大标题、5 张 259px 程序化镜头缩略图（同一批缩略图在深浅两版里完全不变，只换 UI 外壳——
+//   真实产品的深色模式就是这样）、底部正在预览的样片播放条。侧栏标志 = 「镜刻」ShotcraftMark（随主题换反白版）。
 // - look = custom：浅版冷瓷灰白 + 珊瑚红强调；深版近黑石墨 + 同色相更亮的珊瑚。强调色只给选中态 / 播放进度 / 涟漪。
 // - 因果链（组合命门）：⌘K 面板落下 → 人手节奏打 "dark"（不等间隔）→ 回车 → 面板像老电视关机一样
 //   先纵向压成一条亮线、再横向收成一个亮点 → 亮点在原地钉 5f → 深色涟漪**从这个点**荡开换肤。
@@ -12,7 +13,7 @@
 // - 相机：打字时极缓推向面板（1→1.03），涟漪荡开时顺势呼一口气退回 1，hold 段再 1→1.012 极缓推。
 //
 // 时间表（30fps，共 156f）：
-//   0–10    静置：浅色音乐库（播放进度在走，画面不死）
+//   0–10    静置：浅色样片画廊（播放进度在走，画面不死）
 //   10–18   压暗 + 虚化背景（8f EASE.out）；12 面板弹簧落下（damping 17，一次轻过冲）
 //   24–37   打字 d·a·r·k（24/28/31/37，人手不等间隔）；匹配字母逐个加粗，37 首行进入选中态
 //   46      回车：首行闪一下、↵ 键帽按下
@@ -24,6 +25,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, Vignette, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const PALETTE_THEME_RIPPLE_DURATION = 156;
 
@@ -56,7 +58,7 @@ const DARK: Theme = {
   ink: '#f3f4f6', ink2: '#939aa7', ink3: '#59606c', accent: '#ff5f48', bar: 'rgba(16,18,22,0.94)',
 };
 
-// ───────────── 程序化专辑封面（深浅两版共用，不随主题变）─────────────
+// ───────────── 程序化镜头缩略图（深浅两版共用，不随主题变）─────────────
 type Album = { t: string; a: string; glow: string; Art: React.FC };
 const ArtLowTide: React.FC = () => (
   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #0f2747 0%, #1d5f74 58%, #e7a874 100%)' }}>
@@ -107,11 +109,11 @@ const ArtGlassHarbor: React.FC = () => (
 );
 
 const ALBUMS: Album[] = [
-  { t: 'Low Tide', a: 'Mira Sol', glow: '#f2a46e', Art: ArtLowTide },
-  { t: 'Paper Moons', a: 'The Vellums', glow: '#e46a4e', Art: ArtPaperMoons },
-  { t: 'Neon Orchard', a: 'Kaz Ito', glow: '#ff5a6a', Art: ArtNeonOrchard },
-  { t: 'Static Bloom', a: 'June Arden', glow: '#7ed67a', Art: ArtStaticBloom },
-  { t: 'Night Swim', a: 'Oro', glow: '#5c8cff', Art: ArtNightSwim },
+  { t: 'Horizon Push', a: 'Camera · 2.5D', glow: '#f2a46e', Art: ArtLowTide },
+  { t: 'Ink Press', a: 'Opening', glow: '#e46a4e', Art: ArtPaperMoons },
+  { t: 'Neon Marquee', a: 'Outro', glow: '#ff5a6a', Art: ArtNeonOrchard },
+  { t: 'Glow Bloom', a: 'Effects', glow: '#7ed67a', Art: ArtStaticBloom },
+  { t: 'Whip Pan', a: 'Transition', glow: '#5c8cff', Art: ArtNightSwim },
 ];
 const ROW2: { Art: React.FC; hue: number }[] = [
   { Art: ArtNightSwim, hue: 140 }, { Art: ArtStaticBloom, hue: -60 }, { Art: ArtLowTide, hue: 40 }, { Art: ArtNeonOrchard, hue: 160 }, { Art: ArtPaperMoons, hue: 180 },
@@ -138,6 +140,7 @@ const I = {
   grid: ['M2.5 2.5h4.5v4.5h-4.5z', 'M9 2.5h4.5v4.5h-4.5z', 'M2.5 9h4.5v4.5h-4.5z', 'M9 9h4.5v4.5h-4.5z'],
   radio: ['M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z', 'M4.8 4.8a4.5 4.5 0 0 0 0 6.4', 'M11.2 4.8a4.5 4.5 0 0 1 0 6.4'],
   lib: ['M3 2.5v11', 'M6 2.5v11', 'M9 3l3.5 10'],
+  sliders: ['M2.5 4.5h11', 'M2.5 11.5h11', 'M5.5 2.5v4', 'M10.5 9.5v4'],
   list: ['M2.5 4h11', 'M2.5 8h11', 'M2.5 12h7'],
   moon: ['M13 9.6A5.5 5.5 0 1 1 6.4 3a4.4 4.4 0 0 0 6.6 6.6z'],
   half: ['M8 2.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z', 'M8 2.5v11'],
@@ -155,17 +158,16 @@ const App: React.FC<{ th: Theme; frame: number; artGlow: number }> = ({ th, fram
       {/* 侧栏 */}
       <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: SIDE_W, background: th.side, borderRight: `1px solid ${th.line}`, padding: '64px 0 0 104px', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 64 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 13, background: `linear-gradient(150deg, ${th.accent}, #c92a3e)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width={24} height={24} viewBox="0 0 24 24"><path d="M4 14c3-8 5 8 8 0s5 8 8 0" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" /></svg>
-          </div>
-          <span style={{ fontSize: 34, fontWeight: 760, letterSpacing: '-0.035em' }}>Overtone</span>
+          {/* 「镜刻」标志：亮版墨框 / 深版反白框，琥珀斜切不变（标志本身不加底块与渐变） */}
+          <ShotcraftMark size={44} tone={th.dark ? 'dark' : 'light'} />
+          <span style={{ fontFamily: BRAND.font, fontSize: 34, fontWeight: 700, letterSpacing: '0.01em' }}>{BRAND.short}</span>
         </div>
         {[
-          { l: 'Listen Now', i: I.play },
-          { l: 'Browse', i: I.grid },
-          { l: 'Radio', i: I.radio },
-          { l: 'Library', i: I.lib, on: true },
-          { l: 'Playlists', i: I.list },
+          { l: 'Home', i: I.play },
+          { l: 'Shot cards', i: I.grid },
+          { l: 'Workbench', i: I.sliders },
+          { l: 'Gallery', i: I.lib, on: true },
+          { l: 'Renders', i: I.list },
         ].map((n) => (
           <div key={n.l} style={{
             display: 'flex', alignItems: 'center', gap: 18, height: 64, marginLeft: -18, marginRight: 34, paddingLeft: 18, borderRadius: 14,
@@ -179,16 +181,16 @@ const App: React.FC<{ th: Theme; frame: number; artGlow: number }> = ({ th, fram
       </div>
 
       {/* 标题区 */}
-      <div style={{ position: 'absolute', left: MAIN_X, top: 70, fontSize: 112, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }}>Library</div>
+      <div style={{ position: 'absolute', left: MAIN_X, top: 70, fontSize: 112, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 1 }}>Gallery</div>
       <div style={{ position: 'absolute', left: MAIN_X, top: 208, display: 'flex', gap: 12 }}>
-        {['Albums', 'Artists', 'Songs', 'Made for you'].map((c, i) => (
+        {['All shots', 'Camera', 'Outro', 'Made for you'].map((c, i) => (
           <div key={c} style={{
             padding: '10px 24px', borderRadius: 999, fontSize: 26, fontWeight: i === 0 ? 650 : 500,
             background: i === 0 ? th.ink : th.chip, color: i === 0 ? th.bg : th.ink2,
           }}>{c}</div>
         ))}
       </div>
-      <div style={{ position: 'absolute', right: 112, top: 222, fontSize: 26, color: th.ink3, fontWeight: 500 }}>248 albums · sorted by recent</div>
+      <div style={{ position: 'absolute', right: 112, top: 222, fontSize: 26, color: th.ink3, fontWeight: 500 }}>1080p · 30fps · sorted by recent</div>
 
       {/* 第一排封面 */}
       {ALBUMS.map((al, i) => {
@@ -230,8 +232,8 @@ const App: React.FC<{ th: Theme; frame: number; artGlow: number }> = ({ th, fram
       }}>
         <div style={{ position: 'relative', width: 76, height: 76, borderRadius: 12, overflow: 'hidden', flex: 'none' }}><ArtGlassHarbor /></div>
         <div style={{ marginLeft: 22, width: 330 }}>
-          <div style={{ fontSize: 28, fontWeight: 650, letterSpacing: '-0.02em' }}>Glass Harbor</div>
-          <div style={{ fontSize: 23, color: th.ink2, marginTop: 4 }}>Mira Sol · Low Tide</div>
+          <div style={{ fontSize: 28, fontWeight: 650, letterSpacing: '-0.02em' }}>Launch Film</div>
+          <div style={{ fontSize: 23, color: th.ink2, marginTop: 4 }}>Preview · Shot 04</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 34, marginLeft: 120 }}>
           <Ic d={I.prev} color={th.ink2} size={30} w={1.8} />
@@ -241,11 +243,11 @@ const App: React.FC<{ th: Theme; frame: number; artGlow: number }> = ({ th, fram
           <Ic d={I.next} color={th.ink2} size={30} w={1.8} />
         </div>
         <div style={{ marginLeft: 70, flex: 1, display: 'flex', alignItems: 'center', gap: 20, fontSize: 22, color: th.ink3, fontVariantNumeric: 'tabular-nums' }}>
-          <span>{`1:${String(Math.floor(22 + frame / 30)).padStart(2, '0')}`}</span>
+          <span>{`0:${String(Math.floor(22 + frame / 30)).padStart(2, '0')}`}</span>
           <div style={{ position: 'relative', flex: 1, height: 6, borderRadius: 3, background: th.chip }}>
             <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${prog * 100}%`, borderRadius: 3, background: th.accent, boxShadow: th.dark ? `0 0 12px ${alpha(th.accent, 0.6)}` : 'none' }} />
           </div>
-          <span style={{ marginRight: 4 }}>3:48</span>
+          <span style={{ marginRight: 4 }}>0:48</span>
         </div>
       </div>
     </div>
@@ -442,7 +444,7 @@ export const PaletteThemeRipple: React.FC = () => {
               </div>
               {/* 页脚提示 */}
               <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 52, borderTop: '1px solid rgba(15,20,30,0.06)', background: '#f7f8f9', display: 'flex', alignItems: 'center', padding: '0 34px', gap: 26, fontSize: 21, color: '#9aa1ad' }}>
-                <span>↑↓ Navigate</span><span>↵ Run</span><span style={{ marginLeft: 'auto' }}>Overtone Commands</span>
+                <span>↑↓ Navigate</span><span>↵ Run</span><span style={{ marginLeft: 'auto' }}>Shotcraft Commands</span>
               </div>
             </div>
           </div>

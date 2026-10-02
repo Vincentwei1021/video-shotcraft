@@ -41,7 +41,7 @@ const clamp = { extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as 
 // 相机布局倍率 = 起始特写倍率：按 2.2 倍栅格化，之后只做缩小
 const Z = 2.2;
 
-// 90 天可用率条带：确定性，89 天全绿、2 天降级（让 99.9% 可信）
+// 90 天渲染成功率条带：确定性，大部分全绿、2 天降级（让 99.9% 可信）
 const DAYS = Array.from({ length: 45 }, (_, i) => (i === 17 ? 1 : i === 33 ? 2 : 0));
 
 const HeroCard: React.FC<{ rim: number }> = ({ rim }) => (
@@ -63,7 +63,7 @@ const HeroCard: React.FC<{ rim: number }> = ({ rim }) => (
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ width: 9, height: 9, borderRadius: 5, background: '#2fa36b', boxShadow: '0 0 0 4px rgba(47,163,107,0.14)' }} />
-      <div style={{ fontSize: 17, fontWeight: 600, color: G.ink1, letterSpacing: '-0.01em' }}>API uptime</div>
+      <div style={{ fontSize: 17, fontWeight: 600, color: G.ink1, letterSpacing: '-0.01em' }}>Render success</div>
       <div style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 550, color: G.ink2, padding: '3px 9px', borderRadius: 7, background: G.fill, boxShadow: `inset 0 0 0 1px ${G.hairline}` }}>
         90 days
       </div>

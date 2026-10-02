@@ -1,0 +1,18 @@
+{
+  "stem": "BlindsSlice",
+  "changed": true,
+  "brand": [
+    "刊头虚构杂志名「FORMA」→ video-shotcraft 字标（小号标志 + 全小写字名，亮页 light / 朱红页 dark）",
+    "刊名副题「Type & Layout Quarterly」→「Shot Recipe Journal」",
+    "巨字「Grid.」/「Rhythm.」→「Frame.」/「Craft.」（拼出品牌短句 Frame motion. Craft the shot.）",
+    "正文「Every great layout starts with a structure you never see.」/「Motion is just a grid, laid out in time.」→「Shot recipes for cinematic product films.」/「Direct the film. Let the agent shoot it.」"
+  ],
+  "brandEn": [
+    "Masthead fictional magazine name 'FORMA' → video-shotcraft wordmark (small mark + lowercase name; light tone on paper page, dark on red page)",
+    "Masthead subtitle 'Type & Layout Quarterly' → 'Shot Recipe Journal'",
+    "Giant words 'Grid.' / 'Rhythm.' → 'Frame.' / 'Craft.' (spelling the motto Frame motion. Craft the shot.)",
+    "Body 'Every great layout starts with a structure you never see.' / 'Motion is just a grid, laid out in time.' → 'Shot recipes for cinematic product films.' / 'Direct the film. Let the agent shoot it.'"
+  ],
+  "styleKey": "blinds-slice",
+  "mdChanged": true
+}

@@ -1,9 +1,9 @@
 // carousel-3d — 8 张卡排成圆环整环自转一圈：每卡只绕 Y 公转、自身 billboard 朝外，正反两层同向贴图 +
 // backface-visibility:hidden 保证任何时刻都正立不倒置；相机全程钉在浅俯角，首尾帧无缝 loop。
 //
-// 第二轮重设计（酸柠 · 训练计划画廊）：
+// 第二轮重设计（酸柠 · 镜头配方画廊；品牌轮：原「训练计划」换成 video-shotcraft 的镜头配方卡）：
 // - look = lime（石墨暗场 + 荧光黄绿）。卡片放大到 340×460 原生像素、环半径 700px，整环占画宽约 70%；
-//   卡面是为镜头设计的"训练计划卡"：mono 编号、生成式图形（爬升剖面 / 间歇柱 / 心率波 / 圆环…）、
+//   卡面是为镜头设计的"镜头配方卡"：mono 编号、生成式图形（剖面 / 闪切柱 / 声波 / 圆环…）、
 //   64px 大数字、30px 名称——转到正前方的那张被点亮（荧光描边 + 图形转荧光色 + 底光），其余保持石墨灰。
 // - 节奏：不再是死匀速。转角 = 50% 匀速底 + 50% 分步（每 21f 一步 = 8f 停靠 + 13f smooth 换位），
 //   整环永远在走（loop 稳态）但每 45° 有一次"推一把—停靠"的呼吸，正前方的卡在停靠时被读清；
@@ -17,6 +17,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CAROUSEL_3D_DURATION = 168; // 5600ms @30fps
 
@@ -32,14 +33,14 @@ const DWELL = 8;
 
 type Kind = 'climb' | 'intervals' | 'pulse' | 'rings' | 'splits' | 'bars' | 'mobility' | 'race';
 const CARDS: { name: string; stat: string; unit: string; meta: string; kind: Kind }[] = [
-  { name: 'Tempo Run', stat: '8.0', unit: 'km', meta: '42 MIN · ZONE 3', kind: 'splits' },
-  { name: 'Hill Repeats', stat: '6×', unit: '400 m', meta: '+320 M CLIMB', kind: 'climb' },
-  { name: 'Recovery', stat: '30', unit: 'min', meta: 'ZONE 1 · EASY', kind: 'pulse' },
-  { name: 'Long Run', stat: '21.1', unit: 'km', meta: 'SUNDAY · 1:52', kind: 'rings' },
-  { name: 'Intervals', stat: '10×', unit: '1 min', meta: 'VO2 MAX · HARD', kind: 'intervals' },
-  { name: 'Strength', stat: '45', unit: 'min', meta: 'LEGS · CORE', kind: 'bars' },
-  { name: 'Mobility', stat: '15', unit: 'min', meta: 'HIPS · ANKLES', kind: 'mobility' },
-  { name: 'Race Day', stat: '42.2', unit: 'km', meta: 'TARGET 3:15', kind: 'race' },
+  { name: 'Beat Cuts', stat: '120', unit: 'bpm', meta: 'EDIT · ON THE BEAT', kind: 'splits' },
+  { name: 'Steep Tilt', stat: '38°', unit: 'tilt', meta: 'CAMERA · GLIDE', kind: 'climb' },
+  { name: 'Sound Design', stat: '−14', unit: 'LUFS', meta: 'SFX · HIT + WHOOSH', kind: 'pulse' },
+  { name: 'Gauge Readout', stat: '96', unit: '%', meta: 'DATA · 3 RINGS', kind: 'rings' },
+  { name: 'Flash Cuts', stat: '10×', unit: '2 f', meta: 'EDIT · STROBE', kind: 'intervals' },
+  { name: 'Chart Rise', stat: '45', unit: 'f', meta: 'DATA · BAR RACE', kind: 'bars' },
+  { name: 'Ease Curves', stat: '0.8', unit: 's', meta: 'MOTION · SNAPPY', kind: 'mobility' },
+  { name: 'Camera Path', stat: '4.2', unit: 's', meta: 'FLYOVER · 2.5D', kind: 'race' },
 ];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -173,11 +174,11 @@ export const Carousel3D: React.FC = () => {
 
       {/* 画框装饰 */}
       <div style={{ position: 'absolute', left: 120, top: 96, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ width: 12, height: 12, borderRadius: 6, background: L.accent }} />
-        <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink2 }}>STRIDE · TRAINING PLANS</div>
+        <ShotcraftMark size={30} tone="dark" />
+        <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink2 }}>{`${BRAND.name} · shot recipes`}</div>
       </div>
       <div style={{ position: 'absolute', right: 120, top: 96, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink3 }}>
-        WEEK 12 OF 16
+        1080P · 30 FPS
       </div>
     </AbsoluteFill>
   );
@@ -192,7 +193,7 @@ const Face: React.FC<{ i: number; hl: number }> = ({ i, hl }) => {
       {/* 卡顶受光 */}
       <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(120% 55% at 30% 0%, ${alpha('#ffffff', 0.07)} 0%, transparent 60%)` }} />
       <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontFamily: FONT.mono, fontSize: 17, letterSpacing: '0.14em', color: L.ink3 }}>
-        <span>{`PLAN ${String(i + 1).padStart(2, '0')}`}</span>
+        <span>{`SHOT ${String(i + 1).padStart(2, '0')}`}</span>
         <span style={{ color: hl > 0.5 ? L.accent : L.ink3 }}>●</span>
       </div>
       <div style={{ position: 'relative', marginTop: 22, height: 150 }}>
@@ -234,11 +235,13 @@ const Graphic: React.FC<{ kind: Kind; color: string; seed: number }> = ({ kind, 
         </svg>
       );
     case 'pulse': {
+      // 音效卡：四记"打击 + 衰减"的声波（每 14 点一记，振幅指数衰减的正负交替折线）
       const d = Array.from({ length: 57 }, (_, k) => {
         const x = k * 5;
         const beat = k % 14;
-        const y = beat === 6 ? 20 : beat === 7 ? 130 : beat === 8 ? 60 : 84 + Math.sin(k * 0.7) * 4;
-        return `${k ? 'L' : 'M'}${x},${y}`;
+        const amp = beat < 2 ? 0 : 62 * Math.exp(-(beat - 2) * 0.32);
+        const y = 75 + amp * (k % 2 ? 1 : -1) + Math.sin(k * 0.7) * 2;
+        return `${k ? 'L' : 'M'}${x},${y.toFixed(1)}`;
       }).join(' ');
       return <svg width={W} height={H}><path d={d} fill="none" stroke={color} strokeWidth={4} strokeLinejoin="round" strokeLinecap="round" /></svg>;
     }
@@ -255,8 +258,8 @@ const Graphic: React.FC<{ kind: Kind; color: string; seed: number }> = ({ kind, 
               </g>
             );
           })}
-          <text x={168} y={70} fontFamily={FONT.mono} fontSize={18} fill={L.ink3} letterSpacing="0.1em">PACE</text>
-          <text x={168} y={104} fontFamily={FONT.sans} fontSize={34} fontWeight={700} fill={L.ink}>5:18</text>
+          <text x={168} y={70} fontFamily={FONT.mono} fontSize={18} fill={L.ink3} letterSpacing="0.1em">FPS</text>
+          <text x={168} y={104} fontFamily={FONT.sans} fontSize={34} fontWeight={700} fill={L.ink}>30</text>
         </svg>
       );
     case 'splits':

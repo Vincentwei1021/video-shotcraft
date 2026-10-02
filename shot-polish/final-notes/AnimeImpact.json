@@ -1,0 +1,12 @@
+{
+  "stem": "AnimeImpact",
+  "changed": false,
+  "brand": [
+    "画面是共享夹具 FakeDashboard + Card，主控已换成 video-shotcraft 侧栏标志与名字；demo 自身没有 logo / 品牌文案，不用改"
+  ],
+  "brandEn": [
+    "The frame is the shared FakeDashboard + Card fixture, already rebranded to video-shotcraft by the lead; the demo itself has no logo or brand copy"
+  ],
+  "styleKey": "anime-impact",
+  "mdChanged": true
+}

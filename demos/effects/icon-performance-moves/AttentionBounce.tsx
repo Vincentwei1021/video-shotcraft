@@ -2,13 +2,14 @@
 //
 // 第二轮重设计（午后窗光 · 一枚日历图标）：
 // - look = sand（米色暖光 · 赤陶强调）。背景墙上斜打两道百叶窗光（生活方式的午后），画面下缘是一条
-//   贯穿画幅、被画框裁掉两端的磨砂奶油色 Dock；主角是 360px 的日历 app 图标「Daybook」——赤陶页眉
-//   + 大号「17」，比通用铃铛更有辨识度。左右邻居图标（鼠尾草 / 石板蓝 / 沙色 / 炭黑）用低饱和色压住。
+//   贯穿画幅、被画框裁掉两端的磨砂奶油色 Dock；主角是 360px 的 video-shotcraft app 图标——奶油底上
+//   一枚「镜刻」标志（取景框 + 琥珀斜切），比通用铃铛更有辨识度。左右邻居图标（鼠尾草 / 石板蓝 / 沙色 /
+//   炭黑）用低饱和色压住。
 // - 弹跳按真实抛体：4 跳高度 0.35 → 0.6 → 0.85 → 1.2 倍图标高，每跳时长 ∝ √高度（14 / 18 / 22 / 26f），
 //   空中按竖向速度拉长、落地 2f 接触压扁（越跳越重，末跳宽 1.2x 高 0.8x），落点一圈玻璃涟漪 + 几颗溅点。
 // - "被吸引"：第二跳起邻居图标逐渐失焦变淡（rack focus，世界退后），最高那跳镜头 smooth 推近 8%。
 // - 落定：阻尼回弹稳住 → 同帧角标弹出、Dock 下方亮起运行指示点 → 功能面板从图标右上角弹簧展开
-//   （父先到、行晚 3f 错峰），面板文字 ≥32px，结尾帧是一张完整的"新功能"海报。
+//   （父先到、行晚 3f 错峰），面板文字 ≥32px，结尾帧是一张完整的"New in Shotcraft"海报（一支宣传片的分镜时间线）。
 //
 // 时间表（30fps，共 156f）：
 //   0–12    预备：画面已有 Dock 与图标，镜头极缓推进；6–12f 蹲一下蓄力
@@ -20,6 +21,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const ATTENTION_BOUNCE_DURATION = 156; // 5.2s
 
@@ -74,25 +76,16 @@ const LANDINGS = JUMPS.map((j, i) => ({ at: j.start + j.dur, k: i }));
 
 // ───────────── 图标 ─────────────
 
-const DaybookIcon: React.FC<{ size: number }> = ({ size }) => (
+// video-shotcraft app 图标：奶油 squircle + 亮底版「镜刻」标志（标志本身不加光 / 影，柔光盖在图标面上）
+const ShotcraftIcon: React.FC<{ size: number }> = ({ size }) => (
   <div style={{
     position: 'absolute', inset: 0, borderRadius: RAD * (size / ICON), overflow: 'hidden',
     background: 'linear-gradient(180deg, #fffaf2 0%, #f6ecdd 100%)',
     boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.95), inset 0 -6px 14px rgba(120,80,40,0.12), inset 0 0 0 1px rgba(70,45,20,0.08)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
   }}>
-    {/* 赤陶页眉 */}
-    <div style={{
-      position: 'absolute', left: 0, right: 0, top: 0, height: '31%',
-      background: `linear-gradient(180deg, #d4673d 0%, ${L.accent} 100%)`,
-      boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.3), 0 2px 0 rgba(120,40,10,0.12)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: FONT.sans, fontWeight: 700, fontSize: size * 0.16, letterSpacing: '0.14em', color: '#fff7ef', paddingLeft: '0.14em',
-    }}>FRI</div>
-    <div style={{
-      position: 'absolute', left: 0, right: 0, top: '31%', bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: FONT.sans, fontWeight: 650, fontSize: size * 0.5, letterSpacing: '-0.05em', color: L.ink, fontVariantNumeric: 'tabular-nums',
-      paddingBottom: size * 0.02,
-    }}>17</div>
+    {/* 标志可见轮廓 x 16–120 / 128，中心偏右 4 单位：左移回图标正中 */}
+    <ShotcraftMark size={size * 0.62} tone="light" style={{ transform: `translateX(${(-size * 0.62 * 4 / 128).toFixed(2)}px)` }} />
     {/* 顶部柔光 */}
     <div style={{
       position: 'absolute', inset: 0,
@@ -129,10 +122,11 @@ const Neighbor: React.FC<{ kind: number }> = ({ kind }) => {
 
 // ───────────── 面板 ─────────────
 
+// 面板内容：一支宣传片的分镜时间线（时间码 / 镜头 / 手法）
 const SLOTS = [
-  { time: '09:30', title: 'Deep work', meta: '2h', c: '#3d5a80' },
-  { time: '13:00', title: 'Lunch with Ana', meta: 'Café Lume', c: '#7d9a7e' },
-  { time: '17:30', title: 'Climbing', meta: '90 min', c: L.accent },
+  { time: '00:00', title: 'Hero push-in', meta: '2.5D', c: '#3d5a80' },
+  { time: '00:04', title: 'Beat-synced cuts', meta: '12 cuts', c: '#7d9a7e' },
+  { time: '00:09', title: 'Logo sting', meta: '+ SFX', c: L.accent },
 ];
 
 export const AttentionBounce: React.FC = () => {
@@ -235,7 +229,7 @@ export const AttentionBounce: React.FC = () => {
           transform: `scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`, transformOrigin: '50% 100%',
           borderRadius: RAD, boxShadow: softShadow(10 + lift * 40, { color: L.shadow, strength: 1.2 }),
         }}>
-          <DaybookIcon size={ICON} />
+          <ShotcraftIcon size={ICON} />
           {/* 角标 */}
           {badge > 0 && (
             <div style={{
@@ -258,10 +252,10 @@ export const AttentionBounce: React.FC = () => {
             boxShadow: `inset 0 1.5px 0 rgba(255,255,255,1), inset 0 0 0 1px rgba(70,45,20,0.08), ${softShadow(44, { color: L.shadow, strength: 1.25 })}`,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ ...type(24, 700, { caps: true }), letterSpacing: '0.16em', color: L.accent }}>New in Daybook</div>
+              <div style={{ ...type(24, 700, { caps: true }), letterSpacing: '0.16em', color: L.accent }}>New in {BRAND.short}</div>
               <div style={{ flex: 1, height: 1.5, background: L.line }} />
             </div>
-            <div style={{ ...type(68, 700), color: L.ink, marginTop: 18 }}>Your Friday, planned.</div>
+            <div style={{ ...type(68, 700), color: L.ink, marginTop: 18 }}>Every shot, tuned.</div>
             <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {SLOTS.map((s, i) => {
                 const r = row(i);

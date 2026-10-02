@@ -6,6 +6,8 @@
 // （顶沿高光 + 近实远虚两层影）；thumb 8f 内前缘先走、后缘跟随的橡皮筋拉伸 + 速度拖影，
 // 到位后 1.5% 过冲回弹；段标签颜色随 thumb 位置连续过渡；新图标带强调色笑脸；
 // 光标起点挪到真正画外，两层投影；涟漪换强调色细环。时间轴不变。
+// 品牌轮：两段从 Perplexity 的 Ask / Computer 换成 video-shotcraft 的 Prompt → Film
+// （"一句话出一支片"），图标换成对话气泡 / 带笑脸的场记板，几何与时间轴不动。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
@@ -41,22 +43,26 @@ const ArrowCursor: React.FC<{ x: number; y: number; press: number }> = ({ x, y, 
   </svg>
 );
 
-// 新身份图标：带表情的笔记本（表情用唯一强调色，是"奖励感"的一半）
-const SmileLaptop: React.FC<{ size: number }> = ({ size }) => (
+// 新身份图标：带表情的场记板（表情用唯一强调色，是"奖励感"的一半）
+const SmileClapper: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 40 40">
-    <rect x={7} y={7.5} width={26} height={18.5} rx={3.5} fill="none" stroke={INK} strokeWidth={2.8} />
-    <circle cx={15.5} cy={14.5} r={1.9} fill={G.accent} />
-    <circle cx={24.5} cy={14.5} r={1.9} fill={G.accent} />
-    <path d="M14.8 19 Q20 23.2 25.2 19" stroke={G.accent} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-    <path d="M4.5 31 L35.5 31" stroke={INK} strokeWidth={3} strokeLinecap="round" />
+    <rect x={6} y={15.5} width={28} height={19} rx={3.5} fill="none" stroke={INK} strokeWidth={2.8} />
+    <g transform="rotate(-14 6 13)">
+      <rect x={6} y={6.5} width={28} height={6.5} rx={1.5} fill="none" stroke={INK} strokeWidth={2.6} strokeLinejoin="round" />
+      <path d="M14 6.5 L17.5 13 M22.5 6.5 L26 13" stroke={INK} strokeWidth={2.4} strokeLinecap="round" />
+    </g>
+    <circle cx={15.5} cy={22} r={1.9} fill={G.accent} />
+    <circle cx={24.5} cy={22} r={1.9} fill={G.accent} />
+    <path d="M14.8 26.2 Q20 30.4 25.2 26.2" stroke={G.accent} strokeWidth={2.5} fill="none" strokeLinecap="round" />
   </svg>
 );
 
-const AskIcon: React.FC<{ size: number }> = ({ size }) => (
+// 旧身份图标：对话气泡（一句 prompt），里面两行"字"
+const PromptIcon: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 40 40">
-    <circle cx={20} cy={20} r={13} fill="none" stroke={INK} strokeWidth={2.8} />
-    <path d="M16 17 q0-5 4.5-5 q4.5 0 4.5 4.2 q0 3-3.4 4.4 q-1.6 0.7-1.6 2.6" stroke={INK} strokeWidth={2.6} fill="none" strokeLinecap="round" />
-    <circle cx={20} cy={28} r={1.8} fill={INK} />
+    <path d="M9 8.5 H31 a3.5 3.5 0 0 1 3.5 3.5 V24 a3.5 3.5 0 0 1 -3.5 3.5 H19 L12 33 V27.5 H9 a3.5 3.5 0 0 1 -3.5 -3.5 V12 a3.5 3.5 0 0 1 3.5 -3.5 Z"
+      fill="none" stroke={INK} strokeWidth={2.8} strokeLinejoin="round" />
+    <path d="M12 15 H28 M12 21 H22" stroke={INK} strokeWidth={2.6} strokeLinecap="round" />
   </svg>
 );
 
@@ -89,7 +95,7 @@ export const SegmentedThumbHero: React.FC = () => {
   const SEGW = (CW - PAD * 2) / 2;
   const TH = CH - PAD * 2; // thumb 高
 
-  // 光标滑入：ease-out 从右下画外（整只光标在画框外）飘到 Computer 段上
+  // 光标滑入：ease-out 从右下画外（整只光标在画框外）飘到 Film 段上
   const curT = interpolate(frame, [CURSOR_IN, CURSOR_IN + 24], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -118,9 +124,9 @@ export const SegmentedThumbHero: React.FC = () => {
   const thumbR = PAD + SEGW + leadAt(frame) * SEGW; // 前缘（右）
   const thumbV = velocity((f) => PAD + slide(f, Easing.out(Easing.cubic)) * SEGW, frame);
 
-  // 到位瞬间：Computer 图标弹出（过冲），Ask 图标收起
+  // 到位瞬间：Film 图标弹出（过冲），Prompt 图标收起
   const iconIn = spring({ frame: frame - SLIDE_END, fps, config: { damping: 10, stiffness: 220, mass: 0.6 } });
-  const laptopScale = frame >= SLIDE_END ? iconIn : 0;
+  const filmScale = frame >= SLIDE_END ? iconIn : 0;
   const askScale = interpolate(frame, [SLIDE, SLIDE + 6], [1, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -224,7 +230,7 @@ export const SegmentedThumbHero: React.FC = () => {
             }}
           />
         )}
-        {/* Ask 段 */}
+        {/* Prompt 段 */}
         <div style={labelStyle(1 - compAmt)}>
           <span
             style={{
@@ -234,23 +240,23 @@ export const SegmentedThumbHero: React.FC = () => {
               overflow: 'visible',
             }}
           >
-            <AskIcon size={78} />
+            <PromptIcon size={78} />
           </span>
-          Ask
+          Prompt
         </div>
-        {/* Computer 段 */}
+        {/* Film 段 */}
         <div style={labelStyle(compAmt)}>
           <span
             style={{
               display: 'inline-flex',
-              transform: `scale(${laptopScale})`,
-              width: laptopScale < 0.05 ? 0 : 78,
+              transform: `scale(${filmScale})`,
+              width: filmScale < 0.05 ? 0 : 78,
               overflow: 'visible',
             }}
           >
-            <SmileLaptop size={78} />
+            <SmileClapper size={78} />
           </span>
-          Computer
+          Film
         </div>
       </div>
       <ArrowCursor x={curX} y={curY} press={press} />

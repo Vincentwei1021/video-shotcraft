@@ -2,15 +2,15 @@
 // 节点背后的光斑一起涨亮一拍，背景给前景"搭腔"。
 //
 // 第二轮重设计（午夜接力 · 三颗玻璃节点）：
-// - look = midnight（深蓝夜 · 电光蓝 · 青）。三张灰卡换成一条语音 AI 工作流的三颗 240px 玻璃节点
-//   「Listen → Understand → Act」（产品名 Tessel），横向起伏排布（中间高、两边低），飞线是节点之间的
+// - look = midnight（深蓝夜 · 电光蓝 · 青）。三张灰卡换成 video-shotcraft 出片流程的三颗 240px 玻璃节点
+//   「Brief → Storyboard → Ship」（品牌轮由语音 AI「Tessel」的 Listen → Understand → Act 换来），横向起伏排布（中间高、两边低），飞线是节点之间的
 //   一跳一跳的弧——读作"接力"而不是连线图。每颗节点背后各有一团 720–820px 的光斑（电光蓝 / 青 / 堇蓝），
 //   连同节点一起轻微漂移。
 // - 共振（组合命门）：飞线落点帧 = 节点点亮帧 = 背后光斑 surge 起点帧（同一个常量），光斑 5f 涨到
 //   1+1.6 倍亮度并放大 12%、15f 消散；节点同帧描边脉冲 + 一圈冲击环。错开 ≥2f 就读不出"搭腔"。
 // - 飞线：白芯 + 青蓝两层辉光，亮头领跑带彗尾，生长曲线起步蓄力、进站减速；到站 4f 后整条线 14f 消散
 //   成一串细点虚线（能量已经交出去，只留下路径），与 flyline-arc 的"常驻线"区分。
-// - 收束：C 点亮后 72px 标题「Say it once. Tessel does the rest.」逐词升起（Tessel 用青色），
+// - 收束：C 点亮后 72px 标题「Say it once. video-shotcraft does the rest.」逐词升起（品牌名用青色），
 //   光斑 110–140f out-sine 收敛冻结，末 25f 真静止。
 // - 镜头：全程 1→1.04 极缓推进，焦点随接力从 A 漂到 C（起止无速度突变）。
 //
@@ -27,6 +27,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND } from '../../_fixtures/Brand';
 
 export const ORB_FLYLINE_RELAY_DURATION = 165; // 5.5s：动作 f98 前结束、光斑 f140 冻结、末 25f 真静止
 
@@ -60,15 +61,15 @@ type NodeDef = { x: number; y: number; label: string; sub: string; litAt: number
 const ICON_STROKE = { fill: 'none', strokeWidth: 7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
 const NODES: NodeDef[] = [
   {
-    x: 400, y: 470, label: 'Listen', sub: 'Stand-up · 14 min', litAt: 10, inAt: 0, orb: '#3d63ff', orbSize: 820, seed: 1,
+    x: 400, y: 470, label: 'Brief', sub: 'One prompt · 1 page', litAt: 10, inAt: 0, orb: '#3d63ff', orbSize: 820, seed: 1,
     icon: <g {...ICON_STROKE}><rect x={-18} y={-44} width={36} height={60} rx={18} /><path d="M-34 0 C -34 22 -18 34 0 34 C 18 34 34 22 34 0 M0 34 V48" /></g>,
   },
   {
-    x: 960, y: 380, label: 'Understand', sub: '3 decisions · 5 tasks', litAt: LIT_B, inAt: 4, orb: L.accent2, orbSize: 760, seed: 2,
+    x: 960, y: 380, label: 'Storyboard', sub: '8 shots · beat-synced', litAt: LIT_B, inAt: 4, orb: L.accent2, orbSize: 760, seed: 2,
     icon: <g {...ICON_STROKE}><path d="M0 -44 C 4 -14 14 -4 44 0 C 14 4 4 14 0 44 C -4 14 -14 4 -44 0 C -14 -4 -4 -14 0 -44 Z" /><path d="M30 -38 v14 M23 -31 h14" /></g>,
   },
   {
-    x: 1520, y: 470, label: 'Act', sub: 'Sent to #launch', litAt: LIT_C, inAt: 8, orb: '#7f74ff', orbSize: 720, seed: 3,
+    x: 1520, y: 470, label: 'Ship', sub: 'launch-film.mp4', litAt: LIT_C, inAt: 8, orb: '#7f74ff', orbSize: 720, seed: 3,
     icon: <g {...ICON_STROKE}><path d="M-40 4 L 38 -34 L 14 40 L 2 12 Z M2 12 L 38 -34" /></g>,
   },
 ];
@@ -166,7 +167,7 @@ const Node: React.FC<{ f: number; n: NodeDef; ox: number; oy: number }> = ({ f, 
       {/* 标签 */}
       <div style={{ position: 'absolute', left: x - 260, width: 520, top: y + R + 34, textAlign: 'center' }}>
         <div style={{ ...type(52, 650), color: lit > 0.5 ? L.ink : L.ink3 }}>{n.label}</div>
-        <div style={{ ...type(32, 450), color: lit > 0.5 ? L.ink2 : alpha(L.ink3, 0.7), marginTop: 10, ...(n.label === 'Act' ? { fontFamily: FONT.mono, letterSpacing: '0em' } : null) }}>{n.sub}</div>
+        <div style={{ ...type(32, 450), color: lit > 0.5 ? L.ink2 : alpha(L.ink3, 0.7), marginTop: 10, ...(n.label === 'Ship' ? { fontFamily: FONT.mono, letterSpacing: '0em' } : null) }}>{n.sub}</div>
       </div>
     </div>
   );
@@ -231,7 +232,7 @@ export const OrbFlylineRelay: React.FC = () => {
 
       {/* 收束标题（不随镜头推进，稳在画面下缘） */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: 862, textAlign: 'center' }}>
-        <TextReveal text="Say it once. Tessel does the rest." by="word" variant="rise" start={92} each={18} gap={3.5}
+        <TextReveal text={`Say it once. ${BRAND.name} does the rest.`} by="word" variant="rise" start={92} each={18} gap={3.5}
           style={{ ...type(72, 700), color: L.ink }}
           unitStyle={(i) => (i === 3 ? { color: L.accent2 } : {})} />
       </div>

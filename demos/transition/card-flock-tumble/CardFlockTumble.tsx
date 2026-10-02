@@ -5,14 +5,14 @@
 // 第二轮重设计（设计决定）
 // - look = aurora（紫粉极光暗场）。整片收成一套色：卡片环境辉光、背景字墙、烟雾环、巨字全部落在
 //   紫 → 粉 → 奶桃这一条色带上，去掉原来黄 / 品红 / 紫 / 蓝四色彩虹，能量感靠亮度和运动，不靠色数。
-// - 背景：彩虹描边字墙换成两行 300px 单色描边「SHIP FASTER」反向缓移（淡紫 0.16），卡后一团极光
+// - 背景：彩虹描边字墙换成两行 300px 单色描边「CRAFT THE SHOT」反向缓移（淡紫 0.16），卡后一团极光
 //   主光把卡片群托起来；收束时字墙随吸入向中心收缩并淡出（不糊卡片）。
 // - 构图：卡片群重心移回画面中心偏下（原版偏左上），收束点 = 环心 = 巨字中心，一条视线。
 // - 节奏：去掉原版 72–84f 的黑场空档——吸入到点（70f）同一帧中心一记白热闪核（6f 衰减），环从闪核里
 //   长出；巨字 74f 就"砸"进来（1.22 → 1，snappy 14f + 字距收拢），之后极缓长大不停；眉题 / 标语随后错峰。
 // - 巨字改成实心：白热芯 → 淡紫的竖向渐变填充 + 粉紫泛光（全片唯一的泛光主角，Q4），
-//   上方「PULSE 3.0」眉题、下方 40px 标语，结尾是一张完整的发布海报。
-// - 卡片 UI 换皮成虚构产品 Pulse（收件箱 / 任务列表 / 首页），按 CARD_ZOOM 布局级放大栅格化（Q2）。
+//   上方 video-shotcraft 标志 + 字标眉题、下方 44px 品牌短句，结尾是一张完整的发布海报。
+// - 卡片 UI = video-shotcraft 工作台（收件箱 / 镜头列表 / 首页），按 CARD_ZOOM 布局级放大栅格化（Q2）。
 //
 // 时间表（30fps，135f）
 //   0–22    字墙亮起（6–22f），第一张卡侧棱薄边已在画面
@@ -27,6 +27,7 @@ import React, { useId } from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { EASE, Grain, Vignette, ramp, mix } from '../../_fixtures/Polish';
 import { LOOKS, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, PITCH, ShotcraftMark } from '../../_fixtures/Brand';
 
 const L = LOOKS.aurora;
 const DISPLAY = '"Avenir Next", "SF Pro Display", "Helvetica Neue", sans-serif';
@@ -62,7 +63,7 @@ const Backdrop: React.FC<{ frame: number }> = ({ frame }) => {
               transform: `translateX(${((row === 0 ? -1 : 1) * drift - (row === 0 ? 300 : 1400)).toFixed(1)}px)`,
               color: 'transparent', WebkitTextStroke: `2.5px ${alpha('#d9c8ff', row === 0 ? 0.18 : 0.12)}`,
             }}>
-              {'SHIP FASTER  ·  SHIP FASTER  ·  SHIP FASTER  ·  '}
+              {'CRAFT THE SHOT  ·  CRAFT THE SHOT  ·  CRAFT THE SHOT  ·  '}
             </div>
           ))}
         </AbsoluteFill>
@@ -76,7 +77,7 @@ const Backdrop: React.FC<{ frame: number }> = ({ frame }) => {
   );
 };
 
-// ---------- Pulse UI 卡（出版级假内容：侧栏导航 + 三种页面——收件箱 / 任务列表 / 首页） ----------
+// ---------- video-shotcraft UI 卡（出版级假内容：侧栏导航 + 三种页面——收件箱 / 镜头列表 / 首页） ----------
 // 卡片在 3D 里放大到 1.6–1.74 倍：按 CARD_ZOOM 布局级放大（CSS zoom，按目标尺寸栅格化），
 // 外层再 scale(s / CARD_ZOOM) 缩回——文字不是 560 宽位图被放大的糊字（Q2）。
 const CARD_ZOOM = 1.75;
@@ -101,20 +102,20 @@ const Chip: React.FC<{ c: string; children: React.ReactNode }> = ({ c, children 
     <div style={{ width: 5, height: 5, borderRadius: 3, background: c }} />{children}
   </div>
 );
-const NAV = ['Home', 'Inbox', 'Tasks', 'Docs', 'Goals'];
+const NAV = ['Home', 'Inbox', 'Shots', 'Renders', 'Gallery'];
 const INBOX = [
-  ['AK', 'Ana Kim', 'Moved “Pricing page” to Review', '2m'],
-  ['MR', 'Marco Ruiz', 'Can we ship the onboarding fix today?', '9m'],
-  ['JL', 'Jamie Lee', 'Assigned you “Q4 launch checklist”', '24m'],
-  ['SO', 'Sam Ortiz', 'Left a comment on Sprint 14', '1h'],
-  ['TN', 'Tara Nair', 'Approved the design system update', '2h'],
+  ['AK', 'Ana Kim', 'Approved shot 04 · crash zoom', '2m'],
+  ['MR', 'Marco Ruiz', 'Can we render the launch film today?', '9m'],
+  ['JL', 'Jamie Lee', 'Assigned you “Cursor flyover”', '24m'],
+  ['SO', 'Sam Ortiz', 'Left a note on the storyboard', '1h'],
+  ['TN', 'Tara Nair', 'Approved the sound design pass', '2h'],
 ];
 const TASKS: [string, string, string][] = [
-  ['Finalize launch email', 'Done', UI.mint],
-  ['QA checkout flow', 'In progress', UI.violet],
-  ['Update API docs', 'In progress', UI.violet],
-  ['Record product demo', 'To do', UI.amber],
-  ['Localize pricing page', 'To do', UI.amber],
+  ['Crash zoom punch', 'Done', UI.mint],
+  ['Cursor flyover', 'Rendering', UI.violet],
+  ['Logo sting', 'Rendering', UI.violet],
+  ['Beat-synced cuts', 'To do', UI.amber],
+  ['Sound design pass', 'To do', UI.amber],
 ];
 const PageBody: React.FC<{ seed: number }> = ({ seed }) => {
   if (seed === 0) {
@@ -138,7 +139,7 @@ const PageBody: React.FC<{ seed: number }> = ({ seed }) => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', fontSize: 9, fontWeight: 650, color: UI.ink3, letterSpacing: '0.08em', height: 24, alignItems: 'center', borderBottom: `1px solid ${UI.line}` }}>
-          <span style={{ flex: 1, paddingLeft: 25 }}>TASK</span><span style={{ width: 96 }}>STATUS</span><span style={{ width: 28 }} />
+          <span style={{ flex: 1, paddingLeft: 25 }}>SHOT</span><span style={{ width: 96 }}>STATUS</span><span style={{ width: 28 }} />
         </div>
         {TASKS.map(([name, st, c], i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', height: 42, borderBottom: `1px solid ${UI.line}` }}>
@@ -159,12 +160,12 @@ const PageBody: React.FC<{ seed: number }> = ({ seed }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', gap: 10 }}>
         <div style={{ flex: 1, background: UI.fill, borderRadius: 10, padding: '11px 13px', boxShadow: `inset 0 0 0 1px ${UI.line}` }}>
-          <div style={{ fontSize: 10, color: UI.ink3, fontWeight: 650 }}>Shipped this week</div>
+          <div style={{ fontSize: 10, color: UI.ink3, fontWeight: 650 }}>Rendered this week</div>
           <div style={{ fontSize: 30, fontWeight: 750, color: UI.ink, letterSpacing: '-0.035em', lineHeight: 1.15, fontVariantNumeric: 'tabular-nums' }}>12</div>
           <div style={{ fontSize: 10, color: UI.mint, fontWeight: 650 }}>4 ahead of plan</div>
         </div>
         <div style={{ flex: 1.4, background: UI.fill, borderRadius: 10, padding: '11px 13px', boxShadow: `inset 0 0 0 1px ${UI.line}` }}>
-          <div style={{ fontSize: 10, color: UI.ink3, fontWeight: 650 }}>Velocity</div>
+          <div style={{ fontSize: 10, color: UI.ink3, fontWeight: 650 }}>Renders</div>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 54, marginTop: 6 }}>
             {bars.map((h, i) => (
               <div key={i} style={{
@@ -196,8 +197,8 @@ const UiCard: React.FC<{ seed: number; title: string }> = ({ seed, title }) => (
   >
     <div style={{ width: 118, background: '#f4f2fa', padding: '15px 10px', display: 'flex', flexDirection: 'column', gap: 3, borderRight: `1px solid ${UI.line}` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '0 4px 11px' }}>
-        <div style={{ width: 17, height: 17, borderRadius: 5, background: `linear-gradient(135deg, ${UI.violet}, ${UI.pink})` }} />
-        <div style={{ fontSize: 12, fontWeight: 800, color: UI.ink, letterSpacing: '-0.02em' }}>Pulse</div>
+        <ShotcraftMark size={17} tone="light" />
+        <div style={{ fontSize: 12, fontWeight: 800, color: UI.ink, letterSpacing: '-0.02em' }}>{BRAND.short}</div>
       </div>
       {NAV.map((n, i) => {
         const on = n === title;
@@ -229,7 +230,7 @@ const UiCard: React.FC<{ seed: number; title: string }> = ({ seed, title }) => (
         }}>+ New</div>
       </div>
       <div style={{ fontSize: 11, color: UI.ink3, marginTop: -6 }}>
-        {seed === 0 ? '5 unread · Today' : seed === 1 ? 'Sprint 14 · 5 tasks' : 'Good morning, Jamie'}
+        {seed === 0 ? '5 unread · Today' : seed === 1 ? 'Launch film · 5 shots' : 'Good morning, Jamie'}
       </div>
       <PageBody seed={seed} />
     </div>
@@ -339,7 +340,7 @@ const CARDS: { title: string; k: [Pose, Pose, Pose]; conv: Pose }[] = [
     conv: { x: -20, y: -12, rx: 0, ry: 55, rz: 4, s: 0.12 },
   },
   {
-    title: 'Tasks',
+    title: 'Shots',
     k: [
       { x: 0, y: 0, rx: 8, ry: 89, rz: 12, s: 1.0 },
       { x: -16, y: -7, rx: 13, ry: 38, rz: -7, s: 1.42 },
@@ -431,8 +432,12 @@ export const CardFlockTumble: React.FC = () => {
       {/* 巨字锁版：眉题 / 实心巨字 / 标语 */}
       {st >= 0 && (
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', transform: `translateY(${CY_OFF}px)` }}>
-          <div style={{ position: 'absolute', top: 540 - 250, left: 0, right: 0, textAlign: 'center', ...type(28, 700, { caps: true }), color: '#e9dcff', letterSpacing: '0.34em' }}>
-            <TextReveal text="Pulse 3.0" by="char" variant="blur" start={TEXT_T0 + 10} each={12} gap={1.4} />
+          {/* 眉题：品牌标志 + 全小写字标（字标不做全大写） */}
+          <div style={{ position: 'absolute', top: 540 - 262, left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 18 }}>
+            <ShotcraftMark size={50} tone="dark" frameProgress={ramp(frame, TEXT_T0 + 8, 12, EASE.out)} cutProgress={ramp(frame, TEXT_T0 + 14, 10, EASE.out)} />
+            <div style={{ ...type(30, 700), fontFamily: BRAND.font, color: '#f1e9ff', letterSpacing: '0.12em' }}>
+              <TextReveal text={BRAND.name} by="char" variant="blur" start={TEXT_T0 + 10} each={12} gap={0.9} />
+            </div>
           </div>
           <div style={{
             fontFamily: DISPLAY, fontWeight: 900, fontStyle: 'italic', fontSize: 282, lineHeight: 1, whiteSpace: 'nowrap',
@@ -441,9 +446,9 @@ export const CardFlockTumble: React.FC = () => {
             WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
             filter: `drop-shadow(0 0 ${(18 * glowK).toFixed(1)}px ${alpha(L.accent2, 0.55 * glowK)}) drop-shadow(0 0 ${(60 * glowK).toFixed(1)}px ${alpha(L.light, 0.5 * glowK)})`,
             paddingRight: '0.08em',
-          }}>STRONGER</div>
+          }}>CINEMATIC</div>
           <div style={{ position: 'absolute', top: 540 + 200, left: 0, right: 0, textAlign: 'center', ...type(44, 500), color: alpha('#f3ecff', 0.82) }}>
-            <TextReveal text="Every team, one rhythm." by="word" variant="rise" start={TEXT_T0 + 18} each={16} gap={3} />
+            <TextReveal text={PITCH.en.motto} by="word" variant="rise" start={TEXT_T0 + 18} each={16} gap={3} />
           </div>
         </AbsoluteFill>
       )}

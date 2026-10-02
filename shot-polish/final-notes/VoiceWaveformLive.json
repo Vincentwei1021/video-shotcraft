@@ -1,0 +1,16 @@
+{
+  "stem": "VoiceWaveformLive",
+  "changed": true,
+  "brand": [
+    "虚构语音助手「Juniper」→ Shotcraft：标签「Juniper is listening」→「Shotcraft is listening」，「Sent to Juniper」→「Sent to Shotcraft」",
+    "提示语「Ask Juniper anything…」→「Describe your next shot…」",
+    "口述转写「Find a quiet table for four / near the river, around eight.」→「Make a launch film for Friday, / open with a crash zoom.」（逐词出现帧不变）"
+  ],
+  "brandEn": [
+    "Fictional voice assistant 'Juniper' → Shotcraft: label 'Juniper is listening' → 'Shotcraft is listening', 'Sent to Juniper' → 'Sent to Shotcraft'",
+    "Prompt 'Ask Juniper anything…' → 'Describe your next shot…'",
+    "Dictated transcript 'Find a quiet table for four / near the river, around eight.' → 'Make a launch film for Friday, / open with a crash zoom.' (per-word timing unchanged)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

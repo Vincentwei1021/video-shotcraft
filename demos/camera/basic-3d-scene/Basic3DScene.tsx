@@ -4,8 +4,8 @@
 //
 // 设计决定
 // - look：graphite（近单色暗场，白为强调、香槟金只做点缀）——像发布会上"三章节"的空间叙事。
-//   虚构产品「Meridian」（空间化笔记工具），三站 = 三个章节：Capture / Connect / Ship，
-//   总览站是品牌落版「Think in space.」。
+//   产品是 video-shotcraft，三站 = 品牌短句拆成的三个章节：Frame / Craft / Ship，
+//   总览站是品牌落版「Craft the shot.」（标志 + 字标做眉题）。
 // - 卡片是为镜头设计的海报而不是小 UI：1240×700 原生 1:1 排版（对位时屏幕上就是原生像素，
 //   不经 DesignStage 放大，字不糊），150px 标题 + 44px 说明 + 420px 细体大号章节数字（被卡边裁切的编辑感）。
 // - 空间感：世界里散布 70 颗真 3D 浮尘（各有 z，相机飞/转时有真实视差）；非当前卡按"站距"退焦变暗；
@@ -21,12 +21,13 @@
 //   96–128  飞行 2→3（32f）：画框侧躺 90° 被转正——最长的一段，观众要看懂"世界在转"
 //   128–158 站 3 Ship 停留 30f
 //   158–190 飞行 3→总览（32f）：相机 1/2.7 拉远，三卡与品牌落版同框
-//   184–212 落版：眉题字距收拢 → 「Think in space.」逐词升起 → 副句淡入
+//   184–212 落版：眉题字距收拢 → 「Craft the shot.」逐词升起 → 副句淡入
 //   206–224 hold：极缓推近 1.5%，尾帧是一张完整海报
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, SERIF, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const BASIC_3D_SCENE_DURATION = 225; // 7.5s @30fps
 
@@ -45,9 +46,9 @@ const POSES: Pose[] = [
   { x: 594, y: 480, z: -400, rx: 0, ry: 0, rz: 0, s: 2.7 },
 ];
 const CHAPTERS = [
-  { no: '01', kicker: 'Capture', title: 'Capture.', body: 'Every idea lands in a single keystroke.' },
-  { no: '02', kicker: 'Connect', title: 'Connect.', body: 'Notes find their neighbours and link themselves.' },
-  { no: '03', kicker: 'Ship', title: 'Ship.', body: 'Turn a linked draft into a launch plan.' },
+  { no: '01', kicker: 'Frame', title: 'Frame.', body: 'Real page captures, staged for the camera.' },
+  { no: '02', kicker: 'Craft', title: 'Craft.', body: 'Shot recipe cards turn moves into code.' },
+  { no: '03', kicker: 'Ship', title: 'Ship.', body: 'One prompt to a finished promo.' },
 ];
 
 // 飞行时刻表（帧）：[起, 止]
@@ -125,7 +126,9 @@ const ChapterCard: React.FC<{ i: number; frame: number; focus: number }> = ({ i,
         <span style={{ color: GOLD }}>{c.no}</span>
         <span style={{ width: 44, height: 1, background: alpha(GOLD, 0.6) }} />
         <span>Chapter · {c.kicker}</span>
-        <span style={{ marginLeft: 'auto' }}>Meridian</span>
+        <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, textTransform: 'none', fontFamily: BRAND.font, fontSize: 28, fontWeight: 700, letterSpacing: '0.03em', color: L.ink2 }}>
+          <ShotcraftMark size={32} tone="dark" />{BRAND.name}
+        </span>
       </div>
       {/* 标题：逐词从线下升起 */}
       <div style={{ marginTop: 150, ...type(156, 760), color: L.ink }}>
@@ -159,14 +162,16 @@ const OverviewPlate: React.FC<{ frame: number }> = ({ frame }) => {
   return (
     <div style={{ position: 'absolute', left: -960, top: -540, width: 1920, height: 1080, pointerEvents: 'none' }}>
       <div style={{ position: 'absolute', left: 120, bottom: 128 }}>
-        <div style={{ ...type(24, 600, { mono: true }), letterSpacing: `${mix(0.6, 0.16, kick).toFixed(3)}em`, color: GOLD, opacity: kick, textTransform: 'uppercase' }}>
-          Meridian 3 · Three chapters, one canvas
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, ...type(24, 600, { mono: true }), letterSpacing: `${mix(0.6, 0.16, kick).toFixed(3)}em`, color: GOLD, opacity: kick, textTransform: 'uppercase' }}>
+          <ShotcraftMark size={40} tone="dark" />
+          <span style={{ textTransform: 'none', fontFamily: BRAND.font, fontSize: 30, fontWeight: 700, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
+          <span>· Three chapters, one film</span>
         </div>
         <div style={{ marginTop: 26, ...type(150, 400, { serif: true }), letterSpacing: '-0.035em', color: L.ink }}>
-          <TextReveal text="Think in space." by="word" variant="rise" start={st + 6} each={22} gap={5} />
+          <TextReveal text="Craft the shot." by="word" variant="rise" start={st + 6} each={22} gap={5} />
         </div>
         <div style={{ marginTop: 22, ...type(38, 420), color: L.ink2, opacity: sub, transform: `translateY(${((1 - sub) * 14).toFixed(1)}px)` }}>
-          The canvas where notes become plans.
+          Shot recipes for cinematic product films.
         </div>
       </div>
     </div>

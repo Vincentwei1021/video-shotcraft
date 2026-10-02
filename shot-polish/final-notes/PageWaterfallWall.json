@@ -1,0 +1,12 @@
+{
+  "stem": "PageWaterfallWall",
+  "changed": false,
+  "brand": [
+    "画面全是真实页面截图切片（纹理里的站名已由主控统一改成 video-shotcraft），代码里没有自画的 logo / 品牌名 / 文案"
+  ],
+  "brandEn": [
+    "Every tile is a real page-screenshot crop (the site name inside the textures was already rebranded to video-shotcraft by the coordinator); no hand-drawn logo, brand name or copy in code"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

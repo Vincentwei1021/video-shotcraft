@@ -1,9 +1,10 @@
 // sheen-sweep-retry —— 单点扫光（高标准重试）：深墨主角卡上一道斜向高光带缓扫一次，被圆角裁住，无声的加冕。
 //
 // 第二轮重设计（暖沙展台 · 钛黑会员卡发布）：
-// - look = sand（米色 · 赤陶）。主角从"灰底上的 PRO 小卡"换成一张 900×567 的钛黑金属卡（虚构 Corvid Reserve），
-//   卡面是拉丝钛（横向发丝纹）+ 激光蚀刻的字标 / 持卡人 / 非接图标 + 香槟金芯片，带 8 层叠出的金属厚边。
-//   卡在右侧 3D 斜放（rotateY 朝向左侧文字栏、rotateX 微仰），左栏是编辑式标题「Metal, / not plastic.」。
+// - look = sand（米色 · 赤陶）。主角从"灰底上的 PRO 小卡"换成一张 900×567 的钛黑金属卡（video-shotcraft 导演卡），
+//   卡面是拉丝钛（横向发丝纹）+ 激光蚀刻的单色「镜刻」标志与 video-shotcraft 字标 / 持卡人 / 非接图标 + 香槟金芯片，
+//   带 8 层叠出的金属厚边。卡在右侧 3D 斜放（rotateY 朝向左侧文字栏、rotateX 微仰），左栏是编辑式标题
+//   「Cinematic, / by default.」。
 // - 扫光有物理动机：卡缓缓"转向光源"（rotateY 21°→14°）的同一时段，高光带掠过卡面——不是贴上去的特效，
 //   而是转角带来的反射。四约束照旧：单点（只扫主角卡）、圆角裁剪、只扫一次、扫前扫后无光效层。
 // - 光带三层：宽柔光（0.14）+ 窄亮芯（0.5）screen 叠在钛黑上；光带经过处，拉丝纹与蚀刻字被"照出来"
@@ -21,6 +22,7 @@ import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const SHEEN_SWEEP_RETRY_DURATION = 150;
 
@@ -44,12 +46,9 @@ const BRUSH =
   'repeating-linear-gradient(180deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 3px),' +
   'repeating-linear-gradient(180deg, rgba(0,0,0,0.25) 0px, rgba(0,0,0,0.25) 1px, transparent 1px, transparent 7px)';
 
-// 渡鸦字标：圆 + 斜切缺口（C 形）+ 一颗"眼"
-const Mark: React.FC<{ color: string; size?: number }> = ({ color, size = 58 }) => (
-  <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'block' }}>
-    <path d="M38 13.5A17 17 0 1 0 38 34.5L30.6 29.4A8.2 8.2 0 1 1 30.6 18.6Z" fill={color} />
-    <circle cx="36.5" cy="24" r="3.2" fill={color} />
-  </svg>
+// 蚀刻标志：激光雕刻按规范用单色版（取景框与斜切同色），标志本身不加发光 / 投影
+const Mark: React.FC<{ color: string; size?: number }> = ({ color, size = 66 }) => (
+  <ShotcraftMark size={size} frameColor={color} cutColor={color} />
 );
 
 const Contactless: React.FC<{ color: string }> = ({ color }) => (
@@ -67,10 +66,8 @@ const Face: React.FC<{ tone: string; lit?: boolean }> = ({ tone, lit }) => {
   return (
     <div style={{ position: 'absolute', inset: 0, padding: '52px 60px 50px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', color: tone }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ filter: lit ? `drop-shadow(0 0 10px ${alpha(LIT, 0.55)})` : 'drop-shadow(0 1px 0 rgba(255,255,255,0.1))' }}>
-          <Mark color={tone} />
-        </div>
-        <div style={{ ...type(46, 620), letterSpacing: '-0.035em', textShadow: etch }}>corvid</div>
+        <Mark color={tone} />
+        <div style={{ ...type(42, 620), fontFamily: BRAND.font, letterSpacing: '0.01em', textShadow: etch }}>{BRAND.name}</div>
         <div style={{ marginLeft: 'auto', filter: lit ? `drop-shadow(0 0 8px ${alpha(LIT, 0.5)})` : undefined }}>
           <Contactless color={tone} />
         </div>
@@ -78,10 +75,10 @@ const Face: React.FC<{ tone: string; lit?: boolean }> = ({ tone, lit }) => {
       <div style={{ flex: 1 }} />
       <div style={{ display: 'flex', alignItems: 'flex-end' }}>
         <div>
-          <div style={{ ...type(22, 600, { caps: true }), letterSpacing: '0.3em', opacity: 0.8, textShadow: etch }}>Card member</div>
+          <div style={{ ...type(22, 600, { caps: true }), letterSpacing: '0.3em', opacity: 0.8, textShadow: etch }}>Director</div>
           <div style={{ ...type(36, 500, { mono: true }), letterSpacing: '0.16em', marginTop: 12, textShadow: etch }}>A. MORENO</div>
         </div>
-        <div style={{ marginLeft: 'auto', ...type(30, 700, { caps: true }), letterSpacing: '0.34em', textShadow: etch }}>Reserve</div>
+        <div style={{ marginLeft: 'auto', ...type(30, 700, { caps: true }), letterSpacing: '0.34em', textShadow: etch }}>Studio</div>
       </div>
     </div>
   );
@@ -238,11 +235,11 @@ export const SheenSweepRetry: React.FC = () => {
           }}
         >
           <span style={{ width: 10, height: 10, borderRadius: 5, background: L.accent, display: 'inline-block' }} />
-          Corvid Reserve
+          {BRAND.name}
         </div>
         <div style={{ marginTop: 34 }}>
           <TextReveal
-            text={'Metal,\nnot plastic.'}
+            text={'Cinematic,\nby default.'}
             by="line"
             variant="rise"
             start={12}
@@ -257,9 +254,9 @@ export const SheenSweepRetry: React.FC = () => {
             opacity: ramp(frame, 30, 18, EASE.out), transform: `translateY(${mix(14, 0, ramp(frame, 30, 22, EASE.snappy)).toFixed(1)}px)`,
           }}
         >
-          Laser-etched titanium, 18 grams.
+          Shot recipe cards for your agent.
           <br />
-          No numbers on the front.
+          From screenshot to showreel.
         </div>
         <div
           style={{
@@ -269,7 +266,7 @@ export const SheenSweepRetry: React.FC = () => {
             opacity: cta, transform: `translateY(${mix(22, 0, cta).toFixed(1)}px)`,
           }}
         >
-          Request an invite
+          Make your first film
           <span style={{ color: '#f0a07c' }}>→</span>
         </div>
       </div>

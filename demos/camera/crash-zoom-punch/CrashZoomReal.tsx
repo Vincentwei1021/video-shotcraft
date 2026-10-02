@@ -107,7 +107,7 @@ const World: React.FC<{ f: number; lift: number; lock: number; breath: number }>
                 <div key={c} style={{ position: 'absolute', left: 24 + i * 24, top: 20, width: 14, height: 14, borderRadius: 7, background: c, boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.12)' }} />
               ))}
               <div style={{ position: 'absolute', left: WIN.w / 2 - 210, top: 12, width: 420, height: 30, borderRadius: 9, background: 'rgba(255,255,255,0.7)', boxShadow: 'inset 0 0 0 1px rgba(60,40,20,0.1)', fontFamily: FONT.sans, fontSize: 15, color: '#8a7a68', display: 'flex', alignItems: 'center', justifyContent: 'center', letterSpacing: '0.01em' }}>
-                foundation.lab/projects
+                localhost:3000/projects
               </div>
             </div>
             <div style={{ position: 'absolute', left: 0, top: CHROME, width: WIN.w, height: WIN.h, overflow: 'hidden' }}>

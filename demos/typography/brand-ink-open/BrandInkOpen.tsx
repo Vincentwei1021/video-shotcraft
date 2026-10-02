@@ -4,8 +4,9 @@
 // 十字准星 SVG pathLength dashoffset 描画后淡出；字标逐字从大 scale 压到 1 +
 // blur→0（入场三件套定式），字底强调色 glint 短划闪过；kicker mono 打字机
 // 逐字符 + 强调色块光标周期闪；46–76f 整整 1s 静止 hold；退场 7f 上浮+缩+淡。
-// 品牌名/副标/强调色可换成目标品牌。
+// 品牌名/副标/强调色可换成目标品牌。demo 立的是 video-shotcraft：字标全小写（保留纸墨 letterpress 的衬线字），副标打品牌短句。
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
+import { BRAND, PITCH } from '../../_fixtures/Brand';
 
 export const BRAND_INK_OPEN_DURATION = 104;
 
@@ -15,8 +16,8 @@ const INK = 'oklch(18% 0.006 82)';
 const AMBER = 'oklch(52% 0.115 65)';
 const INK2 = 'oklch(50% 0.006 82)';
 
-const WORDMARK = 'AI Foundation Lab';
-const KICKER = 'TEAM RESEARCH CONSOLE';
+const WORDMARK = BRAND.name; // 'video-shotcraft'
+const KICKER = PITCH.en.motto; // 'Frame motion. Craft the shot.'（textTransform 转大写）
 
 export const BrandInkOpen: React.FC = () => {
   const frame = useCurrentFrame();
@@ -45,10 +46,10 @@ export const BrandInkOpen: React.FC = () => {
     return Math.floor(b / 2) % 2 === 0;
   })();
 
-  // --- brand group rests fully-on for ~1s (wordmark completes ~67f; the last
-  // glyph is done at 10+15*3+12=67), then dissolves out (97 → 104): lift +
-  // shrink + fade. This leaves a clean ~30-frame hold of the COMPLETE title
-  // (67→97), per the card's "完整标题停留 ~30 帧" requirement. ---
+  // --- brand group rests fully-on for ~1s (wordmark completes ~64f; the last
+  // glyph is done at 10+14*3+12=64), then dissolves out (97 → 104): lift +
+  // shrink + fade. This leaves a clean ~33-frame hold of the COMPLETE title
+  // (64→97), per the card's "完整标题停留 ~30 帧" requirement. ---
   const brandOut = interpolate(frame, [97, 104], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.4, 0, 0.5, 1),
   });

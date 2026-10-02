@@ -43,7 +43,8 @@ name: aurora-bloom-bg-flip
   否则暗场里留一团灰雾
 - DEEPP/PURPLE 是这个效果的**本体光色**，不是品牌色槽位；要换成项目色
   必须 blob 三层 + B 句文字色整组一起换，只换文字色会和背景脱节
-- 文案是中性占位（"For many years" / "everything changed"），逐词
+- demo 文案是 video-shotcraft 的叙事转折（"Promos took weeks" / "Meet video-shotcraft"，
+  词数与字长贴近原片的 "For many years" / "everything changed"），逐词
   stagger 的节奏依赖词数与字长，换句要回调 0.04/0.06 两个间隔
 - 底色用 JS 逐帧写 `background`（`mix()` 出实色），不要用 CSS transition，
   否则 seek 到任意帧时颜色不确定

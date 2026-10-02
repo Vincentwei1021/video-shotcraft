@@ -2,10 +2,10 @@
 // 极速自旋弧线飞向镜头，到位瞬间硬定格，定格后一次 sheen 扫光。
 //
 // 第二轮重设计（午夜蓝 · 发布会邀请函）：
-// - look = midnight。卡片不再是白底小字海报，而是一张深海军蓝的「Founders Pass」邀请卡：
-//   大号四芒星徽记（就是开场那颗星芒"留在了卡上"）+ 同心细环 + 大字 Founders / Pass +
-//   发行编号；卡面有一层随自旋角变色的全息箔（飞行中流光、定格即冻结）。卡背是纹章 + 徽记。
-// - 构图：卡片落在画面左 1/3（cx=700，卡高 ≈ 86% 画高），右侧留给一组发布会文案——
+// - look = midnight。卡片不再是白底小字海报，而是一张深海军蓝的 video-shotcraft「Launch Film」首映票：
+//   中心徽记 = video-shotcraft 标志，托在开场星芒"留在卡上"的同心细环 + 交叉针线上，大字 Launch / Film +
+//   场次编号；卡面有一层随自旋角变色的全息箔（飞行中流光、定格即冻结）。卡背是纹章 + 标志。
+// - 构图：卡片落在画面左 1/3（cx=700，卡高 ≈ 86% 画高），右侧留给一组 video-shotcraft 宣传文案——
 //   定格后才逐行揭示，hold 段有内容在走、画面像一张完整的邀请海报。
 // - 星芒（用户逐轮定值，保留）：X 形对角针状光束 + 中心小亮点/辉光/放射短刺，9f 内转 90°。
 //   闪光点 = 卡片落点：观众先看到光在哪，卡就从哪"变"出来，绕一圈弧线再回到这里定格。
@@ -26,6 +26,7 @@ import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
 import { Dust, LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const L = LOOKS.midnight;
 
@@ -49,9 +50,6 @@ const CX = 700; // 落点（= 闪光点）
 const CY = 540;
 const TEXT_X = 1130; // 右侧文案左缘
 
-// 四芒星（徽记 / 卡背 / 品牌标共用）：凹边四角星
-const STAR = 'M12 1.5 C12.9 8.2 15.8 11.1 22.5 12 C15.8 12.9 12.9 15.8 12 22.5 C11.1 15.8 8.2 12.9 1.5 12 C8.2 11.1 11.1 8.2 12 1.5 Z';
-
 // 卡片正面：380×540 设计坐标；外层按 ×FINAL_SCALE 布局后用 zoom 栅格化（定格帧原生锐利，Q2）
 const CardFace: React.FC<{ theta: number }> = ({ theta }) => {
   const gid = useId().replace(/[^a-zA-Z0-9]/g, '');
@@ -73,19 +71,14 @@ const CardFace: React.FC<{ theta: number }> = ({ theta }) => {
       }} />
       {/* 品牌行 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
-        <svg viewBox="0 0 24 24" width={16} height={16}><path d={STAR} fill={L.ink} /></svg>
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.34em' }}>VESPER</div>
-        <div style={{ marginLeft: 'auto', fontFamily: FONT.mono, fontSize: 11, color: L.ink2, letterSpacing: '0.04em' }}>No. 0001 / 500</div>
+        <ShotcraftMark size={22} tone="dark" />
+        <div style={{ fontFamily: BRAND.font, fontSize: 14, fontWeight: 700, letterSpacing: '0.03em' }}>{BRAND.name}</div>
+        <div style={{ marginLeft: 'auto', fontFamily: FONT.mono, fontSize: 11, color: L.ink2, letterSpacing: '0.04em' }}>SC 01 · TAKE 01</div>
       </div>
-      {/* 徽记：同心细环 + 交叉针线（开场星芒的"化石"）+ 四芒星 */}
+      {/* 徽记：同心细环 + 交叉针线（开场星芒的"化石"）+ video-shotcraft 标志（标志本身不加光，背后的光晕是舞台光） */}
       <div style={{ flex: 1, position: 'relative' }}>
         <svg viewBox="-190 -150 380 300" width={332} height={262} style={{ position: 'absolute', left: 0, top: 6 }}>
           <defs>
-            <radialGradient id={`core${gid}`} cx="0" cy="0" r="1" gradientUnits="objectBoundingBox">
-              <stop offset="0" stopColor="#ffffff" />
-              <stop offset="0.5" stopColor="#cfe0ff" />
-              <stop offset="1" stopColor="#6f9bff" />
-            </radialGradient>
             <radialGradient id={`halo${gid}`}>
               <stop offset="0" stopColor="#5b8cff" stopOpacity="0.55" />
               <stop offset="1" stopColor="#5b8cff" stopOpacity="0" />
@@ -96,22 +89,22 @@ const CardFace: React.FC<{ theta: number }> = ({ theta }) => {
             </linearGradient>
           </defs>
           <circle r={130} fill={`url(#halo${gid})`} />
-          {[42, 68, 94, 120].map((r, i) => (
-            <circle key={r} r={r} fill="none" stroke={`rgba(170,200,255,${0.2 - i * 0.04})`} strokeWidth={0.8} />
+          {/* 环与针线都从标志外缘（≈56 单位）往外起：标志是开口取景框，线不许从开口里穿过去 */}
+          {[68, 94, 120].map((r, i) => (
+            <circle key={r} r={r} fill="none" stroke={`rgba(170,200,255,${0.18 - i * 0.04})`} strokeWidth={0.8} />
           ))}
           {[-38, 52, 142, 232].map((d, i) => (
-            <path key={d} transform={`rotate(${d})`} d={`M 6 -0.9 L ${i % 2 ? 110 : 180} 0 L 6 0.9 Z`} fill={`url(#ray${gid})`} />
+            <path key={d} transform={`rotate(${d})`} d={`M 62 -0.9 L ${i % 2 ? 110 : 180} 0 L 62 0.9 Z`} fill={`url(#ray${gid})`} />
           ))}
-          <g transform="scale(3.6) translate(-12 -12)">
-            <path d={STAR} fill={`url(#core${gid})`} />
-          </g>
         </svg>
+        {/* 标志压在 svg 中心（svg 332×262 @ top 6，viewBox 原点在中心 → 屏幕中心 (166, 137)） */}
+        <ShotcraftMark size={112} tone="dark" style={{ position: 'absolute', left: 166 - 56, top: 6 + 131 - 56 }} />
       </div>
       {/* 标题 */}
       <div style={{ position: 'relative' }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.24em', color: L.accent, marginBottom: 8 }}>SEASON 04 · KEYNOTE</div>
-        <div style={{ fontSize: 58, fontWeight: 760, letterSpacing: '-0.045em', lineHeight: 0.92 }}>Founders</div>
-        <div style={{ fontSize: 58, fontWeight: 300, letterSpacing: '-0.04em', lineHeight: 0.98, color: '#c9d6f5' }}>Pass</div>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.24em', color: L.accent, marginBottom: 8 }}>PREMIERE · REEL 01</div>
+        <div style={{ fontSize: 58, fontWeight: 760, letterSpacing: '-0.045em', lineHeight: 0.92 }}>Launch</div>
+        <div style={{ fontSize: 58, fontWeight: 300, letterSpacing: '-0.04em', lineHeight: 0.98, color: '#c9d6f5' }}>Film</div>
       </div>
       {/* 底部票根行 */}
       <div style={{
@@ -119,13 +112,13 @@ const CardFace: React.FC<{ theta: number }> = ({ theta }) => {
         borderTop: '1px dashed rgba(170,200,255,0.22)', fontFamily: FONT.mono, fontSize: 11, color: L.ink2, letterSpacing: '0.06em',
       }}>
         <span>ADMIT ONE</span>
-        <span style={{ marginLeft: 'auto' }}>11.04.26 · HALL A</span>
+        <span style={{ marginLeft: 'auto' }}>1920×1080 · 30 FPS</span>
       </div>
     </div>
   );
 };
 
-// 卡背：深海军蓝 + 细纹章 + 中心徽记
+// 卡背：深海军蓝 + 细纹章 + 中心 video-shotcraft 标志
 const CardBack: React.FC = () => (
   <div style={{
     position: 'absolute', inset: 0, borderRadius: 24, overflow: 'hidden',
@@ -142,7 +135,7 @@ const CardBack: React.FC = () => (
       position: 'absolute', inset: 22, borderRadius: 14, boxShadow: 'inset 0 0 0 1px rgba(200,215,255,0.24)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <svg viewBox="0 0 24 24" width={110} height={110}><path d={STAR} fill="#dfe8ff" /></svg>
+      <ShotcraftMark size={120} tone="dark" />
     </div>
   </div>
 );
@@ -300,14 +293,14 @@ const Copy: React.FC = () => {
     <div style={{ position: 'absolute', left: TEXT_X, top: 300, width: 700, color: L.ink }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 34 }}>
         <div style={{ width: 56 * rule, height: 2, background: L.accent, boxShadow: `0 0 12px ${alpha(L.accent, 0.8)}` }} />
-        <TextReveal text="BY INVITATION ONLY" variant="track" start={63} each={20} gap={0.8}
+        <TextReveal text="NOW SHOWING" variant="track" start={63} each={20} gap={0.8}
           style={{ ...type(TYPE_LABEL, 700, { caps: true }), letterSpacing: '0.26em', color: L.accent }} />
       </div>
       <div style={{ ...type(132, 780), color: L.ink }}>
-        <TextReveal text={'Doors open\nNov 4.'} by="line" variant="rise" start={67} each={22} gap={7} />
+        <TextReveal text={'Craft\nthe shot.'} by="line" variant="rise" start={67} each={22} gap={7} />
       </div>
       <div style={{ ...type(36, 420), color: L.ink2, marginTop: 40, maxWidth: 600, lineHeight: 1.38, letterSpacing: '-0.01em' }}>
-        <TextReveal text={'Five hundred founders. One night.\nEverything we have built, first.'} by="word" variant="blur" start={86} each={16} gap={1.6} />
+        <TextReveal text={'Cinematic product videos,\ncrafted by your agent.'} by="word" variant="blur" start={86} each={16} gap={1.6} />
       </div>
     </div>
   );

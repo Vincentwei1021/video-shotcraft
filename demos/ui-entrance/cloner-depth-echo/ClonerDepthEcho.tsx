@@ -2,28 +2,29 @@
 // 手法不变：一张主卡"复印"出 7 个克隆体沿纵深等距排开成队 → 停一拍让观众数清 → 全体同步加速吸回本体 → 合体弹一下。
 //
 // 设计决定
-// - look = lime（石墨黑 + 荧光黄绿）。主角是一张边缘函数实例卡「checkout-api」：大号 p95 延迟读数 + 柠檬绿折线
-//   + 底部 8 个区域位。语义从"多副本"落到具体卖点：一次部署 = 8 个区域同时在跑。
+// - look = lime（石墨黑 + 荧光黄绿）。主角是一张 video-shotcraft 渲染卡「launch-film」（顶栏 video-shotcraft 标志）：
+//   大号 30fps 读数 + 柠檬绿折线 + 底部 8 个镜头位。语义从"多副本"落到具体卖点：一句提示词 = 8 个镜头同时出片。
 // - 纵深：真 3D 透视（perspective 1500），消失点放在左上——克隆体只做 translateZ 后退就自动排向左上，
 //   再叠一点 dx/dy 让纵队张开；越远越淡、越虚、越"只剩轮廓"（填充褪掉、柠檬绿描边留下），像 C4D Cloner 的线框回声。
-//   每个克隆体顶栏换成它自己的区域码（sfo1 / fra1 …）——同一内容、不同落点。
+//   每个克隆体顶栏换成它自己的镜头号（S02 / S03 …）——同一配方、不同镜头。
 // - 版式：主卡右侧中位（占画宽 ~36%），纵队伸向左上；左下是全片的计数器「×8」（260px 柠檬绿 tabular），
-//   克隆每弹出一个它就滚一格；合体后左上空出的位置升起标题「Deploy once. / Run everywhere.」，尾帧是一张海报。
-// - 合体：8 个区域位在吸回到达的同一帧全部点亮（克隆"回到"本体里），主卡 1→1.06→1 单脉冲 + 一次柠檬绿描边光（Q4 只给主角一次）。
+//   克隆每弹出一个它就滚一格；合体后左上空出的位置升起标题「One prompt. / Eight shots.」，尾帧是一张海报。
+// - 合体：8 个镜头位在吸回到达的同一帧全部点亮（克隆"回到"本体里），主卡 1→1.06→1 单脉冲 + 一次柠檬绿描边光（Q4 只给主角一次）。
 //
 // 时间表（30fps，共 138f）
 //   0–16    入场：主卡自下 40px 升起 + 由虚到实（snappy），卡内内容 2f 错峰；计数器 ×1 已在左下
 //   16–24   预备：主卡按压到 0.96、描边提亮（"复印键按下"）
-//   24–44   排开：7 个克隆 spring 错峰 2.2f/个弹向纵深（damping 15，一次轻过冲），每弹出一个计数 +1，顶栏区域码同时浮现
+//   24–44   排开：7 个克隆 spring 错峰 2.2f/个弹向纵深（damping 15，一次轻过冲），每弹出一个计数 +1，顶栏镜头号同时浮现
 //   44–76   停 32f：相机极缓推近 2%、纵队整体轻微视差漂移——数得清"有很多个"
 //   76–86   吸回 10f：全体同步强 ease-in（越来越快），沿纵深方向按速度加拖影模糊
-//   86–104  合体：区域位全亮、主卡单脉冲 1.06、描边光一次；计数器同帧一记缩放回弹
+//   86–104  合体：镜头位全亮、主卡单脉冲 1.06、描边光一次；计数器同帧一记缩放回弹
 //   92–118  标题逐词从线下升起（左上），副行淡入
 //   118–138 hold 20f：光的呼吸 + 0.6% 极缓推近，干净落定
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, Dust, TextReveal, alpha, glow, springAt, type } from '../../_fixtures/Look';
+import { ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CLONER_DEPTH_ECHO_DURATION = 138;
 
@@ -47,7 +48,7 @@ const VP = { x: 360, y: 120 };
 
 const TYPE_H1 = 112; // 标题字号（h1 档略收，两行放进左上空位）
 
-const REGIONS = ['iad1', 'sfo1', 'fra1', 'hnd1', 'gru1', 'syd1', 'bom1', 'cdg1'];
+const REGIONS = ['S01', 'S02', 'S03', 'S04', 'S05', 'S06', 'S07', 'S08']; // 镜头号（沿用原变量名）
 const SPARK = [0.62, 0.58, 0.66, 0.52, 0.55, 0.44, 0.48, 0.36, 0.4, 0.3, 0.33, 0.26, 0.3, 0.22];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -86,8 +87,9 @@ const InstanceCard: React.FC<{ region: string; clone: number; lit: number; frame
         <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 70% 50% at 30% 0%, ${alpha(L.accent, 0.1)} 0%, transparent 70%)` }} />
       )}
       <div style={{ position: 'absolute', left: 42, right: 42, top: 36, display: 'flex', alignItems: 'center', gap: 14, ...rise(0) }}>
-        <div style={{ width: 14, height: 14, borderRadius: 7, background: L.accent, boxShadow: `0 0 0 5px ${alpha(L.accent, 0.16)}` }} />
-        <div style={{ ...type(32, 600, { mono: true }), color: clone === 0 ? L.ink : alpha(L.ink, 0.85) }}>checkout-api</div>
+        {/* video-shotcraft 标志（暗底反白版）；克隆体上随卡一起变淡 */}
+        <ShotcraftMark size={34} tone="dark" style={{ margin: '-4px 0' }} />
+        <div style={{ ...type(32, 600, { mono: true }), color: clone === 0 ? L.ink : alpha(L.ink, 0.85) }}>launch-film</div>
         <div style={{ flex: 1 }} />
         <div
           style={{
@@ -99,7 +101,7 @@ const InstanceCard: React.FC<{ region: string; clone: number; lit: number; frame
           {region}
         </div>
       </div>
-      {/* 读数：p95 延迟 —— 克隆体上降成轮廓字（纹理），只有本体是实心 */}
+      {/* 读数：30fps 出片 —— 克隆体上降成轮廓字（纹理），只有本体是实心 */}
       <div style={{ position: 'absolute', left: 40, top: 104, display: clone === 0 ? 'flex' : 'none', alignItems: 'baseline', gap: 16, ...rise(1) }}>
         <div
           style={{
@@ -108,9 +110,9 @@ const InstanceCard: React.FC<{ region: string; clone: number; lit: number; frame
             WebkitTextStroke: clone === 0 ? undefined : `1.5px ${alpha(L.accent, 0.7)}`,
           }}
         >
-          18<span style={{ fontSize: 72, letterSpacing: '-0.02em', color: clone === 0 ? L.ink2 : 'transparent' }}>ms</span>
+          30<span style={{ fontSize: 72, letterSpacing: '-0.02em', color: clone === 0 ? L.ink2 : 'transparent' }}>fps</span>
         </div>
-        <div style={{ ...type(26, 500, { caps: true }), color: L.ink3, letterSpacing: '0.12em', opacity: clone === 0 ? 1 : 0 }}>p95</div>
+        <div style={{ ...type(26, 500, { caps: true }), color: L.ink3, letterSpacing: '0.12em', opacity: clone === 0 ? 1 : 0 }}>1080p</div>
       </div>
       {/* 折线 */}
       <svg width={576} height={130} style={{ position: 'absolute', left: 42, top: 246, overflow: 'visible', ...rise(2) }}>
@@ -125,7 +127,7 @@ const InstanceCard: React.FC<{ region: string; clone: number; lit: number; frame
         </defs>
         <polyline points={pts} fill="none" stroke={L.accent} strokeWidth={clone === 0 ? 4 : 2.5} strokeLinejoin="round" strokeLinecap="round" opacity={clone === 0 ? 1 : 0.8} />
       </svg>
-      {/* 区域位：本体底部 8 格，合体时全部点亮 */}
+      {/* 镜头位：本体底部 8 格，合体时全部点亮 */}
       {clone === 0 && (
         <div style={{ position: 'absolute', left: 42, right: 42, bottom: 30, display: 'flex', gap: 8, ...rise(3) }}>
           {REGIONS.map((r, i) => {
@@ -285,9 +287,9 @@ export const ClonerDepthEcho: React.FC = () => {
 
       {/* 左上：合体后升起的标题 */}
       <div style={{ position: 'absolute', left: 140, top: 168, ...type(TYPE_H1, 780), color: L.ink }}>
-        <TextReveal text={'Deploy once.'} by="word" variant="rise" start={92} each={16} gap={4} />
+        <TextReveal text={'One prompt.'} by="word" variant="rise" start={92} each={16} gap={4} />
         <br />
-        <TextReveal text={'Run everywhere.'} by="word" variant="rise" start={98} each={16} gap={4} unitStyle={(i) => (i === 1 ? { color: L.accent } : {})} />
+        <TextReveal text={'Eight shots.'} by="word" variant="rise" start={98} each={16} gap={4} unitStyle={(i) => (i === 1 ? { color: L.accent } : {})} />
       </div>
 
       {/* 左下：计数器 */}
@@ -301,7 +303,7 @@ export const ClonerDepthEcho: React.FC = () => {
         }}
       >
         <span style={{ width: 40, height: 2, background: L.accent }} />
-        {count === 1 ? 'region live' : 'regions live · one deploy'}
+        {count === 1 ? 'shot rendered' : 'shots rendered · one prompt'}
       </div>
     </AbsoluteFill>
   );

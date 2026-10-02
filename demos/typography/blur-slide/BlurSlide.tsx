@@ -7,14 +7,14 @@
 //   左对齐在 168px 安全边距的网格上，右侧留白给标题的尾巴呼吸。
 // - 层级：刊头 24px 全大写（纹理级）→ 栏目眉题 30px 朱红全大写 → 主标题 170px 衬线两行 →
 //   副标题 46px 无衬线。主副字号差 3.7 倍，字重 400 衬线对 400 无衬线靠字体家族区分。
-// - 强调色只给一个词：第二行的斜体 "inevitable." 是朱红，它最后落定、入场窗更长（主角）。
-// - 文案：主 5 词 "Make every launch / feel inevitable."、副 9 词（虚构产品 Halo）。
+// - 强调色只给一个词：第二行的斜体 "cinematic." 是朱红，它最后落定、入场窗更长（主角）。
+// - 文案：主 5 词 "Make every launch / feel cinematic."、副 9 词（video-shotcraft 的宣传句）；刊头是 video-shotcraft 字标。
 //
 // 时间表（30fps，120f）
 //   0–24   刊头与发丝线已在画面（首帧不空），发丝线从左向右画出（snappy 24f）
 //   4–22   栏目眉题 blur-slide 入场（与手法同族，做"预备"）
 //   10–40  主标题第一行 3 词，词间 4f，每词 22f
-//   26–58  第二行：先停 6f 换气，"feel" 22f、"inevitable." 30f（最后落定，字距同 p 收紧）
+//   26–58  第二行：先停 6f 换气，"feel" 22f、"cinematic." 30f（最后落定，字距同 p 收紧）
 //   34–80  副标题 9 词，词间 2.4f、每词 20f、位移/模糊更小——层级靠幅度不靠时长；与主标题重叠 24f
 //   72–98  刊脚发丝线从右向左画出 + 页码淡入（hold 段的余波，版面闭合成完整一页）
 //   80–119 落定 hold 40f：整组极缓推近 1→1.03（smooth，起止零速度）+ 纸面主光极缓呼吸
@@ -23,6 +23,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { LOOKS, SERIF, Stage, alpha } from '../../_fixtures/Look';
 import { EASE, FONT, ramp } from '../../_fixtures/Polish';
+import { ShotcraftWordmark } from '../../_fixtures/Brand';
 
 export const BLUR_SLIDE_DURATION = 120; // 4000ms @30fps
 
@@ -64,12 +65,12 @@ const H1_A: Word[] = ['Make', 'every', 'launch'].map((text, i) => ({ text, start
 const H1_B: Word[] = [
   { text: 'feel', start: 26, dur: 22 },
   {
-    text: 'inevitable.', start: 30, dur: 30, track: [0.03, -0.025],
+    text: 'cinematic.', start: 30, dur: 30, track: [0.03, -0.025],
     style: { fontStyle: 'italic', color: L.accent },
   },
 ];
 // 副标题：9 词，词间 2.4f（词数多于原稿，gap 按卡片规则压密）
-const H2: Word[] = 'Plan, review and ship together in one calm workspace.'.split(' ').map((text, i) => ({ text, start: 34 + i * 2.4, dur: 20 }));
+const H2: Word[] = 'Shot recipes and camera moves, crafted by your agent.'.split(' ').map((text, i) => ({ text, start: 34 + i * 2.4, dur: 20 }));
 
 export const BlurSlide: React.FC = () => {
   const frame = useCurrentFrame();
@@ -102,8 +103,9 @@ export const BlurSlide: React.FC = () => {
         07
       </div>
         {/* 刊头：纹理级小字（不需要读），首帧即在；不随文字推近（页面家具是固定的） */}
-        <div style={{ position: 'absolute', left: LEFT, right: LEFT, top: 92, display: 'flex', justifyContent: 'space-between', fontFamily: FONT.sans, fontSize: 24, fontWeight: 600, letterSpacing: '0.2em', color: L.ink2, opacity: 0.4 + 0.6 * rule }}>
-          <span>HALO JOURNAL</span>
+        <div style={{ position: 'absolute', left: LEFT, right: LEFT, top: 92, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: FONT.sans, fontSize: 24, fontWeight: 600, letterSpacing: '0.2em', color: L.ink2, opacity: 0.4 + 0.6 * rule }}>
+          {/* 刊头字标：video-shotcraft（全小写，字标不加 caps 字距） */}
+          <ShotcraftWordmark size={24} markScale={1.5} gap={12} tone="light" color={L.ink2} />
           <span style={{ color: L.ink3 }}>N° 07 — OCTOBER 2026</span>
         </div>
         <div style={{ position: 'absolute', left: LEFT, top: 140, width: 1920 - LEFT * 2, height: 1.5, background: alpha(L.ink, 0.22), transform: `scaleX(${rule.toFixed(4)})`, transformOrigin: '0 50%' }} />

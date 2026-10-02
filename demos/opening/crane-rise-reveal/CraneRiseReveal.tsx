@@ -1,27 +1,28 @@
 // 升降臂拉升揭示（crane-rise-reveal）——crane shot：焦点 → 全局。
 //
-// 第二轮重设计（瓷白 SaaS · 物流台账「Relay」）：
-// - look = porcelain（冷白 + 钴蓝，青绿点缀）。世界 = 一扇为镜头设计的产品窗口：顶栏 + 「Shipments」页头
-//   （右侧 104px 的在途件数 KPI）+ 12 行运单表。开场相机 3.0× 怼在第 10 行运单上——单号 / 航线 / 承运商
-//   在画面里是 63px 的大字，行首一枚钴蓝"正在追踪"标，观众先看清"这是一票具体的货"。
+// 第二轮重设计（瓷白 SaaS · video-shotcraft 渲染队列）：
+// - look = porcelain（冷白 + 钴蓝，青绿点缀）。世界 = 一扇为镜头设计的产品窗口：顶栏 + 「Render queue」页头
+//   （右侧 104px 的今日渲染帧数 KPI）+ 12 行镜头渲染任务表。开场相机 3.0× 怼在第 10 行任务上——镜头号 / 转场 / 配方卡
+//   在画面里是 63px 的大字，行首一枚钴蓝"正在追踪"标，观众先看清"这是一个具体的镜头"。
 // - 拉升：translate = 屏幕中心 − 对准点×scale，对准点与 scale 共用一条 bezier(0.2,0,0.25,1)（零速起步、
 //   ~19% 处峰速、长尾临顶缓停 = 升降臂手感）。视野上缘每越过一行，该行一道钴蓝洗光从行首掠过（越线触发、
-//   与运镜逐帧同步）——"一行行涌入"；页头 KPI 同步从 0 数到 48,210（体量感），窗口最后整体脱离画框、
+//   与运镜逐帧同步）——"一行行涌入"；页头 KPI（今日渲染帧数）同步从 0 数到 48,210（体量感），窗口最后整体脱离画框、
 //   落成瓷白舞台上的一件实物（背景点阵按 0.35 视差慢移，读出纵深）。
-// - 余波：落定后被追踪的那一行状态胶囊由「In transit」翻成青绿「Delivered」+ 对勾——hold 段里唯一的小事件，
+// - 余波：落定后被追踪的那一行状态胶囊由「Rendering」翻成青绿「Rendered」+ 对勾——hold 段里唯一的小事件，
 //   结尾帧 = 「你盯着的这一行，只是这面墙的一格」。
 //
 // 时间表（30fps，共 165f）：
 //   0–24    特写 hold：相机 +1.5% 预备推近（吸一口气），行首追踪点呼吸
 //   24–126  拉升 102f：前 ~40f 快速段包 CameraMotionBlur；行洗光越线触发；KPI 计数（expo-out，与运镜同期收）
 //   126–138 落定：窗口阴影收到静置高度、KPI 末位落定
-//   134–148 余波：追踪行状态翻 Delivered（弹簧 damping 16）
+//   134–148 余波：追踪行状态翻 Rendered（弹簧 damping 16）
 //   148–165 hold 干净落定
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { bezier, ramp, mix, EASE, FONT, softShadow } from '../../_fixtures/Polish';
 import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CRANE_RISE_REVEAL_DURATION = 165; // 特写 hold 24f + 拉升 102f + 落定/余波/hold 39f
 
@@ -29,7 +30,7 @@ const L = LOOKS.porcelain;
 const HOLD = 24;
 const MOVE_END = 126;
 const BLUR_END = 64; // 速度降到峰值 ~35% 以下即撤运动模糊（慢段包了会抹软文字）
-const FLIP = 134; // 追踪行状态翻 Delivered
+const FLIP = 134; // 追踪行状态翻 Rendered（数据层仍叫 delivered）
 const crane = bezier(0.2, 0, 0.25, 1);
 
 // ───────────── 世界几何（终帧 = 世界 1:1）─────────────
@@ -45,7 +46,7 @@ const ROWS = 12;
 const TRACK = 9; // 被追踪的那一行
 const rowTop = (i: number) => ROW0 + i * ROW_H;
 
-// 列（相对内容左缘）
+// 列（相对内容左缘）：id = 镜头号、route = 转场（上一镜 → 下一镜）、carrier = 配方卡、kg = 帧数
 const COL = { id: 0, route: 172, carrier: 560, eta: 790, status: 930, prog: 1150, kg: 1480 };
 
 // ───────────── 相机 ─────────────
@@ -76,28 +77,28 @@ const HEAD_TRIG = (() => {
   return MOVE_END;
 })();
 
-// ───────────── 数据（虚构）─────────────
+// ───────────── 数据（虚构的 video-shotcraft 渲染队列；配方卡名取自本库）─────────────
 type Row = { id: string; from: string; to: string; carrier: string; eta: string; status: 'transit' | 'customs' | 'delivered' | 'loading'; prog: number; kg: string };
 const DATA: Row[] = [
-  { id: 'RL-48177', from: 'Oslo', to: 'Hamburg', carrier: 'Northwind', eta: '09:40', status: 'delivered', prog: 1, kg: '412' },
-  { id: 'RL-48181', from: 'Porto', to: 'Lyon', carrier: 'Kestrel Air', eta: '10:15', status: 'transit', prog: 0.72, kg: '86' },
-  { id: 'RL-48186', from: 'Gdańsk', to: 'Vienna', carrier: 'Meridian', eta: '11:05', status: 'customs', prog: 0.48, kg: '1,240' },
-  { id: 'RL-48190', from: 'Turin', to: 'Zürich', carrier: 'Alpline', eta: '11:30', status: 'transit', prog: 0.61, kg: '230' },
-  { id: 'RL-48194', from: 'Antwerp', to: 'Leeds', carrier: 'Northwind', eta: '12:10', status: 'loading', prog: 0.12, kg: '3,980' },
-  { id: 'RL-48199', from: 'Seville', to: 'Bilbao', carrier: 'Ruta Sur', eta: '12:45', status: 'transit', prog: 0.83, kg: '64' },
-  { id: 'RL-48203', from: 'Malmö', to: 'Aarhus', carrier: 'Kestrel Air', eta: '13:20', status: 'delivered', prog: 1, kg: '18' },
-  { id: 'RL-48207', from: 'Riga', to: 'Tallinn', carrier: 'Baltic Line', eta: '13:55', status: 'transit', prog: 0.54, kg: '702' },
-  { id: 'RL-48210', from: 'Milan', to: 'Munich', carrier: 'Alpline', eta: '14:05', status: 'customs', prog: 0.4, kg: '155' },
-  { id: 'RL-48213', from: 'Lisbon', to: 'Rotterdam', carrier: 'Meridian', eta: '14:20', status: 'transit', prog: 0.91, kg: '1,860' },
-  { id: 'RL-48216', from: 'Lyon', to: 'Geneva', carrier: 'Ruta Sur', eta: '14:50', status: 'loading', prog: 0.2, kg: '340' },
-  { id: 'RL-48219', from: 'Prague', to: 'Kraków', carrier: 'Meridian', eta: '15:30', status: 'transit', prog: 0.66, kg: '97' },
+  { id: 'SH-0401', from: 'Cold open', to: 'Logo', carrier: 'brand-ink-open', eta: '09:40', status: 'delivered', prog: 1, kg: '104' },
+  { id: 'SH-0402', from: 'Logo', to: 'Hero', carrier: 'text-as-mask', eta: '10:15', status: 'transit', prog: 0.72, kg: '96' },
+  { id: 'SH-0403', from: 'Hero', to: 'Dashboard', carrier: 'crash-zoom-punch', eta: '11:05', status: 'customs', prog: 0.48, kg: '120' },
+  { id: 'SH-0404', from: 'Dashboard', to: 'Search', carrier: 'cursor-flyover', eta: '11:30', status: 'transit', prog: 0.61, kg: '150' },
+  { id: 'SH-0405', from: 'Search', to: 'Results', carrier: 'type-and-filter', eta: '12:10', status: 'loading', prog: 0.12, kg: '73' },
+  { id: 'SH-0406', from: 'Results', to: 'Detail', carrier: 'steep-tilt-glide', eta: '12:45', status: 'transit', prog: 0.83, kg: '180' },
+  { id: 'SH-0407', from: 'Detail', to: 'Chart', carrier: 'timeline-travel', eta: '13:20', status: 'delivered', prog: 1, kg: '210' },
+  { id: 'SH-0408', from: 'Chart', to: 'Voice', carrier: 'voice-waveform-live', eta: '13:55', status: 'transit', prog: 0.54, kg: '172' },
+  { id: 'SH-0409', from: 'Voice', to: 'Team', carrier: 'spotlight-hero-card', eta: '14:05', status: 'customs', prog: 0.4, kg: '140' },
+  { id: 'SH-0410', from: 'Team', to: 'Launch', carrier: 'crane-rise-reveal', eta: '14:20', status: 'transit', prog: 0.91, kg: '165' },
+  { id: 'SH-0411', from: 'Launch', to: 'Outro', carrier: 'grain-dissolve', eta: '14:50', status: 'loading', prog: 0.2, kg: '90' },
+  { id: 'SH-0412', from: 'Outro', to: 'Lockup', carrier: 'neon-triple-marquee', eta: '15:30', status: 'transit', prog: 0.66, kg: '120' },
 ];
 
 const STATUS = {
-  transit: { label: 'In transit', fg: L.accent, bg: alpha(L.accent, 0.1) },
-  customs: { label: 'Customs', fg: '#b7791f', bg: 'rgba(214,158,46,0.13)' },
-  delivered: { label: 'Delivered', fg: '#00866f', bg: alpha(L.accent2, 0.13) },
-  loading: { label: 'Loading', fg: L.ink2, bg: 'rgba(76,86,110,0.09)' },
+  transit: { label: 'Rendering', fg: L.accent, bg: alpha(L.accent, 0.1) },
+  customs: { label: 'In review', fg: '#b7791f', bg: 'rgba(214,158,46,0.13)' },
+  delivered: { label: 'Rendered', fg: '#00866f', bg: alpha(L.accent2, 0.13) },
+  loading: { label: 'Queued', fg: L.ink2, bg: 'rgba(76,86,110,0.09)' },
 } as const;
 
 const text = (size: number, weight: number, color: string, extra: React.CSSProperties = {}): React.CSSProperties => ({
@@ -177,7 +178,7 @@ const RowView: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
         }} />
       </div>
       <span style={text(20, 500, L.ink2, { left: CX + COL.kg, top: ty - 10, width: 84, textAlign: 'right' })}>
-        {r.kg}<span style={{ color: L.ink3 }}> kg</span>
+        {r.kg}<span style={{ color: L.ink3 }}> f</span>
       </span>
     </div>
   );
@@ -199,12 +200,11 @@ const World: React.FC<{ frame: number }> = ({ frame }) => {
       }} />
       {/* 顶栏 */}
       <div style={{ position: 'absolute', left: WX, top: WY, width: WW, height: BAR_H, borderBottom: `1px solid ${L.line}` }} />
-      <div style={{ position: 'absolute', left: CX, top: WY + 22, width: 28, height: 28, borderRadius: 8, background: L.accent }}>
-        <svg width={28} height={28} viewBox="0 0 28 28"><path d="M8 18 L14 8 L20 18" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </div>
-      <span style={text(22, 700, L.ink, { left: CX + 40, top: WY + 25 })}>Relay</span>
-      <div style={{ position: 'absolute', left: CX + 170, top: WY, height: BAR_H, display: 'flex', gap: 40 }}>
-        {['Overview', 'Shipments', 'Routes', 'Fleet', 'Billing'].map((t, k) => (
+      {/* 品牌：镜刻标志 + video-shotcraft 字标（全小写、品牌字体） */}
+      <ShotcraftMark size={32} tone="light" style={{ position: 'absolute', left: CX - 3, top: WY + 20 }} />
+      <span style={text(22, 700, BRAND.ink, { left: CX + 38, top: WY + 25, fontFamily: BRAND.font, letterSpacing: '0.02em' })}>{BRAND.name}</span>
+      <div style={{ position: 'absolute', left: CX + 250, top: WY, height: BAR_H, display: 'flex', gap: 40 }}>
+        {['Shots', 'Render queue', 'Timeline', 'Workbench', 'Gallery'].map((t, k) => (
           <div key={t} style={{ position: 'relative', height: BAR_H, display: 'flex', alignItems: 'center' }}>
             <span style={{ ...text(18, k === 1 ? 600 : 500, k === 1 ? L.ink : L.ink3), position: 'relative' }}>{t}</span>
             {k === 1 && <div style={{ position: 'absolute', left: -2, right: -2, bottom: -1, height: 2, background: L.ink }} />}
@@ -212,27 +212,27 @@ const World: React.FC<{ frame: number }> = ({ frame }) => {
         ))}
       </div>
       <div style={{ position: 'absolute', left: WX + WW - PAD - 330, top: WY + 18, width: 270, height: 36, borderRadius: 10, background: L.surface2, boxShadow: `inset 0 0 0 1px ${L.line}` }}>
-        <span style={text(17, 500, L.ink3, { left: 16, top: 10 })}>Search shipments…</span>
+        <span style={text(17, 500, L.ink3, { left: 16, top: 10 })}>Search shots…</span>
         <span style={text(14, 600, L.ink3, { left: 228, top: 11, fontFamily: FONT.mono })}>⌘K</span>
       </div>
       <div style={{ position: 'absolute', left: WX + WW - PAD - 40, top: WY + 18, width: 36, height: 36, borderRadius: 18, background: 'linear-gradient(135deg, #9fb4ff, #2f5bff)' }} />
 
       {/* 页头：标题 + KPI */}
       <div style={{ opacity: 0.35 + 0.65 * headOn }}>
-        <span style={text(16, 700, L.accent, { left: CX, top: HEAD_Y + 44, letterSpacing: '0.16em' })}>LIVE · EUROPE NETWORK</span>
-        <span style={text(64, 700, L.ink, { left: CX - 3, top: HEAD_Y + 76, letterSpacing: '-0.035em' })}>Shipments</span>
-        <span style={text(20, 500, L.ink3, { left: CX, top: HEAD_Y + 152 })}>Updated live · 1,284 carriers · 312 hubs</span>
+        <span style={text(16, 700, L.accent, { left: CX, top: HEAD_Y + 44, letterSpacing: '0.16em' })}>LIVE · RENDER FARM</span>
+        <span style={text(64, 700, L.ink, { left: CX - 3, top: HEAD_Y + 76, letterSpacing: '-0.035em' })}>Render queue</span>
+        <span style={text(20, 500, L.ink3, { left: CX, top: HEAD_Y + 152 })}>Updated live · 1080p · 30 fps · 4 render workers</span>
         <span style={text(104, 750, L.ink, { left: WX + WW - PAD - 520, top: HEAD_Y + 46, width: 520, textAlign: 'right', letterSpacing: '-0.045em' })}>{fmt(kpi)}</span>
         <span style={text(20, 500, L.ink3, { left: WX + WW - PAD - 520, top: HEAD_Y + 158, width: 520, textAlign: 'right' })}>
-          in motion today<span style={{ color: '#00866f', fontWeight: 600 }}>{'   ▲ 12.4%'}</span>
+          frames rendered today<span style={{ color: '#00866f', fontWeight: 600 }}>{'   ▲ 12.4%'}</span>
         </span>
       </div>
 
       {/* 表头 */}
-      {[['SHIPMENT', COL.id], ['ROUTE', COL.route], ['CARRIER', COL.carrier], ['ETA', COL.eta], ['STATUS', COL.status], ['PROGRESS', COL.prog]].map(([t, x]) => (
+      {[['SHOT', COL.id], ['CUT', COL.route], ['RECIPE CARD', COL.carrier], ['ETA', COL.eta], ['STATUS', COL.status], ['PROGRESS', COL.prog]].map(([t, x]) => (
         <span key={t as string} style={text(14, 700, L.ink3, { left: CX + (x as number), top: THEAD_Y + 14, letterSpacing: '0.14em' })}>{t}</span>
       ))}
-      <span style={text(14, 700, L.ink3, { left: CX + COL.kg, top: THEAD_Y + 14, width: 84, textAlign: 'right', letterSpacing: '0.14em' })}>WEIGHT</span>
+      <span style={text(14, 700, L.ink3, { left: CX + COL.kg, top: THEAD_Y + 14, width: 84, textAlign: 'right', letterSpacing: '0.14em' })}>FRAMES</span>
       <div style={{ position: 'absolute', left: CX, top: ROW0 - 1, width: WW - PAD * 2, height: 1, background: L.line }} />
 
       {DATA.map((_, i) => <RowView key={i} i={i} frame={frame} />)}

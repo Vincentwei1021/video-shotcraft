@@ -1,28 +1,30 @@
 // axis-rescale-shock-v2 —— 轴爆表重标：折线正常爬升，新值顶破图表上沿冲进标题区，
 // 停半拍，y 轴"哗"地重标（旧刻度飞出 / 新刻度滑入 / 网格加密 / 旧线压扁成地平线），新值落回 + 弹真值标签。
 //
-// 第二轮重设计（沙色瑞士海报 · 财务月报）：
+// 第二轮重设计（沙色瑞士海报 · 渲染月报）：
 // - look = sand（米色纸 + 墨黑 + 赤陶）。不再是"卡片里的小图表"，而是整张画面就是一页瑞士网格财务海报：
-//   左上 120px 粗黑体标题「Monthly revenue」、右上同字号年度合计 KPI，下面是满版图表（1540×540 绘图区），
+//   左上 120px 粗黑体标题「Monthly renders」、右上同字号年度合计 KPI，下面是满版图表（1540×540 绘图区），
 //   3px 墨黑基线 + 3px "天花板"粗规线 + 发丝网格，历史面积用 45° 斜线排线（印刷感），月份/刻度 32px。
 // - 主角是赤陶色爆表段：Dec 新值从 Nov 起跳，越冲越快顶破天花板规线（规线在穿透点裂开、两片碎屑弹飞），
 //   一路冲进右上角的 KPI 数字里（KPI 被撞得一颤），悬停半拍带柔光——"装不下"字面化。
-// - 重标：14f 内旧刻度 $25k–$100k 向下飞出、新刻度 $100k–$400k 从上滑入，网格 4→8 根从左展开，
-//   旧折线与斜线面积被压扁成地平线；爆表点落回 $340k，弹出赤陶真值标签，KPI 滚到 $833k。
+// - 重标：14f 内旧刻度 25k–100k 向下飞出、新刻度 100k–400k 从上滑入，网格 4→8 根从左展开，
+//   旧折线与斜线面积被压扁成地平线；爆表点落回 340k，弹出赤陶真值标签，KPI 滚到 833k。
+// - 品牌轮：眉题换成 video-shotcraft 标志 + 字标，内容从财务营收换成渲染量（数值与版式不变）。
 //
 // 时间表（30fps，共 168f）：
 //   0–20    规线从左画出、标题逐词升起、刻度/月份淡入（第 1 帧已有纸面与规线起点）
 //   14–56   历史段 Jan→Nov 写入（42f，不对称 in-out），笔尖带墨点
-//   50–62   预警：天花板规线与 $100k 刻度转赤陶，Nov 点一圈脉冲（预备）
+//   50–62   预警：天花板规线与 100k 刻度转赤陶，Nov 点一圈脉冲（预备）
 //   62–76   爆表 14f：越冲越快（ease-in 主导）顶破规线（~69f 穿透：裂口 + 碎屑 + 图表震 10px）→ 冲进 KPI
 //   76–94   悬停 18f：笔尖亮头 + 柔光，KPI 被撞后阻尼回位
 //   94–108  重标 14f（expo-out）：刻度换、网格密、旧线压扁、端点落回
-//   106–126 端点标记 overshoot 落座 + 真值标签弹出；KPI $493k → $833k
+//   106–126 端点标记 overshoot 落座 + 真值标签弹出；KPI 493k → 833k
 //   126–168 hold 42f：只有极缓推镜（1 → 1.018）
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const AXIS_RESCALE_SHOCK_V2_DURATION = 168;
 
@@ -120,8 +122,8 @@ export const AxisRescaleShockV2: React.FC = () => {
   const rule = (d: number) => ramp(frame, d, 20, EASE.snappy);
   const cam = mix(1, 1.018, ramp(frame, 0, AXIS_RESCALE_SHOCK_V2_DURATION, EASE.smooth));
 
-  const OLD = ['$25k', '$50k', '$75k', '$100k'];
-  const NEW = ['$100k', '$200k', '$300k', '$400k'];
+  const OLD = ['25k', '50k', '75k', '100k'];
+  const NEW = ['100k', '200k', '300k', '400k'];
   const tickY = (i: number) => BASE - ((i + 1) / 4) * PH;
 
   // 碎屑（两片规线残段从穿透点弹飞）
@@ -145,11 +147,13 @@ export const AxisRescaleShockV2: React.FC = () => {
 
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam})`, transformOrigin: '60% 45%' }}>
         {/* 标题行 */}
-        <div style={{ position: 'absolute', left: M, top: 92, ...type(32, 650, { caps: true }), color: L.ink2, opacity: ramp(frame, 0, 12, EASE.out) }}>
-          Ostro <span style={{ color: L.ink3 }}>·</span> Finance <span style={{ color: L.ink3 }}>· FY2026</span>
+        <div style={{ position: 'absolute', left: M, top: 92, display: 'flex', alignItems: 'center', gap: 12, ...type(32, 650, { caps: true }), color: L.ink2, opacity: ramp(frame, 0, 12, EASE.out) }}>
+          <ShotcraftMark size={38} tone="light" style={{ marginTop: -2 }} />
+          <span style={{ fontFamily: BRAND.font, fontWeight: 700, textTransform: 'none', letterSpacing: '0.03em', color: INK }}>{BRAND.name}</span>
+          <span><span style={{ color: L.ink3 }}>·</span> Renders <span style={{ color: L.ink3 }}>· FY2026</span></span>
         </div>
         <div style={{ position: 'absolute', left: M - 6, top: 140, ...type(124, 850), color: INK }}>
-          <TextReveal text="Monthly revenue" by="word" variant="rise" start={2} each={18} gap={5} />
+          <TextReveal text="Monthly renders" by="word" variant="rise" start={2} each={18} gap={5} />
         </div>
 
         {/* 右上 KPI：爆表段会冲进这里 */}
@@ -160,13 +164,13 @@ export const AxisRescaleShockV2: React.FC = () => {
           position: 'absolute', right: 1920 - 1824, top: 140, ...type(124, 850), textAlign: 'right',
           color: totalP > 0.5 ? ACC : INK, transform: `translateY(${kpiKick.toFixed(2)}px)`, opacity: ramp(frame, 8, 14, EASE.out),
         }}>
-          ${Math.round(mix(493, 833, totalP))}k
+          {Math.round(mix(493, 833, totalP))}k
         </div>
 
         {/* 图表组（震动只作用在这里） */}
         <div style={{ position: 'absolute', inset: 0, transform: `translateY(${kick.toFixed(2)}px)` }}>
           {/* 刻度 */}
-          <div style={{ position: 'absolute', left: M, top: BASE - 48, width: 200, ...type(32, 500), color: L.ink2, opacity: rule(4) }}>$0</div>
+          <div style={{ position: 'absolute', left: M, top: BASE - 48, width: 200, ...type(32, 500), color: L.ink2, opacity: rule(4) }}>0</div>
           {OLD.map((v, i) => {
             const sw = ramp(frame, BEAT + (3 - i) * 2, 12, EASE.snappy);
             const top = i === 3;
@@ -286,7 +290,7 @@ export const AxisRescaleShockV2: React.FC = () => {
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: 30,
                 boxShadow: `0 18px 40px -12px ${alpha(L.shadow, 0.45)}`,
               }}>
-                <div style={{ ...type(76, 850) }}>$340k</div>
+                <div style={{ ...type(76, 850) }}>340k</div>
                 <div style={{ ...type(32, 600), opacity: 0.9 * ramp(frame, MARK + 10, 10, EASE.out), marginTop: 4 }}>▲ 372% vs Nov</div>
               </div>
               <div style={{ position: 'absolute', right: -10, top: 60, width: 20, height: 20, background: ACC, transform: 'rotate(45deg)' }} />

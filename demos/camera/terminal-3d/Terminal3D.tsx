@@ -2,9 +2,9 @@
 // 手法不变：窗口姿态表 → 相机逆变换；两段飞行各带一个正弦拉远鼓包；离焦窗虚化；飞行中不打字。
 //
 // 第二轮重设计（设计决定）
-// - look = lime（石墨暗场 · 荧光黄绿）：终端是技术感，单一强调色只给提示符、✓ 与最后的 LIVE 地址。
-// - 内容编成一条完整的"三步上线"：虚构 CLI「forge」——01 init 脚手架 → 02 test 跑测试（计数 + 进度格）
-//   → 03 deploy 上线，最后一行 ● LIVE orbit.forge.run 是全片唯一的泛光（Q4）。
+// - look = lime（石墨暗场 · 荧光黄绿）：终端是技术感，单一强调色只给提示符、✓ 与最后的 READY 成片名。
+// - 内容编成一条完整的"三步出片"（品牌轮：video-shotcraft 的世界）：示意 CLI「shotcraft」——01 init 搭分镜
+//   → 02 render 渲染（镜头计数 + 进度格）→ 03 export 混音导出，最后一行 ● READY launch-film.mp4 是全片唯一的泛光（Q4）。
 // - 窗口按镜头重做：1240×700 的真实尺寸布局（相机落定时 1:1 栅格化，文字不糊，Q2），命令 46px、
 //   输出 34px 等宽（≥ 辅助字 32px，Q11）；标题栏写步骤号与路径，不再是通用 "~/workspace — zsh"。
 // - 空间：窗口沿一条弧线前后错落、各自偏转；每站相机不正对，留 8–10° 侧视（读得清且有体积）；
@@ -15,14 +15,14 @@
 //
 // 时间表（30fps，246f）
 //   0–24    开场：相机从拉远 260px 推近落定第一窗（out 曲线），窗口第 0 帧即在画面
-//   8–27    敲 `forge init orbit`（16 字）→ 29 回车 → 31–48 四行输出（菊花 → ✓）
+//   8–26    敲 `shotcraft init`（14 字）→ ~28 回车 → 30–50 四行输出（菊花 → ✓）
 //   48–62   hold 读秒
 //   62–92   飞行 1→2（30f，swift 不对称 in-out + sin 拉远 820px；按横向屏速加方向性模糊）
-//   94–113  敲 `forge test --watch` → 115 回车 → 进度格 + 计数 0→128（20f，out）→ 三行 PASS → ✓ 汇总
+//   94–111  敲 `shotcraft render` → ~113 回车 → 进度格 + 计数 0→24（20f，out）→ 三行 DONE → ✓ 汇总
 //   140–152 hold
 //   152–182 飞行 2→3
-//   184–203 敲 `forge deploy --prod` → 205 回车 → 三行检查 → 220 ● LIVE 地址弹出 + 泛光
-//   222–246 hold：相机极缓推近 2%，尾帧是"已上线"的海报
+//   184–201 敲 `shotcraft export` → ~203 回车 → 三行导出 → ~220 ● READY 成片名弹出 + 泛光
+//   222–246 hold：相机极缓推近 2%，尾帧是"成片已交付"的海报
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
@@ -31,7 +31,7 @@ import { Dust, LOOKS, Stage, alpha, glow } from '../../_fixtures/Look';
 export const TERMINAL_3D_DURATION = 246;
 
 const L = LOOKS.lime;
-// 舞台主光降饱和成橄榄灰绿：荧光色只留给提示符 / ✓ / LIVE，背景不被染成一片绿
+// 舞台主光降饱和成橄榄灰绿：荧光色只留给提示符 / ✓ / READY，背景不被染成一片绿
 const STAGE = { ...L, light: '#56613f', accent2: '#3a4a1c' };
 const MONO = FONT.mono;
 const W = 1180; // 窗口布局尺寸（= 落定时屏幕尺寸）
@@ -162,31 +162,31 @@ const C = { key: L.ink3, val: L.ink, dim: L.ink2, ok: L.accent };
 type Win = { step: string; name: string; path: string; cmd: string; lines: Line[] };
 const WINS: Win[] = [
   {
-    step: '01', name: 'scaffold', path: '~/orbit', cmd: 'forge init orbit',
+    step: '01', name: 'storyboard', path: '~/promo', cmd: 'shotcraft init',
     lines: [
-      { mark: 'spin', at: 0, segs: [['template   ', C.key], ['edge-starter', C.val]] },
-      { mark: 'spin', at: 4, segs: [['packages   ', C.key], ['214 installed', C.val], [' · 3.1s', C.dim]] },
-      { mark: 'spin', at: 8, segs: [['git        ', C.key], ['initialized on ', C.dim], ['main', C.val]] },
-      { mark: 'pass', at: 14, segs: [['ready      ', C.ok], ['cd orbit && forge dev', C.val]] },
+      { mark: 'spin', at: 0, segs: [['template   ', C.key], ['ink-press', C.val]] },
+      { mark: 'spin', at: 4, segs: [['shots      ', C.key], ['12 recipe cards', C.val], [' · 2.5D', C.dim]] },
+      { mark: 'spin', at: 8, segs: [['audio      ', C.key], ['beat grid at ', C.dim], ['120 bpm', C.val]] },
+      { mark: 'pass', at: 14, segs: [['ready      ', C.ok], ['next: shotcraft render', C.val]] },
     ],
   },
   {
-    step: '02', name: 'test', path: '~/orbit', cmd: 'forge test --watch',
+    step: '02', name: 'render', path: '~/promo', cmd: 'shotcraft render',
     lines: [
       { at: 0, segs: [] }, // 进度格 + 计数（特殊绘制）
-      { at: 10, segs: [['PASS ', C.ok], [' api/routes        ', C.val], ['42', C.dim]] },
-      { at: 14, segs: [['PASS ', C.ok], [' ui/components     ', C.val], ['61', C.dim]] },
-      { at: 18, segs: [['PASS ', C.ok], [' edge/runtime      ', C.val], ['25', C.dim]] },
-      { mark: 'pass', at: 24, segs: [['128 passed', C.ok], ['  ·  coverage ', C.dim], ['94.2%', C.val]] },
+      { at: 10, segs: [['DONE ', C.ok], [' act-1/opening     ', C.val], [' 8', C.dim]] },
+      { at: 14, segs: [['DONE ', C.ok], [' act-2/features    ', C.val], ['10', C.dim]] },
+      { at: 18, segs: [['DONE ', C.ok], [' act-3/outro       ', C.val], [' 6', C.dim]] },
+      { mark: 'pass', at: 24, segs: [['24 shots', C.ok], ['  ·  ', C.dim], ['1080p · 30fps', C.val]] },
     ],
   },
   {
-    step: '03', name: 'deploy', path: '~/orbit', cmd: 'forge deploy --prod',
+    step: '03', name: 'export', path: '~/promo', cmd: 'shotcraft export',
     lines: [
-      { mark: 'spin', at: 0, segs: [['build      ', C.key], ['1.8s', C.val], [' · 312 kB', C.dim]] },
-      { mark: 'spin', at: 4, segs: [['regions    ', C.key], ['18 edge locations', C.val]] },
-      { mark: 'spin', at: 8, segs: [['checks     ', C.key], ['all passing', C.val]] },
-      { at: 15, big: true, segs: [] }, // ● LIVE 地址（特殊绘制）
+      { mark: 'spin', at: 0, segs: [['mix        ', C.key], ['voice + sfx', C.val], [' · -14 LUFS', C.dim]] },
+      { mark: 'spin', at: 4, segs: [['encode     ', C.key], ['h264 · 1080p30', C.val]] },
+      { mark: 'spin', at: 8, segs: [['jianying   ', C.key], ['draft exported', C.val]] },
+      { at: 15, big: true, segs: [] }, // ● READY 成片名（特殊绘制）
     ],
   },
 ];
@@ -270,7 +270,7 @@ const Terminal: React.FC<{ i: number; frame: number; focus: number }> = ({ i, fr
             opacity: Math.min(1, p * 1.8), transform: `translateX(${((1 - p) * -10).toFixed(2)}px)`,
           };
           if (i === 1 && k === 0) {
-            // 进度格 + 计数（20f out 曲线）
+            // 进度格 + 镜头计数（20f out 曲线；一格一个镜头）
             const c = ramp(frame, out0, 20, EASE.out);
             const N = 24;
             return (
@@ -283,13 +283,13 @@ const Terminal: React.FC<{ i: number; frame: number; focus: number }> = ({ i, fr
                     }} />
                   ))}
                 </div>
-                <span style={{ color: L.ink, fontVariantNumeric: 'tabular-nums' }}>{String(Math.round(c * 128)).padStart(3, ' ')}</span>
-                <span style={{ color: L.ink3 }}>/ 128</span>
+                <span style={{ color: L.ink, fontVariantNumeric: 'tabular-nums' }}>{String(Math.round(c * N)).padStart(2, ' ')}</span>
+                <span style={{ color: L.ink3 }}>/ {N} shots</span>
               </div>
             );
           }
           if (ln.big) {
-            // ● LIVE 地址：全片唯一泛光（Q4）
+            // ● READY 成片名：全片唯一泛光（Q4）
             const pop = ramp(frame, out0 + ln.at, 14, EASE.overshoot);
             const g = ramp(frame, out0 + ln.at, 26, EASE.out);
             const pulse = 0.55 + 0.45 * Math.cos(Math.max(0, lt) / 6);
@@ -304,10 +304,10 @@ const Terminal: React.FC<{ i: number; frame: number; focus: number }> = ({ i, fr
                   boxShadow: `0 0 ${(40 * g).toFixed(1)}px ${alpha(L.accent, 0.45 * g)}`,
                 }}>
                   <div style={{ width: 14, height: 14, borderRadius: 7, background: L.onAccent, opacity: 0.4 + 0.6 * pulse }} />
-                  LIVE
+                  READY
                 </div>
                 <span style={{ fontSize: 52, fontWeight: 700, color: L.accent, letterSpacing: '-0.01em', textShadow: glow(L.accent, 0.55 * g) }}>
-                  orbit.forge.run
+                  launch-film.mp4
                 </span>
               </div>
             );

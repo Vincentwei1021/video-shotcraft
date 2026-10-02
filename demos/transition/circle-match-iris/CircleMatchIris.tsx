@@ -1,15 +1,15 @@
 // circle-match-iris — 圆心匹配光圈切（match-cut × iris）：光圈从前景一个真圆的圆心炸开，
 // 圈内新景的圆环图表接在同一个圆上——"这个人的头像"变成"这个人的数据"。
 //
-// 第二轮重设计（夜跑俱乐部 · 荧光柠檬）：
-// - look = lime（石墨底 + 荧光黄绿）。景 A 是虚构跑团 App「Stride」的周榜：五行大字号排行，
+// 第二轮重设计（创作者周榜 · 荧光柠檬）：
+// - look = lime（石墨底 + 荧光黄绿）。景 A 是 video-shotcraft 工作室的本周出片榜：五行大字号排行，
 //   第 3 行是「你」——荧光绿实心头像圆（72px）是全片唯一的强调色块，也是匹配剪辑的锚点。
 // - 定睛：其他行降到 32% 亮度、「你」这行抬亮，头像两次脉冲 + 两道荧光涟漪；相机以锚点为原点缓推 3%
 //   （锚点在屏幕上纹丝不动）。
 // - 接圆（命门）：头像实心圆本身"镂空"成圆环——描边宽度从 = 直径（实心盘）收到 44px、半径 36→300，
 //   光圈半径 = 圆环外沿 + 一段 ease-in 加速的外扩，所以是"圆环把光圈撑开"，接圆发生在光圈吃满屏之前。
 //   旧页同时以锚点为心被推远（放大 + 压暗），新景"压"在旧页之上。
-// - 景 B：同心的计时刻度盘 + 圆环 sweep 到 87%，中央 200px 数字与 sweep 同步计数；右侧大标题逐词升起、
+// - 景 B：同心的计时刻度盘 + 圆环 sweep 到 87%（本周出片目标），中央 200px 数字与 sweep 同步计数；右侧大标题逐词升起、
 //   三枚数据错峰落位。
 //
 // 时间表（30fps，共 165f）：
@@ -25,6 +25,7 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import { EASE, FONT, Grain, bezier, mix, ramp } from '../../_fixtures/Polish';
 import { LOOKS, Stage, TYPE, TextReveal, alpha, stagger, type } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 export const CIRCLE_MATCH_IRIS_DURATION = 165;
 
@@ -47,17 +48,17 @@ const rowTop = (i: number) => CY - ROW_H / 2 + (i - 2) * ROW_PITCH;
 const ME = 2;
 
 const ROWS = [
-  { rank: '01', init: 'JO', name: 'Jonas Ortega', sub: 'Lisbon · 7 runs', km: '61.4', d: '+8.2' },
-  { rank: '02', init: 'AS', name: 'Aiko Sato', sub: 'Osaka · 6 runs', km: '52.9', d: '+3.1' },
-  { rank: '03', init: 'MK', name: 'You', sub: 'Berlin · 6 runs', km: '46.6', d: '+5.4' },
-  { rank: '04', init: 'LB', name: 'Lena Brandt', sub: 'Berlin · 5 runs', km: '44.0', d: '−1.2' },
-  { rank: '05', init: 'TN', name: 'Theo Nakamura', sub: 'Vancouver · 4 runs', km: '38.7', d: '+0.6' },
+  { rank: '01', init: 'JO', name: 'Jonas Ortega', sub: 'Lisbon · 7 films', km: '61', d: '+8' },
+  { rank: '02', init: 'AS', name: 'Aiko Sato', sub: 'Osaka · 6 films', km: '53', d: '+3' },
+  { rank: '03', init: 'MK', name: 'You', sub: 'Berlin · 6 films', km: '47', d: '+5' },
+  { rank: '04', init: 'LB', name: 'Lena Brandt', sub: 'Berlin · 5 films', km: '44', d: '−1' },
+  { rank: '05', init: 'TN', name: 'Theo Nakamura', sub: 'Vancouver · 4 films', km: '39', d: '+1' },
 ];
 
 const STATS = [
-  { v: '46.6', u: 'km', k: 'Distance' },
-  { v: '6', u: 'runs', k: 'This week' },
-  { v: '4:52', u: '/km', k: 'Avg pace' },
+  { v: '47', u: 'shots', k: 'Rendered' },
+  { v: '6', u: 'films', k: 'This week' },
+  { v: '4:52', u: 'min', k: 'Avg render' },
 ];
 
 // 光圈外扩：前段很慢（让圆环先把它撑开）、后段加速吃满
@@ -104,16 +105,21 @@ export const CircleMatchIris: React.FC = () => {
 
   return (
     <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', background: L.bg[2] }}>
-      {/* ===== 景 A：Stride 周榜（共享舞台只有这一层 Stage；景 B 在光圈里自带暗底） ===== */}
+      {/* ===== 景 A：video-shotcraft 出片周榜（共享舞台只有这一层 Stage；景 B 在光圈里自带暗底） ===== */}
       <div style={{ position: 'absolute', inset: 0, transformOrigin: `${CX}px ${CY}px`, transform: `scale(${aScale.toFixed(4)})`, filter: away > 0 ? `brightness(${aDim.toFixed(3)})` : undefined }}>
         <Stage look={L} keyLight={{ x: 0.5, y: -0.06 }} fill={{ x: 0.92, y: 0.98 }} intensity={0.7} grain={0} breathe={0.4} />
         {/* 页眉 */}
         <div style={{ position: 'absolute', left: ROW_X, top: 76, width: ROW_W, display: 'flex', alignItems: 'flex-end', opacity: ramp(f, 0, 14, EASE.out) }}>
           <div>
-            <div style={{ ...type(TYPE.label, 700, { caps: true }), letterSpacing: '0.22em', color: L.accent }}>Stride · Berlin Crew</div>
+            {/* 品牌眉题：标志 + 小写字标（字标不做全大写）+ caps 小标签 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <ShotcraftMark size={34} tone="dark" />
+              <span style={{ ...type(TYPE.label + 4, 700), fontFamily: BRAND.font, letterSpacing: '0.03em', color: L.ink }}>{BRAND.name}</span>
+              <span style={{ ...type(TYPE.label, 700, { caps: true }), letterSpacing: '0.22em', color: L.accent }}>· Berlin Studio</span>
+            </div>
             <div style={{ ...type(TYPE.h2, 760), color: L.ink, marginTop: 12 }}>Week 41</div>
           </div>
-          <div style={{ marginLeft: 'auto', ...type(TYPE.small, 500), color: L.ink3, paddingBottom: 10 }}>Distance · km</div>
+          <div style={{ marginLeft: 'auto', ...type(TYPE.small, 500), color: L.ink3, paddingBottom: 10 }}>Shots rendered</div>
         </div>
         {ROWS.map((r, i) => {
           const me = i === ME;
@@ -234,7 +240,7 @@ export const CircleMatchIris: React.FC = () => {
                 {Math.round(sweep * 100)}
                 <span style={{ ...type(TYPE.h3, 650), color: L.accent, marginLeft: -2 }}>%</span>
               </div>
-              <div style={{ ...type(TYPE.small, 500), color: L.ink2, marginTop: 8 }}>of 50 km goal</div>
+              <div style={{ ...type(TYPE.small, 500), color: L.ink2, marginTop: 8 }}>of 54-shot goal</div>
             </div>
             {/* 右侧：标题 + 数据 */}
             <div style={{ position: 'absolute', left: 1010, top: 262, width: 820 }}>
@@ -245,7 +251,7 @@ export const CircleMatchIris: React.FC = () => {
                 <TextReveal text="Almost there." by="word" variant="rise" start={76} each={20} gap={5} />
               </div>
               <div style={{ ...type(TYPE.body, 450), color: L.ink2, marginTop: 26, opacity: ramp(f, 86, 18, EASE.out), transform: `translateY(${((1 - ramp(f, 86, 18, EASE.snappy)) * 14).toFixed(2)}px)` }}>
-                3.4 km left — one easy run.
+                7 shots left — one more render.
               </div>
               <div style={{ display: 'flex', gap: 56, marginTop: 64 }}>
                 {STATS.map((s, i) => {
@@ -269,7 +275,7 @@ export const CircleMatchIris: React.FC = () => {
                 opacity: ramp(f, 108, 16, EASE.out), transform: `translateY(${((1 - ramp(f, 108, 16, EASE.snappy)) * 16).toFixed(2)}px)`,
               }}>
                 <svg width={22} height={22} viewBox="0 0 22 22"><path d="M11 3 19 15H3z" fill={L.accent} /></svg>
-                <span style={{ ...type(TYPE.small, 600), color: L.ink }}>6.3 km to pass Aiko for <span style={{ color: L.accent }}>#2</span></span>
+                <span style={{ ...type(TYPE.small, 600), color: L.ink }}>6 shots to pass Aiko for <span style={{ color: L.accent }}>#2</span></span>
               </div>
             </div>
           </div>

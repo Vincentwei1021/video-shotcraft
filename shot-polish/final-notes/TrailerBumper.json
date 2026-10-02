@@ -1,0 +1,18 @@
+{
+  "stem": "TrailerBumper",
+  "changed": true,
+  "brand": [
+    "开场字卡眉题 THIS FALL → INTRODUCING",
+    "主标题 THE LAUNCH → video-shotcraft（全小写，品牌字标字体，保留字距收拢呼吸）",
+    "副题 Everything your team ships, in one place. → Cinematic product videos, crafted by your agent.",
+    "速剪三镜用的 FakeDashboard 已由主控换成 video-shotcraft 侧栏标志，未再改"
+  ],
+  "brandEn": [
+    "Title card eyebrow THIS FALL → INTRODUCING",
+    "Main title THE LAUNCH → video-shotcraft (lowercase, brand font, tracking-in breath kept)",
+    "Subtitle \"Everything your team ships, in one place.\" → \"Cinematic product videos, crafted by your agent.\"",
+    "The FakeDashboard in the three fast cuts already carries the video-shotcraft sidebar mark (fixture), untouched"
+  ],
+  "styleKey": "trailer-bumper",
+  "mdChanged": true
+}

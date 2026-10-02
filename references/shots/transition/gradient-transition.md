@@ -19,7 +19,7 @@ name: gradient-transition
   慢起长尾 ease 越转越慢落定；圆心放在主体右后方 (64%,54%)，外圈与文字侧再压暗
 - **小画布作画**：三层渐变画在 480×270 上再 `transform: scale(4)` 铺满——合成期放大天然柔化，
   conic 的 blur(9px) 在小画布上做（≈全分辨率 36px），每帧代价是全屏实时模糊的 1/16；上面叠颗粒防色带
-- demo 前景：每段一句大字（180px），动词描述该段的参数运动（Bend light. / Focus it. / Prism 字标），
+- demo 前景：每段一句大字（180px），动词描述该段的参数运动（Bend light. / Focus it. / video-shotcraft 字标 + 品牌短句），
   换句与换类型同拍；底部 mono 注记实时读出正在插值的渐变参数
 
 ## 参数表

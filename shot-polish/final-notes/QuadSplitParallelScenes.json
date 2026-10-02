@@ -1,0 +1,18 @@
+{
+  "stem": "QuadSplitParallelScenes",
+  "changed": true,
+  "brand": [
+    "浏览器格：brasa.app/launch + 眉题「Brasa 2.0」+「Launch day. / Everything ships at 9:00 AM.」→ localhost:3000/promo + video-shotcraft 标志字标 +「Launch film. / One prompt to a finished promo.」，标签页换成 Recipes / Gallery / Docs / Promo",
+    "终端格：brasa deploy --prod → build / edge → live in 4.2s 换成 npx remotion render → bundle / frames 900/900 → promo.mp4 ready",
+    "砸词格「Write. Ship. Repeat.」→「Prompt. Render. Ship.」",
+    "审批格「Release v2.0 · 14 changes」→「Launch film · cut 3 · 12 shots」，通知「3,214 visitors」→「3,214 views」"
+  ],
+  "brandEn": [
+    "Browser quad: brasa.app/launch + \"Brasa 2.0\" + \"Launch day. / Everything ships at 9:00 AM.\" → localhost:3000/promo + video-shotcraft mark & wordmark + \"Launch film. / One prompt to a finished promo.\"; tabs → Recipes / Gallery / Docs / Promo",
+    "Terminal quad: brasa deploy --prod → build / edge → live in 4.2s becomes npx remotion render → bundle / frames 900/900 → promo.mp4 ready",
+    "Slam words \"Write. Ship. Repeat.\" → \"Prompt. Render. Ship.\"",
+    "Review quad \"Release v2.0 · 14 changes\" → \"Launch film · cut 3 · 12 shots\"; toast \"3,214 visitors\" → \"3,214 views\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}
