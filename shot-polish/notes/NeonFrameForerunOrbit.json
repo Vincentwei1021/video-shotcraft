@@ -1,32 +1,31 @@
 {
   "stem": "NeonFrameForerunOrbit",
   "issues": [
-    "框内面板是灰色骨架条，下半截空白，看不出是什么页面",
-    "弧线中段 scale 推到 1.0，面板左上角与霓虹框顶出画框",
-    "悬空组件被面板 overflow 裁切，标题和品牌行在半空被切掉一截",
-    "软影是内容的灰色模糊副本且越高越深，读作脏糊块",
-    "没有导出时长，按默认 150f 渲染"
+    "与姊妹镜几乎同一画面：同款紫橙霓虹、同款亮色小字工作台，两张卡没有区分度",
+    "\"环绕\"只是一块平板在转，背景随机斜框不参与透视，读不出镜头绕着走",
+    "悬空是平面内 2D 假位移，旋转中看不到组件与面板之间的层次",
+    "面板字号 12–17px，旋转中更难读；落定构图偏向一侧"
   ],
   "changes": [
-    "面板换成与姊妹镜同款的出版级工作台首页（导航、问候标题、搜索、最近卡、任务表），面板高 900→790",
-    "机位缩一档：scale 0.8→(弧线中段 +0.08)→落定 0.9，全程整框留在画内；旋转弧线 +38°→−26° 与同帧齐落 LAND=0.52 不变",
-    "页面不再裁切，悬空组件按透视自然探出面板边缘；软影改纯剪影，越高越大越虚越淡，悬空本体按高度微放大",
-    "面板补深色落地影，背景管减细到 1.6px，加暗角与颗粒",
-    "补导出 NEON_FRAME_FORERUN_ORBIT_DURATION=140（旋转 128f 收住后留落定）"
+    "look 改 midnight：蓝→青冷光霓虹 + 暗色玻璃数据仪表盘「Signal」（124px 主数字、面积图、三张 58px KPI、渠道条形榜、目标环），与姊妹镜的紫粉 + 亮色工作台拉开",
+    "做成真 3D 世界：面板、悬空组件、反光地面网格、8 根不同纵深的竖直光柱同在 preserve-3d 里，rotateY +36°→−24° 环绕时三层视差同时出现",
+    "组件开场就悬在 150–210px，环绕前半程看清分层；52f 全体同帧起落、76f 同帧贴合，贴合帧整圈灯管过曝闪一次作为全片唯一的\"咔\"",
+    "按 rotateY 做屏幕空间横移补偿，面板全程居中；面积图在悬空段描出，落定后终点光点呼吸，光柱由中间向两边熄灭让位",
+    "时长 140→150f，环绕 124f 收住后留 26f 落定"
   ],
   "issuesEn": [
-    "The panel was grey skeleton bars with an empty lower half, so you could not tell what page it was",
-    "Mid-arc the scale reached 1.0 and the panel's top-left corner and neon frame left the frame",
-    "Floating parts were clipped by the panel's overflow, so the title and brand row were cut in mid-air",
-    "Shadows were blurred grey copies of the content that got darker with height, reading as smudges",
-    "No duration export, so it rendered the default 150f"
+    "Nearly identical to its sister shot: the same violet-orange neon and the same small-type light workspace, so the two cards were indistinguishable",
+    "The 'orbit' was just a flat board rotating; the random background frames ignored perspective, so you could not feel the camera moving around",
+    "The lift was a 2D in-plane offset, so the rotation never revealed layers between components and panel",
+    "Panel type was 12–17px, even harder to read while rotating, and the final framing leaned to one side"
   ],
   "changesEn": [
-    "The panel uses the same publication-grade workspace home as its sister shot (nav, greeting, search, recent cards, task table), height 900→790",
-    "Camera pulled back one step: scale 0.8 → +0.08 mid-arc → 0.9 at rest, keeping the whole frame in shot; the +38°→−26° arc and the simultaneous LAND=0.52 drop are unchanged",
-    "The page no longer clips, so floating parts overhang the panel edge in perspective; shadows are pure silhouettes that grow larger, softer and fainter with height, and floating parts scale slightly with height",
-    "Deep drop shadow under the panel, background tubes thinned to 1.6px, plus vignette and grain",
-    "Added NEON_FRAME_FORERUN_ORBIT_DURATION=140 (settle hold after the rotation ends at 128f)"
+    "Switched to the midnight look: blue-to-cyan neon around a dark-glass analytics dashboard, Signal (124px headline number, area chart, three 58px KPIs, channel bars, goal ring), clearly separated from the sister shot's violet-pink light workspace",
+    "Built as a real 3D world: panel, floating parts, a reflective floor grid and eight vertical light pillars at different depths share one preserve-3d space, so the rotateY +36°→−24° orbit shows three layers of parallax",
+    "Parts float at 150–210px from the first frame so the layers read during the first half of the orbit; at 52f they all fall together and land on the same frame at 76f, where the whole tube flares once as the shot's single beat",
+    "A screen-space shift proportional to rotateY keeps the panel centered; the area chart draws while floating, its end point pulses after landing, and the pillars go out middle-first",
+    "Duration 140→150f: the orbit stops at 124f, leaving a 26f settle"
   ],
+  "look": "midnight",
   "mdChanged": true
 }
