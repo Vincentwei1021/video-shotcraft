@@ -1,0 +1,32 @@
+{
+  "stem": "NeonFrameForerunOrbit",
+  "issues": [
+    "框内面板是灰色骨架条，下半截空白，看不出是什么页面",
+    "弧线中段 scale 推到 1.0，面板左上角与霓虹框顶出画框",
+    "悬空组件被面板 overflow 裁切，标题和品牌行在半空被切掉一截",
+    "软影是内容的灰色模糊副本且越高越深，读作脏糊块",
+    "没有导出时长，按默认 150f 渲染"
+  ],
+  "changes": [
+    "面板换成与姊妹镜同款的出版级工作台首页（导航、问候标题、搜索、最近卡、任务表），面板高 900→790",
+    "机位缩一档：scale 0.8→(弧线中段 +0.08)→落定 0.9，全程整框留在画内；旋转弧线 +38°→−26° 与同帧齐落 LAND=0.52 不变",
+    "页面不再裁切，悬空组件按透视自然探出面板边缘；软影改纯剪影，越高越大越虚越淡，悬空本体按高度微放大",
+    "面板补深色落地影，背景管减细到 1.6px，加暗角与颗粒",
+    "补导出 NEON_FRAME_FORERUN_ORBIT_DURATION=140（旋转 128f 收住后留落定）"
+  ],
+  "issuesEn": [
+    "The panel was grey skeleton bars with an empty lower half, so you could not tell what page it was",
+    "Mid-arc the scale reached 1.0 and the panel's top-left corner and neon frame left the frame",
+    "Floating parts were clipped by the panel's overflow, so the title and brand row were cut in mid-air",
+    "Shadows were blurred grey copies of the content that got darker with height, reading as smudges",
+    "No duration export, so it rendered the default 150f"
+  ],
+  "changesEn": [
+    "The panel uses the same publication-grade workspace home as its sister shot (nav, greeting, search, recent cards, task table), height 900→790",
+    "Camera pulled back one step: scale 0.8 → +0.08 mid-arc → 0.9 at rest, keeping the whole frame in shot; the +38°→−26° arc and the simultaneous LAND=0.52 drop are unchanged",
+    "The page no longer clips, so floating parts overhang the panel edge in perspective; shadows are pure silhouettes that grow larger, softer and fainter with height, and floating parts scale slightly with height",
+    "Deep drop shadow under the panel, background tubes thinned to 1.6px, plus vignette and grain",
+    "Added NEON_FRAME_FORERUN_ORBIT_DURATION=140 (settle hold after the rotation ends at 128f)"
+  ],
+  "mdChanged": true
+}

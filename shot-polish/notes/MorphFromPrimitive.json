@@ -1,0 +1,30 @@
+{
+  "stem": "MorphFromPrimitive",
+  "issues": [
+    "没有导出时长，工作台按卡片 md 抓到 20f，只渲出静置圆和半个呼吸，变形与内容完全看不到",
+    "平灰 #ececea 底 + 3px 实色描边，落定后的卡只是一个空线框，没有材质与空间",
+    "卡内内容是四根灰色骨架条加一个灰圆，读不出是什么卡",
+    "呼吸与变形都用对称 inOut cubic，落定时直接停住，没有\"扣住\"的感觉"
+  ],
+  "changes": [
+    "补导出 MORPH_FROM_PRIMITIVE_DURATION=140，按原时间轴完整演完静置→呼吸→变形→内容→70f 静止",
+    "呼吸改为吸气缓、呼气干脆的不对称曲线（幅度 1.12 不变）；变形 24f 改 bezier(0.62,0,0.28,1.06)，尾段 ~2% 过冲回收",
+    "轮廓落定后才实体化：54–66f 白色卡面 + 两层 drop-shadow 抬起，描边从 2.5px 近黑退为 1px 发丝线；变形中途保持纯描边",
+    "内容换成出版级任务卡（图标 + 标题 Q4 Launch plan + 状态 chip + 说明 + 里程碑进度条 + 头像组 + 截止日），逐行 2f 错峰上浮 8px 淡入",
+    "背景改柔光渐变 + 暗角 + 颗粒"
+  ],
+  "issuesEn": [
+    "No duration export, so the workbench grabbed 20f from the card md and rendered only the idle circle and half a breath; the morph and content never appeared",
+    "Flat #ececea background with a 3px solid stroke; the final card was an empty outline with no material or depth",
+    "Card content was four grey skeleton bars and a grey dot, so you could not tell what card it was",
+    "Breath and morph both used symmetric in-out cubic and the shape simply stopped on arrival, with no sense of locking in"
+  ],
+  "changesEn": [
+    "Added MORPH_FROM_PRIMITIVE_DURATION=140 so the full timeline plays: idle, breath, morph, content, 70f hold",
+    "Breath is now asymmetric, slow inhale and crisp exhale (amplitude still 1.12); the 24f morph uses bezier(0.62,0,0.28,1.06) for a ~2% overshoot settle",
+    "The shape only becomes solid after the outline lands: a white face with two drop-shadows lifts in over 54–66f while the stroke fades from 2.5px near-black to a 1px hairline; mid-morph stays pure outline",
+    "Content is a publication-grade task card (icon, title Q4 Launch plan, status chip, description, milestone progress bar, avatar stack, due date) with rows rising 8px and fading in on a 2f stagger",
+    "Background is a soft-lit gradient with vignette and grain"
+  ],
+  "mdChanged": true
+}

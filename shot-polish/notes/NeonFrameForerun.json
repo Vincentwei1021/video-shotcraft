@@ -1,0 +1,32 @@
+{
+  "stem": "NeonFrameForerun",
+  "issues": [
+    "框内面板全是灰色骨架条，下半截约 1/3 是空白",
+    "悬空组件的\"同形软影\"是内容的灰色模糊副本，而且越高越深，读作脏糊块而不是投影",
+    "落定 scale 1.04 + 透视，面板右上角顶出画框",
+    "没有导出时长，工作台按默认 150f 渲染，尾段约 0.7s 死帧",
+    "面板与背景管群之间没有深度分隔，暗场大面积平涂"
+  ],
+  "changes": [
+    "面板换成出版级工作台首页：品牌 + 导航（带未读 badge）+ Spaces 色标、问候标题 + 搜索框（⌘K）+ 7 张最近卡 + 页签 + 6 行任务（优先级圈 / 状态 chip / 头像 / 截止日）；面板高 900→790 去掉空白",
+    "软影改为纯剪影（brightness(0)）：离地越高越大越虚越淡（不透明度 0.3→0.08），贴近时收小变实；悬空本体按高度微放大；页面不再裁切，悬空组件可探出面板边缘",
+    "落定 scale 改 0.92（起始 0.86），整框连辉光留在画内；面板补深色落地影把它从管群里托出来",
+    "补导出 NEON_FRAME_FORERUN_DURATION=135（md 的 4–4.5s 内），框奔画 / 点亮 / 错峰贴落 / 背景中亮尾熄时间轴全部保留",
+    "背景霓虹管减细到 1.6px，加暗角与颗粒"
+  ],
+  "issuesEn": [
+    "The panel inside the frame was all grey skeleton bars with roughly the bottom third empty",
+    "The \"matching soft shadow\" under floating parts was a blurred grey copy of the content that got darker the higher it floated, reading as smudges rather than shadows",
+    "The final scale of 1.04 plus perspective pushed the panel's top-right corner out of frame",
+    "No duration export, so the workbench rendered the default 150f with about 0.7s of dead tail",
+    "No depth separation between panel and background tubes; the dark field was flat"
+  ],
+  "changesEn": [
+    "The panel is now a publication-grade workspace home: brand, nav with unread badge, colored Spaces, greeting title, ⌘K search, seven recent cards, tabs and six task rows (priority ring, status chip, avatars, due date); panel height 900→790 removes the void",
+    "Shadows are pure silhouettes (brightness(0)) that grow larger, softer and fainter with height (opacity 0.3→0.08) and tighten on contact; floating parts scale slightly with height, and the page no longer clips so lifted parts can overhang the panel edge",
+    "Final scale is 0.92 (from 0.86) so the whole frame and glow stay in shot; a deep drop shadow lifts the panel off the tube field",
+    "Added NEON_FRAME_FORERUN_DURATION=135 (within the md's 4–4.5s); trace, light-up, staggered landing and center-first background fade timings are unchanged",
+    "Background tubes thinned to 1.6px, plus vignette and grain"
+  ],
+  "mdChanged": true
+}

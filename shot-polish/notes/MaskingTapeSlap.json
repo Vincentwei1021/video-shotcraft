@@ -1,0 +1,32 @@
+{
+  "stem": "MaskingTapeSlap",
+  "issues": [
+    "没有导出时长，工作台从源码抓到 38f，只渲出飘入，两条胶带和\"按死\"都没出现",
+    "画面上方打着调试标题 MASKING TAPE SLAP",
+    "平灰 #ececea 底，和\"纸艺\"材料语言毫无关系",
+    "胶带是灰色半透明条，没有纤维、没有透光，扑入 6f 也没有速度感",
+    "卡片投影是单层，悬浮和贴纸之间只有模糊半径在变"
+  ],
+  "changes": [
+    "补导出 MASKING_TAPE_SLAP_DURATION=120（md 的 3–4s 内），飘入→微晃→两拍→按死后静止 34f 完整演完",
+    "去掉调试标题；背景换成暖调纸面桌（柔光渐变 + multiply 纸纤维颗粒 + 暖色暗角）",
+    "胶带换成琥珀色和纸胶带：纵向纤维纹 + 上下缘透光 + 贴纸薄影，空中影更远更虚；两条落点各歪 2–3° 并外移到角上少压内容；扑入段按速度加方向性运动模糊",
+    "卡片投影改两层 softShadow，悬浮高度随飘入与上下浮变化，按死同帧收紧到 elevation 2；飘入带 −3°→0 倾角跟随",
+    "每次拍下在胶带落点给卡面一圈 8f 消散的压痕暗影（裁在圆角内）；拍打时序 58/82f、过冲与一帧压扁全部保留"
+  ],
+  "issuesEn": [
+    "No duration export, so the workbench grabbed 38f from the source and rendered only the float-in; neither tape strip nor the press-down ever appeared",
+    "A debug title MASKING TAPE SLAP sat at the top of frame",
+    "Flat #ececea grey background with no relation to the paper-craft material language",
+    "The tape was a grey translucent bar with no fibers or translucency, and its 6f slap had no sense of speed",
+    "The card had a single shadow; only the blur radius changed between floating and pinned"
+  ],
+  "changesEn": [
+    "Added MASKING_TAPE_SLAP_DURATION=120 (within the md's 3–4s) so float-in, wobble, two slaps and a 34f post-press hold all play",
+    "Removed the debug title; the background is now a warm paper desk (soft-lit gradient, multiplied paper-fiber grain, warm vignette)",
+    "Tape is amber washi with vertical fibers, translucent edges and a thin contact shadow that is farther and softer in the air; each lands 2–3° askew and sits further out on the corners to cover less content; the approach gets velocity-based directional blur",
+    "Two-layer softShadow on the card driven by float height and bob, snapping to elevation 2 on the press frame; the float-in adds a −3°→0 tilt follow-through",
+    "Each slap leaves an 8f fading pressure shade under the tape, clipped to the card; slap timing 58/82f, overshoot and one-frame squash are unchanged"
+  ],
+  "mdChanged": true
+}

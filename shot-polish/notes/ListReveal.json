@@ -1,0 +1,32 @@
+{
+  "stem": "ListReveal",
+  "issues": [
+    "列表高 255px 几乎顶满 270 的画面，容器上漂后首项被画框裁掉",
+    "纯黑 #0a0b10 平铺背景，条目像贴在虚空里，没有空间感",
+    "六个图标是彩虹色相渐变方块，既不是图标也没有层级",
+    "条目只有 1px 实色描边的平面，没有受光和阴影；没有当前项、快捷键等真实菜单信息",
+    "入场只有 scale + 透明度，条目和内部图标同时到位，像一张图在缩放"
+  ],
+  "changes": [
+    "条目收到 26px 高、6px 间距、188px 宽，整列 ~195px，漂移全程首末项都留在安全区；DesignStage 改 raster=zoom",
+    "背景换成带靛蓝余光的暗场柔光底 + 暗角 + 细颗粒",
+    "图标换成单色线性图标（网格/文件夹/柱图/气泡/齿轮/登出），只有当前项 Dashboard 用唯一强调色；Messages 加未读 badge，其余项加 ⌘ 快捷键，Sign out 前加分隔线并降一档亮度",
+    "条目面改深石墨渐变 + 发丝线 + 顶部受光沿 + 两层软阴影",
+    "保留 0.09 stagger、0.24 行程、outBack、0.78 起始 scale 与 32px 线性漂移；入场加 1.6px→0 的对焦模糊，图标比条目晚 2f 落定形成跟随"
+  ],
+  "issuesEn": [
+    "The 255px list nearly filled the 270 frame, so after the upward drift the first item was clipped by the frame",
+    "Flat #0a0b10 black background with the rows floating in a void",
+    "The six icons were rainbow-hued gradient squares, neither icons nor hierarchy",
+    "Rows were flat with a 1px solid border, no lighting or shadow, and no active item, shortcuts or other real menu cues",
+    "Entrance was scale plus opacity only, with row and icon arriving together like one scaled image"
+  ],
+  "changesEn": [
+    "Rows shrink to 26px tall, 6px gap, 188px wide (~195px total) so first and last items stay inside the safe area through the drift; DesignStage uses raster=zoom",
+    "Background is a dark soft-lit field with a faint indigo tint, vignette and fine grain",
+    "Monochrome line icons (grid/folder/bars/bubble/gear/sign-out), with only the active Dashboard row in the single accent; Messages gets an unread badge, others get ⌘ shortcuts, and Sign out sits below a divider one step dimmer",
+    "Row surfaces use a dark graphite gradient, hairline edge, top light edge and two-layer soft shadow",
+    "Kept the 0.09 stagger, 0.24 travel, outBack, 0.78 start scale and 32px linear drift; added a 1.6px→0 focus blur on entry and icons settle 2f after their row as follow-through"
+  ],
+  "mdChanged": true
+}

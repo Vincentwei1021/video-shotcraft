@@ -1,0 +1,30 @@
+{
+  "stem": "PopupBookRise",
+  "issues": [
+    "没有导出时长，工作台从源码抓到 34f，只渲出前两张卡起身，回弹与场景回正都看不到",
+    "书页底板是灰条骨架壳（灰侧栏条、灰顶栏条），平灰 #dddddb 底没有任何桌面/纸张感",
+    "近排立墙后两侧卡片出画，左侧露出半截黑色侧栏楔形",
+    "卡片立起后像贴图：卡位处没有留下任何痕迹，根部只有一团模糊阴影，卡面明暗不随角度变化"
+  ],
+  "changes": [
+    "补导出 POPUP_BOOK_RISE_DURATION=160（108f 回正后静止 52f，md 的 4–5.5s 内）",
+    "底板换成完整 FakeDashboard(A)（侧栏/顶栏真实内容），卡位处是模切留下的浅凹槽（内阴影），卡立起后露出；背景换暖调纸面桌 + 纸纤维颗粒 + 暖色暗角，与 masking-tape-slap 同材料语言",
+    "整页缩到 0.8，近排立墙后左右都留在画内",
+    "根部投影改为两层（随立起收窄的软影 + 立直后出现的贴地接触线）；立起的卡面靠铰链底部加随角度出现的环境遮蔽，立起中段有一次上亮下暗的受光变化",
+    "立起 spring（damping 11，过冲到 −95° 回 −90°）、远排先近排后 7f 错峰与 75°→68° 回正全部保留"
+  ],
+  "issuesEn": [
+    "No duration export, so the workbench grabbed 34f from the source and rendered only the first two cards starting to rise; the rebound and scene settle never appeared",
+    "The page base was a grey skeleton shell (grey sidebar and top-bar bars) on a flat #dddddb background with no sense of desk or paper",
+    "After the near row stood up, the side cards left the frame and half a black sidebar wedge showed on the left",
+    "Risen cards read as decals: nothing was left in their slots, the root was one blurry shadow, and face shading never changed with angle"
+  ],
+  "changesEn": [
+    "Added POPUP_BOOK_RISE_DURATION=160 (52f hold after the 108f settle, within the md's 4–5.5s)",
+    "The base is the full FakeDashboard(A) with real sidebar/top-bar content, and each slot is a shallow die-cut recess with an inner shadow revealed as its card rises; the background is a warm paper desk with fiber grain and warm vignette, matching masking-tape-slap",
+    "The whole page is scaled to 0.8 so the standing near row stays inside the frame",
+    "Root shadow is two layers (a soft shadow that narrows as the card rises plus a contact line once upright); risen faces get angle-driven occlusion near the hinge and one top-lit/bottom-shaded pass mid-rise",
+    "The rise spring (damping 11, overshoot to −95° back to −90°), far-row-first 7f stagger and 75°→68° settle are unchanged"
+  ],
+  "mdChanged": false
+}

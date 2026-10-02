@@ -1,0 +1,32 @@
+{
+  "stem": "ListStackPress",
+  "issues": [
+    "相机 5 段关键帧各自缓入缓出，f12/f18/f56 处速度归零，跟随堆叠时一顿一顿",
+    "琥珀高亮条放在 72% 高度、30px 高，一半压在正文上，还以 60% 不透明度盖在字上把项目名洗淡；右侧 2px 竖线直接切过正文",
+    "glaze 扫光在 f64–78，最后一张 f76 才落地，扫光早于收尾；且扫的是整页、不裁进卡片",
+    "计数器数字没设字体，落到浏览器默认衬线体，与等宽标签不搭",
+    "飞行卡只有单层大阴影，600px 的升入没有任何速度感"
+  ],
+  "changes": [
+    "相机改为一条连续曲线（cy 270→815、zoom 1.35→0.86，82f 后静止），逐帧喂给 PageCam2D，跟随平滑无顿点，尾帧整摞完整入画",
+    "高亮条按截图实测对准项目名行（卡内 y156–176）、宽度等于项目名，multiply 叠在字下做荧光笔；落地后滞后 3f 才长出，最后一张压缩为 5f 长 + 4f 淡",
+    "glaze 移到 f74–87 最后一张落定后，soft-light 暖色斜光，按页面坐标连续扫过整摞并裁进每张卡圆角（Q4）",
+    "飞行卡按速度加纵向 SpeedBlur；阴影改为随离地高度变化的两层 softShadow，被压时更贴地；补顶部受光沿",
+    "计数器数字改系统无衬线 500 + tabular-nums，滚格时带随速度的纵向模糊，下方加一条发丝分隔线"
+  ],
+  "issuesEn": [
+    "The camera used five keyframe segments each with its own ease, so velocity hit zero at f12/f18/f56 and the follow stuttered",
+    "The amber highlight sat at 72% height and 30px tall, half over the body copy and washing out the project name at 60% opacity, with a 2px vertical line slicing through the text",
+    "The glaze ran f64–78 while the last card only landed at f76, so the sweep came before the finish, and it swept the whole page instead of being clipped to the cards",
+    "Counter digits had no font set and fell back to the browser serif, clashing with the mono labels",
+    "Flying cards had a single big shadow and the 600px rise had no sense of speed"
+  ],
+  "changesEn": [
+    "Camera is one continuous curve (cy 270→815, zoom 1.35→0.86, still after 82f) fed frame by frame into PageCam2D, giving a smooth follow and a final frame with the full stack in view",
+    "The highlight is measured from the screenshot to sit on the project-name line (card y156–176), as wide as the name, multiplied under the text like a highlighter; it grows 3f after landing, compressed to 5f grow + 4f fade for the last card",
+    "Glaze moved to f74–87 after the last card settles: a warm soft-light diagonal that sweeps the stack continuously in page space, clipped to each card's rounded corners (Q4)",
+    "Velocity-driven vertical SpeedBlur on flying cards; two-layer softShadow that scales with height and hugs the floor when pressed; added a top light edge",
+    "Counter digits use the system sans at 500 with tabular-nums and a speed-based vertical blur while rolling, plus a hairline divider below"
+  ],
+  "mdChanged": true
+}

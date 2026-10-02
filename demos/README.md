@@ -25,7 +25,7 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
   list-stack-press / document-typewriter-reveal / outro-group-photo-launch）用到的
   整页截图与 `live-layout.json`。这些 demo 里的 `staticFile('textures/live/xxx.png')`
   要求把 `_textures/` 下的同名文件复制到你项目的 `public/textures/live/`
-  （page-waterfall-wall 例外：它写的是 `textures/xxx.png`，放 `public/textures/`）。
+  （page-waterfall-wall 也已统一读 `textures/live/`，不再有例外）。
 
 个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
 `npm i @remotion/motion-blur`。名单（8 个文件 / 6 张卡）：

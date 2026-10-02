@@ -1,0 +1,30 @@
+{
+  "stem": "PlatformHingeRise",
+  "issues": [
+    "两块主体、背景圆和结论台都是灰色色块，上面打着 SUBJECT / CONTEXT / OUTCOME 调试式大写占位字，用 Arial",
+    "主体底边盖在平台之上（裁切线在平台下方），读不出\"从平台后方翻起\"",
+    "梯形用 clipPath 裁切，box-shadow 被一起裁掉，所有块都是没有投影的平面剪纸",
+    "平灰 #f4f4f1 底，平台和结论台是纯色梯形，没有材质和受光"
+  ],
+  "changes": [
+    "内容换成一组可读的方案对比：OPTION A Self-hosted $18.4k/mo（成本柱上升）与 OPTION B Managed cloud $11.4k/mo（强调色柱下降），背景盘\"INFRA REVIEW · Q3\"，结论台\"Cloud saves 38%\" + 说明行；系统字体栈",
+    "裁切线对齐平台上缘（y=174），平台画在主体之上，两块底边都略低于平台上缘——真正从平台后方翻起；铰点、±18°、112/90px 行程与阻尼回摆不变",
+    "卡面改石墨渐变 + 沿梯形上边的受光线，投影挂在外层 drop-shadow 上；平台/结论台改浅石材渐变 + 上缘高光，平台下加随 scaleX 铺开的接触影",
+    "翻起段按速度加纵向 SpeedBlur（静止为 0）；主体落定时平台 0.6px 承重下沉回弹",
+    "背景换柔光底 + 细颗粒；全部时间轴（f0–15 / 12–32 / 14–30 / 30–46 / 52–74 / 30f hold）保持原值"
+  ],
+  "issuesEn": [
+    "Both subjects, the background disc and the outcome plinth were grey blocks stamped with debug-style caps placeholders SUBJECT / CONTEXT / OUTCOME in Arial",
+    "The subjects' bottoms sat on top of the platform (clip line below it), so they did not read as rising from behind the platform",
+    "The trapezoids were cut with clipPath, which also clipped their box-shadows, leaving flat shadowless paper cutouts",
+    "Flat #f4f4f1 background, with the platform and plinth as plain solid trapezoids with no material or light"
+  ],
+  "changesEn": [
+    "Content is now a readable option comparison: OPTION A Self-hosted $18.4k/mo (rising cost bars) vs OPTION B Managed cloud $11.4k/mo (falling accent bars), a background disc \"INFRA REVIEW · Q3\" and the plinth \"Cloud saves 38%\" with a caption; system font stack",
+    "The clip line now matches the platform top (y=174) and the platform draws over the subjects, whose bottoms sit just below its edge, so they truly rise from behind it; hinges, ±18°, 112/90px travel and damped wobble unchanged",
+    "Graphite gradient faces with a light edge along the slanted top, shadows moved to an outer drop-shadow; platform and plinth use a pale stone gradient with a top highlight, and a contact shadow spreads with the platform's scaleX",
+    "Velocity-driven vertical SpeedBlur during the rise (zero at rest); the platform dips 0.6px under the landing and springs back",
+    "Soft-lit backdrop with fine grain; every timeline value (f0–15 / 12–32 / 14–30 / 30–46 / 52–74 / 30f hold) is unchanged"
+  ],
+  "mdChanged": false
+}
