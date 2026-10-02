@@ -1,26 +1,31 @@
 {
   "stem": "DutchRollToLevel",
   "issues": [
-    "痛点警示条是深色块 + 三角 + 灰条，解决卡是空 Card，读不出前后语义",
-    "警示条与解决卡长时间交叉淡化，叠成一块灰",
-    "滚正前没有蓄力，斜置期只有几何上的歪、没有情绪"
+    "主体是灰色占位 dashboard + 小字警示条，看不出\"痛点\"是什么，斜角只像构图歪了",
+    "背景是纯色底，-10° 斜角缺少参照物，滚正那一拍的\"扶正\"感很弱",
+    "滚正后只换了一张小 toast，画面其余部分毫无变化，解决方案没有分量",
+    "文字 18–26px，1080p 下读不清"
   ],
   "changes": [
-    "警示条换成失败构建 toast（红色侧条、图标、'Build failing on main / 3 checks failed · 12 deploys blocked'、View logs）；解决卡换成成功 toast（勾线描出、'All checks passing'、Healthy chip）",
-    "警示条 8f ease-in 上移收走，解决卡晚 6f snappy 上浮接替，只重叠 2f；图标 overshoot 弹出、标题/副标/chip 2–3f 错峰",
-    "滚正前 6f 再压 0.6° 蓄力，再 14f 冲过 0 到 +1.2°、10f 收回；斜置期叠暖色压暗暗角（不适），随滚正散去（释然）",
-    "补导出 DUTCH_ROLL_TO_LEVEL_DURATION=150，落定后真静止 56f"
+    "look 换成 porcelain（冷白 + 钴蓝），痛点红只作状态语义色；主体改成为镜头设计的 1320×700 事故面板：168px p99 延迟、实时曲线、三格状态",
+    "世界铺一张比画面大一圈的坐标纸网格：-10° 时网格与画框明显错位，滚正后严丝合缝——\"扶正\"是字面意义的",
+    "滚正节拍：6f 预备再压 0.6° → 13f snappy 冲到 +1.2° → 11f smooth 收回 0，scale 1.08→1.00 同步",
+    "跟随与重叠：数字晚 4f 由 2,840 回落到 184 ms 并由红转墨，曲线从左到右一个波次愈合（描边逐点由红变钴蓝）、留一道淡红残影，延迟跌破 SLO 那一帧状态胶囊带过冲换成 Operational，标题句换成「Rolled back in one click.」",
+    "斜置期屏幕空间叠暖红暗角（不适感），滚正后散去；落定后 1.5% 极缓推近 hold 60f"
   ],
   "issuesEn": [
-    "The pain banner was a dark block with a triangle and a grey bar, and the solution was an empty Card, so the before/after meaning didn't read",
-    "Banner and solution card crossfaded for a long stretch and merged into a grey slab",
-    "No wind-up before the roll; the tilted state was only geometrically crooked, with no emotional cue"
+    "The subject was a grey placeholder dashboard with a tiny alert bar: the pain was unreadable and the tilt looked like a framing mistake",
+    "A flat background gave the -10° tilt no reference, so the levelling beat felt weak",
+    "After levelling only a small toast changed; the rest of the frame stayed the same and the fix had no weight",
+    "Text at 18–26px was unreadable at 1080p"
   ],
   "changesEn": [
-    "The banner is now a failing-build toast (red edge, icon, 'Build failing on main / 3 checks failed · 12 deploys blocked', View logs); the solution is a success toast (check stroke draws on, 'All checks passing', Healthy chip)",
-    "The banner exits up with ease-in in 8f and the success toast rises 6f later with a snappy ease, overlapping only 2f; the icon pops with overshoot and title/subtitle/chip stagger 2–3f",
-    "A 0.6° wind-up over 6f before the roll, then 14f past 0 to +1.2° and 10f back; a warm darkening vignette during the tilt (unease) clears as it levels (relief)",
-    "Exported DUTCH_ROLL_TO_LEVEL_DURATION=150 with a 56f true hold after leveling"
+    "Porcelain look (cool white and cobalt) with red used only as a status colour; the subject is a 1320×700 incident panel designed for the shot: 168px p99 latency, a live chart and three status tiles",
+    "The world is graph paper larger than the frame: at -10° the grid visibly fights the frame edges, after levelling it locks square, so 'set right' is literal",
+    "Levelling beat: 6f wind-up 0.6° further, 13f snappy overshoot to +1.2°, 11f smooth settle to 0, with scale 1.08→1.00",
+    "Follow-through: 4f later the number falls 2,840→184 ms and shifts red to ink, the chart heals in a left-to-right wave (stroke turns cobalt point by point) leaving a faint red ghost, the status chip pops to Operational on the frame latency drops under SLO, and the headline becomes 'Rolled back in one click.'",
+    "A warm-red screen-space vignette during the tilt clears as it levels; a 1.5% slow push holds the last 60f"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

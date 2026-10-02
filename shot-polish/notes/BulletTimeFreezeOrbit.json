@@ -1,28 +1,31 @@
 {
   "stem": "BulletTimeFreezeOrbit",
   "issues": [
-    "画面上方打着调试标题 BULLET TIME，冻结靠一枚 FREEZE 大徽标提示",
-    "面板是灰条骨架 + 灰柱，2px 实色边，无轴标签",
-    "背景死平，相机环绕时背景不动，读不出是相机在绕",
-    "数字标签同时线性淡入，无错峰"
+    "灰色占位图表 + 角落调试标题「BULLET TIME」与 FREEZE 徽标，冻结要靠文字告诉观众",
+    "冻结期画面里只有静止的柱子，看不出\"运动中的一瞬间被定住\"",
+    "环绕只是单张面板 rotateY，背景纯色、没有深度参照，读不出是相机在绕",
+    "时间是硬停硬起，没有子弹时间的变速感"
   ],
   "changes": [
-    "去掉调试标题与徽标，换画面内的时间证词：右上时间码与面板总数计数器都走 effFrame，冻结时一起停住，时码点由红变靛并展开 FROZEN",
-    "面板换出版级图表：标题/副标/计数器、刻度与周标签、唯一强调色柱、发丝边 + 两层软阴影",
-    "背景点阵随 rotateY 反向视差（5.5px/度）、地面接触影随投影宽度收窄；面板转离主光时整体压暗 9%，一道随角度横扫的镜面反光（裁进圆角）",
-    "冻结期整体冷调 + 暗角收拢，进出各 8f 过渡；恢复后数字标签 2f 错峰 ease-out 浮现；补导出 BULLET_TIME_FREEZE_ORBIT_DURATION=150"
+    "look 换成 midnight（深蓝夜 + 电光蓝）：悬在暗场里的玻璃数据面板，7 根柱错峰生长、主角柱电光蓝泛光，右上 112px 六位滚轮计数器",
+    "柱顶喷出 140 颗带真实 z 深度的数据火花；冻结时火花悬在半空并保留拖尾，计数器低位的滚动模糊也一起冻住——冻住的是运动中的瞬间",
+    "双时钟加速度坡道：内容时钟 8f 急刹进冻结、冻结 52 帧、8f 恢复；冻结时柱顶正好是一道由高到低的波浪",
+    "真 3D 场景（preserve-3d）：面板、火花、透视网格地面、远处点阵墙各在自己的深度；相机 rotateY 0→-52°（smooth）→ 顶点慢漂 → 回正（swift），同步抬升 6°、推近 160px",
+    "去掉全部调试文字；恢复后柱顶数值逐个弹簧弹出，尾段 30f 海报 hold；时长 150→170f"
   ],
   "issuesEn": [
-    "A debug title 'BULLET TIME' sat on screen and the freeze was signalled by a big FREEZE badge",
-    "The panel was grey skeleton bars and grey columns with a 2px solid border and no axis labels",
-    "Flat background that didn't move during the orbit, so it didn't read as the camera circling",
-    "Value labels all faded in linearly at once with no stagger"
+    "Grey placeholder chart plus a debug 'BULLET TIME' title and FREEZE badge: the freeze had to be explained in text",
+    "During the freeze only static bars were on screen, so it never read as a moment of motion held still",
+    "The orbit was a single panel rotating on Y against a flat background with no depth cues, so the camera move did not read",
+    "Time stopped and restarted abruptly with no bullet-time speed ramp"
   ],
   "changesEn": [
-    "Removed the debug title and badge. On-screen evidence now carries the freeze: a timecode HUD and a total counter both run on effFrame and stop together; the dot turns from red to indigo and FROZEN slides out",
-    "Publication-grade chart: title, subtitle, counter, ticks and week labels, one accent column, hairline and two-layer soft shadow",
-    "The background dot grid counter-parallaxes with rotateY (5.5px/deg) and the contact shadow narrows with the projected width; the panel darkens 9% as it turns from the key light, and one angle-driven specular sweep stays clipped to the radius",
-    "Cool grade and tightening vignette while frozen, 8f in and out; after resume, labels stagger in 2f apart with ease-out; exported BULLET_TIME_FREEZE_ORBIT_DURATION=150"
+    "Midnight look (deep navy and electric blue): a glass data panel floating in the dark, 7 staggered bars with a glowing electric-blue hero bar, and a 112px six-digit odometer",
+    "140 data sparks with real z depth spray from the bar tops; in the freeze they hang mid-air with their streaks, and the odometer's rolling blur freezes too, so what stops is motion itself",
+    "Dual clocks with speed ramps: the content clock brakes into the freeze over 8f, holds 52 frames, and ramps back over 8f; at the freeze the bar tops form a descending wave",
+    "A true 3D scene (preserve-3d) with panel, sparks, perspective grid floor and a distant dot wall at their own depths; the camera orbits rotateY 0→-52° (smooth), drifts at the apex, returns (swift), rising 6° and dollying in 160px",
+    "All debug text removed; after resume the value labels spring in one by one and the last 30f hold as a poster; duration 150→170f"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

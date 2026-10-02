@@ -1,32 +1,31 @@
 {
   "stem": "SteepTiltGlide",
   "issues": [
-    "Helvetica/Arial 回退字体，大标题字距松散",
-    "悬空元素的同形软影太实，读作一份重叠的字（ClickUp 下方出现第二个 ClickUp）",
-    "速度重影只有两层离散拷贝，快速段看起来像双影故障",
-    "主区三块白色圆角砖是空白块",
-    "右段白页与主区之间是一条生硬色块分界；远端没有景深层次"
+    "页面是浅灰占位 UI（Dropbox 图标、大 W 残字、空白砖），内容掠过时没有一节值得看、也读不出是什么产品",
+    "浅灰页面在暗场里一片白，颜色单调，光只有左侧一团紫晕",
+    "滑移近匀速，整镜头节奏平，尾段没有落点，最后一帧不是一张完整画面",
+    "速度重影垫在不透明页面下面，几乎只在页面边缘露出；悬空贴落是 2D 位移假影子"
   ],
   "changes": [
-    "字体换系统栈，大字负字距（-0.035em）、全大写小字正字距",
-    "同形软影 blur 9+h·0.13、不透明度 ≤0.26、压成无字形冷灰——读作影子",
-    "重影改三层 f-1.6/-3.2/-4.8、权重递减，叠出连续拖影（镜头常数、滑移曲线、贴落节拍不动）",
-    "三块白砖填入克制小组件（Sprint 进度 / 本周待办 / 走势线），带发丝边与两层阴影",
-    "右段白页加发丝边 + 左投影分层；屏幕空间左侧景深雾 + 颗粒；补导出 STEEP_TILT_GLIDE_DURATION=120"
+    "look 换成 lime（石墨暗场 + 荧光黄绿）：页面改成为镜头设计的深色产品长页（虚构跑步产品 STRIDE 4），五节「车厢」——200px 标题 / 4:12 配速卡 / 心率区间 Z4 / 12.4 km 路线卡 / 「Run smarter.」+ 荧光按钮",
+    "镜头常数（60° / perspective 1100 / origin 30% 58%）一个数不动，仍是物动镜不动；滑移改 bezier(0.36,0.08,0.32,0.94)，「慢—快—慢」，收尾减速成蠕行（尾段斜率不归零），末帧是可读的收尾海报",
+    "悬空贴落改成真 3D：卡片在 preserve-3d 里 translateZ 悬在页面前方，按自身滑到的位置加速贴落，页面上的软影随高度收拢变实",
+    "速度重影改成 f-0.5/-1.0/-1.5 三层密拖尾、叠在本体之上 lighten 混合，只在高速段出现，亮字与荧光件拖出连续残影",
+    "光：镜头坐标系里固定的一团荧光主光（页面在光下滑过）+ 页面顶缘荧光轮廓线 + 远端雾；3D 层去掉 filter: blur（软影改径向渐变），渲染从白屏 / 4 分多钟降到 ~40s；时长 120→150f"
   ],
   "issuesEn": [
-    "Helvetica/Arial fallback fonts with loose tracking on the big titles",
-    "Floating elements' shadows were too solid and read as duplicate text (a second 'ClickUp' under the first)",
-    "The speed ghost was only two discrete copies, which looked like a double-image glitch in fast stretches",
-    "Three white rounded tiles in the main area were empty blocks",
-    "A hard color seam between the right white page and the main area, and no depth falloff at the far end"
+    "The page was light-grey placeholder UI (a Dropbox glyph, a stray giant W, blank tiles): no section was worth watching and the product was unclear",
+    "The light-grey page read as a white slab on the dark stage, with only a purple glow on the left for light",
+    "The glide was near-linear, so the rhythm was flat and the tail had no landing; the last frame was not a composed image",
+    "Speed ghosts sat under the opaque page and only peeked out at its edges; the float-and-land used fake 2D offsets"
   ],
   "changesEn": [
-    "System font stack, tight tracking on big type (-0.035em), opened tracking on small caps",
-    "Shadows use blur 9+h·0.13, opacity ≤0.26 and are desaturated so glyphs don't read; they now look like shadows",
-    "Ghosting is three layers at f-1.6/-3.2/-4.8 with falling weights, giving a continuous smear (camera constants, glide curve and drop timing unchanged)",
-    "The white tiles now hold restrained mini widgets (sprint progress, due-this-week list, velocity line) with hairlines and two-layer shadows",
-    "The right page gets a hairline edge and a left drop shadow; screen-space depth fog on the left plus grain; exported STEEP_TILT_GLIDE_DURATION=120"
+    "Lime look (graphite stage and neon yellow-green): the page is a dark product long-page designed for the shot (fictional running app STRIDE 4) with five 'carriages': a 200px headline, a 4:12 pace card, heart-rate zones with Z4 as hero, a 12.4 km route card and 'Run smarter.' with a neon button",
+    "Camera constants (60°, perspective 1100, origin 30% 58%) are untouched, still object-moves-camera-locked; the glide now runs on bezier(0.36,0.08,0.32,0.94), slow-fast-slow, easing into a creep with a non-zero tail slope so the last frame is a readable closing poster",
+    "Float-and-land is true 3D: cards hover in front of the page via translateZ inside preserve-3d and drop as they slide into the reading zone, their soft shadows tightening as they land",
+    "Speed ghosts are now dense trails at f-0.5/-1.0/-1.5 composited above the page with lighten blending, only at high speed, so bright type and neon parts smear continuously",
+    "Light: a neon key light fixed in camera space that the page slides under, a neon rim along the top edge and far fog; filter: blur was removed from the 3D layers (shadows are radial gradients), taking the render from white frames and 4+ minutes to ~40s; duration 120→150f"
   ],
+  "look": "lime",
   "mdChanged": true
 }
