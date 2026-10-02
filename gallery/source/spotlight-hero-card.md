@@ -25,7 +25,7 @@ name: spotlight-hero-card
 - 卡片 rise（带过冲）→ 悬停 sin bob → reseat（落地微压 + 一圈香槟色落地光）；悬浮投影落向左下（光从右上来）
 - SVG rounded-rect 轮廓光束跑两圈：第一圈快而亮、第二圈慢而弱（香槟金 + 白芯）
 - 卡起飞后原位铺页面底色补丁 + 香槟色描边，落地瞬间增亮消失
-- 3D 悬空注记（hover-3d-annotation 手法，C3）：卡左侧白色粗黑体两行「One card, / one project.」（34px 页面空间，
+- 3D 悬空注记（hover-3d-annotation 手法，C3）：卡左侧白色粗黑体两行 video-shotcraft 宣传语「Your product, / in motion.」（34px 页面空间，
   推进后 ≈100px），关键词背后 12f 长出香槟色马克条（字翻成墨色），注记下垫暗色衬底压住邻卡文字；
   注记层用与页面同一套相机数学（camAt）单独画在灯光层之上——它是自发光的字，不被关灯压暗。
   reseat 时注记同步落回页面平面（translateZ 92→4），不提前退场，结尾是一张完整海报

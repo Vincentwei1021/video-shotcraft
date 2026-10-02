@@ -16,7 +16,7 @@
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/daily?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 <a href="https://trendshift.io/repositories/88911?utm_source=trendshift-badge&utm_medium=badge&utm_campaign=badge-trendshift-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/88911/weekly?language=TypeScript" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
-**An agent skill for crafting cinematic product videos: 157 shot recipe cards · 214 styles · 214 motion previews · a production-ready template**
+**An agent skill for crafting cinematic product videos: 124 shot recipe cards · 150 styles · 150 motion previews · a production-ready template**
 
 [English](README.md) | [中文](README_CN.md) | [日本語](README_JA.md)
 
@@ -30,7 +30,7 @@ beat-synced cuts, and film-grade SFX included.
 
 🎬 [**Watch finished films in the Showcase »**](https://vincentwei1021.github.io/video-shotcraft/showcase.html) — see what makers have created with video-shotcraft.
 
-🖼️ [**Browse all 214 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
+🖼️ [**Browse all 150 motion previews in the live Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
 
 ## ✨ What's new
 
@@ -56,7 +56,7 @@ beat-synced cuts, and film-grade SFX included.
 > (`node workbench/scripts/open.mjs <project>`). The film is decomposed into
 > shot / transition / caption / SFX tracks exactly as authored; select any shot
 > and edit its copy, font sizes and colours in a schema-driven inspector, move,
-> trim or speed-ramp clips, drag any of the **216 demo motions** in from the
+> trim or speed-ramp clips, drag any of the **150 demo motions** in from the
 > library, then export with Remotion. Preview and render are frame-identical
 > (pixel-parity verified).
 >
@@ -174,14 +174,14 @@ With these three flags, frame renders from the bundled template work.
 
 | Content | Description |
 | --- | --- |
-| 157 shot recipe cards | Purpose, energy, suggested duration, parameters, implementation notes, and known pitfalls |
-| 214 motion previews | Covering 214 styles; searchable and filterable in the online Gallery |
+| 124 shot recipe cards | Purpose, energy, suggested duration, parameters, implementation notes, and known pitfalls |
+| 150 motion previews | Covering 150 styles; searchable and filterable in the online Gallery |
 | Remotion implementations | Tuned TSX demos containing the actual easing and timing parameters for each card |
 | Complete video template | A validated 36.2-second, 1920×1080, 30fps product promo with 10 shots |
 | Components and assets | 2.5D page camera, captions, flash cuts, digit rolls, SFX, and capture scripts |
 | Production methodology | Capture, visual direction, storyboarding, sound design, beat sync, and final QA |
 | JianYing project export | Load the film into JianYing (CapCut CN) for further editing — per-shot speed, captions, and audio all editable (verified on macOS 11.2) |
-| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 216 demo motions, export via Remotion |
+| Motion workbench | Browser timeline editor opened after delivery: split the film into tracks, edit exposed shot properties, retime, drag in any of the 150 demo motions, export via Remotion |
 
 The toolkit primarily targets web and desktop product promos, while individual
 shot cards can also be used in feature demos, brand films, launch videos, and
@@ -194,7 +194,7 @@ video-shotcraft/
 ├── SKILL.md                 # Agent entry point and core production rules
 ├── references/
 │   ├── pipeline.md          # End-to-end production workflow
-│   ├── shots/               # 157 shot recipe cards in 10 functional categories
+│   ├── shots/               # 124 shot recipe cards in 10 functional categories
 │   ├── sequences/           # Reusable full-video structures and sequence patterns
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology

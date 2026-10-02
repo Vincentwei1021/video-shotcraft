@@ -1,8 +1,8 @@
 ---
 name: segmented-thumb-hero
-一句话: 分段控件 thumb 位移当主角特写——超大胶囊 segmented control 弹簧浮入，描边箭头光标画外滑入按下，发光 thumb 8f ease-out 滑到另一段，到位瞬间新图标 spring 弹出、旧图标收起
-适用: "模式切换/二选一"功能的宣告镜头（Ask→Computer、Chat→Agent 式）；一个 UI 微交互撑一整镜的特写拍法
-时长: ~4s（demo 120f：浮入 22f + 光标 24f + 点击 + 滑动 8f + 图标弹出 + 副句 + hold 30f）
+一句话: 分段控件 thumb 位移当主角特写——超大胶囊 segmented control 弹簧浮入，描边箭头光标画外滑入按下，白 thumb 8f ease-out 滑到另一段，到位瞬间新图标 spring 弹出、旧图标收起
+适用: "模式切换/二选一"功能的宣告镜头（demo 的 video-shotcraft Prompt→Film、Chat→Agent 式）；一个 UI 微交互撑一整镜的特写拍法
+时长: ~3.5s（demo 110f：浮入 18f + 光标 24f + 点击 + 滑动 8f + 图标弹出 + hold）
 能量: 中（微交互特写，精致不轰）
 ---
 
@@ -15,25 +15,21 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
 缺了图标弹出就是切换没有奖励。
 
 ## 动效核心
-- 控件特写尺寸 1240×232（demo 酸柠暗场：石墨下凹轨道 + 荧光黄绿发光 thumb，thumb 上墨色字），
-  从下 220px + 俯仰 26°→0 弹簧浮入（spring damping 15 / stiffness 110），落地影随落位收紧；
-  台面一道 0.16 不透明度的镜面倒影
+- 控件特写尺寸 1080×220，从下 200px 弹簧浮入
+  （spring damping 14 / stiffness 120），大阴影随落位收小（24→12px）
 - 光标是超大描边箭头（130px，白底墨描边）：24f Easing.out(cubic)
-  从右下画外滑到目标段上；按下 scale 1→0.86→1（3f 下 4f 回）；切换后光标向右下让开
+  从右下画外滑到目标段上；按下 scale 1→0.86→1（3f 下 4f 回）
 - **thumb 严格 8f** Easing.out(cubic)（demo 52→60f）——还原原片手感；
-  这 8f 是全镜的心跳，前后各拍都在为它服务。前缘 out-poly4、后缘 out-quad 形成拉伸，
-  到位 1.5% 过冲 6f 收敛，按速度横向拖影
+  这 8f 是全镜的心跳，前后各拍都在为它服务
 - 到位瞬间双动作同帧起：新图标 spring(damping 10, stiffness 220)
   过冲弹出；旧图标 6f Easing.in 塌缩且 width 同步归零让文字自然回流
 - 点击涟漪：3px 强调色细环 12f 从点击点（光标尖端）扩散淡出（Easing.out(quad)）
   ——涟漪确认"按下"发生过，无涟漪点击读作光标路过
-- 余波：到位时 thumb 一次泛光脉冲、台面光池转亮并移到新段下方；66f 起控件下方
-  60px 副句逐词升起（"Now it doesn't just answer. It acts."），交代新模式的意义
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
-| 控件尺寸 | 1240×232，thumb 内缩 16px，段标签 84px | 缩到 <600px 宽就不是特写了，thumb 位移读不出重量 |
+| 控件尺寸 | 1080×220，thumb 内缩 16px | 缩到 <600px 宽就不是特写了，thumb 位移读不出重量 |
 | thumb 时长 | 8f Easing.out(cubic) | >14f 读作慢动作演示视频；<5f 读作瞬移，"滑"没了 |
 | 光标滑入 | 24f 从画外，ease-out | linear 或 <14f 读作光标被扔进来；起点必须画外 |
 | 按下 | scale 0.86 + 涟漪 12f | 无按下直接滑 thumb，因果链断，读作自动播放 |
@@ -43,7 +39,7 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
 ## 已知坑
 - demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
   首次实战须以真实素材回验
-- 与 input-trigger-moves 分工：cursor-performance 是光标在完整页面里
+- 与 cursor-flyover 分工：那张是光标在完整页面里
   点击推近（有上下文），本卡是控件脱离页面拍无背景特写——同片可共存，
   但同一次点击别既拍页面版又拍特写版
 - 图标塌缩用 width 归零而不是只 scale——只 scale 会留空位，文字不回流，
@@ -53,7 +49,7 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
 - 涟漪圆环要 zIndex 压在 thumb 之上、圆心锁点击点——跟着 thumb 走
   就成了 thumb 的拖尾，语义变错
 - 实战替换素材：段标签/图标换成真功能名即可，但"新段图标带表情"
-  （demo 带笑脸、落定后眨一次眼的 Agent 小机器人）是奖励感的一半，纯线框图标会淡不少
+  （demo 笑脸场记板）是奖励感的一半，纯线框图标会淡不少
 
 ## 参考实现
 demos/interaction/segmented-thumb-hero/

@@ -33,7 +33,8 @@ name: word-relay-geometry
 - Stronger 无几何：120f 起描边 → 竖向镀铬渐变（亮顶—暗腰—亮底）；124→148f 一道带香槟暖色的
   窄白带（`100deg`、`background-size:300%`）从左扫到右；146→158f 收成纯白 + 一次泛光脉冲，
   脚下横向光带从 0.2 宽 snappy 展开，舞台主光同拍提亮——结论词独享的升格待遇
-- 词下 40px 副句给产品证据（rise 逐词升起），左上 mono 计数「01 / 03」、底部三段进度条（label 级纹理）；
+- 词下 40px 副句给产品证据（rise 逐词升起，demo 是 video-shotcraft 的三句宣传），左上 mono 计数「01 / 03」、
+  右上镜刻标志 + video-shotcraft 小写字标、底部三段进度条（label 级纹理）；
   相机全程 1→1.025 smooth 极缓推进（不抖）
 
 ## 参数表
