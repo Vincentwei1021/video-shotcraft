@@ -1,134 +1,135 @@
 // 字形漂移合拢（letterform-drift-assembly）——Stranger Things 片头式入场。
-// 标题 "ASSEMBLE" 拆 8 字符：各自从不同方向（h(i) seeded 随机向量，
-// 幅度 ±260–360px）带 blur 8px + opacity 0.35 缓慢漂入，错峰归位
-// （delay i×3f，45f 行程，Easing.out(cubic)）。每字锁定瞬间给一次
-// "加深脉冲"：字色 ink→#000→ink + 描边 0→3px→0（8f）——白底上
-// 不用发光用加深（库判例）。全部合体后整词 scale 1→1.04→1 收束呼吸
-// （判例：1.02 太弱，加码到 1.04）。
-// 关键帧：0–24 各字错峰启程 → i 字 [i*3, i*3+45] 漂入归位 →
-// 锁定帧 i*3+45 起 8f 加深脉冲（最后一字 66–74）→ 80–104 整词呼吸 →
-// 104–150 全静止（46f，无逐帧滤镜）。
 //
-// 质感升级：去掉调试标题；柔光 Backdrop；系统 SF 栈 700、带色相的近黑墨色；
-// 漂入除位移/blur/opacity 外再绑同一条 p 的旋转（±24°→0）与纵深缩放（1.22→1），
-// 字是从镜头前的空间里飘回字面，而不是平面滑动；合体后字面下方浮出一层极淡的落地影。
-// 补导出时长 150f（原工作台按 56f 推断，渲染止于半空）。
+// 第二轮重设计（ember · 暗场片头字卡 · 虚构剧集「NOCTURNE」）：
+// - look = ember（暖黑 · 余烬橙 · 金）。主角是 200px 衬线粗体全大写的空心描边字：描边是余烬橙，
+//   发光用 drop-shadow 沿描边走（不是整块字形的晕）——这就是片头式的"霓虹描边字"。
+// - 漂移从纵深来：每个字从镜头前方（scale 1.7–2.7、出画 420–840px、±10° 歪斜）带大虚焦缓慢漂回字面，
+//   位移 / 缩放 / 虚焦 / 不透明度共用一条长尾 ease-out 的 p——到了就是实的，不会"到了还糊着"。
+//   顺序不是左到右，而是种子乱序 + 先疏后密的错峰（越来越快地合拢，最后两三个字几乎一起落）。
+// - 锁定：每个字落位那一刻描边加粗亮成金色、字腔闪一下金、发光冲高再回落（12f 脉冲），之后字腔灌进一层极暗的橙褐填充。
+// - 合体之后：上下两根发光细杠从词心向两侧展开（片头的标志性横杠），下方副标题字距收拢浮现；
+//   余烬浮尘全程缓慢上飘，hold 段整画面极缓推近 2%（漂移时镜头不动）。
+//
+// 时间表（30fps，共 170f）：
+//   0       第 1 帧：8 个虚焦大字已在画面四周（不是空帧）
+//   0–96    漂移合拢：每字 64f 行程，起点按 EASE.out 分布在 0–32f（先疏后密）
+//   ~64–96  逐字锁定脉冲（10f）
+//   98–122  上下横杠从中心展开（snappy 24f）+ 整词一次泛光
+//   112–134 副标题字距收拢浮现
+//   120–170 hold：极缓推近 2%，余烬上飘
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, FONT, ramp } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, bezier, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, SERIF, Stage, alpha, stagger, type } from '../../_fixtures/Look';
 
-export const LETTERFORM_DRIFT_ASSEMBLY_DURATION = 150;
+export const LETTERFORM_DRIFT_ASSEMBLY_DURATION = 170;
 
+const L = LOOKS.ember;
+const GOLD = L.accent2;
 const h = (n: number) => {
-  const s = Math.sin(n * 127.3) * 43758.5453;
+  const s = Math.sin(n * 127.3 + 11.7) * 43758.5453;
   return s - Math.floor(s);
 };
 
-const WORD = 'ASSEMBLE';
-const TRAVEL = 45; // 每字漂入行程帧数
-const STAG = 3; // 错峰间隔
-const INK = [23, 24, 28]; // G.ink1 #17181c
+const WORD = 'NOCTURNE';
+const N = WORD.length;
+const FS = 200;
+const TRAVEL = 64; // 每字漂移行程
+const SPAN = 32; // 起点分布跨度
+const DRIFT_EASE = bezier(0.3, 0.22, 0.14, 1); // 匀而长的 ease-out：全程都在漂，最后 1/4 极慢地"吸"进字面
+// 种子乱序：落位顺序（不是左到右）
+const ORDER = [3, 6, 0, 5, 2, 7, 1, 4];
+const BAR_AT = 98;
+
+const Letter: React.FC<{ ch: string; i: number; frame: number }> = ({ ch, i, frame }) => {
+  const rank = ORDER.indexOf(i);
+  const start = stagger(rank, N, SPAN, EASE.out); // 先疏后密
+  const lock = start + TRAVEL;
+  const p = ramp(frame, start - 22, TRAVEL + 22, DRIFT_EASE); // 提前 22f "起跑" → 第 1 帧已在画面里
+  const q = 1 - p;
+  // 起始向量：从词心向外 + 种子扰动
+  const side = i - (N - 1) / 2;
+  const ang = Math.atan2((h(i + 3) - 0.5) * 2.2, side === 0 ? 0.3 : side) + (h(i + 9) - 0.5) * 0.8;
+  const mag = 420 + h(i + 21) * 420;
+  const dx = Math.cos(ang) * mag * q;
+  const dy = Math.sin(ang) * mag * q * 0.85;
+  const sc = 1 + (0.7 + h(i + 41) * 1.0) * q; // 从镜头前方来：大 → 1
+  const rot = (h(i + 61) - 0.5) * 20 * q;
+  const blur = 22 * q * q + 2 * q;
+  const op = Math.min(1, 0.5 + 0.5 * p * 1.2);
+  // 锁定脉冲：lock → lock+10，快起慢落
+  const k = frame - lock;
+  const pulse = k < 0 || k > 12 ? 0 : k < 3 ? k / 3 : 1 - EASE.out((k - 3) / 9);
+  const settled = frame >= lock;
+  const fill = settled ? ramp(frame, lock, 18, EASE.out) : 0;
+  const strokeC = pulse > 0 ? mixHex(L.accent, GOLD, pulse) : L.accent;
+  const g = 0.55 + 1.9 * pulse;
+  return (
+    <span style={{
+      display: 'inline-block', position: 'relative',
+      transform: `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(4)})`,
+      opacity: op,
+      filter: `${blur > 0.3 ? `blur(${blur.toFixed(2)}px) ` : ''}drop-shadow(0 0 ${(6 * g).toFixed(1)}px ${alpha(L.accent, 0.9)}) drop-shadow(0 0 ${(26 * g).toFixed(1)}px ${alpha(L.accent, 0.55)})`,
+      color: pulse > 0 ? alpha(GOLD, 0.22 * pulse + 0.0) : alpha('#3a0f04', 0.85 * fill),
+      WebkitTextStroke: `${(3.2 + 2 * pulse).toFixed(2)}px ${strokeC}`,
+      padding: '0 0.012em',
+    }}>
+      {ch}
+    </span>
+  );
+};
+
+// 两色混合（脉冲时描边 橙→金）
+const mixHex = (a: string, b: string, t: number) => {
+  const pa = [1, 3, 5].map((o) => parseInt(a.slice(o, o + 2), 16));
+  const pb = [1, 3, 5].map((o) => parseInt(b.slice(o, o + 2), 16));
+  return `rgb(${pa.map((v, k) => Math.round(v + (pb[k] - v) * t)).join(',')})`;
+};
 
 export const LetterformDriftAssembly: React.FC = () => {
   const frame = useCurrentFrame();
-  const chars = WORD.split('');
-  const lastLock = (chars.length - 1) * STAG + TRAVEL; // 66
-
-  // 整词收束呼吸：80–92 放大到 1.04，92–104 回落，之后恒 1 → 帧确定
-  const breath =
-    frame < 92
-      ? interpolate(frame, [80, 92], [1, 1.04], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-          easing: Easing.inOut(Easing.cubic),
-        })
-      : interpolate(frame, [92, 104], [1.04, 1], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-          easing: Easing.inOut(Easing.cubic),
-        });
-  // 合体后落地影
-  const ground = ramp(frame, lastLock - 6, 30, EASE.out);
-
+  const bar = ramp(frame, BAR_AT, 24, EASE.snappy);
+  const flare = ramp(frame, BAR_AT, 6, EASE.out) * (1 - ramp(frame, BAR_AT + 6, 30, EASE.out));
+  const sub = ramp(frame, 112, 22, EASE.out);
+  const push = 1 + 0.02 * ramp(frame, 118, 52, EASE.swift);
+  const barW = 1540;
+  const Bar: React.FC<{ y: number }> = ({ y }) => (
+    <div style={{
+      position: 'absolute', left: 960 - (barW / 2) * bar, top: y, width: barW * bar, height: 5, borderRadius: 3,
+      background: `linear-gradient(90deg, ${alpha(L.accent, 0)} 0%, ${L.accent} 12%, ${mixHex(L.accent, GOLD, 0.35)} 50%, ${L.accent} 88%, ${alpha(L.accent, 0)} 100%)`,
+      boxShadow: `0 0 12px ${alpha(L.accent, 0.8)}, 0 0 40px ${alpha(L.accent, 0.45)}`,
+      opacity: bar > 0.001 ? 1 : 0,
+    }} />
+  );
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.32 }} accent="#5b63d3" grain={0.05} vignette={0.14} />
-      {/* 落地影：合体后在字面下方出现的极淡椭圆影 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 960 - 520,
-          top: 540 + 70,
-          width: 1040,
-          height: 70,
-          borderRadius: '50%',
-          background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(20,22,32,0.13), rgba(20,22,32,0) 70%)',
-          opacity: ground,
-          transform: `scale(${breath})`,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transform: `scale(${breath})`,
-        }}
-      >
-        {chars.map((c, i) => {
-          const start = i * STAG;
-          const lock = start + TRAVEL;
-          // 漂入进度（位移 / blur / opacity / 旋转 / 纵深 共用一条 p）
-          const p = interpolate(frame, [start, lock], [0, 1], {
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
-            easing: Easing.out(Easing.cubic),
-          });
-          // seeded 起始向量：方向 h(i)，幅度 260–360px
-          const ang = h(i + 1) * Math.PI * 2;
-          const mag = 260 + h(i + 101) * 100;
-          const dx = Math.cos(ang) * mag * (1 - p);
-          const dy = Math.sin(ang) * mag * (1 - p);
-          const rot = (h(i + 201) - 0.5) * 48 * (1 - p);
-          const depth = 1 + 0.22 * (1 - p);
-          const blur = 8 * (1 - p);
-          const op = interpolate(p, [0, 1], [0.35, 1]);
-          // 锁定加深脉冲：lock→lock+8，三角波 0→1→0
-          const pulse =
-            frame <= lock || frame >= lock + 8
-              ? 0
-              : frame < lock + 4
-                ? (frame - lock) / 4
-                : (lock + 8 - frame) / 4;
-          const color = `rgb(${INK.map((v) => Math.round(v * (1 - pulse))).join(',')})`;
-          const strokeW = 3 * pulse;
-          const settled = p >= 1 && pulse === 0;
-          return (
-            <span
-              key={i}
-              style={{
-                fontFamily: FONT.sans,
-                fontWeight: 700,
-                fontSize: 148,
-                letterSpacing: '0.02em',
-                color: settled ? G.ink1 : color,
-                display: 'inline-block',
-                transform: settled
-                  ? undefined
-                  : `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(${depth.toFixed(4)})`,
-                opacity: op,
-                filter: blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : undefined,
-                WebkitTextStroke: strokeW > 0.01 ? `${strokeW.toFixed(2)}px #000` : undefined,
-              }}
-            >
-              {c}
-            </span>
-          );
-        })}
-      </div>
-    </div>
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.5 }} fill={{ x: 0.5, y: 1.05 }} intensity={0.75 + 0.25 * ramp(frame, 60, 50, EASE.out)} breathe={0.5}>
+        <Dust look={L} count={46} seed={7} drift={0.35} opacity={0.55} color={L.accent} />
+      </Stage>
+      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})` }}>
+        {/* 词后的一次泛光（横杠展开时） */}
+        <div style={{
+          position: 'absolute', left: 260, right: 260, top: 390, height: 300, borderRadius: '50%',
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(L.accent, 0.32)} 0%, ${alpha(L.accent, 0)} 70%)`,
+          opacity: 0.35 + 0.65 * flare,
+        }} />
+        <Bar y={418} />
+        <Bar y={644} />
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 430, display: 'flex', justifyContent: 'center',
+          fontFamily: SERIF, fontWeight: 800, fontSize: FS, lineHeight: 1, letterSpacing: '-0.01em',
+        }}>
+          {WORD.split('').map((c, i) => <Letter key={i} ch={c} i={i} frame={frame} />)}
+        </div>
+        {/* 副标题 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 696, textAlign: 'center', ...type(34, 600, { caps: true }),
+          letterSpacing: `${(0.62 - 0.22 * sub).toFixed(3)}em`, paddingLeft: '0.4em', color: L.ink2, opacity: sub,
+          filter: sub < 1 ? `blur(${((1 - sub) * 6).toFixed(2)}px)` : undefined,
+        }}>
+          A new series <span style={{ color: L.accent }}>·</span> Fridays
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };

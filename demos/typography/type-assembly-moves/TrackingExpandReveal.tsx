@@ -1,119 +1,116 @@
 // 字距呼吸展开（tracking-expand-reveal）——电影片头字幕惯用的 letter-spacing 入场。
-// 标题 "BREATHE"（150px）出场时字符几乎叠压（相当于 letter-spacing -0.42em），
-// 50 帧内展开到 0.14em，同步 blur 10px→0、opacity 0.6→1、scaleX 0.92→1。
-// 不动 letter-spacing 本身（逐帧重排会抖）：容器常量 letterSpacing 0.14em 定终位，
-// 逐字符 span 用 translateX 手动插值——第 i 字起始位移 = (i - 中心) × 每缝差值 84px，
-// 全部挤向词心，位移只与字缝有关、与字宽无关，天然对中。
-// 关键帧：0–50 展开（Easing.out(poly(5)))＋去糊提亮 → 35–58 副标题淡入（≈主词展开 70% 时点）
-// → 58–130 全静止（≥72f，滤镜彻底摘除）。
 //
-// 质感升级：去掉调试标题；柔光 Backdrop（主光在词心上方）；系统 SF 栈 700、带色相近黑墨色；
-// 展开时字下方一层柔影随清晰度同步浮现（字从雾里"落"到纸面）；副标题 32px 三级灰、
-// 淡入附 8px 上浮；补导出时长 130f（原工作台按 56f 推断，副标题刚出来就切走）。
+// 第二轮重设计（aurora · 黄昏地平线 · 安静的品牌章节字卡）：
+// - look = aurora（紫夜 · 粉紫地平线光）。主角是 156px / 300 细字重全大写「AFTERGLOW」——细字 + 宽字距
+//   是这一式最该有的气质（安静、呼吸、片头字幕），不是粗黑体。
+// - 呼吸 = 先吸后呼：0–10f 字母先往词心再挤一点（预备，像吸气），然后 66f 缓起长尾的曲线展开到 0.34em。
+//   起始叠压 −0.42em（每缝 ~120px 位移，可感），blur 16→0、字的辉光 强→弱 共用同一条 p。
+//   实现命门不变：letter-spacing 恒为终态，逐字 span 只做 translateX = (1−p)(i−词心)·Δ。
+// - 字和光同呼吸：地平线光带的宽度、词下一根发丝线的长度都绑同一条 p 一起"呼"出去；
+//   hold 段字距再极缓地多呼出 ~1.5%（ease-out 收尾），光带随之呼吸——画面一直活着但不抖。
+// - 层级：眉题 mono「CHAPTER III」（字距收拢浮现）→ 主词 → 副句 40px 逐词虚化揭示。
+//
+// 时间表（30fps，共 150f）：
+//   0       第 1 帧：词心一团虚焦发光的叠字 + 暗地平线（不是空帧）
+//   0–10    吸气：叠字再收紧 4%
+//   8–74    呼气展开（66f，缓起 + 长尾 ease-out）；地平线光带 / 发丝线同步伸展
+//   40–60   眉题字距收拢浮现
+//   58–84   副句逐词揭示
+//   84–150  hold：极缓的余呼吸（字距 +1.5%、光带呼吸），整画面 1.5% 推近
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { Backdrop, FONT } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, bezier, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 
-export const TRACKING_EXPAND_REVEAL_DURATION = 130;
+export const TRACKING_EXPAND_REVEAL_DURATION = 150;
 
-const WORD = 'BREATHE';
-const FS = 150; // 主词字号
-// 每个字缝的起始-终点差：(-0.42em) - (0.14em) = -0.56em = -84px @150px
-const GAP_DELTA = -0.56 * FS;
+const L = LOOKS.aurora;
+const WORD = 'AFTERGLOW';
+const FS = 156;
+const FINAL_EM = 0.34; // 终态字距
+const START_EM = -0.42; // 起始叠压
+const GAP_DELTA = (START_EM - FINAL_EM) * FS; // 每缝起止差（负 = 挤向词心）
+const EXHALE = bezier(0.4, 0.06, 0.1, 1); // 呼气：从静止缓起、中段放开、长尾极慢地铺开（不是一下弹开）
+const WORD_Y = 470; // 主词顶
 
 export const TrackingExpandReveal: React.FC = () => {
   const frame = useCurrentFrame();
-  // 展开进度 0→1（0–50f，out poly(5)）
-  const p = interpolate(frame, [0, 50], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.poly(5)),
-  });
-  const blur = 10 * (1 - p);
-  const op = interpolate(p, [0, 1], [0.6, 1]);
-  const sx = interpolate(p, [0, 1], [0.92, 1]);
-  // 副标题：主词时间轴走到 70%（帧 35）起淡入
-  const subOp = interpolate(frame, [35, 58], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.quad),
-  });
-
+  // 吸气（预备）：0–10f 再收紧一点
+  const inhale = ramp(frame, 0, 10, EASE.swift) * (1 - ramp(frame, 10, 12, EASE.out));
+  const p = ramp(frame, 8, 66, EXHALE);
+  // 余呼吸：hold 段再呼出 1.5%
+  const after = ramp(frame, 72, 78, EASE.out);
+  const spread = (1 - p) + 0.06 * inhale; // 字距位移系数（1 = 起始叠压，>1 = 吸气时更紧）
+  const extra = 0.015 * after; // 额外外展（em 比例）
+  const blur = 16 * (1 - p) * (1 - p) + 0.8 * (1 - p);
   const N = WORD.length;
   const center = (N - 1) / 2;
-  const settled = frame >= 50; // 展开完成后摘掉一切滤镜/变换，保证逐帧完全相同
+  const push = 1 + 0.015 * ramp(frame, 60, 90, EASE.swift);
+  const breathe = 0.5 + 0.5 * Math.sin((frame - 72) / 16);
+
+  // 光带与发丝线与字同呼吸
+  const bandW = 30 + 70 * p + 6 * after * (0.6 + 0.4 * breathe);
+  const lineW = 1340 * p * (1 + extra);
+  const eyebrow = ramp(frame, 40, 22, EASE.out);
 
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.36 }} accent="#5b63d3" grain={0.045} vignette={0.13} />
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.86 }} fill={{ x: 0.82, y: 0.2 }} intensity={0.7 + 0.3 * p}>
+        {/* 地平线光带：宽度随字距呼出 */}
+        <div style={{
+          position: 'absolute', left: `${50 - bandW / 2}%`, width: `${bandW}%`, top: 770, height: 240,
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(L.accent2, 0.42)} 0%, ${alpha(L.light, 0.22)} 45%, ${alpha(L.light, 0)} 72%)`,
+          filter: 'blur(8px)',
+        }} />
+        <div style={{
+          position: 'absolute', left: `${50 - bandW / 2.4}%`, width: `${bandW / 1.2}%`, top: 890, height: 2,
+          background: `linear-gradient(90deg, ${alpha(L.accent2, 0)} 0%, ${alpha('#ffd6ea', 0.85)} 50%, ${alpha(L.accent2, 0)} 100%)`,
+        }} />
+        <Dust look={L} count={28} seed={3} drift={0.12} opacity={0.4} color="#ffd6ea" />
+      </Stage>
 
-      {/* 主词：容器 letterSpacing 恒为 0.14em（终态），字符仅做 translateX */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 430,
-          left: 0,
-          width: 1920,
-          display: 'flex',
-          justifyContent: 'center',
-          transform: settled ? undefined : `scaleX(${sx})`,
-          filter: settled ? undefined : `blur(${blur}px)`,
-          opacity: settled ? 1 : op,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: FONT.sans,
-            fontWeight: 700,
-            fontSize: FS,
-            color: G.ink1,
-            letterSpacing: '0.14em',
-            // 柔影随清晰度浮现：展开完成后定格为静态值（无逐帧变化）
-            textShadow: `0 ${(14 * p).toFixed(2)}px ${(36 * p).toFixed(2)}px rgba(20,22,32,${(0.12 * p).toFixed(3)})`,
-            whiteSpace: 'pre',
-            // letter-spacing 只加在字后，整体左移半个缝宽找回视觉对中
-            marginLeft: 0.14 * FS * 0.5,
-          }}
-        >
-          {WORD.split('').map((ch, i) => {
-            const tx = (1 - p) * (i - center) * GAP_DELTA;
-            return (
-              <span
-                key={i}
-                style={{
-                  display: 'inline-block',
-                  transform: settled ? undefined : `translateX(${tx}px)`,
-                }}
-              >
-                {ch}
-              </span>
-            );
-          })}
+      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})`, transformOrigin: '50% 52%' }}>
+        {/* 眉题 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: WORD_Y - 92, textAlign: 'center',
+          ...type(26, 600, { caps: true, mono: true }), letterSpacing: `${(0.7 - 0.28 * eyebrow).toFixed(3)}em`,
+          paddingLeft: `${(0.7 - 0.28 * eyebrow).toFixed(3)}em`, color: L.accent, opacity: eyebrow,
+        }}>
+          Chapter III
         </div>
-      </div>
 
-      {/* 副标题：主词展开 70% 时点淡入 */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 630,
-          left: 0,
-          width: 1920,
-          textAlign: 'center',
-          fontFamily: FONT.sans,
-          fontWeight: 500,
-          fontSize: 32,
-          color: G.ink3,
-          letterSpacing: '0.32em',
-          // letter-spacing 只加在字后，补半个字距找回视觉对中
-          paddingLeft: '0.32em',
-          opacity: frame >= 58 ? 1 : subOp,
-          transform: frame >= 58 ? undefined : `translateY(${((1 - subOp) * 8).toFixed(2)}px)`,
-        }}
-      >
-        A CINEMATIC TITLE ENTRANCE
-      </div>
-    </div>
+        {/* 主词：容器 letterSpacing 恒为终态，字符只做 translateX */}
+        <div style={{
+          position: 'absolute', top: WORD_Y, left: 0, width: 1920, display: 'flex', justifyContent: 'center',
+          filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
+        }}>
+          <div style={{
+            ...type(FS, 300, { caps: true }), letterSpacing: `${FINAL_EM}em`, marginLeft: `${FINAL_EM}em`,
+            color: L.ink, whiteSpace: 'pre', lineHeight: 1,
+            textShadow: `0 0 ${(18 + 40 * (1 - p)).toFixed(1)}px ${alpha(L.accent2, 0.22 + 0.4 * (1 - p))}, 0 0 80px ${alpha(L.light, 0.35)}`,
+          }}>
+            {WORD.split('').map((ch, i) => {
+              const tx = spread * (i - center) * GAP_DELTA + extra * (i - center) * FS;
+              return (
+                <span key={i} style={{ display: 'inline-block', transform: Math.abs(tx) > 0.01 ? `translateX(${tx.toFixed(2)}px)` : undefined }}>
+                  {ch}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 词下发丝线：与字同呼吸 */}
+        <div style={{
+          position: 'absolute', left: 960 - lineW / 2, width: lineW, top: WORD_Y + FS + 34, height: 1.5,
+          background: `linear-gradient(90deg, ${alpha(L.ink, 0)} 0%, ${alpha(L.ink, 0.5)} 30%, ${alpha(L.ink, 0.5)} 70%, ${alpha(L.ink, 0)} 100%)`,
+        }} />
+
+        {/* 副句 */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: WORD_Y + FS + 70, textAlign: 'center', ...type(40, 400), color: L.ink2 }}>
+          <TextReveal text="Evening light, for every screen you own." start={58} by="word" variant="blur" each={18} gap={2.6} />
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };

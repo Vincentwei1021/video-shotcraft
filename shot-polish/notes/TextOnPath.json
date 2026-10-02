@@ -1,28 +1,31 @@
 {
   "stem": "TextOnPath",
   "issues": [
-    "没有导出时长常量，工作台按 56f 推断，字还挂在线上就结束，摆正环节没渲染",
-    "字符各自起跑、后面的字要追越前面的字，曲线低段挤成一团（\"GROWTHALL\" 叠字），行进中读不出句子",
-    "终位按 46px 估宽排版，字距忽宽忽窄；左上角调试标题 \"TEXT ON PATH\"",
-    "曲线是一条 3px 灰线，看不出\"增长线\"的语义"
+    "浅灰平底 + 68px 黑字 + 细灰曲线，字小、对比弱，曲线没有语义（看不出是图表）",
+    "字符各自起跑、后面的字追越前面的字，曲线低段挤成一团读不出整句",
+    "摆正是原地 lerp 到水平线，没有轨迹和重量感；落定后画面只剩一行字一条线",
+    "左上角打着调试标题「TEXT ON PATH」"
   ],
   "changes": [
-    "补 TEXT_ON_PATH_DURATION = 150f（56f 推进 + 8f 停顿 + 逐字摆正至 ~101f + 静止）",
-    "整串字按实测步进沿弧长刚性推进（末字领跑、切线角旋转），行进中即可读出 \"GROWTH ALL THE WAY\"；曲线 evolve 按弧长比例与车头同步",
-    "到达后停 8f，从左到右 1.5f 错峰、12f inOut 摆正到水平基线，终位按实测字宽排版",
-    "曲线做成图表增长线：强调色 4px 圆头描边 + 线下渐变面积 + 车头光点 + 网格与刻度；柔光 Backdrop、SF 700"
+    "look 换成 midnight（深蓝夜 · 电光蓝 · 青），曲线做成占满画面的营收增长线：5px 电光蓝描边 + 外发光 + 线下渐变面积 + 青色车头光点 + 网格与 mono 刻度",
+    "文案改为「UP AND TO THE RIGHT」92px / 800 全大写，字面意思就是这条线；整串按实测步进沿弧长刚性推进（缓起长尾 60f），行进中可读、带速度拖影",
+    "摆正改为逐字弧线抬升到左上标题位：y 快曲线带 ~4% 过冲、x in-out、旋转晚 2f 收敛，1.1f 错峰形成一道「剥离」波",
+    "余波：光点到顶一圈脉冲 → 数值牌「$48.6M ARR ▲312%」弹簧弹出、季度标记逐个点亮、眉题与副句逐词升起；hold 段 1.5% 极缓推近",
+    "时长 150f → 160f，尾帧是完整的年报数据海报"
   ],
   "issuesEn": [
-    "No exported duration: the workbench guessed 56f, so it ended with letters still on the line and the straightening never rendered",
-    "Each letter started on its own and later letters had to overtake earlier ones, so the low part of the curve became a pile-up ('GROWTHALL') and the sentence was unreadable in motion",
-    "Final layout used a 46px width guess so spacing was uneven; debug label \"TEXT ON PATH\" top-left",
-    "The curve was a 3px grey line with no 'growth chart' meaning"
+    "Flat light-grey background, 68px black type and a thin grey curve: small, low contrast, and the curve has no meaning (not readable as a chart)",
+    "Each character started on its own, so later letters overtook earlier ones and bunched up on the low part of the curve",
+    "Straightening was an in-place lerp to a baseline with no trajectory or weight; the settled frame was just one line of text and one curve",
+    "A debug title 'TEXT ON PATH' sat in the top-left corner"
   ],
   "changesEn": [
-    "Added TEXT_ON_PATH_DURATION = 150f (56f travel, 8f pause, staggered straightening to ~101f, then hold)",
-    "The whole string advances rigidly along arc length at measured advances (last letter leading, rotated to the tangent), readable as 'GROWTH ALL THE WAY' while moving; the curve's evolve tracks the lead letter by arc-length fraction",
-    "After an 8f pause letters straighten left to right at 1.5f stagger with a 12f inOut onto a horizontal baseline laid out from measured widths",
-    "The curve is now a growth chart: 4px accent round-cap stroke, gradient area fill, lead-point dot, gridlines and ticks; soft-light Backdrop, SF 700"
+    "Switched to the midnight look (deep navy, electric blue, cyan); the curve is now a full-frame revenue growth line with a 5px electric-blue stroke, outer glow, gradient area fill, cyan head dot, grid and mono ticks",
+    "Copy is now 'UP AND TO THE RIGHT' at 92px / 800 caps, literally describing the line; the string travels rigidly along arc length with measured spacing (slow-in, long-tail 60f), readable in motion with a speed trail",
+    "Straightening is now a per-letter arced lift into the top-left headline slot: fast y with ~4% overshoot, in-out x, rotation settling 2f later, staggered 1.1f into a peel-off wave",
+    "Follow-through: a pulse ring at the top of the line, then a spring-in value badge '$48.6M ARR ▲312%', quarter markers lighting up, eyebrow and subline rising word by word; 1.5% slow push in the hold",
+    "Duration 150f to 160f; the final frame is a complete annual-report data poster"
   ],
+  "look": "midnight",
   "mdChanged": true
 }
