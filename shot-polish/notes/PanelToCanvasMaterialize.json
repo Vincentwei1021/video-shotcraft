@@ -1,0 +1,32 @@
+{
+  "stem": "PanelToCanvasMaterialize",
+  "issues": [
+    "飞行卡的起点 y=210 与面板里真实行槽（≈238）错位约 28px，起飞瞬间可见跳变；飞出的行里复选框变成黑方块、没有勾",
+    "面板只有 3 行，下方 2/3 是空白；全部内容是灰色骨架条，读不出是什么内容被搬上画布",
+    "飞行全程阴影固定、无高度变化，快速段没有运动模糊，落位像平移贴图",
+    "光标沿直线斜穿画面；按钮 2px 灰边面板上的深灰块，按下只有缩放",
+    "背景平灰 + 均匀点阵，画布没有任何\"这是白板\"的线索"
+  ],
+  "changes": [
+    "行槽改为绝对定位并与飞行起点共用 ROWS_TOP=262 常量，起飞零跳变；面板行与飞行行共用同一 RowContent 组件（含已勾选复选框）",
+    "面板做成 6 行\"Research notes\"列表，勾选不连续的 3 行（0/2/3），行含标题、标签胶囊、头像；飞出后槽位留虚线 + \"On canvas\" 提示",
+    "卡形态换成出版级研究笔记卡（标签点、计数、26px 标题、摘要、作者），按 480×240 终态排版随卡长大逐步露出，交叉淡化窗口保持 0.45",
+    "飞行段离地高度随弧线 sin 抬升（softShadow 2→48→6）+ 中段放大 3.5% + 按速度的方向性运动模糊（velocity 驱动，落定归零）",
+    "按钮改为深色渐变 + 计数徽章随打勾 1→2→3 弹跳，按下带裁进圆角的涟漪；光标走上拱弧线 + swift 缓动，停在徽章右侧不挡字；加画布工具条与柔光底"
+  ],
+  "issuesEn": [
+    "Flying cards start at y=210 while the real row slots sit at about 238, so each card jumps ~28px at takeoff; the flying row also shows a black square instead of a checked box",
+    "The panel holds only 3 rows with the bottom two-thirds empty, and all content is grey skeleton bars, so you can't tell what is being moved to the canvas",
+    "Shadow stays constant during flight with no sense of height and no motion blur in the fast part, so landing reads as a sliding decal",
+    "The cursor travels in a straight diagonal; the button is a dark grey block on a 2px grey-bordered panel and only scales when pressed",
+    "Flat grey background with a uniform dot grid and no hint that the left side is a whiteboard"
+  ],
+  "changesEn": [
+    "Row slots are absolutely positioned from the same ROWS_TOP=262 constant as the flight origin, so takeoff has zero jump; panel rows and flying rows share one RowContent component (with the checked box)",
+    "Panel is now a 6-row \"Research notes\" list with 3 non-adjacent rows picked (0/2/3), each with title, tag pill and avatar; vacated slots become dashed outlines with an \"On canvas\" hint",
+    "Card state is a publication-grade research note (tag dot, count, 26px title, excerpt, author) laid out at the final 480×240 and revealed as the card grows; the crossfade window stays at 0.45",
+    "Flight height follows the arc (softShadow 2→48→6) with a 3.5% mid-flight scale and velocity-driven directional motion blur that goes to zero on landing",
+    "Button is a dark gradient with a count badge that pops 1→2→3 as rows are checked and a ripple clipped to its corners on press; the cursor follows an arched swift-eased path and stops right of the badge; added a board toolbar and soft-lit canvas"
+  ],
+  "mdChanged": false
+}

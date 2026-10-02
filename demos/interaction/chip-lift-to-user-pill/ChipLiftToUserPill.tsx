@@ -3,13 +3,19 @@
 // 黑 chip 保持左缘不动向右生长成药丸，内部逐字打出人名并点亮绿点，再拉一条 1px 连接线
 // 接到圆形徽标，最后走逐词加深字幕。
 // 设计坐标 480×270（DesignStage 等比放大），440×240 定尺画布居中排版。
+// 改版：时间轴与参数表不变；加一条"跟拍"机位——选择段网格居中，药丸定型后（0.44→0.68）
+// 平滑横移到"药丸 + 连线 + 徽标 + 字幕"整组居中（生长段机位静止，左缘锚定的读法不受影响）；
+// chip 发丝线 + 内高光 + 两层软阴影，黑药丸带受光上沿与随选中抬起的投影；连接线改 0.5 设计 px
+// 并带一颗领跑小点；字幕与药丸左缘对齐；柔光底 + 颗粒在 DesignStage 之外。
 import React from 'react';
+import { AbsoluteFill } from 'remotion';
 import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
+import { Backdrop, EASE } from '../../_fixtures/Polish';
 
 export const CHIP_LIFT_TO_USER_PILL_DURATION = 150; // 5000ms @30fps
 
 // ---- 本卡共享量（浅灰瑞士极简系配色 / 字体；BG/DIM/h2r 取自 motion-lab/fx/b09.js 同批定义） ----
-const SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif';
+const SANS = '-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Inter,Arial,sans-serif';
 const BG = '#F1F1F3'; // 页面浅灰
 const INK = '#0B0B0C'; // 纯黑
 const TXT = '#111111'; // 正文黑
@@ -55,6 +61,15 @@ const CAP_WIN = CAP_ST * 1.5;
 const BADGE_SIZE = 26;
 const BADGE_SVG = Number((BADGE_SIZE * 0.52).toFixed(1)); // 13.5
 
+// 机位（设计 px）：网格中心 (103,115) → 结果组中心 (211,140，含下方字幕) 都对到画布中心 (220,120)
+const CAM0 = { x: 220 - 103, y: 120 - 115 };
+const CAM1 = { x: 220 - 211, y: 120 - 140 };
+const LINE_W = 90; // 连接线终长（徽标坐标基于它）
+
+// 设计坐标下的材质（×4 后：1px 发丝线 / 顶部内高光 / 两层软阴影）
+const HAIR = 'inset 0 0 0 0.25px rgba(20,22,28,0.10)';
+const CHIP_SHADOW = 'inset 0 0.25px 0 rgba(255,255,255,0.9), 0 0.25px 0.5px rgba(16,18,24,0.07), 0 1.5px 4px -1.2px rgba(16,18,24,0.10)';
+
 export const ChipLiftToUserPill: React.FC = () => {
   const t = useT();
 
@@ -73,20 +88,28 @@ export const ChipLiftToUserPill: React.FC = () => {
   const capShow = seg(t, 0.6, 0.66);
   const capInn = seg(t, 0.6, 0.92);
 
+  // 跟拍：药丸定型后才动（生长期机位静止），smooth in-out
+  const cam = seg(t, 0.44, 0.68, EASE.smooth);
+  const camX = lerp(cam, CAM0.x, CAM1.x);
+  const camY = lerp(cam, CAM0.y, CAM1.y);
+  // 选中"抬起"：反黑后投影加深（离地感），生长期保持
+  const lift = seg(t, 0.06, 0.2, E.outCubic);
+
   return (
-    <DesignStage bg={BG}>
+    <AbsoluteFill style={{ background: BG }}>
+    <Backdrop tone="light" light={{ x: 0.5, y: 0.34 }} grain={0.035} vignette={0.12} />
+    <DesignStage bg="transparent">
       {/* 页面 + 440×240 定尺画布（居中） */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: BG,
           overflow: 'hidden',
           fontFamily: SANS,
           WebkitFontSmoothing: 'antialiased',
         }}
       >
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 440, height: 240, margin: '-120px 0 0 -220px' }}>
+        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 440, height: 240, margin: '-120px 0 0 -220px', transform: `translate(${camX.toFixed(3)}px, ${camY.toFixed(3)}px)` }}>
           {/* B 其余 chip：按到目标的曼哈顿距离交错淡出 + scale .9 */}
           {OTHERS.map((o, i) => {
             const d0 = 0.10 + o.dist * 0.022;
@@ -101,13 +124,12 @@ export const ChipLiftToUserPill: React.FC = () => {
                   width: CW,
                   height: CH,
                   borderRadius: CH / 2,
-                  background: '#fff',
-                  border: `1px solid ${LINE}`,
+                  background: 'linear-gradient(180deg, #ffffff, #fbfbfb)',
                   display: 'flex',
                   alignItems: 'center',
                   boxSizing: 'border-box',
                   overflow: 'hidden',
-                  boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+                  boxShadow: `${HAIR}, ${CHIP_SHADOW}`,
                   opacity: 1 - p,
                   transform: `scale(${lerp(p, 1, 0.9)})`,
                 }}
@@ -143,14 +165,17 @@ export const ChipLiftToUserPill: React.FC = () => {
               height: CH,
               borderRadius: CH / 2,
               background: mix(aq, '#ffffff', INK),
-              border: `1px solid ${mix(aq, LINE, INK)}`,
               display: 'flex',
               alignItems: 'center',
               boxSizing: 'border-box',
               overflow: 'hidden',
-              boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+              boxShadow: aq > 0
+                ? `inset 0 0 0 0.25px rgba(255,255,255,0.06), 0 ${(0.25 + 0.5 * lift).toFixed(2)}px ${(0.5 + 1 * lift).toFixed(2)}px rgba(10,10,14,${(0.08 + 0.08 * lift).toFixed(3)}), 0 ${(1.5 + 2.5 * lift).toFixed(2)}px ${(4 + 6 * lift).toFixed(2)}px -1.2px rgba(10,10,14,${(0.10 + 0.18 * lift).toFixed(3)})`
+                : `${HAIR}, ${CHIP_SHADOW}`,
             }}
           >
+            {/* 黑药丸受光上沿 */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 55%)', opacity: aq }} />
             {/* 原缩写标签：反色后随生长淡出 */}
             <div
               style={{
@@ -211,23 +236,36 @@ export const ChipLiftToUserPill: React.FC = () => {
                 width: 7,
                 height: 7,
                 borderRadius: '50%',
-                background: '#35D07F',
-                boxShadow: '0 0 8px rgba(53,208,127,.6)',
+                background: 'radial-gradient(circle at 40% 35%, #6ff0a8, #35D07F 60%)',
+                boxShadow: '0 0 8px rgba(53,208,127,.6), 0 0 0 1.2px rgba(53,208,127,.18)',
                 opacity: clamp01(dq * 2),
                 transform: `scale(${dq})`,
               }}
             />
           </div>
 
-          {/* 1px 连接线：从药丸右缘拉到徽标 */}
+          {/* 连接线（0.5 设计 px = 成片 2px）：从药丸右缘拉到徽标，线头带一颗领跑小点，抵达徽标时并入 */}
           <div
             style={{
               position: 'absolute',
               left: TX + PW1,
-              top: TY + CH / 2,
-              height: 1,
-              width: `${(cw * 90).toFixed(1)}px`,
+              top: TY + CH / 2 - 0.5,
+              height: 1, // 亚像素高度会被布局取整吃掉，用 1px + scaleY(.5) 得到成片 2px 细线
+              width: `${(cw * LINE_W).toFixed(2)}px`,
+              background: `linear-gradient(90deg, rgba(17,17,17,0.35), ${TXT})`,
+              transform: 'scaleY(0.5)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              left: TX + PW1 + cw * LINE_W - 1.5,
+              top: TY + CH / 2 - 1.5,
+              width: 3,
+              height: 3,
+              borderRadius: '50%',
               background: TXT,
+              opacity: cw > 0 ? 1 - bp : 0,
             }}
           />
 
@@ -238,10 +276,9 @@ export const ChipLiftToUserPill: React.FC = () => {
               width: BADGE_SIZE,
               height: BADGE_SIZE,
               borderRadius: '50%',
-              background: '#fff',
-              border: `1px solid ${LINE}`,
+              background: 'linear-gradient(180deg, #ffffff, #f7f7f8)',
               boxSizing: 'border-box',
-              boxShadow: '0 2px 10px rgba(0,0,0,.07)',
+              boxShadow: `${HAIR}, inset 0 0.25px 0 #fff, 0 0.5px 1px rgba(16,18,24,0.08), 0 3px 8px -2px rgba(16,18,24,0.14)`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -263,7 +300,7 @@ export const ChipLiftToUserPill: React.FC = () => {
               display: 'flex',
               alignItems: 'baseline',
               whiteSpace: 'nowrap',
-              left: TX + PW1 - 18,
+              left: TX + 1, // 与药丸左缘对齐（原 TX + PW1 − 18 悬在徽标下方）
               top: TY + CH + 34,
               opacity: capShow,
             }}
@@ -288,5 +325,6 @@ export const ChipLiftToUserPill: React.FC = () => {
         </div>
       </div>
     </DesignStage>
+    </AbsoluteFill>
   );
 };

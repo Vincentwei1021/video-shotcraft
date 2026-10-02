@@ -1,0 +1,28 @@
+{
+  "stem": "ChipLiftToUserPill",
+  "issues": [
+    "网格挤在画面左上象限，收尾的药丸 + 连线 + 徽标又偏向右侧，字幕挂在徽标正下方，前后两段构图都不居中",
+    "连接线在 4× 设计缩放下是 4px 实心黑条，比药丸文字还重",
+    "chip 是平白块 + 2 级灰阴影，选中的黑 chip 纯平涂，名字叫 lift 却没有任何\"抬起\"",
+    "纯色浅灰平铺底"
+  ],
+  "changes": [
+    "加跟拍机位：选择段网格居中，药丸定型后（t 0.44→0.68）smooth 横移到结果组居中；生长期机位静止，左缘锚定的读法不变，全部时间轴参数不变",
+    "连接线改 0.5 设计 px（成片 2px，左淡右实的渐变），线头一颗领跑小点，抵达徽标时并入；徽标加发丝线与两层软阴影",
+    "chip 发丝线 + 顶部内高光 + 两层软阴影；黑药丸叠受光上沿渐变，反黑后投影在 0.06→0.2 加深（离地抬起），在线绿点改径向渐变 + 外环",
+    "字幕与药丸左缘对齐，成组排版；背景换柔光渐变 + 轻暗角 + 颗粒（在 DesignStage 之外，不随设计缩放变粗）"
+  ],
+  "issuesEn": [
+    "The grid is squeezed into the top-left quadrant, then the pill + line + badge drift right with the caption hanging under the badge, so neither half of the shot is centered",
+    "Under the 4× design scale the connector becomes a 4px solid black bar, heavier than the pill's text",
+    "Chips are flat white with a faint shadow and the selected chip is a flat black fill; the card is called \"lift\" but nothing lifts",
+    "Flat light-grey fill"
+  ],
+  "changesEn": [
+    "Added a follow camera: the grid is centered during selection, then after the pill settles (t 0.44→0.68) a smooth pan centers the result group; the camera is still while the pill grows, so the left-anchored read and all timeline values are unchanged",
+    "Connector is 0.5 design px (2px on screen, gradient from faint to solid) with a small lead dot that merges into the badge on arrival; the badge gets a hairline and two-layer soft shadow",
+    "Chips have hairlines, top highlight and two-layer soft shadows; the black pill adds a lit top-edge gradient and its shadow deepens over 0.06→0.2 after the blackout (it lifts); the online dot gets a radial gradient and outer ring",
+    "Caption aligned to the pill's left edge so the group reads as one layout; soft-lit gradient background with light vignette and grain, rendered outside DesignStage"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "CursorCastEnsemble",
+  "issues": [
+    "结尾聚拢时 Lisa 的光标与名牌正好压在刚打完的 \"Our customers love it\" 上，违反卡片\"氛围层不许盖住正在阅读的主内容\"",
+    "五枚光标只有三种颜色（两蓝两绿），颜色 = 身份的编码被打破",
+    "环境便签与中央卡片都是灰色骨架条 + 2px 灰边，读不出是白板便签",
+    "Rita 打字时仍按 ±76px 双频正弦大幅漂移，像手在乱晃而不是在键盘上",
+    "平灰底 + 均匀点阵；光标与名牌无投影，浮不起来"
+  ],
+  "changes": [
+    "聚拢位重排到中央卡片四周（左上/右上/左下/底边/句尾），Rita 停在句尾右下，任何一帧都不压正文",
+    "五人五色：Lisa 蓝、Lucas 绿、Marta 橙、Niko 紫、Rita 粉，打字光标条用 Rita 的粉色",
+    "便签换成低饱和真实便签（Interview notes / Q3 bets / Pricing ideas / Launch），中央卡片做成 \"Customer feedback\" 引用卡，46px 680 字重，发丝线 + 两层软阴影",
+    "打字窗口内 Rita 的漂移压到 15%（前后各 8–10f 渐变），其余光标漂移、入场 spring、聚拢 easeInOut 与 25% 残余漂移等参数不变",
+    "光标加 drop-shadow，名牌改系统字体 650 + 内高光 + 同色柔影；背景换柔光渐变 + 渐隐点阵 + 颗粒"
+  ],
+  "issuesEn": [
+    "When the cast gathers at the end, Lisa's cursor and badge land right on the freshly typed \"Our customers love it\", breaking the card's rule that the ambient layer must never cover the content being read",
+    "Five cursors share only three colors (two blues, two greens), so color no longer encodes identity",
+    "Ambient notes and the central card are grey skeleton bars with 2px grey borders and don't read as whiteboard stickies",
+    "Rita keeps drifting ±76px on the dual sine while typing, so her hand looks like it is waving around instead of resting on a keyboard",
+    "Flat grey background with a uniform dot grid; cursors and badges have no shadow and don't lift off the canvas"
+  ],
+  "changesEn": [
+    "Gather spots moved around the central card (top-left, top-right, bottom-left, bottom edge, end of sentence) with Rita parked at the end of her line, so nothing covers the text in any frame",
+    "Five people, five colors: Lisa blue, Lucas green, Marta orange, Niko violet, Rita pink; the typing caret uses Rita's pink",
+    "Notes are low-saturation real stickies (Interview notes / Q3 bets / Pricing ideas / Launch); the central card is a \"Customer feedback\" quote card at 46px/680 with hairline and two-layer soft shadow",
+    "Rita's drift drops to 15% during the typing window (8–10f ramps either side); other drift, entry spring, easeInOut gather and 25% residual drift are unchanged",
+    "Cursors get a drop shadow, badges use the system font at 650 with an inner highlight and same-hue soft shadow; soft-lit background with a fading dot grid and grain"
+  ],
+  "mdChanged": false
+}

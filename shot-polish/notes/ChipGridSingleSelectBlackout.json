@@ -1,0 +1,32 @@
+{
+  "stem": "ChipGridSingleSelectBlackout",
+  "issues": [
+    "选项名是 \"Option one plan / Option three long name\" 这类占位，标题 \"OPTION GROUP\" 是调试字样，读不出在选什么",
+    "chip 是平白块 + 极弱阴影，黑 chip 是纯 #0B0B0C 平涂，选中后和其他 chip 没有材质差别",
+    "算式行 \"18% off · 42.00 → 34.44\" 只有数字没有价格语义，原价与现价同权重",
+    "收束态黑 chip 在 y≈320、算式行在 y≈700，中间近 300px 空档，整组偏上、构图散",
+    "纯色平铺浅灰底，没有光的方向"
+  ],
+  "changes": [
+    "选项换成计费周期（Annual billing / Monthly billing / Two-year commitment / Student / Nonprofit rate），标题改 BILLING CYCLE；时间轴与参数表（灰闪 1 帧、反黑 5f linear、回弹 0.04、余项 18%）全部不变",
+    "chip 改为 1px 发丝线（0.25 设计 px 内描边，几何宽度不变）+ 顶部内高光 + 两层软阴影；黑 chip 反黑时叠受光上沿渐变，投影随上移离地加深",
+    "算式行改价格结算 \"18% off · $42.00 → $34.44/mo\"：保留逐词加深，原价加深后再划线退为次级灰，现价 700 字重加大一号",
+    "整组下移 30 设计 px、算式行从 150 上提到 108，选择态与收束态的视觉重心都落在画面中线附近",
+    "背景换柔光渐变 + 轻暗角 + 颗粒，放在 DesignStage 之外，不随 4× 设计缩放变粗"
+  ],
+  "issuesEn": [
+    "Options are placeholders like \"Option one plan / Option three long name\" under a debug-style \"OPTION GROUP\" title, so you can't tell what is being chosen",
+    "Chips are flat white with a barely visible shadow and the selected chip is a flat #0B0B0C fill, so the selected state has no material difference",
+    "The formula \"18% off · 42.00 → 34.44\" is bare numbers with no pricing meaning; old and new price carry equal weight",
+    "In the end state the black chip sits at y≈320 and the formula at y≈700, leaving a ~300px hole and a top-heavy, scattered layout",
+    "Flat light-grey fill with no sense of light direction"
+  ],
+  "changesEn": [
+    "Options are billing choices (Annual billing / Monthly billing / Two-year commitment / Student / Nonprofit rate) under BILLING CYCLE; the timeline and parameter table (1-frame grey flash, 5f linear blackout, 0.04 bounce, others to 18%) are untouched",
+    "Chips get a 1px hairline (0.25 design-px inset stroke, same geometry), top inner highlight and two-layer soft shadow; the black chip adds a lit top-edge gradient and a shadow that deepens as it lifts",
+    "Formula reads as checkout math \"18% off · $42.00 → $34.44/mo\": word-by-word darkening kept, the old price is struck through and greys out after darkening, the new price is 700 weight and one size up",
+    "Whole group shifted down 30 design px and the formula raised from 150 to 108, so both the choice state and the end state center on the frame",
+    "Soft-lit gradient background with light vignette and grain, rendered outside DesignStage so it doesn't get coarser under the 4× design scale"
+  ],
+  "mdChanged": true
+}

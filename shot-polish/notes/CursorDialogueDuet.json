@@ -1,0 +1,28 @@
+{
+  "stem": "CursorDialogueDuet",
+  "issues": [
+    "轨迹是分段硬覆盖：60f 绕位起步时 Developer 瞬移 40px、Designer 向后回退约 110px 再起弧，\"人在动\"的连续感断了",
+    "终场巨箭头冲出后只盖住画面约 2/3，末帧右侧仍露暗场，起不到\"遮挡藏切点\"的转场作用",
+    "\"灯光交接\"只体现在名牌亮暗上，暗场近乎纯平黑，画面里没有光",
+    "对话位两枚光标挨得太近，Developer 光标压在 Designer 名牌上；快速绕位与甩出没有速度感"
+  ],
+  "changes": [
+    "两枚光标的位置改为 frame 的连续函数：对话位对称放在中点两侧，绕位以中点为圆心上下分弧、半径 R0→270→R0 且首尾不压扁，与前后段零跳变衔接；Designer 改向右下甩出",
+    "巨箭头放大终值 2.8→110、尖端终点重标定到 (−380,−2690)，134f 起箭头主体整屏遮挡，末帧是干净的纯色遮挡帧",
+    "加一盏跟随说话人的柔光池（蓝/绿色温 + 白芯），70–84f 随名牌交接从 Designer 滑到 Developer，巨箭头起飞后收光；Backdrop 暗场渐变 + 暗角 + 颗粒",
+    "对话位拉开为蓝左下 / 绿右上，名牌互不遮挡；按速度加方向性运动模糊（10px/帧死区，只在绕位快段与甩出出现）；光标加投影与点亮色晕，名牌系统字体 + 内高光"
+  ],
+  "issuesEn": [
+    "Trajectories are hard per-segment overrides: at 60f Developer jumps 40px and Designer backs up ~110px before starting the arc, so the cursors no longer move like hands",
+    "The giant arrow only covers about two-thirds of the frame at the end, leaving dark on the right, so it can't hide a cut",
+    "The \"light handoff\" exists only as badge brightness; the dark scene is almost flat black with no light in it",
+    "At the dialogue position the cursors crowd each other and Developer's arrow sits on Designer's badge; the fast swap and exit have no sense of speed"
+  ],
+  "changesEn": [
+    "Both positions are now continuous functions of frame: dialogue spots sit symmetrically around a midpoint, the swap runs upper/lower arcs about that midpoint with radius R0→270→R0 and no squash at the ends, so every segment joins with zero jump; Designer now exits down-right",
+    "Giant-arrow end scale 2.8→110 with the tip target recalibrated to (−380,−2690), so from 134f the arrow body covers the whole frame and the last frames are a clean solid mask",
+    "Added a soft light pool that follows whoever is speaking (blue/green tint with a white core), sliding from Designer to Developer with the 70–84f badge handoff and fading as the arrow takes off; dark Backdrop gradient with vignette and grain",
+    "Dialogue spots spread to blue lower-left / green upper-right so badges never overlap; velocity-driven directional blur with a 10px/frame dead zone (only in the fast swap and exit); cursors get shadows and a lit-color halo, badges use the system font with an inner highlight"
+  ],
+  "mdChanged": true
+}

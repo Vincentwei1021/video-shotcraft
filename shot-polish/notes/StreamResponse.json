@@ -1,0 +1,32 @@
+{
+  "stem": "StreamResponse",
+  "issues": [
+    "参考截图背板只轻虚化，左侧仍能读出 \"Ask Linear\" 字样，后景抢戏且带外部品牌",
+    "完成脉冲只是 1px 边框 0.25→0.55 的亮度变化，几乎看不见，完成态缺少确认感",
+    "状态图标的 running 只是转 100° 的灰环，pending/running/done 三态读不出来",
+    "摘要下方与底栏下方各留一大块死空白，面板下半部分在证据到齐前长期空着",
+    "行文字 21px、meta 16px、完成文案 15–17px，小窗播放难读；面板静止不随相机运动"
+  ],
+  "changes": [
+    "背板改为纯纹理：blur 9px + 亮度 0.42 + 去饱和，叠径向压暗、暗角与 soft-light 颗粒，面板后加一抹随脉冲增强的强调色余光",
+    "状态图标重做三态：虚线 pending 环 → 旋转缺口弧 running → 渐变实心圆 overshoot 弹出 + 勾线 strokeDashoffset 描出，仍比行体晚 3f",
+    "完成脉冲改为面板外 1px 强调色描边 + 柔光晕 + 摘要底色同步 0.25→0.55→0.25（10f 一次），顶栏 Working 呼吸点 chip 同时切成 Complete",
+    "底栏补进度条与 n/7 计数（每行 done 时 +1，进度 out 缓动），完成后换成勾 + Analysis complete，填掉死空白",
+    "字号层级上调：摘要 34px/620、行 24px、meta 18px 胶囊（done 后点亮）；摘要改为 18% 羽化软边 wipe + 附句 5f 跟随；相机背板 1.075→1、面板 1.04→1 轻视差微退"
+  ],
+  "issuesEn": [
+    "The reference backplate is only lightly blurred, so \"Ask Linear\" is still readable on the left: busy background with a third-party brand",
+    "The completion pulse is just a 1px border going 0.25→0.55, nearly invisible, so the done state lacks confirmation",
+    "The running state is a grey ring rotating 100°, so pending/running/done are not distinguishable",
+    "Large dead bands under the summary and below the footer; the lower half of the panel sits empty for most of the shot",
+    "Row text 21px, meta 16px, completion copy 15–17px are hard to read in a small player; the panel never moves with the camera"
+  ],
+  "changesEn": [
+    "Backplate turned into pure texture: 9px blur, 0.42 brightness, desaturated, plus radial darkening, vignette and soft-light grain; a faint accent glow behind the panel grows with the pulse",
+    "Rebuilt status icon: dashed pending ring → spinning arc → gradient filled disc with overshoot pop and a stroke-drawn check, still lagging the row body by 3f",
+    "Completion pulse is now an outer 1px accent ring + soft glow + summary tint at 0.25→0.55→0.25 over 10f, once; the header Working chip flips to Complete at the same time",
+    "Footer gains a progress bar and an n/7 counter that ticks as each row completes, then swaps to a check + Analysis complete, filling the dead space",
+    "Type hierarchy raised: summary 34px/620, rows 24px, meta 18px pills that light up when done; summary uses an 18%-feathered soft wipe with a 5f trailing subline; camera retreat with parallax (backplate 1.075→1, panel 1.04→1)"
+  ],
+  "mdChanged": false
+}

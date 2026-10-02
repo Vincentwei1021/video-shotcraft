@@ -1,0 +1,32 @@
+{
+  "stem": "DiagramCascadeBuild",
+  "issues": [
+    "工作台按 130f 渲染，镜头本意 160f，成树后的呼吸收尾（132–160f）整段被裁掉",
+    "孙层节点 x=810/1110 宽 300，两张卡边缘几乎相贴，布局拥挤",
+    "prompt 写的是 ER 图，节点里却只有灰色骨架条，读不出是实体表",
+    "连线 5px 灰色直角折线，粗笨；节点 spring 从 scale 0 放大，像 PPT 弹出",
+    "prompt 条 3px 灰边敲完瞬间跳成黑边，没有提交动作；背景平灰点阵"
+  ],
+  "changes": [
+    "补导出 DIAGRAM_CASCADE_BUILD_DURATION = 160，完整演出打字→提交→级联→呼吸",
+    "孙层改为等距 420（330/750/1170/1590），子层 540/1380，兄弟之间留 120px",
+    "节点换成 ER 实体卡：表图标 + 表名 23px + 列数，两行等宽字段（PK 强调色胶囊 / FK 灰胶囊 / 类型），表头先出、字段晚 3f 依次滑入",
+    "连线改 2px 圆角折线（r=16，pathLength 归一描线 16f），父/子端口白点在线到达时 overshoot 弹出；节点 0.82→1 + 上浮 14px + 阴影随高度收紧",
+    "prompt 条加 AI 图标、强调色光标与提交键：敲完描边转强调色 + 5px 焦点环，提交键点亮并按下 10f 后根节点出现；柔光画布 + 渐隐点阵"
+  ],
+  "issuesEn": [
+    "The workbench rendered 130f while the shot needs 160f, so the breathing finish after the tree completes (132–160f) was cut",
+    "Grandchild nodes at x=810/1110 with 300px width almost touch each other",
+    "The prompt asks for an ER diagram but nodes only hold grey skeleton bars, so they never read as tables",
+    "Connectors are 5px grey square elbows; nodes spring up from scale 0 like a slide-deck pop",
+    "The prompt bar's 3px grey border snaps to black when typing ends with no submit action; flat grey dotted background"
+  ],
+  "changesEn": [
+    "Added DIAGRAM_CASCADE_BUILD_DURATION = 160 so typing → submit → cascade → breathe all play",
+    "Grandchildren evenly spaced at 420px (330/750/1170/1590), children at 540/1380, leaving 120px between siblings",
+    "Nodes are ER entity cards: table icon + 23px name + column count, two monospace field rows (accent PK pill / grey FK pill / type); header first, fields slide in 3f apart",
+    "Connectors are 2px rounded elbows (r=16, normalised pathLength drawn over 16f) with white parent/child ports popping when the line arrives; nodes rise 0.82→1 with a 14px lift and shadows tightening on landing",
+    "Prompt bar gains an AI glyph, accent caret and submit button: on completion the border turns accent with a 5px focus ring, the button lights and presses 10f before the root appears; soft-lit canvas with a fading dot grid"
+  ],
+  "mdChanged": false
+}

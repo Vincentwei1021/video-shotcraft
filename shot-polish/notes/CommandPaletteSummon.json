@@ -1,0 +1,28 @@
+{
+  "stem": "CommandPaletteSummon",
+  "issues": [
+    "工作台按 inline 推断只渲 104f，正好停在高亮那一刻，卡片要求的末段 ≥40f 真静止整段缺失",
+    "敲入的字符是两个深灰方块，候选行是灰色骨架条，读不出在搜什么、列表为什么收窄",
+    "压暗是中性灰 rgba(20,20,20,.45) 平铺，画面发闷；面板 2px 灰边 + 单层阴影，浮不起来",
+    "唤出没有动机：dashboard 静置 12f 后面板凭空出现；高亮只是灰底 + 4px 深灰左条"
+  ],
+  "changes": [
+    "补导出 COMMAND_PALETTE_SUMMON_DURATION = 150（110f 后静止 40f），全部时间轴常量（压暗 12–22、弹落 18 −20→+8→0、4f 错峰、按键 62/78、高亮 94、闪烁到 104）不变",
+    "候选行换成真实命令（Invite people / Insert chart / Switch theme / New project / Export as PDF）+ 图标 + 快捷键键帽；输入 \"i\"→\"in\"，不匹配的行按原塌缩规则退场，保留行的匹配前缀加粗；底部提示栏随之显示 5→3→2 results",
+    "压暗改带色相的深色径向压暗 + 背景去饱和并后退 1.5%；面板改 1px 内外描边 + 顶部内高光 + 飞行级两层软阴影，弹落时 0.97→1 微缩放",
+    "开场画面底部出现 ⌘ K 键帽并在 10–16f 按下，给唤出一个因果；高亮改强调色浅底 + 3px 强调左条 + 图标转实色 + ↵ 键帽浮现；输入框加放大镜、占位提示、esc 键帽与强调色光标"
+  ],
+  "issuesEn": [
+    "The workbench's inline guess rendered only 104f, stopping right at the highlight, so the card's required ≥40f static ending was missing",
+    "Typed characters are two dark grey blocks and rows are grey skeleton bars, so you can't tell what is being searched or why the list narrows",
+    "The dim is a flat neutral grey rgba(20,20,20,.45) wash that muddies the frame; the panel has a 2px grey border and a single shadow, so it doesn't float",
+    "The summon has no cause: after 12f of idle dashboard the panel just appears; the highlight is a grey fill with a 4px dark left bar"
+  ],
+  "changesEn": [
+    "Added COMMAND_PALETTE_SUMMON_DURATION = 150 (40f of stillness after 110f); every timeline constant (dim 12–22, drop at 18 −20→+8→0, 4f stagger, keys at 62/78, highlight at 94, blink until 104) is unchanged",
+    "Rows are real commands (Invite people / Insert chart / Switch theme / New project / Export as PDF) with icons and shortcut keycaps; typing \"i\"→\"in\" collapses non-matching rows with the original rule while kept rows bold the matched prefix, and the footer counts 5→3→2 results",
+    "Dim is a hue-tinted dark radial overlay with the background desaturating and receding 1.5%; the panel gets 1px inner/outer strokes, a top highlight and a two-layer flight-level soft shadow, plus a 0.97→1 scale during the drop",
+    "A ⌘ K keycap pair appears at the bottom and presses at 10–16f to motivate the summon; the highlight is an accent tint with a 3px accent bar, a filled icon and a ↵ keycap; the input gets a magnifier, placeholder, esc keycap and accent caret"
+  ],
+  "mdChanged": false
+}

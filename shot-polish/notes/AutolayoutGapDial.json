@@ -1,0 +1,32 @@
+{
+  "stem": "AutolayoutGapDial",
+  "issues": [
+    "回弹弹簧过冲把 gap 拉成负数（约 −5px），链接块互相重叠、徽章读数变成 0，是明显穿帮",
+    "顶部 \"GAP\" 大字 + 黑块读数是调试占位，画面不像在设计工具里调参数",
+    "链接块里只有灰色骨架条，2px 灰边，读不出是导航",
+    "框选描边与手柄是 3px 深灰粗线、16px 手柄，标注线 3px 实心，工具语义笨重",
+    "跳数脉冲按帧号 sin 摆动，与数值是否在变化无关；背景是平灰底 + 均匀点阵"
+  ],
+  "changes": [
+    "弹簧参数不变，过冲段 ×0.45 压缩：12→110→约 4→12，仍\"缩到比起点更紧再回稳\"但 gap 永不为负",
+    "读数块做成 Auto layout 检查器：方向切换、Gap 数值框（选中蓝描边 + 4px 焦点环）+ 随 gap 滚动的拨盘刻度尺，与块位置同源同帧",
+    "链接块换成真实导航文案（Overview 深色激活态 + 4 个白色胶囊，30px 字），发丝线、顶部内高光、两层软阴影，入场 0–12f 错峰上浮",
+    "框选改为 2px 选择蓝 + 14px 白底手柄（spring 依次弹出）+ 图层名 \"Nav links\"；测量改为间距粉：虚线延长线、2px 测量线带端刺、粉色徽章",
+    "跳数脉冲改为由数值相位驱动（每跨 2px 一格脉冲一次）× 速度门限，静止时归 1；背景换柔光渐变 + 中心清晰、四周隐去的点阵"
+  ],
+  "issuesEn": [
+    "The return spring overshoots gap to about −5px, so the link blocks overlap and the badges read 0, a visible glitch",
+    "The big \"GAP\" title with a black readout chip is a debug placeholder; nothing says you're tuning a value inside a design tool",
+    "Link blocks are grey skeleton bars with 2px grey borders, so they don't read as navigation",
+    "Selection outline and handles are 3px dark grey lines with 16px handles and 3px solid measure lines, which feels clumsy as tool UI",
+    "The tick pulse wobbles on a frame-based sine whether or not the value is changing; the background is flat grey with a uniform dot grid"
+  ],
+  "changesEn": [
+    "Same spring parameters, overshoot portion scaled ×0.45: 12→110→about 4→12, still tighter than the start before settling, but gap never goes negative",
+    "Readout rebuilt as an Auto layout inspector: direction toggle, Gap number field (selection-blue stroke + 4px focus ring) and a dial ruler that scrolls with gap, all from the same value in the same frame",
+    "Blocks carry real nav labels (dark active Overview + four white pills, 30px type) with hairlines, top highlight, two-layer soft shadows and a 0–12f staggered rise-in",
+    "Selection is now a 2px selection-blue frame with 14px white handles that spring in one after another and a \"Nav links\" layer name; measurements use spacing pink: dashed extension lines, 2px measure line with end ticks, pink badges",
+    "Tick pulse is driven by the value's phase (one pulse per 2px step) gated by speed, so it rests at 1; background is a soft-light gradient with a dot grid that fades toward the edges"
+  ],
+  "mdChanged": true
+}
