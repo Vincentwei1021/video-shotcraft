@@ -1,0 +1,30 @@
+{
+  "stem": "HitCounter",
+  "issues": [
+    "三张卡是灰条骨架，读不出这是三个功能点在连招",
+    "背景 dashboard 直接 opacity 0.4，深色侧栏洗成脏灰，槽位是 3px 灰色虚线框",
+    "卡片下落是平移的硬块：没有运动模糊、投影不随高度变化，触地只有 6% 压扁",
+    "伤害数字和 ×N 计数器用回退字体、纯墨色，三击视觉上一样，没有“越打越狠”"
+  ],
+  "changes": [
+    "三张功能卡改成出版级假内容（Realtime sync / Edge cache / AI summaries：图标 tile、New chip、一句话说明、采用量 sparkline），槽位重新以画面中线对称排布",
+    "背景 dashboard 改为 9px 失焦 + 暖灰 scrim + 轻暗角 + 颗粒；槽位改成凹陷内阴影 + 1.5px 发丝虚线，卡快落地时槽底的接触影逐渐收紧、加深",
+    "下落段加按速度计算的竖向 SpeedBlur 和 5% 拉伸，投影 elevation 从 56 落到 4；触地时压扁 6%、横向撑开 3%，冲击描边环外扩 34px，两侧各甩出 3 根碎屑线（都跟着顿帧一起冻住），闪白用真实帧驱动",
+    "逐击升温：伤害数字与计数器按 墨 → 靛 → 暖橙 三档变色，计数器改为深色 COMBO 面板（内高光、底部热度条），跳字时数字上蹦 0.14em；脉冲 1.3/1.45/1.6 与倾斜 −2/−4/−6° 保持原值",
+    "补 HIT_COUNTER_DURATION = 150（末击效果约 110f 收完，静止 hold 到 150f）"
+  ],
+  "issuesEn": [
+    "The three cards were grey skeleton bars, so nothing said these were three features landing as a combo",
+    "The background dashboard was just set to opacity 0.4, washing the dark sidebar into muddy grey; the slots were 3px grey dashed boxes",
+    "The cards fell as rigid blocks: no motion blur, shadows that ignored height, and only a 6% squash on landing",
+    "Damage numbers and the ×N counter used a fallback font in plain ink and looked the same on all three hits, with no sense of escalation"
+  ],
+  "changesEn": [
+    "The three cards now carry publication-grade mock content (Realtime sync / Edge cache / AI summaries, each with an icon tile, New chip, one-line description and adoption sparkline); slots are re-laid out symmetrically about the centre line",
+    "Background dashboard defocused 9px under a warm-grey scrim, light vignette and grain; slots are recessed with an inner shadow and a 1.5px hairline dash, and their contact shadow tightens and darkens as each card approaches",
+    "The fall gets velocity-driven vertical SpeedBlur and 5% stretch, with shadow elevation dropping from 56 to 4; on impact the card squashes 6% and spreads 3%, an impact ring expands 34px and three debris strokes fly from each side (all frozen with the hitstop), while the white flash runs on real frames",
+    "Hits escalate in colour: damage numbers and the counter step from ink to indigo to warm orange; the counter is now a dark COMBO panel with an inner highlight and a bottom heat bar, and the digit hops 0.14em on each change; pulse 1.3/1.45/1.6 and tilt −2/−4/−6° unchanged",
+    "Added HIT_COUNTER_DURATION = 150 (last-hit effects finish around 110f, then hold to 150f)"
+  ],
+  "mdChanged": false
+}

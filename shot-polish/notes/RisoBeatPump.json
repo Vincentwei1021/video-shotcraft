@@ -1,0 +1,28 @@
+{
+  "stem": "RisoBeatPump",
+  "issues": [
+    "没有导出时长，工作台按 150f 默认渲染，比镜头本意（四拍后 24f 静止，共 140f）多拖 10f",
+    "浅灰/深墨双版叠在平铺灰底上，错位读作阴影，看不出是印刷没对准",
+    "标题下三张卡是通用灰条骨架，和“节拍/印刷”毫无关系",
+    "节拍刻度是四个灰点，回退字体，整张画面像线框稿"
+  ],
+  "changes": [
+    "补 RISO_BEAT_PUMP_DURATION = 140（末拍归零后真静止 24f）；纸纤维与油墨颗粒都是静态纹理，泵缩放只作用画面容器，颗粒/暗角作为镜头外层不跟着缩",
+    "双版换成朱红专色 + 深墨，multiply 叠在暖色 riso 纸上；标题改为 \"On the beat.\"（系统 SF 栈 176px/900，−0.028em），双版常驻、套准时归零重合",
+    "三张卡改为印刷鼓件卡：1.5px 墨线框 + 版号 + \"Kick / Snare / Hi-hat\" + 专色半调网点几何（圆/三角/方）+ 墨线波形",
+    "节拍刻度改为带拍号 1–4 的墨线圈，命中 3f 填朱红再转实心墨并常驻（8f 1.8→1 脉冲不变）；版面加四角套准十字与 \"SIDE A — 75 BPM / 4 / 4\" 版记；泵 1.08·exp(−t/3)、错位 4/7/11/16px 逐拍加码不变"
+  ],
+  "issuesEn": [
+    "No duration was exported, so the workbench rendered the 150f default, 10f longer than intended (24f still after four beats, 140f total)",
+    "Light-grey and ink plates over flat grey made the offset read as a shadow rather than misregistered print",
+    "The three cards under the title were generic grey skeleton bars with nothing to do with beats or print",
+    "The beat markers were four grey dots in a fallback font; the whole frame looked like a wireframe"
+  ],
+  "changesEn": [
+    "Added RISO_BEAT_PUMP_DURATION = 140 (24f truly still after the last beat settles); paper fibre and ink grain are static, and the pump scales only the picture container while grain and vignette sit outside it like a lens layer",
+    "Plates are now vermilion spot plus deep ink, multiplied onto warm riso stock; the title is now \"On the beat.\" (system SF stack, 176px/900, −0.028em), with both plates always present and coinciding when registered",
+    "The three cards are now printed drum-part cards: 1.5px ink frame, part number, \"Kick / Snare / Hi-hat\", a spot-colour halftone shape (circle / triangle / square) and an ink waveform",
+    "Beat markers are now ink rings numbered 1–4 that flash vermilion for 3f on the hit, then stay solid ink (8f 1.8→1 pulse unchanged); registration crosshairs and a \"SIDE A — 75 BPM / 4 / 4\" folio frame the layout; the 1.08·exp(−t/3) pump and the 4/7/11/16px escalating offsets are unchanged"
+  ],
+  "mdChanged": true
+}

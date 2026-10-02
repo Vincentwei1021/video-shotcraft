@@ -1,0 +1,28 @@
+{
+  "stem": "SpotlightSweepReveal",
+  "issues": [
+    "工作台按 110f 截断，正好切在全字提亮之前，标题从没被完整点亮过",
+    "光锥是 clip-path 硬边梯形，边缘像剪纸；光斑是纯灰白圆，没有灯光的色温",
+    "光斑 x 是纯正弦，f110 正以最高速穿过中心时被硬停，收尾一顿",
+    "平铺 #2a2a28 灰底、Helvetica、标题是卡名 \"SPOTLIGHT ON\" 的占位"
+  ],
+  "changes": [
+    "补 SPOTLIGHT_SWEEP_REVEAL_DURATION = 160（f125 起真静止 35f），完整演到全亮定格",
+    "光锥改为 SVG 柔边体积光（灯头在画外正上方，近灯头 0.20、往下渐隐，16px 高斯柔边），光束里 48 粒尘埃缓慢上浮闪烁；墙上光斑改为暖白（255,244,228）横椭圆，被照到的字底下垫一层同遮罩的 14px 柔晕",
+    "摆动保留 560px·sin(2πf/55) 两来回，乘一个从 f27 起 smooth 收拢的阻尼包络，光斑在 f110 以零速度停到中心再交给提亮",
+    "底色改为 #17181d→#0b0c0f 带色相的深色渐变 + 重暗角 + 静态颗粒；标题换成 \"Your best work, / in the spotlight.\"（系统 SF 栈 150px/800 负字距），暗版 0.07、全亮 out-cubic、光效线性消散的参数不变"
+  ],
+  "issuesEn": [
+    "The workbench cut it at 110f, right before the full reveal, so the title was never fully lit",
+    "The beam was a hard-edged clip-path trapezoid like cut paper, and the pool was a flat grey-white circle with no colour temperature",
+    "The pool's x was a pure sine, so at f110 it stopped dead while crossing centre at top speed, leaving a hitch at the end",
+    "Flat #2a2a28 grey, Helvetica, and the title was the card-name placeholder \"SPOTLIGHT ON\""
+  ],
+  "changesEn": [
+    "Added SPOTLIGHT_SWEEP_REVEAL_DURATION = 160 (truly still for 35f from f125), so it now plays through to the fully lit hold",
+    "The beam is now soft SVG volumetric light (lamp off-frame directly above, 0.20 near the lamp fading downward, 16px Gaussian edge) with 48 dust motes drifting up and twinkling; the pool is a warm-white (255,244,228) horizontal ellipse, and lit glyphs get a 14px soft glow under the same mask",
+    "The swing keeps two 560px·sin(2πf/55) passes but multiplies them by a damping envelope that eases in from f27, so the pool arrives at centre at zero velocity on f110 before handing off to the reveal",
+    "Background is a hue-tinted #17181d→#0b0c0f gradient with a heavy vignette and static grain; the title is now \"Your best work, / in the spotlight.\" (system SF stack, 150px/800, negative tracking); the 0.07 dark copy, out-cubic reveal and linear light fade are unchanged"
+  ],
+  "mdChanged": true
+}

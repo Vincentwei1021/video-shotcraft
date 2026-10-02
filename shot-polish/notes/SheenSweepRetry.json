@@ -1,0 +1,30 @@
+{
+  "stem": "SheenSweepRetry",
+  "issues": [
+    "主角卡是 #3a3a3a 平色块，只有 \"PRO\" 加两根灰条，读不出是什么卡",
+    "背景是平铺 G.bg 浅灰，卡只有一层泛灰投影，没有空间感",
+    "扫光是一条 0.32 的单层渐变带，扫过时卡面本身毫无反应，像贴了一张透明胶片",
+    "光带从卡外 1216px 开始走，inOut 匀速中段大多耗在卡外，真正扫过卡面只有约 4f，几乎看不清"
+  ],
+  "changes": [
+    "卡改为深墨渐变会员卡（#2a2c35→#111216，28px 圆角，内发丝线 + 上沿内高光 + elevation 36 两层软阴影），内容是 Workspace 标识、Annual plan chip、PRO 大字、权益一句话和 $24/seat",
+    "背景改为暖灰纵向渐变 + 左上主光斑 + 轻暗角 + 静态颗粒，卡下加一块贴地接触影",
+    "高光带改成宽柔光（0.05–0.10）+ 窄亮芯（峰值 0.32）两层，screen 叠在深墨上；卡面 25° 细斜线暗纹常驻 0.03，只在光带经过处被同角度遮罩照到 0.16；卡上沿发丝线跟着光带同步亮起",
+    "光带中心改为从卡左外 300px 走到卡右外 300px，仍是 40–68f inOut cubic 只扫一次，扫过卡面约 10f；扫光层条件挂载，68f 后整层卸载",
+    "补 SHEEN_SWEEP_RETRY_DURATION = 140（40f 静止 + 28f 扫光 + 72f 真静止）"
+  ],
+  "issuesEn": [
+    "The hero card was a flat #3a3a3a block with \"PRO\" and two grey bars; there was no telling what kind of card it was",
+    "The background was a flat G.bg light grey and the card had one muddy shadow, with no sense of space",
+    "The sheen was a single 0.32 gradient band; the card surface did not respond as it passed, like a strip of clear film laid on top",
+    "The band started 1216px off the card, so most of the even-speed middle of the inOut ease ran off-card; it crossed the card for only about 4f and was barely readable"
+  ],
+  "changesEn": [
+    "The card is now a deep-ink membership card (#2a2c35→#111216, 28px radius, inner hairline, top inner highlight, two-layer elevation-36 shadow) carrying a Workspace mark, an Annual plan chip, the big PRO, a one-line benefit and $24/seat",
+    "Background is a warm-grey vertical gradient with a top-left key light, light vignette and static grain, plus a contact shadow under the card",
+    "The sheen is now two layers, a wide soft wash (0.05–0.10) and a narrow hot core (peak 0.32), screened over the ink; a 25° fine-line guilloche sits at 0.03 and is lit to 0.16 only where the band passes, through a mask at the same angle; the card's top hairline brightens in step with the band",
+    "The band centre now travels from 300px left of the card to 300px right of it, still one 40–68f inOut-cubic pass, crossing the card in about 10f; the sheen layers are conditionally mounted and unmounted after 68f",
+    "Added SHEEN_SWEEP_RETRY_DURATION = 140 (40f still, 28f sweep, 72f truly still)"
+  ],
+  "mdChanged": false
+}

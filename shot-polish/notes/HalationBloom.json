@@ -1,0 +1,28 @@
+{
+  "stem": "HalationBloom",
+  "issues": [
+    "工作台按 17f 截断，只看得到撞停瞬间，晕层回落与驻留呼吸光全被切掉",
+    "画面上方打着调试标签 \"HALATION BLOOM\"，纯平 #2a2a28 灰底，字体回退到 Helvetica",
+    "2.4x→1 的急缩是硬跳，没有运动模糊，读作缩放而非砸入",
+    "晕只有一层均匀白雾，没有高光芯和胶片暖边，也照不亮周围的暗场"
+  ],
+  "changes": [
+    "补 HALATION_BLOOM_DURATION = 145（f56 起真静止 89f），颗粒改用静态纹理，收尾逐帧完全相同",
+    "去掉调试标签，换成撞停后 6f 错峰浮入的副标题 \"faster builds on every commit\"（40px）；底色改为 #16171c→#0b0c10 带色相的深色渐变，加冷色光斑、暗角和静态颗粒；字改用系统 SF 栈 300px/800 负字距，写作 \"10×\"",
+    "急缩段加快门 0.5f 的时间采样运动模糊（按字边位移自适应 1–14 个子帧 + 高斯抹阶梯）",
+    "晕改为三层：贴字的紧芯（blur 6，0.9→0.5）+ 参数表主晕（blur 22、brightness 1.8、scale 1→1.3、6f out-cubic 涨、线性落到 0.35 再收到 0.22）+ 外圈暖橙 halation 边（blur 48）；撞停同帧中心径向暖光照亮暗场，再退到 30% 驻留"
+  ],
+  "issuesEn": [
+    "The workbench cut it at 17f, showing only the hit; the bloom falloff and the lingering glow were cut off",
+    "A debug label \"HALATION BLOOM\" sat at the top of the frame over a flat #2a2a28 grey, with the font falling back to Helvetica",
+    "The 2.4x→1 crash was a hard jump with no motion blur, reading as a scale change rather than a slam",
+    "The bloom was a single uniform white haze, with no hot core or warm film fringe, and it did not light the dark surroundings"
+  ],
+  "changesEn": [
+    "Added HALATION_BLOOM_DURATION = 145 (truly still for 89f from f56); grain uses a static texture so the tail is frame-identical",
+    "Debug label replaced by a 40px subtitle, \"faster builds on every commit\", that floats in 6f after the hit; the background is a hue-tinted #16171c→#0b0c10 gradient with a cool light pool, vignette and static grain; type uses the system SF stack at 300px/800 with negative tracking, set as \"10×\"",
+    "The crash gets temporal-sampling motion blur with a 0.5f shutter (1–14 sub-frames adapted to edge travel, plus a Gaussian to smooth the steps)",
+    "The bloom now has three layers: a tight core hugging the glyphs (blur 6, 0.9→0.5), the main halo from the parameter table (blur 22, brightness 1.8, scale 1→1.3, 6f out-cubic rise, linear fall to 0.35 then settling at 0.22), and a warm orange halation fringe (blur 48); on the hit frame a radial warm spill lights the dark field, then fades to 30% and stays"
+  ],
+  "mdChanged": false
+}

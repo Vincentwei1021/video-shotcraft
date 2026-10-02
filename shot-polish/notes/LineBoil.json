@@ -1,0 +1,28 @@
+{
+  "stem": "LineBoil",
+  "issues": [
+    "工作台按 105f 截断，正好切在摘罩那一帧，“沸腾 → 回到真静止”的对比后半段没了",
+    "画面左上打着调试标题 \"LINE BOIL\"，右下是 3px 粗描边的 \"boil on/off\" 胶囊，像调试界面",
+    "被沸腾的描边卡里是实心灰条，沸腾起来读作模糊而不是重描",
+    "平铺浅灰底、Helvetica 大字，和卡片 md 说的“纸墨手工感”宿主不沾边"
+  ],
+  "changes": [
+    "补 LINE_BOIL_DURATION = 140，完整呈现 静止 35f → 沸腾 70f → 摘罩真静止 35f 三段",
+    "宿主改为纸墨字卡：暖纸径向渐变 + 静态大尺度纸纤维（multiply）+ 暖褐暗角；眉题 \"CHAPTER TWO\"（不入滤镜，当静止参照物），大标题 \"Still alive.\" 用系统 SF 栈 190px/800 负字距，墨色 #1e1d1b",
+    "描边卡改为全墨线的手绘分镜卡：不规则起笔外框、三行手写线稿、取景框加人物线、指向箭头和一圈朱红圈注，正好是 md 说的最适合沸腾的对象",
+    "调试胶囊换成右下角极小的等宽状态标（朱红实点 boiling / 空心点 still），5f 交叉淡变，100–105f 前全部完成；沸腾参数（scale 8、baseFrequency 0.015、seed=floor(f/3)、条件挂载）不变"
+  ],
+  "issuesEn": [
+    "The workbench cut it at 105f, exactly on the unmount frame, so the back half of the boil-then-truly-still contrast was missing",
+    "A debug title \"LINE BOIL\" sat top-left and a thick-bordered \"boil on/off\" pill bottom-right, like a debug panel",
+    "The stroked card contained solid grey bars, which read as blur rather than redrawn lines when boiling",
+    "Flat light grey and Helvetica display type had nothing to do with the paper-and-ink host the card's md describes"
+  ],
+  "changesEn": [
+    "Added LINE_BOIL_DURATION = 140 so all three phases play: 35f still, 70f boil, 35f truly still after unmounting",
+    "The host is now a paper-and-ink title card: warm radial paper gradient, static large-scale paper fibre (multiply), warm-brown vignette; a \"CHAPTER TWO\" eyebrow stays outside the filter as a still reference, and the headline \"Still alive.\" is set in the system SF stack at 190px/800 with negative tracking in #1e1d1b ink",
+    "The stroked card is now an all-ink-line storyboard sketch: an irregular hand-started frame, three handwritten lines, a viewfinder with a figure, a pointer arrow and a vermilion circle annotation, exactly the kind of subject the md says boils best",
+    "The debug pills became a tiny mono state tag bottom-right (solid vermilion dot = boiling, hollow dot = still) with a 5f cross-fade, all finished before 100–105f; boil parameters (scale 8, baseFrequency 0.015, seed = floor(f/3), conditional mounting) unchanged"
+  ],
+  "mdChanged": false
+}
