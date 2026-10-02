@@ -52,7 +52,7 @@ def probe_frames(p):
     try:
         out = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
                               'stream=nb_frames', '-of', 'csv=p=0', str(p)], capture_output=True, text=True)
-        return int(out.stdout.strip())
+        return int(out.stdout.strip().strip(',').split(',')[0])
     except ValueError:
         return None
 
