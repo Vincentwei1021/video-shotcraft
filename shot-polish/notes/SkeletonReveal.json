@@ -1,0 +1,30 @@
+{
+  "stem": "SkeletonReveal",
+  "issues": [
+    "只有消息行“变真”，侧栏和频道头到结尾仍是灰条，读作没加载完",
+    "推近 1.34 且原点偏心，结尾侧栏与窗口上下边被切，主区下半是空白",
+    "没有导出时长，靠卡片 md 推断",
+    "骨架期是静止灰条，缺少加载态语法；头像是四块灰色方块，字体硬编码 Helvetica",
+    "窗口是 2px 灰边 + 单层阴影，纸面背景平涂"
+  ],
+  "changes": [
+    "第三级覆盖整个界面：工作区名、频道列表（选中态 #rebrand）、私信、频道头（话题 + 成员）与输入框都由灰条交叉显影成真内容，外围先一步、输入框收尾",
+    "推近改为以窗口中心 1→1.22，整窗始终在画内；补 SKELETON_REVEAL_DURATION = 172",
+    "骨架期加一次加载态 shimmer（lighten 混合只提亮灰条）；骨架行滚入改强 ease-out",
+    "头像改四色克制渐变 + 内高光，系统字体栈、负字距与 tabular 时间；窗口发丝线 + 三层软阴影 + 落地影；纸面柔光底与颗粒"
+  ],
+  "issuesEn": [
+    "Only the message rows became real; the sidebar and channel header stayed grey bars to the end, reading as unfinished loading",
+    "The 1.34 push with an off-center origin cropped the sidebar and the window's top/bottom edges, and the lower half of the main pane was empty",
+    "No exported duration; it relied on the md inference",
+    "The skeleton phase was static grey bars with no loading cue; avatars were grey squares and the font was hard-coded Helvetica",
+    "The window had a 2px grey border with a single shadow on a flat paper background"
+  ],
+  "changesEn": [
+    "The third level now covers the whole interface: workspace name, channel list (selected #rebrand), DMs, channel header (topic + members) and the composer all cross-develop from bars into content, periphery first and composer last",
+    "The push is now 1→1.22 about the window center so the whole window stays in frame; added SKELETON_REVEAL_DURATION = 172",
+    "One loading shimmer pass during the skeleton phase (lighten blend brightens only the bars); skeleton rows slide in with a strong ease-out",
+    "Avatars use four restrained gradients with inner highlight; system font stack, negative tracking and tabular timestamps; hairline window with three-layer soft shadow and floor shadow; soft-lit paper backdrop with grain"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,28 @@
+{
+  "stem": "WireframeDrawOn",
+  "issues": [
+    "线框是按旧版灰阶骨架手排的，与 Phase 0 新版 FakeDashboard 的侧栏/顶栏/卡内布局对不上，扫描线扫过时元素跳位",
+    "描线是 #8f8f8d 2.5px 灰线，读作灰色占位而不是“蓝图”",
+    "背景是平涂 #ececea，开场 20f hold 是一片空白",
+    "没有导出时长"
+  ],
+  "changes": [
+    "线框按新版 FakeDashboard A 的真实几何逐件重排：侧栏 logo/导航/项目/用量卡、顶栏面包屑/分段控件/搜索/头像、六卡表头/大数字/页脚，以及每张卡各自的图表形态（面积线、页面条、14 根柱、进度条、热力格）",
+    "蓝图化：冷灰蓝 #6c7894 细线（外框 1.6px、内件 1.25px）+ 淡蓝 24px 点阵底（开场 hold 期间淡入）+ 卡角裁切标记",
+    "扫描线改竖向渐变芯，身后带 260px 渐隐暖光作为“刚显影”的余温，竖线与 clip 前沿仍由同一 scan 值驱动",
+    "补 WIREFRAME_DRAW_ON_DURATION = 150；分组描线与扫描节拍全部保持原值；整体加极轻暗角与颗粒"
+  ],
+  "issuesEn": [
+    "The wireframe was hand-laid for the old grey skeleton, so it no longer matched the upgraded FakeDashboard's sidebar, top bar and card internals; elements jumped as the scan passed",
+    "Strokes were #8f8f8d 2.5px grey lines, reading as grey placeholders rather than a blueprint",
+    "Flat #ececea background; the 20f opening hold was blank",
+    "No exported duration"
+  ],
+  "changesEn": [
+    "Wireframe rebuilt piece by piece on the new FakeDashboard A geometry: sidebar logo/nav/projects/usage card, top-bar breadcrumb/segmented control/search/avatar, each card's header/big number/footer and its own chart form (area line, page bars, 14 bars, progress rows, heatmap)",
+    "Blueprint look: cool slate-blue #6c7894 lines (1.6px outlines, 1.25px details), a faint 24px dot grid that fades in during the hold, and card crop marks",
+    "The scan line gets a vertical gradient core and a 260px fading warm trail as the 'just developed' afterglow; line and clip front still share one scan value",
+    "Added WIREFRAME_DRAW_ON_DURATION = 150; draw-on groups and scan timing are unchanged; subtle vignette and grain"
+  ],
+  "mdChanged": true
+}

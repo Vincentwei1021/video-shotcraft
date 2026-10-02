@@ -1,0 +1,28 @@
+{
+  "stem": "GridWaveFlip",
+  "issues": [
+    "渲染穿帮：依赖 backface-visibility，Chromium 在首行/首列把灰背也剔掉，开场五张卡“隐身”",
+    "perspective 挂在 grid 上、隔了一层未 preserve-3d 的格子，翻转实际是正交的，没有纵深",
+    "灰背是平涂灰块 + 一个圆点；阴影挂在旋转体上跟着卡面一起转",
+    "翻面过程没有受光变化；工作台按 150f 渲染，比卡片设定的 130f 多出死帧"
+  ],
+  "changes": [
+    "按角度显式只画朝外那面（<90° 灰背、≥90° 正面），确定性无剔除问题",
+    "每格自带 perspective 2400px、perspectiveOrigin 换算到整墙中心，整墙真正共享一个消失点",
+    "灰背改为哑光纸感卡（微渐变、斜纹、压印标记、发丝线）；阴影改为格位下方独立地面影，随翻转抬起变大变虚、落定收紧",
+    "翻面按 cos(角度) 压暗，最薄处高光线保留；补 GRID_WAVE_FLIP_DURATION = 130，波前与尾张过冲参数不变"
+  ],
+  "issuesEn": [
+    "Render bug: relying on backface-visibility, Chromium culled the grey backs in the first row and column, so five cards were invisible at the start",
+    "Perspective sat on the grid with a non-preserve-3d cell in between, so the flips were effectively orthographic with no depth",
+    "The back was a flat grey block with a dot, and the shadow rotated along with the card",
+    "No lighting change during the flip; the workbench rendered 150f instead of the card's 130f"
+  ],
+  "changesEn": [
+    "Each frame draws only the outward face by angle (<90° back, ≥90° front), deterministic with no culling issues",
+    "Every cell carries perspective 2400px with perspectiveOrigin mapped to the wall center, so the wall truly shares one vanishing point",
+    "The back is now a matte paper card (subtle gradient, diagonal texture, debossed mark, hairline); the shadow is a separate floor shadow under each slot that grows and softens with lift and tightens on landing",
+    "Faces darken by cos(angle) while turning; the edge-on highlight line stays; added GRID_WAVE_FLIP_DURATION = 130 with wavefront and tail overshoot unchanged"
+  ],
+  "mdChanged": true
+}

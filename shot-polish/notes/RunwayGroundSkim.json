@@ -1,0 +1,32 @@
+{
+  "stem": "RunwayGroundSkim",
+  "issues": [
+    "没有导出时长，工作台按默认 150f 渲染，镜头本意 4s 后多出 1 秒死帧",
+    "终态构图失衡：立起后页顶的导航与标题被切，页底留出约 100px 黑带",
+    "地面流式布局与卡片槽位错位：第二行卡压住 Todo 标题，卡片左缘不对齐内容区",
+    "卡面是 4px 灰边 + 空心方框图标的骨架，空中追光在着地那帧硬切回暗亮度，且光晕是直角方框",
+    "Helvetica 硬编码，地面下半页大片空白"
+  ],
+  "changes": [
+    "补 RUNWAY_GROUND_SKIM_DURATION = 120（4s：悬空→急雨贴落→立起→正视 hold）",
+    "立起段拉远到 z=-1800、锚点 58%→68.5%，按透视推导让页心投影到画面中心，终态整页居中四周均匀留边",
+    "地面改为绝对定位的出版级 Home 页（系统字体栈、2px 发丝线、彩色图标、Todo 进度、Goals 区），槽位对齐内容左缘并画虚线空位框",
+    "卡面加彩色图标块、首字母头像与贴地两层软影；追光按离地高度平滑收回、光晕裁进圆角；下落末段按速度加纵向运动模糊",
+    "低机位时近景的下半页压淡，不抢落卡的戏，立起时显出；整体加颗粒"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench rendered the default 150f, leaving a dead second after the intended 4s",
+    "Unbalanced end frame: after standing up, the nav and title were cut off at the top with a ~100px black band below",
+    "The flow-laid ground and the card slots disagreed: the second row covered the Todo heading and cards didn't align with the content edge",
+    "Skeleton card faces with 4px grey borders and hollow square icons; the airborne spotlight hard-cut back to ground brightness on landing, and its glow was a square box",
+    "Hard-coded Helvetica, and the lower half of the ground was empty"
+  ],
+  "changesEn": [
+    "Added RUNWAY_GROUND_SKIM_DURATION = 120 (4s: hover → rain-drop landing → stand-up → frontal hold)",
+    "The stand-up pulls back to z=-1800 with the anchor 58%→68.5%, derived from the perspective math so the page center projects to frame center; the final page is centered with even margins",
+    "The ground is now an absolutely positioned, publication-grade Home page (system font stack, 2px hairlines, colored icons, Todo progress, a Goals section); slots align to the content edge and show dashed empty outlines",
+    "Cards get colored icon tiles, initials avatars and two-layer grounded shadows; the spotlight eases back with height and its glow is clipped to the radius; the final fall gets velocity-based vertical motion blur",
+    "In the low-angle phase the near-field lower page is dimmed so it doesn't compete with the falling cards, then revealed on stand-up; grain overall"
+  ],
+  "mdChanged": true
+}

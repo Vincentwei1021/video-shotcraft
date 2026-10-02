@@ -1,0 +1,28 @@
+{
+  "stem": "RowEmbed",
+  "issues": [
+    "空槽补丁用 #fdfcfa，比页面底色 #f9f6f1 偏白，五个槽位读成一整块白板",
+    "取景穿帮：起点露出页顶外约 200px 空白，终点页底下方空出约 160px，且结尾标题被切半",
+    "行落下是对称缓入缓出，到槽位前已经减速到零，“扣进去”的冲击感弱；节拍等间隔",
+    "强调色缝是一根硬头实色条，飞行行没有速度感"
+  ],
+  "changes": [
+    "补丁改为逐像素采样的真实底色，并加 20% 透明度的虚线槽位框，观众能看到“空位在等”（Q9）",
+    "相机改为 cy 500→740、zoom 1.12→1.25 缓动下摇加微推，全程被页面铺满，结尾上沿落在分隔线与「项目资料」之间",
+    "下落缓动改 bezier(.5,0,.8,.75)，末段带速度砸进槽位后由 press 回弹吸收；飞行段按速度加纵向运动模糊；节拍改 10→7 帧递减",
+    "槽位接触影随行接近收紧变实，飞行行加顶部受光与发丝边；强调色缝两端羽化；整体加极轻暗角与颗粒"
+  ],
+  "issuesEn": [
+    "The empty-slot patch was #fdfcfa, whiter than the page's #f9f6f1, so the five slots read as one big white board",
+    "Framing gaps: the start showed ~200px beyond the page top, the end left ~160px empty below the page and sliced the title in half",
+    "Rows fell with a symmetric ease-in-out and reached the slot at zero speed, so the snap-in had no impact; cue spacing was uniform",
+    "The accent seam was a hard-ended solid bar and the falling rows had no sense of speed"
+  ],
+  "changesEn": [
+    "The patch uses the pixel-sampled page color plus a 20%-alpha dashed slot outline, so viewers see an empty slot waiting (Q9)",
+    "Camera now eases cy 500→740 with zoom 1.12→1.25 (tilt down plus slight push), always filled by the page; the final top edge sits between a divider and the next section",
+    "Drop easing is bezier(.5,0,.8,.75) so rows hit the slot with speed and the press bounce absorbs it; velocity-based vertical motion blur in flight; cues accelerate (10→7f gaps)",
+    "A slot contact shadow tightens as each row approaches; flying rows get a top highlight and hairline edge; the seam has feathered ends; subtle vignette and grain overall"
+  ],
+  "mdChanged": true
+}

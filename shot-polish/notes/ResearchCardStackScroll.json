@@ -1,0 +1,32 @@
+{
+  "stem": "ResearchCardStackScroll",
+  "issues": [
+    "13 张 × 12 帧超出 144 帧，末两张在最后一帧仍在入场途中，结尾没有落定",
+    "堆是匀速线性漂移，背景 grid 也匀速走，读作传送带而不是“一张压一张”",
+    "飞入的卡正文要等落定那一帧才硬切出现，近一半帧里最上一张是空卡",
+    "摘要是四根灰色骨架条，作者行是 A. Author, B. Writer 占位",
+    "下方糊卡叠成一大块浓黑重影，纯色 #FAFAFA 底没有层次"
+  ],
+  "changes": [
+    "改为 11 张、间隔 14→9.5 帧递减的发牌节拍（均值仍≈12f），末张 f≈123.5 落定，留约 20f 静止",
+    "每落一张把整叠往右下推一格（6f ease-out），grid 位移由同一累计量导出，一推一停严格同步",
+    "正文在飞行后半程淡入上浮、被下一张盖住时淡出；入场 1.5f 即不透明，飞行段按速度加纵向运动模糊；落位压缩改 2.4f 正弦包络",
+    "卡面出版级：分类 chip、作者、两行真实感摘要、arXiv 编号/引用数/页数与 PDF 标签；发丝线 + 内高光 + 顶部受光",
+    "深卡额外降透明度、阴影随深度减弱；亮场柔光底 + 上下羽化的 grid + 暗角 + 颗粒，DesignStage 改 zoom 栅格化"
+  ],
+  "issuesEn": [
+    "13 cards × 12 frames overran 144 frames, so the last two were still flying in on the final frame; no settle",
+    "The pile drifted linearly and the background grid scrolled at constant speed, reading as a conveyor belt rather than one card pressing another",
+    "An incoming card's body hard-cut in only on its landing frame, so the top card was blank in nearly half the frames",
+    "The abstract was four grey skeleton bars and the author line was A. Author, B. Writer placeholder",
+    "The blurred cards below piled into a heavy black smear on a flat #FAFAFA background"
+  ],
+  "changesEn": [
+    "Now 11 cards on an accelerating deal rhythm (intervals 14→9.5f, still ≈12f on average); the last lands at f≈123.5 leaving ~20f of stillness",
+    "Each landing pushes the whole pile one step down-right (6f ease-out); the grid offset derives from the same accumulator, so they step and stop together",
+    "The body fades and lifts in during the second half of the flight and fades out as the next card covers it; cards are opaque within 1.5f, get velocity-based vertical motion blur in flight, and the landing squash is a 2.4f sine pulse",
+    "Publication-grade card faces: category chip, authors, a two-line realistic abstract, arXiv id / citations / pages and a PDF tag; hairline, inner highlight and top light",
+    "Deeper cards also lose opacity and their shadows weaken with depth; light soft-lit backdrop, a feathered grid, vignette and grain; DesignStage switched to zoom rasterization"
+  ],
+  "mdChanged": true
+}

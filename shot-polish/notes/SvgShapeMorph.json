@@ -1,0 +1,28 @@
+{
+  "stem": "SvgShapeMorph",
+  "issues": [
+    "画面底部常驻调试字幕 morphTo(shapeA)/morphTo(shapeB)",
+    "形体只是一根 2px 霓虹细线 + 14% 平涂填充，没有体积和受光",
+    "140 点用 L 直线段拼接，放大到 1080p 后轮廓靠点密度硬撑",
+    "纯色 #0a0b10 背景，形体发光却照不亮周围空间"
+  ],
+  "changes": [
+    "去掉调试字幕，画面只留形体本身",
+    "体积化：左上受光的径向渐变填充 + 外圈辉光 + 渐变描边 + 裁在轮廓内的内沿高光；内核柔光滞后 5f 跟随变形，读作“里面的流体慢半拍”",
+    "改为 1920×1080 原生坐标作画，140 个采样点用闭合 Catmull-Rom 转三次贝塞尔，轮廓真正光滑",
+    "带色相的深底 + 随色相染色、变形中途略增亮的环境柔光 + 暗角 + 颗粒"
+  ],
+  "issuesEn": [
+    "A debug caption morphTo(shapeA)/morphTo(shapeB) sat at the bottom of every frame",
+    "The form was a 2px neon line with a flat 14% fill, no volume or lighting",
+    "The 140 points were joined with straight L segments, relying on density for smoothness at 1080p",
+    "Flat #0a0b10 background; the glowing form lit nothing around it"
+  ],
+  "changesEn": [
+    "Removed the debug caption; the frame holds only the form",
+    "Volume: top-left-lit radial gradient fill, outer bloom, gradient rim and an inner-edge highlight clipped to the outline; an inner glow core follows the morph 5f late, like fluid lagging inside",
+    "Drawn in native 1920×1080 coordinates; the 140 samples are joined by a closed Catmull-Rom → cubic Bézier, so the outline is truly smooth",
+    "Hue-tinted dark base with an ambient glow that follows the hue and brightens slightly mid-morph, plus vignette and grain"
+  ],
+  "mdChanged": true
+}

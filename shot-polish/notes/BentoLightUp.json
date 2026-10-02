@@ -1,0 +1,28 @@
+{
+  "stem": "BentoLightUp",
+  "issues": [
+    "六张等大格子，不是 bento；点亮后是白卡压在 #2a2a28 暗底上，暗场品牌段被白块亮瞎",
+    "流光是均匀的 4px 琥珀描边 + drop-shadow，点亮辉光是卡外一圈方形外发光",
+    "标题是反色的 TitleBlock “Features”，字阶单一",
+    "纯色暗底，没有导出时长"
+  ],
+  "changes": [
+    "真 bento：两行宽窄互补 600/420/420 ↔ 420/420/600；卡面改暗色出版级 Card，点亮读作通电而非换色",
+    "流光改彗星：22% 周长的亮头（6px 高斯辉光 + 2.5px 亮芯）跑一圈，身后留 1.5px 细边，退火到 0.4 常亮；点亮暖光裁在圆角内",
+    "标题改为琥珀眉标 PLATFORM + 56px 负字距主标题；描边/弹出/缓推节拍全部保持原值",
+    "暗场柔光底（暖色余光）+ 全亮后地面暖光 + 暗角 + 颗粒；补 BENTO_LIGHT_UP_DURATION = 150"
+  ],
+  "issuesEn": [
+    "Six equal cells, not a bento; lit cards were white slabs on a #2a2a28 background, blinding in a dark brand beat",
+    "The light trace was a uniform 4px amber stroke with drop-shadow, and the light-up glow was a square outer halo",
+    "The title was an inverted TitleBlock “Features” with a single type size",
+    "Flat dark background, and no exported duration"
+  ],
+  "changesEn": [
+    "A true bento: rows alternate 600/420/420 ↔ 420/420/600; cards use the dark publication-grade Card so lighting up reads as powering on rather than a color swap",
+    "The trace is now a comet: a 22%-perimeter bright head (6px Gaussian glow + 2.5px core) runs the loop leaving a 1.5px edge that anneals to 0.4; the warm light-up glow is clipped inside the radius",
+    "Title becomes an amber PLATFORM eyebrow plus a 56px tightly tracked headline; trace/pop/push timings are unchanged",
+    "Dark soft-lit backdrop with warm tint, a floor glow once all cells are lit, vignette and grain; added BENTO_LIGHT_UP_DURATION = 150"
+  ],
+  "mdChanged": true
+}

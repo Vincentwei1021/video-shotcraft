@@ -1,0 +1,28 @@
+{
+  "stem": "ValueStaggerGradient",
+  "issues": [
+    "代码字幕是 #5b6480 的暗灰小字，几乎读不出，且两拍之间硬切换句",
+    "柱子用 scaleY 生长，入场时圆角被压扁；方形 box-shadow 光晕在 transform 放大层里发糊",
+    "柱子是平涂渐变，没有受光、没有地面，像贴在黑板上",
+    "纯色 #0a0b10 背景；基线只有一排暗点"
+  ],
+  "changes": [
+    "代码字幕做成语法着色的代码条（发丝边浅底、38px 输出字高），两拍间约 5f 上下交叉换句",
+    "柱子改为底部锚定按 height 生长，DesignStage 改 zoom 栅格化，模糊与辉光按目标分辨率绘制",
+    "柱体加顶部内高光、左侧受光条与随脉冲增强的辉光；地面加渐隐倒影、基线与刻度",
+    "带色相的深底 + 柱群下方随两拍起落的柔光 + 暗角 + 颗粒；值梯度、时间错峰与中心脉冲参数全部保持原值"
+  ],
+  "issuesEn": [
+    "The code caption was dim #5b6480 small text, barely readable, and hard-cut between the two beats",
+    "Bars grew with scaleY, squashing their corners on entry; the square box-shadow glow was soft in the transform-upscaled layer",
+    "Bars were flat gradients with no lighting or floor, as if pasted on a blackboard",
+    "Flat #0a0b10 background; the baseline was a row of dim dots"
+  ],
+  "changesEn": [
+    "The caption is now a syntax-highlighted code bar (hairline, faint fill, 38px output glyphs) that cross-swaps lines vertically over ~5f between beats",
+    "Bars are bottom-anchored and grow by height; DesignStage uses zoom rasterization so blur and glow render at output resolution",
+    "Bars get a top inner highlight, a left light strip and glow that strengthens with the pulse; the floor gets a fading reflection, baseline and ticks",
+    "Hue-tinted dark base with a soft glow under the bars that rises with both beats, vignette and grain; value gradients, time stagger and center-pulse parameters are unchanged"
+  ],
+  "mdChanged": true
+}
