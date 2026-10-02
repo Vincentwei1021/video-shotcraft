@@ -1,32 +1,31 @@
 {
   "stem": "PaperTitleCard",
   "issues": [
-    "整卡 opacity 淡出连纸一起淡，最后 8 帧画面掉成灰黑，交棒时像断电",
-    "压印只有 scale 1.28→1 单段，没有\"压进纸面再回弹\"的落点，读起来像普通放大淡入",
-    "8 个词等间隔 4f，句子 41f 才压完，下划线与副行在句子没写完时就提前出场，抢戏",
-    "纸底只有一层径向渐变，没有纸纹与边缘收光，画面偏平",
-    "副行 mono 26px、颜色浅，低于 Q11 辅助字高，数字滚动无运动感"
+    "116px 衬线一句话居中，纸面上再无别的东西，画面像空白文档",
+    "8 个词同一种压印节奏一路压完，强调词只是换色，节奏上没有重音",
+    "副行 mono 只有 30px 且很浅、数字滚动小到几乎看不见",
+    "尾部 8f 把墨全部淡掉，单独展示时尾帧是一张空纸"
   ],
   "changes": [
-    "压印改三段：前 72% 用 bezier(0.2,0.75,0.3,1) 从 1.28 压到 0.985，再 ease-out 回弹到 1；悬空时投随高度收缩的暖色软影，落纸后换成 1px 凹印高光",
-    "逐词间隔 4f→3f 越压越快（4/8/12/15/18/21/24/27f），句子 37f 落定；下划线挪到 24→38f、副行 26→38f、数字 27→43f，层层跟随",
-    "纸底加竖向微渐变 + 中心暖光 + 极弱暖色暗角 + multiply 纤维颗粒，全程极缓推近 1→1.012（smooth）",
-    "尾部只淡出墨：字/线/副行 8f 上浮 10px + 4px 虚化退场，纸面保留，末帧恰好干净",
-    "字体换 New York/ui-serif 栈、墨色带暖色相；副行提到 mono 30px、数字 600 字重并按滚速加竖向拖影"
+    "做成活版印刷打样稿：四角裁切标记生长、顶部套准靶、底部 mono 版权行（纹理层），中央两行 136px 衬线古典居中；纸面叠纸纤维噪声",
+    "双色套印重排节奏：第一版（墨）逐词压印 4→24f、强调词处留空，停 6f 后第二版（朱红）单独重压「one」（1.38× 起压、暗晕更大）",
+    "朱红版元素（强调词 / 短划线 / 套准靶红圈）从 (9,−6)px 的套准偏移 12f 内对版归零——套准标记因此成为手法的一部分",
+    "墨层过确定性'上墨不均'噪声滤镜 + 1px 凹印；每词落纸时词下方一圈受压暗晕 4–6f 回弹",
+    "look = paper（朱红强调）；副行 32px + DigitRoll 44→60f；时长 55→80f、hold 20f；尾部淡出改为常量 FADE_OUT 开关（默认关，尾帧保留完整海报）"
   ],
   "issuesEn": [
-    "The whole card faded via opacity, paper included, so the last 8 frames dropped to grey-black like a power cut",
-    "The press was a single scale 1.28→1 step with no 'into the paper and back' landing; it read as a plain zoom-fade",
-    "Eight words on an even 4f stagger, sentence only done at 41f, and the underline/sub line appeared before the sentence finished",
-    "Paper was a single radial gradient with no fibre or edge falloff, so the frame felt flat",
-    "Sub line was 26px light mono, below the Q11 auxiliary text height, and the digit roll had no sense of motion"
+    "One centred 116px serif sentence and nothing else on the paper — it looks like a blank document",
+    "All 8 words press in with the same rhythm; the accent word is only recoloured, with no rhythmic emphasis",
+    "The 30px mono subline is faint and the digit roll is almost invisible",
+    "The last 8f fade all ink out, so when shown on its own the final frame is blank paper"
   ],
   "changesEn": [
-    "Three-stage press: first 72% eases 1.28→0.985 with bezier(0.2,0.75,0.3,1), then eases back to 1; a warm soft shadow shrinks as the word lands, replaced by a 1px debossed highlight",
-    "Stagger tightens from 4f to 3f (4/8/12/15/18/21/24/27f), sentence lands at 37f; underline moved to 24→38f, sub line 26→38f, digits 27→43f so each layer follows the last",
-    "Paper gets a vertical tint, warm centre light, faint warm vignette and multiply fibre grain, plus a slow 1→1.012 smooth push-in",
-    "Exit fades only the ink: text/rule/sub line rise 10px and blur 4px over 8f while the paper stays; last frame is clean",
-    "New York/ui-serif stack with warm-tinted ink; sub line raised to 30px mono, 600-weight digits with speed-based vertical blur"
+    "Recast as a letterpress proof sheet: crop marks grow in the corners, a registration target at top, a mono slug line at the bottom (texture), two centred lines of 136px serif; paper fibre noise over the sheet",
+    "Two-colour printing drives the rhythm: the ink pass presses words 4→24f leaving a gap for the accent word, then after a 6f pause the vermilion pass stamps 'one' on its own (1.38× start, a bigger press halo)",
+    "Everything on the vermilion plate (accent word, rule, the red registration ring) slides from a (9,−6)px misregistration into register within 12f — the proof marks become part of the technique",
+    "Ink runs through a deterministic uneven-inking noise filter plus a 1px deboss; each word leaves a brief press halo under it that springs back in 4–6f",
+    "Look = paper (vermilion accent); 32px subline with DigitRoll 44→60f; duration 55→80f with a 20f hold; the ink fade-out is now a FADE_OUT constant (off by default, so the last frame is a full poster)"
   ],
+  "look": "paper",
   "mdChanged": true
 }

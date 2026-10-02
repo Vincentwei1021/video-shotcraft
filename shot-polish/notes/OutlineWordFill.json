@@ -1,30 +1,31 @@
 {
   "stem": "OutlineWordFill",
   "issues": [
-    "1px（设计坐标）描边放大后成片约 4px，空心字读作粗笨的气球边而不是制图细线",
-    "3.2× → 1 的收缩只用 10f，速度极大却全程锐利，冲击感打折",
-    "瞄准环只是一圈虚线，点亮那一下除了字本身没有任何\"锁定\"反馈",
-    "#030303 纯黑平铺，微尘是方形像素点"
+    "近纯黑底 + 灰色细线，整体灰暗无光，点亮之前几乎什么都看不清",
+    "画面只有一个词和一个虚线圆，'瞄准'的过程没有内容，1.5s 的等待显得空",
+    "点亮只是白字 + 很弱的白辉光，'钉子'落下那一下没有冲击反馈，圆和线也没变化",
+    "在 480×270 设计坐标里放大渲染，0.6px 描边与虚线放大后偏糊"
   ],
   "changes": [
-    "描边收到 0.6px（成片约 2.4px），预热 86→145 的灰度节拍不变；空心字固定用静态字体 Helvetica Neue，避开 SF 可变字体内部重叠轮廓被描出来的问题",
-    "急缩段按 scale 中心差分速度给瞬时失焦（≤0.8 设计 px，停稳归零）",
-    "虚线圆加四个随圆自转的套准刻度；点亮帧圆与左右水平线同步增亮\"锁定\"，与字辉光共用同一条 flash 曲线回落",
-    "底换带冷色相的近黑径向 + 暗角 + soft-light 颗粒，微尘改圆形柔点、尺寸缩小",
-    "10f 收缩、45f 圆收缩、0.6 帧瞬时填充等所有时间窗保持不变"
+    "look 换 ember（暖黑 · 橙）；按 1920 原生坐标重写：220px / 500 Helvetica Neue 空心字（2px 暖灰描边），r=410 虚线圆 + 内圈 72 格刻度环 + 四个套准刻度",
+    "两侧水平虚线带 mono 读数「BEFORE 38 ms」/「AFTER 4 ms」，把'更快'讲成一组对比数据；圆内点亮后升起眉题与 40px 副行",
+    "第 54 帧硬切点亮成白热字，同帧圆 / 线锁定成橙色、右侧读数变橙，主圈自转刹停（内圈继续慢转）；白 + 橙两层辉光 8f 衰完、一道冲击环 14f 外扩消散、舞台主光脉冲",
+    "保留快慢对比：字急缩 11f（snappy + 按 scale 速度失焦）vs 圆慢收 44f（EASE.out）；描边 44–53f 预热到亮橙白",
+    "时长 75→90f，点亮后 hold 36f，全程推进 1→1.015；填充改按帧硬切，不再依赖归一化时间窗"
   ],
   "issuesEn": [
-    "A 1px (design-unit) stroke became ~4px on screen, so the outline word read as a chunky balloon edge rather than a drafting line",
-    "The 3.2× → 1 shrink takes only 10f — a huge velocity rendered perfectly sharp, which blunted the impact",
-    "The targeting ring was just a dashed circle; at the fill moment nothing but the word itself acknowledged the lock-on",
-    "Flat #030303 black, and the dust motes were square pixels"
+    "Near-pure black with thin grey lines — dim and unlit; almost nothing is legible before the fill",
+    "Only one word and one dashed circle on screen; the 'aiming' phase has no content, so the 1.5s wait feels empty",
+    "The fill is just white type with a weak white glow — no impact feedback when the 'nail' lands, and the circle and lines don't react",
+    "Rendered from a 480×270 design space and scaled up, so the 0.6px stroke and dashes look soft"
   ],
   "changesEn": [
-    "Stroke reduced to 0.6px (~2.4px on screen) with the 86→145 pre-brighten beat kept; the outline word is pinned to the static Helvetica Neue because SF's variable outlines expose overlapping inner contours under text-stroke",
-    "Transient defocus during the shrink from the central-difference scale velocity (≤0.8 design px, zero at rest)",
-    "Four registration ticks rotate with the dashed ring; on the fill frame the ring and both horizontal dashes brighten as a lock-on and fall back on the same flash curve as the word's glow",
-    "Ground is a cool-tinted near-black radial with vignette and soft-light grain; dust motes are now small soft round points",
-    "Every timing window — 10f shrink, 45f ring shrink, 0.6-frame instant fill — is unchanged"
+    "Look switched to ember; rewritten in native 1920 coordinates: 220px / 500 Helvetica Neue outline (2px warm-grey stroke), r=410 dashed circle + an inner 72-tick bezel + four registration ticks",
+    "Horizontal dashed lines carry mono readouts 'BEFORE 38 ms' / 'AFTER 4 ms', turning 'faster' into a before/after data point; an eyebrow and 40px subline rise inside the circle after the fill",
+    "Hard cut to white-hot solid on frame 54: the circle and lines lock to orange on the same frame, the right readout turns orange, the main ring stops rotating (inner bezel keeps drifting); a white + orange glow decays in 8f, one shock ring expands and fades over 14f, the stage light pulses",
+    "Fast/slow contrast kept: 11f word shrink (snappy + velocity-based defocus) vs 44f circle settle (EASE.out); the stroke warms to bright orange-white over 44–53f",
+    "Duration 75→90f with a 36f hold after the fill, push-in 1→1.015; the fill is a frame-based hard cut instead of a normalised time window"
   ],
+  "look": "ember",
   "mdChanged": true
 }

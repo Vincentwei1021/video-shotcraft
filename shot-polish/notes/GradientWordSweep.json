@@ -1,30 +1,31 @@
 {
   "stem": "GradientWordSweep",
   "issues": [
-    "没有导出时长常量，工作台按卡片猜成 20f，扫充只演到一半，闪电和稳态呼吸全没渲出来",
-    "辉光层的 mask/clipPath 裁在文字盒上，模糊溢出部分被切成矩形，扫充时词周围出现明显的\"方框光\"",
-    "闪电是 36 次随机事件挤在 70f 里，远密于卡片要求的稀疏零星，尾帧仍在闪",
-    "整段入场是一整块淡入上移，之后完全死机位；#050505 纯平黑底"
+    "小字号 92px 斜体两行居中，词组挤在画面中线一窄条里，上下大片纯黑没有任何设计",
+    "关键词充能前后都是白字基础上叠渐变，'通电'前后的明暗差很小，读不出\"只有它被点亮\"",
+    "环境是死平近黑，充能只发生在字上，房间没有被照亮，能量感停在文字层",
+    "闪电是任意折线，和字形没有关系，像随机划痕；扫满那一下没有任何冲量，波前过完就平了"
   ],
   "changes": [
-    "补 GRADIENT_WORD_SWEEP_DURATION = 105（3.5s，卡片 2.5–3.5s 区间上沿）",
-    "所有带模糊的辉光层（大柔光/中晕/近核/尾迹/波前亮核）改放进四周外扩 90px 的 Halo 盒，mask 色标用 calc 换算回文字坐标，方框光彻底消失；亮核由 clipPath 硬裁改软边 mask",
-    "闪电改为 7 次排期（同屏 1 道、末次约 92f 熄灭），尾段留出干净呼吸；三层紫红细描边规格不变",
-    "入场改两行错峰 blur-slide（snappy，第二行晚 4f，blur 10→0）；整段极缓推近 1→1.025（smooth）",
-    "底换带紫色相的近黑径向 + 暗角 + soft-light 颗粒；18f 快扫、波前梯度、4 层泛光强度全部保留"
+    "look 换 aurora（紫粉夜）；左对齐口号海报：mono 眉题 → 230px / 800 巨字 Supercharged → 76px 白色正文 → 底部发丝线 + 页脚，关键词是画面唯一的彩色",
+    "充能前关键词是没上电的暗灰（ink 26%）、正文纯白；扫前 4f '吸气'预备（微缩 + 再暗），扫满那帧弹簧踢 +2.4%（damping 13 一次回弹）+ 泛光峰值后衰减到稳态",
+    "舞台主光随充能 0.35→1.0 亮起、词后大柔光跟着波前展开，浮尘同步变亮——整个房间被这个词照亮",
+    "闪电改为字母顶之间的跳弧（按字形顶高生成），6 次排期、每次 3–4f 两拍闪烁，紫红三层细描边保留",
+    "时间表重排：0–20 入场 / 20–24 吸气 / 24–42 扫充（EASE.out）/ 46–86 闪电 / 尾段 19f 呼吸，全程推进 1→1.03；修降部被渐变层漏掉的暗灰残影（行高 1.3）"
   ],
   "issuesEn": [
-    "No exported duration constant, so the workbench guessed 20f from the card — the sweep only got halfway and the lightning and steady glow never rendered",
-    "Glow layers were masked/clipped to the text box, so the blur spill was cut into a rectangle — a visible \"box of light\" around the word during the sweep",
-    "Lightning was 36 random events packed into 70f, far denser than the card's sparse-and-occasional spec, and still flickering on the last frame",
-    "The entrance was one block fading up, then a locked-off frame on a flat #050505 black"
+    "Small 92px italic on two centred lines, squeezed into a thin band across the middle with large empty black areas above and below",
+    "The keyword is white before and after the gradient, so the before/after contrast is weak — it doesn't read as 'only this word got powered'",
+    "Flat near-black environment; the charge happens only on the type, nothing in the room lights up",
+    "Lightning was arbitrary zig-zags unrelated to the letterforms; nothing happens at the moment the sweep completes"
   ],
   "changesEn": [
-    "Added GRADIENT_WORD_SWEEP_DURATION = 105 (3.5s, top of the card's 2.5–3.5s range)",
-    "Every blurred glow layer (ambient, mid, near core, trail, wavefront core) now sits in a Halo box padded 90px on all sides, with mask stops mapped back to text coordinates via calc — the boxed glow is gone; the core uses a soft mask instead of a hard clipPath",
-    "Lightning is now 7 scheduled flashes (one at a time, last one dies around 92f), leaving a clean tail; the three-layer thin magenta stroke spec is unchanged",
-    "Entrance is a two-line staggered blur-slide (snappy, second line 4f later, blur 10→0); the whole shot slowly pushes in 1→1.025 (smooth)",
-    "Ground is a purple-tinted near-black radial with vignette and soft-light grain; the 18f sweep, wavefront gradient and four-layer glow levels are all kept"
+    "Look switched to aurora; left-aligned slogan poster: mono eyebrow → 230px / 800 'Supercharged' → 76px white body → hairline footer; the keyword is the only colour on screen",
+    "Before charging the keyword is an unpowered dim grey (ink 26%) next to pure-white body copy; a 4f 'inhale' anticipation (slight shrink, dimmer), then a spring kick of +2.4% (damping 13, one visible rebound) and glow peak the frame the sweep completes, decaying to steady state",
+    "The stage key light ramps 0.35→1.0 with the charge, a large soft glow behind the word unfolds with the wavefront and the dust brightens — the whole room is lit by the word",
+    "Lightning is now arcs jumping between letter tops (built from glyph heights), 6 scheduled flashes of 3–4f with a two-beat flicker; the three-layer thin magenta stroke is kept",
+    "New timeline: 0–20 entrance / 20–24 inhale / 24–42 sweep (EASE.out) / 46–86 lightning / 19f breathing tail, push-in 1→1.03; fixed the grey ghost on descenders that the gradient layers missed (line-height 1.3)"
   ],
+  "look": "aurora",
   "mdChanged": true
 }
