@@ -1,0 +1,32 @@
+{
+  "stem": "Carousel3D",
+  "issues": [
+    "八张卡是 200→354 的饱和彩虹渐变，卡面只有几何符号 + CARD 0X 编号 + 两根骨架条",
+    "环前后的卡亮度完全一样，没有空气透视，背面卡和正面卡在画面里抢戏",
+    "地面反光盘放在卡片下方很远处，画面里几乎看不到，环像悬在空中",
+    "3D 层在 480×270 设计坐标里 transform 放大，卡面文字与细边发软",
+    "背景是单一径向渐变，没有颗粒，暗部有色带"
+  ],
+  "changes": [
+    "卡面改为同色系石墨模板卡（色相 228→263 微调）：渐变图标块 + 标题/副标题 + 八种迷你图表，1px 低透明发丝线 + 顶部内高光 + 卡顶径向受光",
+    "按卡在环上的方位角 (1−cosθ)/2 叠深色压暗层（最后方 62%），前后层次一眼可读",
+    "地面盘挪到卡脚下（y=66），并加一份以地面为镜面的 scaleY(−1) 倒影环（叶子层 16% 透明度 + 渐隐 mask，不拍平 3D）",
+    "DesignStage 改 raster=zoom，3D 层按目标分辨率栅格化，文字锐利；几何（半径/透视/俯角）与匀速一圈完全不变，首尾帧仍无缝",
+    "背景换成深色柔光底（中心主光 + 靛蓝余光 + 暗角 + 颗粒）"
+  ],
+  "issuesEn": [
+    "The eight cards used a saturated 200→354 rainbow gradient, with faces made of a glyph, a CARD 0X label and two skeleton bars",
+    "Front and back cards had identical brightness, no aerial perspective, so back cards competed with the front",
+    "The floor disc sat far below the cards and was barely visible; the ring looked like it was floating",
+    "The 3D layer was transform-upscaled from 480×270 design space, so card text and hairlines were soft",
+    "Single radial-gradient background with no grain, banding in the darks"
+  ],
+  "changesEn": [
+    "Faces are single-family graphite template cards (hue 228→263): gradient icon tile, title/subtitle and eight mini charts, low-alpha hairline, top inner highlight and a top sheen",
+    "A dark overlay scaled by (1−cosθ)/2 of each card's ring angle (62% at the back) makes depth instantly readable",
+    "The floor disc now sits right under the cards (y=66), plus a scaleY(−1) reflection ring mirrored about the floor (16% opacity and fade mask on leaf faces so 3D isn't flattened)",
+    "DesignStage uses raster=zoom so the 3D layer rasterizes at target resolution; geometry (radius/perspective/tilt) and the single constant-speed loop are unchanged, still seamless",
+    "Dark soft-lit backdrop (center key light, indigo spill, vignette, grain)"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "ClonerDepthEcho",
+  "issues": [
+    "没有导出时长常量，工作台按 inline 猜成 10f，改版前视频只有一张静止主卡，排开/吸回整段都没演",
+    "画面上方打着调试标题 CLONER DEPTH ECHO，背景是纯色灰底",
+    "克隆体是半透明白卡叠在浅灰底上，越往后越接近背景色，纵队几乎读不出来",
+    "主卡在画面里偏小、无落地参照；吸回是 10f 高速位移却没有任何运动模糊",
+    "复印前主卡没有预备动作，'一个 = 很多'只能靠观众自己数"
+  ],
+  "changes": [
+    "补导出 CLONER_DEPTH_ECHO_DURATION = 120（4s，卡片 md 4–5s 下限）：入场 16f → f18 排开 → 停 25f → 10f 吸回 → 弹跳 → 静止 37f",
+    "去掉调试标题；柔光浅底 + 暗角 + 颗粒，主卡下方加随合体弹跳的地面接触影；整组以纵队重心放大 1.22 取景",
+    "克隆体叠一层随纵深加深的强调色染色（5%→18%）+ 强调色发丝边，透明度 100%→20% 衰减保持不变，纵队清晰可数",
+    "吸回段按每个克隆的实际位移速度给沿 (64,−34) 方向的近似方向模糊，静止时为 0；主卡阴影随弹跳抬高",
+    "复印前主卡先按压到 0.965（f10→18）再随排开回弹；右上角实例计数 chip 随克隆弹出从 ×1 数到 ×8，每跳一次小脉冲，合体后停在 ×8"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 10f from inline code; the before video was a single static card with no spread or merge",
+    "A debug title CLONER DEPTH ECHO sat at the top over a flat grey background",
+    "Clones were translucent white cards on light grey, fading into the background so the column barely read",
+    "The hero was small with no grounding; the 10f merge was very fast but had no motion blur",
+    "No anticipation before the 'copy', and 'one = many' relied on viewers counting"
+  ],
+  "changesEn": [
+    "Exported CLONER_DEPTH_ECHO_DURATION = 120 (4s, the low end of the card's 4–5s): 16f entrance → spread at f18 → 25f hold → 10f merge → pop → 37f rest",
+    "Removed the debug title; soft-lit light backdrop with vignette and grain, a floor contact shadow that reacts to the pop, and the group framed 1.22x around the column's center",
+    "Clones get a depth-increasing accent tint (5%→18%) and accent hairline while keeping the 100%→20% opacity falloff, so the column is clearly countable",
+    "During the merge each clone gets approximate directional blur along (64,−34) from its actual velocity, zero at rest; hero shadow lifts with the pop",
+    "The hero presses to 0.965 (f10→18) before springing back as clones spread; an instance chip counts ×1→×8 with a pulse per tick and stays ×8 after the merge"
+  ],
+  "mdChanged": false
+}

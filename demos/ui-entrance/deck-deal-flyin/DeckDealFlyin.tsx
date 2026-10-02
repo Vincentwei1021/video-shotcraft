@@ -9,8 +9,16 @@
 //      出牌间隔硬加速收缩（gap 4f→0.2f），单卡飞行带 z 弧顶 + settle 过冲 +
 //      press 回弹，相机追逐向下滚动越来越快，满板静止 0.5s。
 // 运动模糊（相机快速段）本 demo 用残影 ghost 近似，不依赖 @remotion/motion-blur。
-import { Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
+// 质感层（改版）：
+//   · 相机：原关键帧逐段 ease-in-out，会在 f34/f62/f82 三处完全停住再起步（运镜顿挫）；
+//     改为过同一组关键帧的单调三次 Hermite 样条，逐帧展开成 PageCam2D 关键帧（线性插值），
+//     速度在关键帧处连续，追逐 scroll 真正"越来越快"，满板前自然减速入 rest；
+//   · 金属桌面：粗糙的交叉条纹换成确定性 feTurbulence 各向异性拉丝纹 + 宽幅镜面高光带 + 暖主光；
+//   · 金属 → 页面：半透明叠化在中段是一片脏灰，改为以牌堆为圆心的柔边光圈揭开（iris reveal），
+//     像"灯从牌堆处亮起"；开场段叠暗角 + 颗粒，随金属一同退场。
+import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { PageCam2D, CamKey2D } from '../../_fixtures/PageCam2D';
+import { Grain, Vignette } from '../../_fixtures/Polish';
 import layout from '../../_textures/live-layout.json';
 
 export const DECK_DEAL_FLYIN_DURATION = 113;
@@ -71,7 +79,7 @@ const ANTICIPATE = {
   topPull: 30,
 };
 
-const CAM_KEYS: CamKey2D[] = [
+const CAM_ANCHORS: CamKey2D[] = [
   { frame: 0, cx: PILE_CX - 30, cy: PILE_CY + 60, zoom: 1.95, rotX: 46, rotY: -30, rotZ: 9, persp: 1100 },
   { frame: 34, cx: PILE_CX + 30, cy: PILE_CY + 40, zoom: 1.85, rotX: 42, rotY: 26, rotZ: -7, persp: 1100 },
   { frame: 62, cx: 960, cy: 900, zoom: 0.88, rotX: 26, rotY: 0, rotZ: 2, persp: 1300 },
@@ -80,8 +88,67 @@ const CAM_KEYS: CamKey2D[] = [
   { frame: 113, cx: 960, cy: 3032, zoom: 0.72, rotX: 0, rotY: 0, rotZ: 0, persp: 1300 },
 ];
 
+// —— 相机样条：单调三次 Hermite（Fritsch–Carlson），各参数分别过锚点，关键帧处速度连续 ——
+type CamParam = 'cx' | 'cy' | 'zoom' | 'rotX' | 'rotY' | 'rotZ' | 'persp';
+const PARAMS: CamParam[] = ['cx', 'cy', 'zoom', 'rotX', 'rotY', 'rotZ', 'persp'];
+const hermite = (xs: number[], ys: number[]) => {
+  const n = xs.length;
+  const d = xs.slice(0, -1).map((x, i) => (ys[i + 1] - ys[i]) / (xs[i + 1] - x));
+  const m = xs.map((_, i) => (i === 0 ? d[0] : i === n - 1 ? d[n - 2] : d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2));
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+    const a = m[i] / d[i], b = m[i + 1] / d[i], h = a * a + b * b;
+    if (h > 9) { const k = 3 / Math.sqrt(h); m[i] = k * a * d[i]; m[i + 1] = k * b * d[i]; }
+  }
+  // 最后一段（满板 rest）两端速度为 0：相机稳稳停住
+  m[n - 1] = 0;
+  return (x: number) => {
+    let i = 0;
+    while (i < n - 2 && x > xs[i + 1]) i++;
+    const h = xs[i + 1] - xs[i];
+    const t = Math.min(1, Math.max(0, (x - xs[i]) / h));
+    const t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * ys[i] + (t3 - 2 * t2 + t) * h * m[i] + (-2 * t3 + 3 * t2) * ys[i + 1] + (t3 - t2) * h * m[i + 1];
+  };
+};
+const CURVES = Object.fromEntries(
+  PARAMS.map((p) => [p, hermite(CAM_ANCHORS.map((k) => k.frame), CAM_ANCHORS.map((k) => (k[p] as number | undefined) ?? (p === 'persp' ? 1400 : 0)))]),
+) as Record<CamParam, (x: number) => number>;
+const CAM_KEYS: CamKey2D[] = Array.from({ length: DECK_DEAL_FLYIN_DURATION + 1 }, (_, f) => ({
+  frame: f,
+  cx: CURVES.cx(f),
+  cy: CURVES.cy(f),
+  zoom: CURVES.zoom(f),
+  rotX: CURVES.rotX(f),
+  rotY: CURVES.rotY(f),
+  rotZ: CURVES.rotZ(f),
+  persp: CURVES.persp(f),
+}));
+const LINEAR = (t: number) => t;
+
+// —— 拉丝金属纹理：确定性 feTurbulence（x 极低频 / y 高频 = 横向拉丝），无缝小图平铺 ——
+const BRUSH_TILE = (() => {
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' width='640' height='640'>` +
+    `<filter id='b' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>` +
+    `<feTurbulence type='fractalNoise' baseFrequency='0.0018 0.62' numOctaves='3' seed='11' stitchTiles='stitch'/>` +
+    `<feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.6 0.6 0.6 0 -0.66'/>` +
+    `</filter><rect width='100%' height='100%' filter='url(#b)'/></svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+})();
+
+// 金属 → 页面的光圈揭开：f34→58 以牌堆为圆心，柔边半径从 0 扩到 3400px（页面空间）
+const REVEAL = [34, 58] as const;
+
 export const DeckDealFlyin: React.FC = () => {
   const frame = useCurrentFrame();
+  const reveal = interpolate(frame, [REVEAL[0], REVEAL[1]], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.5, 0, 0.75, 0.6),
+  });
+  const holeR = 3400 * reveal;
+  const feather = 520 + 900 * reveal;
+  // 开场氛围（暗角 + 颗粒）随金属一起退场
+  const moodOp = interpolate(frame, [30, 56], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
 
   // anticipation progress (0→1 during 28→36)
   const antT = interpolate(frame, [ANTICIPATE.from, ANTICIPATE.to], [0, 1], {
@@ -90,20 +157,32 @@ export const DeckDealFlyin: React.FC = () => {
   const antDone = frame >= ANTICIPATE.to;
 
   return (
-    <PageCam2D src="textures/live/projects-empty.png" pageH={PAGE_H} keys={CAM_KEYS}>
+    <AbsoluteFill>
+    <PageCam2D src="textures/live/projects-empty.png" pageH={PAGE_H} keys={CAM_KEYS} ease={LINEAR}>
       {/* dark brushed-metal table under the opening pile close-up */}
-      {frame < METAL_FADE[1] ? (
+      {frame < METAL_FADE[1] + 4 ? (
         <div
           style={{
             position: 'absolute', left: -3000, top: -3000, width: 9000, height: 9000,
-            opacity: interpolate(frame, [METAL_FADE[0], METAL_FADE[1]], [1, 0], {
+            // 光圈揭开：牌堆处先"亮"出纸面，柔边向外扩散；尾段整体再收掉残余
+            opacity: interpolate(frame, [METAL_FADE[1] - 6, METAL_FADE[1] + 4], [1, 0], {
               extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
             }),
+            WebkitMaskImage: reveal > 0
+              ? `radial-gradient(circle at ${3000 + PILE_CX}px ${3000 + PILE_CY}px, transparent ${holeR.toFixed(0)}px, #000 ${(holeR + feather).toFixed(0)}px)`
+              : undefined,
+            maskImage: reveal > 0
+              ? `radial-gradient(circle at ${3000 + PILE_CX}px ${3000 + PILE_CY}px, transparent ${holeR.toFixed(0)}px, #000 ${(holeR + feather).toFixed(0)}px)`
+              : undefined,
             background: [
-              `radial-gradient(1300px 900px at ${3000 + PILE_CX}px ${3000 + PILE_CY}px, rgba(255,214,150,0.20), rgba(255,190,120,0.06) 40%, transparent 68%)`,
-              'repeating-linear-gradient(100deg, rgba(255,255,255,0.028) 0px, rgba(255,255,255,0.028) 1px, transparent 2px, transparent 7px)',
-              'repeating-linear-gradient(100deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 2px, transparent 4px, transparent 13px)',
-              'linear-gradient(115deg, #2a2d33 0%, #383c44 28%, #22242a 55%, #33363e 78%, #1d1f24 100%)',
+              // 暖主光：落在牌堆上
+              `radial-gradient(1300px 900px at ${3000 + PILE_CX}px ${3000 + PILE_CY}px, rgba(255,214,150,0.22), rgba(255,190,120,0.07) 40%, transparent 68%)`,
+              // 宽幅镜面高光带：拉丝金属被斜光扫过的那条亮带
+              `linear-gradient(104deg, transparent ${3000 + PILE_CX - 1500}px, rgba(220,228,240,0.10) ${3000 + PILE_CX - 500}px, rgba(240,244,252,0.16) ${3000 + PILE_CX}px, rgba(220,228,240,0.08) ${3000 + PILE_CX + 600}px, transparent ${3000 + PILE_CX + 1700}px)`,
+              // 各向异性拉丝纹（确定性噪声小图平铺）
+              `${BRUSH_TILE} 0 0 / 640px 640px repeat`,
+              // 钢色底：冷灰带一点蓝
+              'linear-gradient(115deg, #24272d 0%, #33373f 30%, #202228 56%, #2c2f36 80%, #1a1c21 100%)',
             ].join(', '),
             pointerEvents: 'none',
           }}
@@ -160,7 +239,10 @@ export const DeckDealFlyin: React.FC = () => {
         const shadow = landed
           ? '0 2px 6px rgba(60,45,30,.08)'
           : inPile
-            ? '0 1px 3px rgba(60,45,30,.14)'
+            ? i === N_CARDS - 1
+              // 牌堆最底一张：在金属桌面上投一块大而虚的落影（随金属退场减弱），牌堆"压"在桌上
+              ? `0 1px 3px rgba(60,45,30,.14), 0 22px 48px rgba(0,0,0,${(0.5 * (1 - reveal) + 0.1).toFixed(3)})`
+              : '0 1px 3px rgba(60,45,30,.14)'
             : `0 ${36 - 30 * settleT}px ${70 - 60 * settleT}px rgba(60,45,30,${0.3 - 0.22 * settleT})`;
 
         // motion-blur ghost during the deal (cheap approximation)
@@ -205,5 +287,12 @@ export const DeckDealFlyin: React.FC = () => {
         }}
       />
     </PageCam2D>
+      {moodOp > 0 ? (
+        <AbsoluteFill style={{ opacity: moodOp, pointerEvents: 'none' }}>
+          <Vignette strength={0.55} inner={0.4} color="#050608" />
+          <Grain opacity={0.09} blend="soft-light" />
+        </AbsoluteFill>
+      ) : null}
+    </AbsoluteFill>
   );
 };

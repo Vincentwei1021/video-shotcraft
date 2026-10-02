@@ -1,0 +1,30 @@
+{
+  "stem": "DeckDealFlyin",
+  "issues": [
+    "相机关键帧逐段 ease-in-out，在 f34、f62、f82 三处速度归零再起步，追逐 scroll 一顿一顿，不是'越来越快'",
+    "金属桌面是两层 repeating-linear-gradient 交叉条纹，读作粗糙的滚花网纹而不是拉丝金属",
+    "金属层整体半透明淡出，转场中段整个页面被盖成一片脏灰",
+    "开场暗场没有暗角和颗粒，牌堆在桌面上没有落影，像贴在纹理上"
+  ],
+  "changes": [
+    "相机改为过同一组关键帧的单调三次 Hermite（Fritsch–Carlson）样条，逐帧展开喂给 PageCam2D（线性插值），关键帧处速度连续，满板 rest 段速度为 0 稳停",
+    "拉丝纹换成确定性 feTurbulence 各向异性噪声小图平铺（x 0.0018 / y 0.62）+ 104° 宽幅镜面高光带 + 冷灰钢色底 + 暖主光",
+    "金属 → 页面改为以牌堆为圆心的柔边光圈揭开（f34→58，半径 0→3400px、羽化 520→1420px），像灯从牌堆处亮起，无灰色中间态",
+    "开场段叠暗角（0.55）+ soft-light 颗粒，随金属一同在 f30→56 退场；牌堆最底一张在金属上投大而虚的落影，随揭开减弱",
+    "发牌节拍、预备拍 48/30px、单卡飞行 / settle / press、0.5s 满板静止等全部原参数保持不变"
+  ],
+  "issuesEn": [
+    "Per-segment ease-in-out camera keys hit zero velocity at f34, f62 and f82, so the chase scroll stuttered instead of accelerating",
+    "The metal table was two crossed repeating-linear-gradients that read as coarse knurling rather than brushed metal",
+    "The whole metal layer faded out translucently, turning the page into a muddy grey mid-transition",
+    "The dark opening had no vignette or grain, and the pile cast no shadow on the table, looking pasted on"
+  ],
+  "changesEn": [
+    "Camera now follows a monotone cubic Hermite (Fritsch–Carlson) spline through the same keys, expanded per frame into PageCam2D keys (linear), with continuous velocity at keys and zero velocity into the full-board rest",
+    "Brushed texture is a deterministic anisotropic feTurbulence tile (x 0.0018 / y 0.62) plus a 104° broad specular band, cool steel base and warm key light",
+    "Metal-to-page is a soft iris reveal centered on the pile (f34→58, radius 0→3400px, feather 520→1420px), like lights coming up from the pile, with no grey midpoint",
+    "Opening adds a vignette (0.55) and soft-light grain that leave with the metal (f30→56); the bottom pile card casts a large soft shadow on the metal that weakens with the reveal",
+    "Deal cadence, 48/30px anticipation, per-card flight/settle/press and the 0.5s full-board rest are all unchanged"
+  ],
+  "mdChanged": true
+}

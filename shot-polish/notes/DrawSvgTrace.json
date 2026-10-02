@@ -1,0 +1,32 @@
+{
+  "stem": "DrawSvgTrace",
+  "issues": [
+    "没有导出时长常量，工作台按卡片 md 猜成 40f，改版前视频只演到描边一半就结束，闭合闪、交棒、下划线全没出现",
+    "左上角打着调试标题 DRAW SVG TRACE，背景是纯色灰底",
+    "笔头只是一段更粗的同色线段，读不出'有一支笔在画'",
+    "闭合后填进来的是灰色骨架条 + 灰圆头像，交棒的 2px 灰边比墨线还粗糙",
+    "内容一次性整体淡入，卡片本身没有任何体积变化"
+  ],
+  "changes": [
+    "补导出 DRAW_SVG_TRACE_DURATION = 126：描边 40f → 闪黑交棒 16f → 下划线 18f → 真静止 40f（R1）",
+    "去掉调试标题；柔光纸面底 + 暗角 + 颗粒；墨色换成带冷调的 #17181c，闭合仍冲纯黑 + 4→8px 加粗",
+    "笔头改为三段渐细 dash（5.2/6.4/7.6px）+ 按圆角矩形弧长参数精确定位的圆形笔尖（带落影与一点高光），起收 2f 淡入淡出",
+    "卡片内容换成出版级指标卡：标签 + 'Revenue grew 38% in Q3' 标题 + 正文 + 12 柱趋势图 + 署名行；第二用法改为只给重点词 38% 画下划线",
+    "闭合后各元素自上而下 2f 错峰 8f 上浮淡入，卡片阴影随'上色'从贴地长到静置高度；交棒 border 改为 1px 发丝线"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 40f from the card md; the before video stopped mid-trace, never reaching the close flash, handoff or underline",
+    "A debug title DRAW SVG TRACE sat top-left over a flat grey background",
+    "The pen tip was just a thicker segment of the same line, not reading as a pen drawing",
+    "After closing, the card filled with grey skeleton bars and a grey dot avatar, and the 2px grey handoff border looked cruder than the ink line",
+    "Content faded in all at once and the card itself had no sense of volume"
+  ],
+  "changesEn": [
+    "Exported DRAW_SVG_TRACE_DURATION = 126: 40f trace → 16f flash/handoff → 18f underline → 40f true hold (R1)",
+    "Removed the debug title; soft paper backdrop with vignette and grain; ink is a cool #17181c, still flashing to pure black with a 4→8px weight on close",
+    "Pen is three tapered dashes (5.2/6.4/7.6px) plus a round nib placed exactly by rounded-rect arc length, with a drop shadow and tiny highlight, fading in/out over 2f",
+    "Card content is a publication-grade metric card: label, 'Revenue grew 38% in Q3' headline, body copy, a 12-bar trend and a byline; the second usage now underlines only the key figure 38%",
+    "After closing, elements rise and fade in top-down with a 2f stagger over 8f, the card shadow grows from flat to resting height, and the handoff border is a 1px hairline"
+  ],
+  "mdChanged": true
+}

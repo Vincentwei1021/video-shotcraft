@@ -1,0 +1,32 @@
+{
+  "stem": "CardStack",
+  "issues": [
+    "八张卡是 222→334 的彩虹色环，饱和渐变堆在一起显得廉价",
+    "卡面只有两根彩色骨架条 + 一个几何字符，没有任何可信内容",
+    "扇面展开后两端卡片顶出画框被裁切，构图失衡",
+    "卡片从屏下直上直下弹入，没有倾角跟随、没有速度模糊，成摞时完全对齐像一张贴图",
+    "纯色 #0a0b10 背景 + 单层重阴影，卡片与环境没有空间关系；3D 层经 transform 放大，小字发软"
+  ],
+  "changes": [
+    "改为同色系石墨卡面（色相只在 228→262 内微调）+ 1px 低透明发丝线 + 顶部内高光 + 卡顶径向受光",
+    "卡面做成出版级模板卡：图标 + 标题 + 副标题 + 八种迷你可视化（柱图/折线/环图/清单/看板/表格/日历/指标）",
+    "展开同段（0.5→0.86，smooth）相机从 1 拉远到 0.8 并略下移，扇面完整入画；DesignStage 改 raster=zoom，3D 层按目标分辨率栅格化",
+    "入场加 ±7° 交替倾角随 spring 收敛 + 按速度计算的竖向高斯模糊（静止为 0）；成摞时有确定性 ±2.4°/±3px 错位，展开时理顺进扇面",
+    "阴影改为随飞行高度变化的两层（接触影 + 环境影），地面加一块随扇面变宽的接触暗影；深色柔光底 + 暗角 + 颗粒"
+  ],
+  "issuesEn": [
+    "The eight cards formed a 222→334 rainbow hue ramp; stacked saturated gradients looked cheap",
+    "Card faces were just two colored skeleton bars plus a glyph, no believable content",
+    "After the fan opened, the outer cards were clipped by the frame edges",
+    "Cards shot straight up with no tilt follow-through or motion blur, and the stack was perfectly aligned like a single bitmap",
+    "Flat #0a0b10 background with one heavy shadow, no spatial grounding; the 3D layer was transform-upscaled so small text was soft"
+  ],
+  "changesEn": [
+    "Single-family graphite cards (hue only drifts 228→262) with low-alpha hairline border, top inner highlight and a top radial sheen",
+    "Faces are publication-grade template cards: icon, title, subtitle and eight mini visualizations (bars/line/donut/checklist/kanban/table/calendar/metric)",
+    "During the fan (0.5→0.86, smooth) the camera pulls back from 1 to 0.8 so the fan fits; DesignStage uses raster=zoom so the 3D layer rasterizes at target resolution",
+    "Entrance adds an alternating ±7° tilt that settles with the spring plus velocity-driven vertical blur (zero at rest); the pile has deterministic ±2.4°/±3px offsets that straighten into the fan",
+    "Two-layer shadows that scale with flight height, a floor contact shadow that widens with the fan, and a dark soft-lit backdrop with vignette and grain"
+  ],
+  "mdChanged": true
+}

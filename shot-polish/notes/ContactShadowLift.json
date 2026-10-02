@@ -1,0 +1,32 @@
+{
+  "stem": "ContactShadowLift",
+  "issues": [
+    "没有导出时长常量，工作台按 default 150f 渲染，末次落地 f125 后只剩 25f，不够 md 要求的 35f 真静止",
+    "顶栏是 2px 灰边 + 深灰方块 + 灰条 + 灰圆的骨架占位",
+    "接触阴影是纯黑 0.9 浓度的径向椭圆，静置时像一道脏黑边",
+    "被点名的卡与另外两张没有任何主次区分，悬停 18f 完全静止像卡帧",
+    "纯色灰底，没有光感"
+  ],
+  "changes": [
+    "补导出 CONTACT_SHADOW_LIFT_DURATION = 160：三次点名 f2/42/82，末次 f125 落定后真静止 35f",
+    "顶栏换成出版级产品顶栏：渐变字标 + Northwind + 导航（当前项高亮）+ 搜索框（⌘K）+ 首字母头像，毛玻璃白 + 发丝底线",
+    "接触影拆成两层带色相的径向椭圆：实心接触核（仍按 scale 1→1.72 / opacity 0.55→0.18）+ 更宽更虚的环境影，核心浓度降到 0.6 不再发脏",
+    "被点名的卡抬起时出现强调色 1.5px 发丝描边 + 极淡外环，其余两张同步 multiply 压暗约 4% 让位；悬停段加 ±1.5px 正弦漂浮（两端为 0，不动落点）",
+    "柔光浅底 + 暗角 + 颗粒；抬升 −28px / scale 1.08 / 落地 0.99 卡壳等判例参数全部保持"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench used the 150f default, leaving only 25f after the last landing at f125 instead of the 35f true hold",
+    "The top bar was a skeleton: 2px grey border, a dark square, grey bars and a grey circle",
+    "The contact shadow was a pure-black 0.9 radial ellipse that read as a dirty black edge at rest",
+    "The called-out card had no hierarchy over the other two, and the 18f hover was completely frozen",
+    "Flat grey background with no light"
+  ],
+  "changesEn": [
+    "Exported CONTACT_SHADOW_LIFT_DURATION = 160: call-outs at f2/42/82, last landing at f125, then a 35f true hold",
+    "Top bar is a publication-grade product header: gradient logo mark, Northwind wordmark, nav with active item, ⌘K search field and initials avatar, frosted white with a hairline",
+    "Contact shadow is two tinted radial ellipses: a solid contact core (still scale 1→1.72 / opacity 0.55→0.18) plus a wider soft ambient layer, core density lowered to 0.6 so it no longer looks dirty",
+    "The lifted card gets a 1.5px accent hairline and faint outer ring while the other two dim ~4% via multiply; the hover adds a ±1.5px sine float that is zero at both ends so landings are unchanged",
+    "Soft-lit light backdrop with vignette and grain; the −28px / 1.08 lift and 0.99 landing squash precedents are untouched"
+  ],
+  "mdChanged": false
+}

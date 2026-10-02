@@ -1,0 +1,32 @@
+{
+  "stem": "DocParkLeftPillDeal",
+  "issues": [
+    "自动滚动用 (t*3 % 1)*40 取模，而文档内容并不周期，每 1/3 片长整页向下回跳 40px，肉眼可见",
+    "左侧'文档'只是三栏灰色骨架条，看不出是一份什么文档，'结论从文档里来'无从读起",
+    "药丸只是白底 + 1px 灰边，图标是纯黑细线，和文档、背景同一灰阶，毫无层次",
+    "文档与药丸之间是一大片空白，结论和来源之间没有任何视觉关联",
+    "纯色浅灰平底"
+  ],
+  "changes": [
+    "自动滚动改为连续匀速 −t×120（速度与原 3×40 相同，≈0.7px/f），不再回跳；文档内容加长到 330 设计 px",
+    "文档换成出版级'客户档案'正文：标题 / 元信息 / PROFILE·PREFERENCES·USAGE·ORDERS 等分节正文，系统字体与字重层级",
+    "每张药丸落定时，文档中对应依据句被强调色荧光笔自左向右划出，并有一条强调色细线（pathLength draw-on）从该句行尾连到药丸，随该句字幕退场淡出",
+    "药丸改为受光白面 + 0.5px 发丝线 + 内高光 + 随落定收敛的两层软阴影，图标放进强调色浅底圆，右侧加 tabular-nums 置信度",
+    "柔光浅底（主光右上 + 靛蓝余光 + 暗角 + 颗粒）；发牌节奏 T0、outBack 弹入、逐词字幕编排全部保持原参数"
+  ],
+  "issuesEn": [
+    "Auto-scroll used (t*3 % 1)*40 on non-periodic content, so the doc visibly snapped back 40px every third of the shot",
+    "The 'document' was three columns of grey skeleton bars; nothing said what it was, so 'conclusions come from the doc' didn't read",
+    "Pills were white with a 1px grey border and pure-black line icons, the same grey value as doc and background, no hierarchy",
+    "A large empty gap separated doc and pills, with no visual link between a conclusion and its source",
+    "Flat light-grey background"
+  ],
+  "changesEn": [
+    "Auto-scroll is now continuous −t×120 (same ~0.7px/f speed as the old 3×40), no snap-back; doc content extended to 330 design px",
+    "The doc is a publication-grade 'account review' with title, meta line and PROFILE/PREFERENCES/USAGE/ORDERS sections in the system font with clear weight hierarchy",
+    "As each pill lands, its evidence sentence in the doc gets an accent highlighter wiping left→right, and a thin accent connector (pathLength draw-on) links that line to the pill, fading with its caption",
+    "Pills are top-lit white with a 0.5px hairline, inner highlight and a two-layer shadow that settles on landing; icons sit in a soft accent circle, with a tabular-nums confidence on the right",
+    "Soft-lit light backdrop (key light upper right, indigo spill, vignette, grain); T0 cadence, outBack pop and word-by-word captions keep their original parameters"
+  ],
+  "mdChanged": true
+}

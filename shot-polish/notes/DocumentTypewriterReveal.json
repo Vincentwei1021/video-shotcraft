@@ -1,0 +1,32 @@
+{
+  "stem": "DocumentTypewriterReveal",
+  "issues": [
+    "开场标题特写机位 cy=280 低于下限，画面上方露出约 150px 页面以外的空底，页顶被拦腰截断",
+    "标题块测量宽度比粗体实际字宽短约 70px，打字遮罩盖不住尾词，'Weekly' 在写到之前就从右侧漏出来",
+    "人名 @-mention 的琥珀底色盖在纹理文字上方，Lin / Marco 等人名被洗成浅色，反而不如普通标题醒目",
+    "相机关键帧逐段 ease-in-out，在 f22 处速度归零再起步，拉远过程一顿",
+    "右上角 kicker 是悬浮的灰色等宽字，和页面顶栏叠在一起像调试标签；写入遮罩色与纸面差 1–2 级"
+  ],
+  "changes": [
+    "开场机位改为贴住页顶的标题特写（zoom 1.25 时 cy=440），首帧即完整的编辑器顶栏 + 标题",
+    "写入遮罩右侧多盖（标题 120px、正文 24px），遮罩色改为纹理纸面实测色 #fefcf9，无漏字、无色块",
+    "@-mention 底色改为 multiply 混合、opacity 0.9：只染纸面不洗字，人名保持深色并被标出",
+    "相机改为过同一组关键帧的单调三次 Hermite 样条逐帧展开，拉远一气呵成，末段微呼吸保留",
+    "kicker 改为带底的发丝线 chip（琥珀圆点 + 内高光 + 柔影），ease-out 从右侧 12px 滑入；caret 加同色柔光"
+  ],
+  "issuesEn": [
+    "The opening close-up used cy=280, below the minimum, exposing ~150px of empty canvas above the page and cutting the page top in half",
+    "The h1 block was measured ~70px narrower than the bold title, so the typing mask didn't cover the tail and 'Weekly' leaked out before being typed",
+    "The amber @-mention wash sat on top of the texture text, bleaching names like Lin and Marco so they looked weaker than plain headings",
+    "Per-segment ease-in-out camera keys hit zero velocity at f22, so the pull-back hitched",
+    "The top-right kicker was floating grey mono text overlapping the page header like a debug label; the mask color was 1–2 levels off the paper"
+  ],
+  "changesEn": [
+    "Opening framing is a title close-up flush with the page top (cy=440 at zoom 1.25), showing the full editor header and title from frame 0",
+    "Typing masks extend further right (120px for headings, 24px for body) and use the measured paper color #fefcf9: no leaks, no tonal blocks",
+    "@-mention wash uses multiply blending at 0.9 opacity, tinting the paper without bleaching the text, so names stay dark and highlighted",
+    "Camera follows a monotone cubic Hermite spline through the same keys, expanded per frame, giving one continuous pull-back with the micro-breathing kept",
+    "Kicker is now a hairline chip (amber dot, inner highlight, soft shadow) that eases in 12px from the right; the caret gets a soft same-color glow"
+  ],
+  "mdChanged": true
+}

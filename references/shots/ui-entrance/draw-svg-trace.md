@@ -19,7 +19,8 @@ name: draw-svg-trace
 - **免测周长**：SVG rect/path 设 `pathLength={1}`，strokeDasharray="1"，
   dashoffset 1→0（40f Easing.inOut(cubic)）——不用 getTotalLength
 - **笔头**：同一路径再叠一层更粗（4→7px）的短 dash
-  （dasharray "0.045 0.955"），dashoffset = 笔头相位 − p，天然跑在最前；
+  （dasharray "0.045 0.955"），dashoffset = 笔头相位 − p，天然跑在最前；实现上叠三段
+  渐细 dash（0.045/5.2px → 0.027/6.4px → 0.013/7.6px）+ 按圆角矩形弧长精确定位的圆形笔尖；
   没有笔头就只是"边框在变长"，有笔头才是"有人在画"
 - 闭合闪：48–50f 描边冲纯黑 + 4→8px 加粗，50–56f out quad 回落
   ——白底上加深加粗，不用发光（判例）
