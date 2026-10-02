@@ -1,277 +1,300 @@
-// carousel-3d — 3D Carousel 环形画廊（motion-lab 定稿转原生 Remotion）
-// 8 张卡片按 sin/cos 排成圆环并匀速整环自转，每卡只绕 Y 公转、自身 billboard
-// 朝外，正反两层同向贴图 + backface-visibility:hidden，任何时刻卡片都正立不倒置；
-// 相机全程固定（浅俯角近景），配方 angle=i*360/n+frame*speed。
-// 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
-// 质感层（改版）：卡面换成出版级"模板卡"（同色系石墨面 + 发丝线 + 顶部受光 + 迷你图表）；
-// 按卡在环上的前后位置做空气透视（越靠后越暗、越淡）；地面盘挪到卡片脚下并加一层
-// 渐隐倒影，环真正"落地"；raster="zoom" 让 3D 层按目标分辨率栅格化，卡面文字不糊（Q2）。
-// 自转保持匀速（可无缝 loop 的稳态运动是这张卡的语义），首尾帧逐像素可接。
+// carousel-3d — 8 张卡排成圆环整环自转一圈：每卡只绕 Y 公转、自身 billboard 朝外，正反两层同向贴图 +
+// backface-visibility:hidden 保证任何时刻都正立不倒置；相机全程钉在浅俯角，首尾帧无缝 loop。
+//
+// 第二轮重设计（酸柠 · 训练计划画廊）：
+// - look = lime（石墨暗场 + 荧光黄绿）。卡片放大到 340×460 原生像素、环半径 700px，整环占画宽约 70%；
+//   卡面是为镜头设计的"训练计划卡"：mono 编号、生成式图形（爬升剖面 / 间歇柱 / 心率波 / 圆环…）、
+//   64px 大数字、30px 名称——转到正前方的那张被点亮（荧光描边 + 图形转荧光色 + 底光），其余保持石墨灰。
+// - 节奏：不再是死匀速。转角 = 50% 匀速底 + 50% 分步（每 21f 一步 = 8f 停靠 + 13f smooth 换位），
+//   整环永远在走（loop 稳态）但每 45° 有一次"推一把—停靠"的呼吸，正前方的卡在停靠时被读清；
+//   8 步 × 21f = 168f 正好一圈，首尾帧逐像素可接。
+// - 环下方大字幕随步进滚动换字（编号 + 72px 名称），相机固定不动（画廊而不是过山车）。
+// - 空气透视：按方位角给卡面叠深色（最后方 70%）+ 地面反光盘 + 渐隐倒影环，环真正"落地"。
+//
+// 时间表（30fps，共 168f，可无缝循环）：
+//   每 21f 一拍：0–8 停靠（正前方卡点亮、字幕定格）→ 8–21 换位（smooth，字幕上滚换字）；共 8 拍 = 360°
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, rand, useT } from '../../_fixtures/Motion';
-import { Backdrop, FONT } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
 
 export const CAROUSEL_3D_DURATION = 168; // 5600ms @30fps
 
+const L = LOOKS.lime;
 const N = 8;
-const RADIUS = 190;
-// 卡片脚下的地面高度（卡高 124、中心 0 → 下沿 62，再留 4px 空隙）
-const FLOOR = 66;
+const RADIUS = 700;
+const CW = 340;
+const CH = 460;
+const RING_Y = 470; // 环中心高度
+const FLOOR = CH / 2 + 10; // 卡脚下的地面（相对环中心）
+const BEAT = 21; // 每步帧数 = 停靠 + 换位
+const DWELL = 8;
 
-// 同色系（靛蓝→紫，色相只走 35°），每张一个"模板"
-const CARDS: { title: string; sub: string; kind: 'bars' | 'line' | 'ring' | 'list' | 'grid' | 'metric' | 'doc' | 'kanban'; hue: number }[] = [
-  { title: 'Analytics', sub: 'Dashboard', kind: 'bars', hue: 228 },
-  { title: 'Forecast', sub: 'Model', kind: 'line', hue: 233 },
-  { title: 'Goals', sub: 'OKR tracker', kind: 'ring', hue: 238 },
-  { title: 'Tasks', sub: 'Checklist', kind: 'list', hue: 243 },
-  { title: 'Gallery', sub: 'Media grid', kind: 'grid', hue: 248 },
-  { title: 'Revenue', sub: 'KPI card', kind: 'metric', hue: 253 },
-  { title: 'Docs', sub: 'Wiki page', kind: 'doc', hue: 258 },
-  { title: 'Roadmap', sub: 'Board', kind: 'kanban', hue: 263 },
+type Kind = 'climb' | 'intervals' | 'pulse' | 'rings' | 'splits' | 'bars' | 'mobility' | 'race';
+const CARDS: { name: string; stat: string; unit: string; meta: string; kind: Kind }[] = [
+  { name: 'Tempo Run', stat: '8.0', unit: 'km', meta: '42 MIN · ZONE 3', kind: 'splits' },
+  { name: 'Hill Repeats', stat: '6×', unit: '400 m', meta: '+320 M CLIMB', kind: 'climb' },
+  { name: 'Recovery', stat: '30', unit: 'min', meta: 'ZONE 1 · EASY', kind: 'pulse' },
+  { name: 'Long Run', stat: '21.1', unit: 'km', meta: 'SUNDAY · 1:52', kind: 'rings' },
+  { name: 'Intervals', stat: '10×', unit: '1 min', meta: 'VO2 MAX · HARD', kind: 'intervals' },
+  { name: 'Strength', stat: '45', unit: 'min', meta: 'LEGS · CORE', kind: 'bars' },
+  { name: 'Mobility', stat: '15', unit: 'min', meta: 'HIPS · ANKLES', kind: 'mobility' },
+  { name: 'Race Day', stat: '42.2', unit: 'km', meta: 'TARGET 3:15', kind: 'race' },
 ];
 
-export const Carousel3D: React.FC = () => {
-  const t = useT();
-  const spin = t * 360; // 整片正好公转 1 圈可循环
+const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const rand = (n: number) => {
+  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+const hex = (h: string) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const mixHex = (a: string, b: string, t: number) => {
+  const A = hex(a), B = hex(b), q = clamp01(t);
+  return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * q)).join(',')})`;
+};
 
-  // 一张卡的正反两层（同一份内容）；depth∈[0,1]：0 最前、1 最后
-  const renderCard = (i: number, depth: number, reflect: boolean) => {
-    const c = CARDS[i];
-    const faceStyle: React.CSSProperties = {
-      position: 'absolute',
-      inset: 0,
-      borderRadius: 9,
-      boxSizing: 'border-box',
-      overflow: 'hidden',
-      backfaceVisibility: 'hidden',
-      WebkitBackfaceVisibility: 'hidden',
-      background: `linear-gradient(170deg, hsl(${c.hue},18%,21%) 0%, hsl(${c.hue},20%,13%) 100%)`,
-      border: `1px solid hsla(${c.hue},50%,85%,0.13)`,
-      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.09)`,
-      fontFamily: FONT.sans,
-      color: '#f2f4fa',
+// 转角（0→1 圈）：50% 匀速 + 50% 分步（停靠 DWELL 帧 + smooth 换位）；f=168 恰为 1 圈
+const stepPart = (f: number) => {
+  const k = Math.floor(f / BEAT);
+  const local = f - k * BEAT;
+  return (k + EASE.smooth(clamp01((local - DWELL) / (BEAT - DWELL)))) / N;
+};
+const turnAt = (f: number) => 0.5 * (f / (N * BEAT)) + 0.5 * stepPart(f);
+
+export const Carousel3D: React.FC = () => {
+  const f = useCurrentFrame();
+  const spin = turnAt(f) * 360;
+  // 每张卡的世界方位角（0 = 正前方）
+  const azimuth = (i: number) => ((((i * 360) / N - spin) % 360) + 540) % 360 - 180;
+  const depthOf = (i: number) => (1 - Math.cos((azimuth(i) * Math.PI) / 180)) / 2;
+  const hlOf = (i: number) => EASE.smooth(clamp01(1 - Math.abs(azimuth(i)) / 26));
+
+  // 字幕：停靠时定格当前卡，换位时上滚到下一张
+  const k = Math.floor(f / BEAT);
+  const roll = EASE.smooth(clamp01((f - k * BEAT - DWELL) / (BEAT - DWELL)));
+
+  const renderCard = (i: number, reflect: boolean) => {
+    const d = depthOf(i);
+    const hl = reflect ? 0 : hlOf(i);
+    const face: React.CSSProperties = {
+      position: 'absolute', inset: 0, borderRadius: 26, overflow: 'hidden', boxSizing: 'border-box',
+      backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden',
+      background: `linear-gradient(165deg, ${L.surface2} 0%, ${L.surface} 60%, #0f110d 100%)`,
+      border: `1.5px solid ${hl > 0.01 ? alpha(L.accent, 0.25 + 0.6 * hl) : alpha('#ffffff', 0.1)}`,
+      boxShadow: `inset 0 1px 0 ${alpha('#ffffff', 0.1)}`,
       ...(reflect
         ? {
             // 透明度只能挂在叶子层：挂在 preserve-3d 容器上会把整环拍平
-            opacity: 0.16,
-            // 倒影：从卡脚（镜像后的上沿）向下渐隐
-            WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.9) 100%)',
-            maskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.9) 100%)',
+            opacity: 0.08,
+            WebkitMaskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 62%, rgba(0,0,0,0.85) 100%)',
+            maskImage: 'linear-gradient(180deg, rgba(0,0,0,0) 62%, rgba(0,0,0,0.85) 100%)',
           }
         : {}),
     };
-    const face = (
+    const body = (
       <>
-        <Face i={i} />
-        {/* 空气透视：环背面的卡压暗（不改几何，只叠一层带色相的深色） */}
-        <div style={{ position: 'absolute', inset: 0, background: '#0c0d14', opacity: (0.62 * depth).toFixed(3) }} />
+        <Face i={i} hl={hl} />
+        {/* 空气透视：越靠后越暗（只叠一层带色相的深色，不改几何） */}
+        <div style={{ position: 'absolute', inset: 0, background: L.bg[2], opacity: (0.7 * d).toFixed(3) }} />
       </>
     );
     return (
-      // 卡片容器只做环上定位（绕 Y 公转 + billboard 朝外），
-      // 永不绕 X/Z，卡永远正立
-      <div
-        key={i}
-        style={{
-          position: 'absolute',
-          left: -46,
-          top: -62,
-          width: 92,
-          height: 124,
-          transformStyle: 'preserve-3d',
-          transform: `rotateY(${(i * 360) / N}deg) translateZ(${RADIUS}px)`,
-        }}
-      >
-        <div style={faceStyle}>{face}</div>
-        <div style={{ ...faceStyle, transform: 'rotateY(180deg)' }}>{face}</div>
+      <div key={i} style={{
+        position: 'absolute', left: -CW / 2, top: -CH / 2, width: CW, height: CH, transformStyle: 'preserve-3d',
+        // 卡只做环上定位（绕 Y 公转 + 沿法向推出半径），永不绕 X/Z——永远正立
+        // 转到正前方的卡沿法向多推出 44px（只平移不旋转），停靠时读作"被选中"
+        transform: `rotateY(${(i * 360) / N}deg) translateZ(${(RADIUS + 44 * hlOf(i)).toFixed(2)}px)`,
+      }}>
+        <div style={face}>{body}</div>
+        <div style={{ ...face, transform: 'rotateY(180deg)' }}>{body}</div>
       </div>
     );
   };
 
-  const depthOf = (i: number) => {
-    const a = (((i * 360) / N + spin) * Math.PI) / 180;
-    return (1 - Math.cos(a)) / 2;
-  };
-
   return (
-    <AbsoluteFill>
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.36 }} accent="#6a72e6" grain={0.08} vignette={0.62} />
-      <DesignStage bg="transparent" raster="zoom">
-        {/* 3D 场景：perspective 950px */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', perspective: '950px' }}>
-          {/* 相机全程固定：浅俯角近景，不拉远不变角 */}
-          <div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              width: 0,
-              height: 0,
-              transformStyle: 'preserve-3d',
-              willChange: 'transform',
-              transform: 'translateZ(-90px) rotateX(-8deg) translateY(-10px)',
-            }}
-          >
-            {/* 地面反光盘：躺平在卡脚下（FLOOR），径向渐变兜住整环 */}
-            <div
-              style={{
-                position: 'absolute',
-                left: -230,
-                top: FLOOR - 230,
-                width: 460,
-                height: 460,
-                borderRadius: '50%',
-                transform: 'rotateX(90deg)',
-                background: 'radial-gradient(circle, rgba(120,130,240,0.16) 0%, rgba(120,130,240,0.05) 42%, transparent 64%)',
-              }}
-            />
-            {/* 倒影环：以地面为镜面翻转（scaleY -1），每张倒影卡面低透明度 + 渐隐 */}
-            <div
-              style={{
-                position: 'absolute',
-                transformStyle: 'preserve-3d',
-                transform: `translateY(${FLOOR * 2}px) scaleY(-1) rotateY(${spin}deg)`,
-              }}
-            >
-              {Array.from({ length: N }, (_, i) => renderCard(i, depthOf(i), true))}
-            </div>
-            {/* 圆环载体：唯一的逐帧变量，整环绕 Y 匀速自转 */}
-            <div
-              style={{
-                position: 'absolute',
-                transformStyle: 'preserve-3d',
-                willChange: 'transform',
-                transform: `rotateY(${spin}deg)`,
-              }}
-            >
-              {Array.from({ length: N }, (_, i) => renderCard(i, depthOf(i), false))}
-            </div>
+    <AbsoluteFill style={{ background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.16 }} fill={{ x: 0.5, y: 1.0 }} intensity={0.5} />
+
+      {/* 正前方卡脚下的荧光底光（固定在画面上，不随环转） */}
+      <div style={{
+        position: 'absolute', left: 960 - 520, top: RING_Y + 120, width: 1040, height: 420, borderRadius: '50%',
+        background: `radial-gradient(ellipse at 50% 40%, ${alpha(L.accent, 0.16)} 0%, ${alpha(L.accent, 0)} 65%)`,
+      }} />
+
+      {/* 3D 场景：perspective 2200px；相机固定浅俯角 */}
+      <div style={{ position: 'absolute', inset: 0, perspective: '2200px', perspectiveOrigin: `50% ${RING_Y - 60}px` }}>
+        <div style={{
+          position: 'absolute', left: 960, top: RING_Y, width: 0, height: 0, transformStyle: 'preserve-3d',
+          transform: `translateZ(${-RADIUS}px) rotateX(-9deg)`,
+        }}>
+          {/* 地面反光盘 + 刻度环 */}
+          <div style={{
+            position: 'absolute', left: -RADIUS * 1.35, top: FLOOR - RADIUS * 1.35, width: RADIUS * 2.7, height: RADIUS * 2.7, borderRadius: '50%',
+            transform: 'rotateX(90deg)',
+            background: `radial-gradient(circle, ${alpha(L.accent, 0.1)} 0%, ${alpha(L.accent, 0.03)} 45%, transparent 66%)`,
+          }} />
+          <svg width={RADIUS * 2.4} height={RADIUS * 2.4} viewBox={`${-RADIUS * 1.2} ${-RADIUS * 1.2} ${RADIUS * 2.4} ${RADIUS * 2.4}`}
+            style={{ position: 'absolute', left: -RADIUS * 1.2, top: FLOOR - RADIUS * 1.2, transform: `rotateX(90deg) rotateZ(${spin}deg)`, overflow: 'visible' }}>
+            <circle r={RADIUS * 1.08} fill="none" stroke={alpha('#ffffff', 0.08)} strokeWidth={2} />
+            {Array.from({ length: 96 }, (_, t) => {
+              const a = (t / 96) * Math.PI * 2;
+              const r0 = RADIUS * (t % 12 === 0 ? 1.02 : 1.05);
+              return <line key={t} x1={r0 * Math.cos(a)} y1={r0 * Math.sin(a)} x2={RADIUS * 1.08 * Math.cos(a)} y2={RADIUS * 1.08 * Math.sin(a)}
+                stroke={t % 12 === 0 ? alpha(L.accent, 0.5) : alpha('#ffffff', 0.12)} strokeWidth={t % 12 === 0 ? 3 : 2} />;
+            })}
+          </svg>
+          {/* 倒影环：以地面为镜面翻转 */}
+          <div style={{ position: 'absolute', transformStyle: 'preserve-3d', transform: `translateY(${FLOOR * 2}px) scaleY(-1) rotateY(${-spin}deg)` }}>
+            {Array.from({ length: N }, (_, i) => renderCard(i, true))}
+          </div>
+          {/* 圆环载体：唯一的逐帧变量 */}
+          <div style={{ position: 'absolute', transformStyle: 'preserve-3d', transform: `rotateY(${-spin}deg)` }}>
+            {Array.from({ length: N }, (_, i) => renderCard(i, false))}
           </div>
         </div>
-      </DesignStage>
+      </div>
+
+      {/* 字幕：编号 + 名称，随步进上滚换字（裁切窗） */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 862, height: 120, overflow: 'hidden' }}>
+        {[0, 1].map((j) => {
+          const c = (k + j) % N;
+          const y = (j - roll) * 120;
+          return (
+            <div key={j} style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 34,
+              transform: `translateY(${y.toFixed(2)}px)`, opacity: 1 - Math.abs(j - roll) * 0.9,
+            }}>
+              <span style={{ fontFamily: FONT.mono, fontSize: 26, letterSpacing: '0.14em', color: L.accent }}>{`0${c + 1} / 08`}</span>
+              <span style={{ ...type(72, 750), color: L.ink }}>{CARDS[c].name}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 画框装饰 */}
+      <div style={{ position: 'absolute', left: 120, top: 96, display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ width: 12, height: 12, borderRadius: 6, background: L.accent }} />
+        <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink2 }}>STRIDE · TRAINING PLANS</div>
+      </div>
+      <div style={{ position: 'absolute', right: 120, top: 96, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: L.ink3 }}>
+        WEEK 12 OF 16
+      </div>
     </AbsoluteFill>
   );
 };
 
-// ——— 卡面：图标块 + 标题 + 副标题 + 迷你可视化（92×124 设计 px） ———
-const Face: React.FC<{ i: number }> = ({ i }) => {
+// ───────────── 卡面（340×460） ─────────────
+const Face: React.FC<{ i: number; hl: number }> = ({ i, hl }) => {
   const c = CARDS[i];
-  const acc = `hsl(${c.hue},75%,73%)`;
-  const accSoft = `hsla(${c.hue},70%,70%,0.17)`;
-  const dim = 'rgba(220,224,240,0.17)';
-  const line = 'rgba(255,255,255,0.07)';
-  const W = 72;
-  const viz = (() => {
-    switch (c.kind) {
-      case 'bars':
-        return (
-          <svg width={W} height={44}>
-            {Array.from({ length: 6 }, (_, k) => {
-              const h = 12 + rand(i * 9 + k) * 30;
-              return <rect key={k} x={k * 12.4} y={44 - h} width={7.5} height={h} rx={1.6} fill={k === 4 ? acc : dim} />;
-            })}
-          </svg>
-        );
-      case 'line': {
-        const d = Array.from({ length: 8 }, (_, k) => `${k ? 'L' : 'M'}${(k * 10.3).toFixed(1)},${(36 - k * 3.4 - rand(i * 5 + k) * 9).toFixed(1)}`).join(' ');
-        return (
-          <svg width={W} height={44}>
-            <path d={`${d} L72,44 L0,44 Z`} fill={accSoft} />
-            <path d={d} fill="none" stroke={acc} strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        );
-      }
-      case 'ring':
-        return (
-          <svg width={W} height={44}>
-            <circle cx={22} cy={22} r={17} fill="none" stroke={dim} strokeWidth={5} />
-            <circle cx={22} cy={22} r={17} fill="none" stroke={acc} strokeWidth={5} strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 17 * 0.72} 999`} transform="rotate(-90 22 22)" />
-            <text x={48} y={20} fontSize={10} fontWeight={700} fill="#f2f4fa" fontFamily={FONT.sans}>72%</text>
-            <text x={48} y={30} fontSize={5.4} fill="rgba(210,214,230,0.5)" fontFamily={FONT.sans}>on track</text>
-          </svg>
-        );
-      case 'list':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6.5 }}>
-            {[1, 1, 0, 0].map((d, k) => (
-              <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <div style={{ width: 6.5, height: 6.5, borderRadius: 2, background: d ? acc : 'transparent', border: d ? 'none' : '0.75px solid rgba(220,224,240,0.3)' }} />
-                <div style={{ height: 3, width: 26 + rand(i + k * 7) * 30, borderRadius: 2, background: dim }} />
-              </div>
-            ))}
-          </div>
-        );
-      case 'grid':
-        return (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
-            {Array.from({ length: 6 }, (_, k) => (
-              <div
-                key={k}
-                style={{
-                  height: 19,
-                  borderRadius: 3,
-                  background: k === 1 ? `linear-gradient(140deg, ${acc}, hsl(${c.hue},45%,40%))` : `linear-gradient(140deg, rgba(220,224,240,0.16), rgba(220,224,240,0.06))`,
-                }}
-              />
-            ))}
-          </div>
-        );
-      case 'metric':
-        return (
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>$84.2k</div>
-            <div style={{ marginTop: 4, display: 'inline-block', fontSize: 5.6, fontWeight: 600, color: acc, background: accSoft, padding: '1.5px 4px', borderRadius: 5 }}>
-              +9.1% MoM
-            </div>
-          </div>
-        );
-      case 'doc':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4.5 }}>
-            <div style={{ height: 4, width: 44, borderRadius: 2, background: 'rgba(230,234,248,0.4)' }} />
-            {[66, 72, 58, 70, 40].map((w, k) => (
-              <div key={k} style={{ height: 2.6, width: w, borderRadius: 1.5, background: dim }} />
-            ))}
-          </div>
-        );
-      case 'kanban':
-      default:
-        return (
-          <div style={{ display: 'flex', gap: 4 }}>
-            {[3, 2, 2].map((n, col) => (
-              <div key={col} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {Array.from({ length: n }, (_, r) => (
-                  <div key={r} style={{ height: 11, borderRadius: 2.5, background: col === 0 && r === 0 ? accSoft : 'rgba(255,255,255,0.05)', border: `0.5px solid ${line}` }} />
-                ))}
-              </div>
-            ))}
-          </div>
-        );
-    }
-  })();
+  const g = mixHex('#6b7262', L.accent, hl); // 图形主色：石墨灰 → 荧光
   return (
-    <div style={{ position: 'absolute', inset: 0, padding: 10 }}>
+    <div style={{ position: 'absolute', inset: 0, padding: 30 }}>
       {/* 卡顶受光 */}
-      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(130% 55% at 25% 0%, hsla(${c.hue},60%,78%,0.12) 0%, rgba(0,0,0,0) 65%)` }} />
-      <div
-        style={{
-          position: 'relative',
-          width: 20,
-          height: 20,
-          borderRadius: 6,
-          background: `linear-gradient(150deg, ${acc}, hsl(${c.hue},50%,48%))`,
-          boxShadow: `inset 0 0.5px 0 rgba(255,255,255,0.4), 0 2px 6px -1px hsla(${c.hue},70%,30%,0.6)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div style={{ width: 7, height: 7, borderRadius: i % 2 ? 2 : 4, background: 'rgba(255,255,255,0.92)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(120% 55% at 30% 0%, ${alpha('#ffffff', 0.07)} 0%, transparent 60%)` }} />
+      <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', fontFamily: FONT.mono, fontSize: 17, letterSpacing: '0.14em', color: L.ink3 }}>
+        <span>{`PLAN ${String(i + 1).padStart(2, '0')}`}</span>
+        <span style={{ color: hl > 0.5 ? L.accent : L.ink3 }}>●</span>
       </div>
-      <div style={{ position: 'relative', marginTop: 9, fontSize: 9.5, fontWeight: 650, letterSpacing: '-0.015em', color: '#f2f4fa' }}>{c.title}</div>
-      <div style={{ position: 'relative', marginTop: 1.5, fontSize: 5.8, fontWeight: 500, letterSpacing: '0.01em', color: 'rgba(210,214,230,0.5)' }}>{c.sub}</div>
-      <div style={{ position: 'absolute', left: 10, right: 10, bottom: 10 }}>{viz}</div>
+      <div style={{ position: 'relative', marginTop: 22, height: 150 }}>
+        <Graphic kind={c.kind} color={g} seed={i} />
+      </div>
+      <div style={{ position: 'relative', marginTop: 26, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <span style={{ ...type(72, 800), color: L.ink, letterSpacing: '-0.04em' }}>{c.stat}</span>
+        <span style={{ ...type(28, 600), color: L.ink2 }}>{c.unit}</span>
+      </div>
+      <div style={{ position: 'relative', ...type(32, 650), color: L.ink, marginTop: 10 }}>{c.name}</div>
+      <div style={{ position: 'absolute', left: 30, bottom: 28, fontFamily: FONT.mono, fontSize: 17, letterSpacing: '0.12em', color: L.ink3 }}>{c.meta}</div>
     </div>
   );
+};
+
+const Graphic: React.FC<{ kind: Kind; color: string; seed: number }> = ({ kind, color, seed }) => {
+  const W = 280, H = 150;
+  const dim = alpha('#ffffff', 0.1);
+  switch (kind) {
+    case 'climb': {
+      const pts = Array.from({ length: 14 }, (_, k) => [k * (W / 13), 130 - (k % 4 < 2 ? k % 4 : 4 - (k % 4)) * 46 - rand(seed + k) * 10]);
+      const d = pts.map((p, k) => `${k ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+      return (
+        <svg width={W} height={H}>
+          <path d={`${d} L${W},${H} L0,${H} Z`} fill={color} fillOpacity={0.16} />
+          <path d={d} fill="none" stroke={color} strokeWidth={4} strokeLinejoin="round" />
+        </svg>
+      );
+    }
+    case 'intervals':
+      return (
+        <svg width={W} height={H}>
+          {Array.from({ length: 10 }, (_, k) => (
+            <g key={k}>
+              <rect x={k * 28} y={20} width={14} height={130} rx={4} fill={color} />
+              <rect x={k * 28 + 16} y={100} width={8} height={50} rx={3} fill={dim} />
+            </g>
+          ))}
+        </svg>
+      );
+    case 'pulse': {
+      const d = Array.from({ length: 57 }, (_, k) => {
+        const x = k * 5;
+        const beat = k % 14;
+        const y = beat === 6 ? 20 : beat === 7 ? 130 : beat === 8 ? 60 : 84 + Math.sin(k * 0.7) * 4;
+        return `${k ? 'L' : 'M'}${x},${y}`;
+      }).join(' ');
+      return <svg width={W} height={H}><path d={d} fill="none" stroke={color} strokeWidth={4} strokeLinejoin="round" strokeLinecap="round" /></svg>;
+    }
+    case 'rings':
+      return (
+        <svg width={W} height={H}>
+          {[0.86, 0.62, 0.4].map((v, k) => {
+            const r = 66 - k * 19;
+            const C = 2 * Math.PI * r;
+            return (
+              <g key={k} transform="rotate(-90 75 75)">
+                <circle cx={75} cy={75} r={r} fill="none" stroke={dim} strokeWidth={12} />
+                <circle cx={75} cy={75} r={r} fill="none" stroke={color} strokeOpacity={1 - k * 0.3} strokeWidth={12} strokeLinecap="round" strokeDasharray={`${C * v} ${C}`} />
+              </g>
+            );
+          })}
+          <text x={168} y={70} fontFamily={FONT.mono} fontSize={18} fill={L.ink3} letterSpacing="0.1em">PACE</text>
+          <text x={168} y={104} fontFamily={FONT.sans} fontSize={34} fontWeight={700} fill={L.ink}>5:18</text>
+        </svg>
+      );
+    case 'splits':
+      return (
+        <svg width={W} height={H}>
+          {Array.from({ length: 8 }, (_, k) => {
+            const w = 150 + rand(seed * 7 + k) * 110;
+            return <rect key={k} x={0} y={k * 19} width={w} height={11} rx={5.5} fill={k === 5 ? color : dim} />;
+          })}
+          <line x1={210} x2={210} y1={0} y2={150} stroke={color} strokeWidth={2} strokeDasharray="4 5" />
+        </svg>
+      );
+    case 'bars':
+      return (
+        <svg width={W} height={H}>
+          {Array.from({ length: 7 }, (_, k) => {
+            const h = 40 + rand(seed * 11 + k) * 105;
+            return <rect key={k} x={k * 40} y={150 - h} width={26} height={h} rx={6} fill={k === 4 ? color : dim} />;
+          })}
+        </svg>
+      );
+    case 'mobility':
+      return (
+        <svg width={W} height={H}>
+          {[0, 1, 2].map((k) => (
+            <path key={k} d={`M 0 ${40 + k * 36} C 70 ${10 + k * 36}, 140 ${80 + k * 36}, 280 ${30 + k * 36}`} fill="none" stroke={k === 1 ? color : dim} strokeWidth={k === 1 ? 5 : 4} strokeLinecap="round" />
+          ))}
+        </svg>
+      );
+    case 'race':
+    default:
+      return (
+        <svg width={W} height={H}>
+          <path d="M 10 120 C 60 20, 120 140, 170 60 S 250 30, 270 40" fill="none" stroke={dim} strokeWidth={10} strokeLinecap="round" />
+          <path d="M 10 120 C 60 20, 120 140, 170 60" fill="none" stroke={color} strokeWidth={10} strokeLinecap="round" />
+          <circle cx={170} cy={60} r={12} fill={L.bg[2]} stroke={color} strokeWidth={5} />
+          <circle cx={270} cy={40} r={8} fill={L.ink} />
+        </svg>
+      );
+  }
 };

@@ -1,32 +1,31 @@
 {
   "stem": "AvatarBracketCarousel",
   "issues": [
-    "纯色 #0b0c12 平底，画面没有任何空间层次",
-    "头像是 emoji 贴在灰色平圆上，彩色 emoji 抢戏且显得廉价",
-    "角色标签悬空在下一位头像上方，与被模糊的头像直接叠在一起，难读",
-    "句子与对焦框从第 0 帧就静态存在，开场没有任何入场动作",
-    "头像入场只有线性淡入，轮换时也没有速度感"
+    "整句 34px（设计坐标）字 + 92px 槽位只占画面中间一条，四周大片空着，像网页里的一行小字",
+    "头像是灰色圆 + emoji / 线性图标，读不出是「人」，四个队员看起来几乎一样",
+    "角色标签是 10px 小字，在 1080p 成片里接近不可读，换字时容易被下方队列虚影干扰",
+    "冷黑底 + 靛蓝框，没有版式骨架，与库里其他暗场 UI 镜头雷同"
   ],
   "changes": [
-    "背景换成全分辨率深色柔光底（主光落在槽位上方 + 极淡靛蓝余光 + 暗角 + soft-light 颗粒）",
-    "头像改为顶部受光的径向渐变圆盘 + 发丝描边 + 内高光 + 两层落影，中心用白色线性图标（调色板/对话/柱状/钢笔）表示角色",
-    "角色标签做成带底的深色 chip（强调色圆点 + 600 字重），压在下一位头像之上，文字随 pos 同向滚动换字，仍保持 2.2 衰减斜率",
-    "开场：对焦框四角从外侧 14px 收拢锁定（snappy 缓动），Your / teammates 错峰 0.035 浮起去模糊；头像入场改为 ease-out 自下浮入",
-    "轮换期间按队列速度给头像最多 8% 的纵向拉伸，静止时归零；对焦框改用提亮的靛蓝强调色 + 弱外发光，7% 呼吸与切换点保持不变"
+    "look 换成 paper 暖纸瑞士海报：句子放大到 150px/800 粗黑体，槽位 260px、朱红四角对焦框是全片唯一强调色，12 栏发丝网格 + 眉题 + 计数 + 进度胶囊做骨架",
+    "头像重画成插画人像（土色底、肩、头、四种发型 / 眼镜），队列步距 236px，邻位缩到 0.6 并按距离模糊，暗示后面还有人",
+    "切换改成物理弹簧（damping 15，一次可见过冲），40 / 74 / 108f 三拍，移动中按速度加竖向拉伸与运动模糊；对焦框同拍外扩 7% 再咬回",
+    "角色标签做成纸面名牌 chip：编号 + 52px 角色名 + 名字，实底压住下方虚影，随 pos 同向滚动、衰减斜率 2.4 永不两词同屏",
+    "开场：两词从基线下升起、四角从外侧 70px overshoot 收拢锁定、头像 4f 错峰浮入；落定 hold 26f，相机全程 1→1.03 极缓推进"
   ],
   "issuesEn": [
-    "Flat #0b0c12 background with no sense of depth",
-    "Avatars were emoji on flat grey discs; the colorful emoji competed for attention and looked cheap",
-    "The role label floated directly over the next blurred avatar, hard to read",
-    "Sentence and bracket were static from frame 0, no entrance at all",
-    "Avatars entered with a linear fade only, and rotation had no sense of speed"
+    "The sentence (34px in design units) and a 92px slot filled only a thin strip at mid-frame, leaving the rest empty like a single line of web copy",
+    "The avatars were grey discs with emoji or line icons, so they did not read as people and the four teammates looked nearly identical",
+    "The role label was 10px text, close to unreadable in the 1080p output, and the blurred queue below interfered with it during changes",
+    "A cool black ground with an indigo bracket and no layout scaffolding made it look like every other dark UI shot in the library"
   ],
   "changesEn": [
-    "Full-resolution dark soft-light backdrop (key light above the slot, faint indigo spill, vignette, soft-light grain)",
-    "Avatars are now top-lit radial-gradient discs with hairline rim, inner highlight and two-layer shadow, carrying white line icons (palette/chat/chart/pen) for each role",
-    "Role label is a dark chip (accent dot, 600 weight) sitting above the queued avatar; text rolls in the same direction as pos, keeping the 2.2 falloff",
-    "Intro: bracket corners converge 14px inward to lock on (snappy ease), 'Your' / 'teammates' rise and de-blur with a 0.035 stagger; avatars ease up into the queue",
-    "During rotation avatars get up to 8% velocity-driven vertical stretch (zero at rest); bracket uses a brighter indigo with a soft glow, 7% breath and switch timings unchanged"
+    "Switched to the paper look as a Swiss poster: the sentence is now 150px/800 heavy grotesk, the slot is 260px with vermilion corner brackets as the only accent, and a 12-column hairline grid, eyebrow, counter and progress pills form the scaffold",
+    "Redrew the avatars as illustrated portraits (earthy backgrounds, shoulders, heads, four hairstyles and glasses); the queue steps 236px and neighbours shrink to 0.6 with distance blur, hinting at more people behind",
+    "Switches are now physical springs (damping 15, one visible overshoot) on beats 40 / 74 / 108f, with velocity-based vertical stretch and motion blur while moving; the bracket breathes out 7% and bites back on the same beat",
+    "The role label is a paper name-tag chip with index, 52px role and first name; its solid fill hides the blurred queue below, it scrolls with pos, and a 2.4 falloff keeps two labels from ever sharing the frame",
+    "Opening: both words rise from the baseline, the corners overshoot in from 70px outside to lock, and the avatars float in on a 4f stagger; 26f landing hold, with the camera pushing 1→1.03 very slowly throughout"
   ],
+  "look": "paper",
   "mdChanged": true
 }

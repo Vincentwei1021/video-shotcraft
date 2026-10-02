@@ -1,28 +1,31 @@
 {
   "stem": "WordRelayGeometry",
   "issues": [
-    "Better 的三实线圆用 rotate(-90) 绕原点转，md 写的 x 轴 −110/0/110 横排变成了竖排，上下两个圆被推出画面，只剩中间一个和两段弧",
-    "结论词 Stronger 收白到 t=0.98 才完成，落定后只剩约 4 帧就结束，结论没有呼吸",
-    "前两词的白色填充是 clip-path 硬切口横扫，像进度条；进出场只有缩放淡出，没有景深",
-    "#07080c 平底加 20 颗同样大小的白点，几何线是平的细线，整体偏素"
+    "56px 小字词在 1080p 画面正中只占一小块，几何是 1px 暗灰细线，暂停任意一帧都像空场",
+    "#07080c 平底加 20 颗同样大小的白点，没有光、没有层次，三段之间也没有把它们缝起来的版式元素",
+    "三套几何各自只做了「出现」：虚线圆匀速转、三圆长完就停，读不出快 / 好的论证",
+    "结论词 Stronger 的 sheen 是灰色渐变，扫光前后整字发灰，金属感和收白的落点都不够"
   ],
   "changes": [
-    "三实线圆改为绕各自圆心 rotate(-90 cx 0) 起笔，按 md 横排相扣；trim 生长时笔头带一粒亮点，长满即熄",
-    "Stronger 的 sheen 出现 / 扫光 / 收白窗口提前（扫光 t0+0.07→0.21，收白 t0+0.21→0.27），f164 前落定，留约 16f hold；三段时段、入出场窗不变",
-    "填充改为 ±6% 柔边 mask 揭示；新词 1.06→1 去虚推近，旧词 0.86 缩小时加 3px 退焦，读出前后景深；描边层改用静态字库 Helvetica Neue，避开 SF 可变字体描边露出的内部交叠线",
-    "底景加中心冷色柔光与暗角，颗粒放在设计坐标外按成片像素取样；微尘按种子分远近两层（远层更大更虚更淡）；几何线加 1.6px 柔光"
+    "look 换成 graphite 石墨暗场电影字卡：词放大到 230px/800 静态字库，几何放大到画幅级（虚线环 r=400、三圆 r=218），词下 40px 副句给产品证据，左上「01 / 03」计数 + 底部三段进度条把三拍缝成一个连续段落",
+    "Faster：虚线环 0.4→1 snappy 生长时多转 160° 减速刹住，外圈 120 格刻度环反向慢转，一道渐隐彗星弧以 7.5°/帧沿环飞跑——快由转速差读出",
+    "词表改为 Faster / Tighter / Stronger；Tighter 的三圆 trim 依次生长后间距 340→300 收拢咬紧，落定瞬间圆线提亮、四个相交点弹出菱形铆钉光点",
+    "Stronger：竖向镀铬渐变底 + 带香槟暖色的窄白带扫过，再收纯白并一次泛光脉冲，脚下横向光带展开、舞台主光同拍提亮；收白后 hold 22f",
+    "时间表按帧重排：入场 14f snappy（1.06→1 去虚）、出场 10f exit（0.86 + 12px 退焦）、交接重叠 6f；相机全程 1→1.025 极缓推进；修掉 mask/background-clip 裁掉 g 下伸部露出描边的问题"
   ],
   "issuesEn": [
-    "Better's three solid circles used rotate(-90) about the origin, so the horizontal row at x = −110/0/110 specified in the md turned into a vertical stack; the top and bottom circles were pushed out of frame, leaving one circle and two arcs",
-    "The concluding word, Stronger, did not finish turning white until t=0.98, leaving only about 4 frames after it landed, so the payoff never got to breathe",
-    "The first two words filled with white behind a hard clip-path wipe that read like a progress bar, and the entrances and exits were plain scale fades with no depth",
-    "A flat #07080c ground, 20 identical white dots and thin flat geometry lines made the whole frame feel sparse"
+    "The 56px words occupied a tiny patch at the center of a 1080p frame and the geometry was 1px dark-grey hairlines, so any paused frame looked empty",
+    "A flat #07080c ground with 20 identical white dots had no light and no depth, and nothing in the layout stitched the three beats together",
+    "Each geometry only 'appeared': the dashed ring spun at a constant rate and the three circles just stopped once drawn, so they never argued for fast or better",
+    "The concluding word's sheen was a grey gradient, so Stronger looked grey before and after the sweep and neither the metal nor the whiteout landed"
   ],
   "changesEn": [
-    "The three solid circles now start their stroke with rotate(-90 cx 0) about their own centers, so they interlock in a horizontal row as the md specifies; while each trim grows, a small bright dot marks the pen tip and goes out once the circle closes",
-    "Stronger's sheen appearance, sweep and whiteout now start earlier (sweep t0+0.07→0.21, whiteout t0+0.21→0.27), landing before f164 and leaving about a 16f hold; the three segment windows and the entry/exit windows are unchanged",
-    "The fill now reveals through a ±6% soft-edged mask; incoming words push in from 1.06 to 1 as they sharpen, and outgoing words shrink to 0.86 while defocusing by 3px, which reads as depth; the outline layer uses the static Helvetica Neue to avoid the internal overlap lines that SF's variable font shows when stroked",
-    "Added a cool central glow and vignette to the ground; grain sits outside the design-coordinate stage so it samples at output resolution; the dust splits by seed into near and far layers (far motes larger, softer and fainter); the geometry lines get a 1.6px soft glow"
+    "Switched to the graphite look as a cinematic title card: words scaled to 230px/800 in a static face, geometry scaled to frame size (dashed ring r=400, circles r=218), a 40px proof line under each word, plus a '01 / 03' counter and a three-segment progress rail that stitch the beats into one passage",
+    "Faster: the dashed ring grows 0.4→1 with a snappy ease while over-spinning 160° and braking like a flywheel, an outer 120-tick ring counter-rotates, and a fading comet arc races around at 7.5°/frame so speed reads from the difference in rates",
+    "Word list is now Faster / Tighter / Stronger; Tighter's three circles trim on in sequence, then close their spacing 340→300 to lock together, brightening on contact while four diamond rivet glints pop at the intersections",
+    "Stronger: a vertical chrome gradient with a narrow champagne-tinted white band sweeping across, then a whiteout with one bloom pulse, a horizontal light line unfurling underneath and the key light lifting on the same beat; 22f hold after the whiteout",
+    "Retimed in frames: 14f snappy entries (1.06→1 sharpening), 10f ease-in exits (0.86 with 12px defocus), 6f handoff overlaps; the camera pushes 1→1.025 very slowly throughout; fixed mask/background-clip cropping the g descender and exposing the outline layer"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

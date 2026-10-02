@@ -1,32 +1,31 @@
 {
   "stem": "BezierSourceConvergeMerge",
   "issues": [
-    "纯色浅灰平底，曲线是一律 1.2px 的纯黑线，画面生硬单薄",
-    "来源节点是写着 S1–S4 的白圆，像调试占位；四个节点驻留位左右错开（40 步扫描精度不足），排不成一列",
-    "数据包是 7px 空心蓝圈，没有速度感，看起来像噪点",
-    "徽标是白底黑星，和来源节点同一视觉权重，汇聚点不突出；吞并瞬间只有一次缩放",
-    "结尾徽标停在画面右侧 3/4 处，字幕左偏且逐词加深一直拖到最后一帧，尾帧构图失衡、没有落定"
+    "浅灰底 + 1px 黑细线 + S1–S4 小白圆，像一张流程图示意，没有光也没有产品感",
+    "四个节点同时到达汇聚点，吞并只有一次小脉冲，全片缺一个节奏高点",
+    "节点缩小到消失时仍是白圆片，读不出「被吸进去 / 化成数据」",
+    "结尾徽标停在画面右侧，13px 字幕「Four sources unified」在 1080p 下几乎读不出"
   ],
   "changes": [
-    "背景换成柔光浅底（主光偏右上 + 极淡靛蓝余光 + 暗角 + 颗粒）；曲线改为 0.9px 圆头、从浅灰到近黑的渐变描边，读出流向",
-    "节点改为受光白瓷圆片（渐变 + 发丝线 + 内高光 + 随尺寸变化的两层软阴影）+ 灰阶线性图标（数据库/云/表格/API），入场改为约 8% 过冲弹出；f0 直接按直线段长标定 96/len，四节点严格对齐",
-    "数据包改为实心强调色渐变点 + 9 点彗尾（沿路径向后采样，透明度与半径递减），周期与相位偏移不变",
-    "徽标改为强调色径向渐变圆 + 白星 + 两层带色软阴影，成为唯一主角；吞并时刻加一圈只发一次的细环涟漪（扩到 2.1 倍淡出）",
-    "擦除阶段（0.76→0.93，smooth 缓动）整幅画布左移 112 设计 px 把徽标收到正中；字幕居中于徽标下方、上浮淡入，逐词加深在 0.95 前完成，尾段留出落定"
+    "look 换成 aurora 极光暗场：来源做成 128px 深色玻璃砖 + 线性图标，配 40px 名称与 mono 规模注记；汇聚点是 168px 极光渐变徽标 + 两圈慢转细环 + 大面积泛光",
+    "光路改为 10px 柔光底 + 2.4px 暗紫→亮粉渐变线，5f 错峰 draw-on；数据包是带 12 段彗尾的白色亮点，两个整数周期",
+    "四路按 5f 错峰汇入（到达 108/113/118/123f），徽标被连打四下、每下更亮，外圈四段弧逐段点亮、右上「N / 4 SYNCED」同步——da-da-da-DUM",
+    "节点沿真实曲线三段式缩小（128→44→0），中段被强调色点燃并收成光球，名称同时向左退场退焦",
+    "收尾：光路从起点反向擦除，相机平移 480px + 推近 1.1 把徽标收到正中，末次吸入一圈涟漪，96px 结论句「One source of truth.」逐词升起，hold 22f"
   ],
   "issuesEn": [
-    "Flat light-grey background and uniform 1.2px pure-black lines, harsh and thin",
-    "Source nodes were white circles labeled S1–S4, like debug placeholders; their resting positions were misaligned (40-step scan) so they didn't form a column",
-    "Data packets were 7px hollow blue rings with no sense of speed, reading as noise",
-    "The badge was a white disc with a black star, same visual weight as the sources; absorption had only a scale bump",
-    "The final badge sat at 3/4 right, the caption was off-center and its word darkening ran to the last frame, so the end frame was unbalanced and never settled"
+    "A light grey ground with 1px black hairlines and small white S1–S4 discs read like a flowchart sketch, with no light and no product feel",
+    "All four nodes reached the hub at once, so the merge was a single small pulse and the shot lacked a rhythmic peak",
+    "The nodes were still white discs as they shrank away, so they never read as being sucked in or turned into data",
+    "The final badge sat off to the right, and the 13px caption 'Four sources unified' was barely legible at 1080p"
   ],
   "changesEn": [
-    "Soft-lit light backdrop (key light upper right, faint indigo spill, vignette, grain); curves are 0.9px round-cap strokes with a light-grey-to-ink gradient that reads as flow direction",
-    "Nodes are top-lit porcelain discs (gradient, hairline, inner highlight, size-dependent two-layer shadow) with grey line icons (database/cloud/sheet/API), popping in with ~8% overshoot; f0 is calibrated exactly as 96/len so the four nodes align",
-    "Packets are solid accent-gradient dots with a 9-sample comet tail sampled backwards along the path; cycle and phase offsets unchanged",
-    "Badge is an accent radial-gradient disc with a white star and tinted two-layer shadow, the sole hero; one thin ripple ring expands to 2.1x at absorption",
-    "During the erase (0.76→0.93, smooth ease) the canvas pans 112 design px left to center the badge; caption is centered below it, rises in, and finishes darkening by 0.95 so the tail settles"
+    "Switched to the aurora look: sources are 128px dark glass tiles with line icons, each with a 40px name and a mono scale note; the hub is a 168px aurora-gradient badge with two slowly counter-rotating rings and a wide bloom",
+    "Paths are now a 10px soft glow under a 2.4px violet-to-pink gradient line, drawn on with a 5f stagger; packets are bright white dots with 12-segment comet tails over two whole cycles",
+    "The four routes arrive on a 5f stagger (108/113/118/123f), so the badge takes four hits, each brighter than the last, while its outer four-segment arc and the 'N / 4 SYNCED' counter fill in step: da-da-da-DUM",
+    "Nodes shrink in three phases along the real curves (128→44→0), ignite with the accent light mid-way and round into orbs, while their names exit left with a defocus",
+    "Ending: paths erase back from their origins, the camera pans 480px and pushes to 1.1 to centre the badge, the last absorption sends out a ripple, and a 96px 'One source of truth.' rises word by word before a 22f hold"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

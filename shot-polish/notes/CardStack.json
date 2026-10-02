@@ -1,32 +1,31 @@
 {
   "stem": "CardStack",
   "issues": [
-    "八张卡是 222→334 的彩虹色环，饱和渐变堆在一起显得廉价",
-    "卡面只有两根彩色骨架条 + 一个几何字符，没有任何可信内容",
-    "扇面展开后两端卡片顶出画框被裁切，构图失衡",
-    "卡片从屏下直上直下弹入，没有倾角跟随、没有速度模糊，成摞时完全对齐像一张贴图",
-    "纯色 #0a0b10 背景 + 单层重阴影，卡片与环境没有空间关系；3D 层经 transform 放大，小字发软"
+    "卡面只有两条色条 + 一个星形，读不出这是一组什么东西，8 张卡几乎一样",
+    "靛蓝→品红的彩虹色阶铺满扇面，配纯黑底，像一组配色样卡而不是产品",
+    "入场等间距逐张弹入，落座没有重量；展开后扇面就停住，没有结尾主角和信息",
+    "卡片在画面里偏小（110×150 设计坐标），四周大片空黑"
   ],
   "changes": [
-    "改为同色系石墨卡面（色相只在 228→262 内微调）+ 1px 低透明发丝线 + 顶部内高光 + 卡顶径向受光",
-    "卡面做成出版级模板卡：图标 + 标题 + 副标题 + 八种迷你可视化（柱图/折线/环图/清单/看板/表格/日历/指标）",
-    "展开同段（0.5→0.86，smooth）相机从 1 拉远到 0.8 并略下移，扇面完整入画；DesignStage 改 raster=zoom，3D 层按目标分辨率栅格化",
-    "入场加 ±7° 交替倾角随 spring 收敛 + 按速度计算的竖向高斯模糊（静止为 0）；成摞时有确定性 ±2.4°/±3px 错位，展开时理顺进扇面",
-    "阴影改为随飞行高度变化的两层（接触影 + 环境影），地面加一块随扇面变宽的接触暗影；深色柔光底 + 暗角 + 颗粒"
+    "look 换成 porcelain 瓷白模板库：卡片放大到 320×440 原生像素，每张是生成式封面图（甘特 / 柱图 / 折线 / 圆环 / 表格 / 日历 / 看板 / 大数字）+ 32px 标题 + mono 元信息，封面只用钴蓝 / 青绿 / 墨的浅色调",
+    "卡数改为 9 张（奇数有中心卡），叠压次序 = 序号（左压右，像摊开的一手牌），成摞→扇面全程不换顶牌",
+    "入场按「越来越快」分布（40f 跨度，EASE.out 错峰），每张 spring（damping 13）落座时整摞被压低 5px；飞行中交替倾角 + 竖向运动模糊",
+    "展开前整摞收紧 2% 预备，展开改用低阻尼弹簧（一次轻微过冲 = 手腕甩开）；相机成摞段推近 1.06、展开同段拉远到 0.88",
+    "结尾：钴蓝实色的中心卡「Q4 Launch」被抽出 72px + 描边 + 一次扫光，88px 标题「Start from a template.」逐词升起，hold 28f；时长 126→150f"
   ],
   "issuesEn": [
-    "The eight cards formed a 222→334 rainbow hue ramp; stacked saturated gradients looked cheap",
-    "Card faces were just two colored skeleton bars plus a glyph, no believable content",
-    "After the fan opened, the outer cards were clipped by the frame edges",
-    "Cards shot straight up with no tilt follow-through or motion blur, and the stack was perfectly aligned like a single bitmap",
-    "Flat #0a0b10 background with one heavy shadow, no spatial grounding; the 3D layer was transform-upscaled so small text was soft"
+    "Each card face had only two colour bars and a star, so the set did not read as anything in particular and the 8 cards looked nearly identical",
+    "An indigo-to-magenta rainbow ran across the fan on a pure black ground, like a set of swatches rather than a product",
+    "Cards popped in at even intervals and landed without weight; once fanned the shot simply stopped, with no hero or message at the end",
+    "The cards were small in frame (110×150 in design units) with large empty black margins"
   ],
   "changesEn": [
-    "Single-family graphite cards (hue only drifts 228→262) with low-alpha hairline border, top inner highlight and a top radial sheen",
-    "Faces are publication-grade template cards: icon, title, subtitle and eight mini visualizations (bars/line/donut/checklist/kanban/table/calendar/metric)",
-    "During the fan (0.5→0.86, smooth) the camera pulls back from 1 to 0.8 so the fan fits; DesignStage uses raster=zoom so the 3D layer rasterizes at target resolution",
-    "Entrance adds an alternating ±7° tilt that settles with the spring plus velocity-driven vertical blur (zero at rest); the pile has deterministic ±2.4°/±3px offsets that straighten into the fan",
-    "Two-layer shadows that scale with flight height, a floor contact shadow that widens with the fan, and a dark soft-lit backdrop with vignette and grain"
+    "Switched to the porcelain look as a template library: cards scaled to 320×440 native px, each with a generative cover (gantt, bars, line, rings, table, calendar, kanban, big number), a 32px title and mono metadata, covers limited to light cobalt, teal and ink tints",
+    "Nine cards (odd, so there is a centre card) stacked in index order, each overlapping the one to its left like a fanned hand, so the top card never swaps between stack and fan",
+    "Entries accelerate (40f span with an EASE.out stagger); each card lands on a spring (damping 13) and presses the whole stack down 5px, with alternating flight tilt and vertical motion blur",
+    "The stack tightens 2% as an anticipation beat, then fans out on a low-damping spring (one slight overshoot, like a flick of the wrist); the camera pushes to 1.06 during stacking and pulls back to 0.88 during the fan",
+    "Ending: the solid-cobalt centre card 'Q4 Launch' slides out 72px with an outline and a single sheen while an 88px 'Start from a template.' rises word by word, then a 28f hold; duration 126→150f"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }
