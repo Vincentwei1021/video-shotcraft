@@ -1,32 +1,31 @@
 {
   "stem": "InvisibleCut",
   "issues": [
-    "没有导出时长常量，工作台按源码第一个数字猜成 54f——卡片刚扫到出画就结束，切后的 B 页没有任何停留",
-    "遮挡卡和背景页同为浅色，失焦糊满时整屏是一片发灰的白，读不出“有东西贴着镜头掠过”",
-    "±40px 带风推挤把页面整体平移，切后左缘露出一条米灰底色缝（侧栏外侧），魔术当场穿帮",
-    "推挤是切点前后各自孤立的两小段运动，镜头其余时间完全死机位，“一条 take”的错觉不牢",
-    "前景卡扫过时对背景没有任何光影影响，近物与远景之间没有距离感"
+    "前后两页是灰色占位线框 dashboard，换景前后没有内容与因果，\"无痕\"无从谈起",
+    "遮挡物是一张放大的深色卡片，靠 CameraMotionBlur 12 倍采样 + 4 层残影糊满，贵且读作一块灰影",
+    "背景推挤后要靠延展边补色，画面本身没有空间感，全程浅灰底",
+    "横扫前没有任何动作做铺垫，切换没有动机"
   ],
   "changes": [
-    "补 INVISIBLE_CUT_DURATION = 100（前态 40 + 横扫 14 + 回稳/静止 46）；1600×1000·scale 1.6、-2200→2600 共 14f bezier(0.3,0,0.7,1)、f47 切点、CameraMotionBlur 300°/12、4 层残影、±40 推挤全部保持",
-    "遮挡卡改用 Card tone=\"dark\" 深色版：离镜头最近、不受光的前景读作暗剪影，糊满帧是一拍“被挡住”的暗，切点更隐形；主卡加 0 40px 120px 深色投影",
-    "前景卡前缘挂一条 900px 宽的软投影带（0.9→0 线性渐隐，整体 0.32）随卡扫过背景，近物遮光卖出贴脸距离感",
-    "背景页左右各接 64px 延展边（左接侧栏深色渐变、右接顶栏 #fafaf9 + 内容区底色），推挤与横移不再露底",
-    "加一条贯穿切点的慢速相机横移（0–85f 共 -18px，EASE.smooth），切前切后是同一个运动；85f 后完全停稳留 15f 静止收尾"
+    "look 换成 sand（米色 · 赤陶），做成旅行 App：A 沙漠营地详情（860px 程序绘制沙丘日落照片 + 92px 衬线标题 + 价格 + 赤陶 Reserve 大按钮），B 预订成功（168px 衬线「You're going.」+ 票根卡 + 赤陶对勾印章）",
+    "因果一条线：24f 按下 Reserve（缩放 + 压暗 + Reserving… 转圈）→ 失焦前景一晃 → 已订好；版式左右互换，换景幅度大但画面连续（票根顶部还是那张沙丘照片）",
+    "遮挡物改为贴镜头掠过的失焦深棕前景：纯渐变实心核 2600px + 340px 软边（软边即失焦与运动模糊），前缘赤陶轮廓光、前方软投影；去掉 CameraMotionBlur，渲染快数倍",
+    "一条 take：内容全程 +40→−40px 慢横移贯穿切点，切前被风拖左、切后从右 14f 回稳；39f 实心核盖满画幅时硬切",
+    "切后余波：印章弹簧落座（damping 13）+ 对勾描画、说明与确认码错峰升起，hold 40f"
   ],
   "issuesEn": [
-    "No duration constant; the workbench guessed 54f from the first number in the source, so the shot ended the instant the card left frame and scene B never held",
-    "The occluding card and the page were both light, so the defocused full-cover frames were a flat greyish white — nothing read as an object brushing past the lens",
-    "The ±40px wind shove translated the whole page and exposed a beige strip at the left edge after the cut, breaking the trick",
-    "The shove was two isolated moves around the cut with a dead-locked camera otherwise, so the one-take illusion was weak",
-    "The passing foreground card had no light/shadow effect on the background, so there was no sense of depth between near and far"
+    "Both pages were grey wireframe placeholder dashboards with no content and no cause and effect, so there was nothing to make \"seamless\"",
+    "The occluder was an enlarged dark card smeared by 12-sample CameraMotionBlur plus four ghost layers: expensive, and it read as a grey smudge",
+    "The background needed bleed strips to cover the shove; there was no sense of depth, just a flat light-grey page",
+    "Nothing happened before the swipe, so the change had no motive"
   ],
   "changesEn": [
-    "Added INVISIBLE_CUT_DURATION = 100 (40 lead-in + 14 sweep + 46 settle/hold); the 1600×1000 ·1.6 card, -2200→2600 over 14f with bezier(0.3,0,0.7,1), f47 cut, CameraMotionBlur 300°/12, four trails and ±40 shove are unchanged",
-    "The occluder now uses Card tone=\"dark\": the nearest, unlit foreground reads as a dark silhouette, so the full-cover frames are a beat of being blocked and the cut hides better; the main card gets a 0 40px 120px dark shadow",
-    "A 900px soft shadow band (0.9→0 gradient at 0.32) rides the card's leading edge across the background, selling how close it passes",
-    "The page now has 64px bleed extensions on both sides (sidebar gradient on the left, #fafaf9 top bar plus canvas on the right), so the shove and drift never reveal the backdrop",
-    "A slow camera drift runs through the cut (-18px over 0–85f, EASE.smooth), so before and after are one continuous move; everything is still after 85f, leaving a 15f hold"
+    "Sand look (beige and terracotta) as a travel app: A is a desert-camp listing (860px procedural dune-sunset photo, 92px serif title, price, big terracotta Reserve button); B is the booking confirmation (168px serif \"You're going.\", a ticket stub and a terracotta check seal)",
+    "One causal line: Reserve is pressed at 24f (press scale, darken, Reserving… spinner), a defocused foreground object whips past, and the trip is booked; the layout flips sides, a big change that still reads as continuous (the ticket header reuses the dune photo)",
+    "The occluder is now an out-of-focus dark-brown foreground object grazing the lens: a gradient-only 2600px solid core with 340px soft edges (the edges are the defocus and motion blur), a terracotta rim on the leading edge and a soft shadow ahead; CameraMotionBlur is gone and the render is several times faster",
+    "One take: the content pans slowly from +40 to −40px across the cut; before the cut the wind drags it left, after it B settles from the right over 14f; the hard cut lands at 39f when the core covers the frame",
+    "After the cut the seal springs in (damping 13) and its check draws on, the details and confirmation code rise in stagger, then a 40f hold"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }

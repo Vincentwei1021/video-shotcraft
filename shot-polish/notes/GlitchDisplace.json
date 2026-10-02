@@ -1,32 +1,31 @@
 {
   "stem": "GlitchDisplace",
   "issues": [
-    "没有导出时长常量，工作台只渲 40f——撕裂（45–62f）根本没进画，看到的只是一张静止页面",
-    "明暗重影两层压在 16 条整页条带底下，被完全盖住，峰值帧只有抖、没有 glitch 的双重影",
-    "16 条等高横条全员同幅乱抖，错位没有主次，读作百叶窗/水波而不是信号撕裂",
-    "条带切口没有任何边缘处理，错位条和相邻条之间看不出“撕口”",
-    "硬切与开撕都没有掩护或预备，58f 切页只靠抖动本身"
+    "前后两页是灰色占位线框 dashboard，没有内容，撕裂前后\"换了什么\"读不出来",
+    "浅灰底上明暗双重影几乎不显，撕裂期只像整页在抖，缺少信号故障的质感",
+    "每条错位条都画白亮边，峰值帧满屏横线，像横格纸",
+    "硬切放在抖动衰减段（58f），切点附近错位已经很小，掩护偏弱"
   ],
   "changes": [
-    "补 GLITCH_DISPLACE_DURATION = 135（前态 45 + 撕裂 17 + 真静止 73）；45f 起撕、58f 硬切、62f 摘罩、±70px 峰幅、h(i*31+f*7) 驱动与 out-cubic 冲起/线性消散包络全部保持",
-    "16 条改为确定性不等高（权重 0.45–1.35），并给每条固定“能量”：约 2 成静止、3 成满幅重撕、其余轻颤；错位值再过 0.6 次幂推向两端，撕裂有主次",
-    "明暗重影挪进条带内部随条一起错位：+12px 原页 multiply 拖出暗边、−12px 原页 lighten 吃出亮边，只给错位 >~10px 的条，白底不发灰",
-    "错位条上沿 1px 亮线、下沿 1px 暗线做撕口切边；撕裂期叠随包络起落的信号颗粒（峰值 0.14），摘罩后全部卸载",
-    "38–39f 加 2 帧前兆（两条重撕条 ±10px）做预备；58f/59f 叠 1.10/1.05 轻曝光抬升掩护硬切"
+    "look 换成 midnight 暗场，两页做成同一块发布控制台的两态：「Rolling out Halo 4.0」进度卡在 99%、17/18 区域亮 → 「Halo 4.0 is live.」18/18 全亮青绿、p95 41ms，撕裂读作上线那一下的状态跳变",
+    "等宽技术感版式：132px 标题 + 196px 等宽大数字 + 中区流量/延迟曲线 + 18 格区域条 + 32px 日志/指标，同一网格两态对位",
+    "重影改成双色剪影（内容的青绿 / 电光蓝单色副本 ±12px、screen），随条一起错位；只有重撕条画切边，另加每帧 2 根扫描亮线",
+    "时间表重排：30–31f 前兆轻颤（进度卡 99%）→ 44f 撕裂冲起 → 54f 满幅抖动中硬切（曝光抬升 + 1.6% 冲击放大）→ 60f 摘罩",
+    "余波：区域格一道青绿波从左到右扫过、p95 58→41ms 计数、三项指标错峰升起；hold 段 Live 信号点脉冲 + 整屏 1.8% 极缓推进"
   ],
   "issuesEn": [
-    "No duration constant, so the workbench rendered only 40f — the tear (45–62f) never appeared; viewers saw a static page",
-    "Both light/dark ghost layers sat beneath 16 full-page strips and were completely covered, so the peak frames jittered with no glitch double image",
-    "Sixteen equal-height strips all jittered with the same amplitude — no hierarchy, reading as blinds or ripples rather than a signal tear",
-    "Strip edges had no treatment, so nothing read as a torn edge between displaced neighbours",
-    "Neither the tear onset nor the hard cut had any setup or cover; the 58f page swap relied on jitter alone"
+    "Both pages were grey wireframe placeholder dashboards with no content, so you couldn't tell what the tear changed",
+    "On the light grey page the light/dark ghosts barely showed; the tear just looked like the page shaking, with no signal-glitch texture",
+    "Every displaced strip got a bright edge, so the peak frame was covered in horizontal lines like ruled paper",
+    "The hard cut sat in the decay (58f) when displacement was already small, so it was poorly masked"
   ],
   "changesEn": [
-    "Added GLITCH_DISPLACE_DURATION = 135 (45 lead-in + 17 tear + 73 true hold); the 45f onset, 58f hard cut, 62f unmount, ±70px peak, h(i*31+f*7) driver and out-cubic rise / linear decay envelope are unchanged",
-    "The 16 strips now have deterministic uneven heights (weights 0.45–1.35) and a fixed per-strip energy: ~20% still, ~30% full-amplitude tears, the rest light tremor; offsets pass through a 0.6 power so they sit at the extremes",
-    "The ghosts moved inside each strip and travel with it: a +12px multiply copy drags a dark fringe, a −12px lighten copy eats a light fringe, only on strips displaced more than ~10px, so the white page never greys out",
-    "Displaced strips get a 1px bright top edge and 1px dark bottom edge as the tear seam; signal grain (peak 0.14) rides the envelope during the tear and is unmounted afterwards",
-    "Two precursor frames at 38–39f (two heavy strips at ±10px) act as anticipation; 58f/59f get a 1.10/1.05 exposure lift to cover the hard cut"
+    "Dark midnight look; the two pages are one release console in two states: \"Rolling out Halo 4.0\" stuck at 99% with 17/18 regions lit, then \"Halo 4.0 is live.\" with 18/18 lit teal and p95 41ms, so the tear reads as the moment of going live",
+    "Mono, technical layout: 132px headline, 196px mono figure, a traffic/latency curve in the middle, an 18-cell region bar and 32px log/stat rows, on the same grid in both states",
+    "Ghosts became two-colour silhouettes (teal and electric-blue single-colour copies of the content, ±12px, screen) that move with each strip; only heavily torn strips get a cut edge, plus two scan lines per frame",
+    "New timing: 30–31f precursor jitter while progress hangs at 99%, tear attacks at 44f, hard cut at 54f inside full-amplitude shaking (exposure lift plus a 1.6% punch-in), unmask at 60f",
+    "Aftermath: a teal wave runs across the region cells, p95 counts 58→41ms, three stats rise in stagger; the hold has a Live ping and a 1.8% slow push"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

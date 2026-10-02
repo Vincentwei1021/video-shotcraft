@@ -1,185 +1,216 @@
-import React from 'react';
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
-import { FakeDashboard, G } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, FONT, Grain, SpeedBlur, mix, ramp, tracking, velocity } from '../../_fixtures/Polish';
-
-// versus-slam 对撞开屏：左右两个半屏画面（带 78° 斜切边）从画外加速对冲，
-// 沿斜缝砰地撞合；撞击帧白闪 + 整机震屏指数衰减 + "VS" 字块盖章压出，结尾静止 hold。
+// versus-slam 对撞开屏：左右两个半屏（78° 斜切边）从画外加速对冲，沿斜缝砰地撞合；
+// 撞击帧白闪 + 整机震屏指数衰减 + "VS" 圆章盖章压出，切点就是撞击本身，结尾静止 hold。
 //
-// 质感升级：
-// - 两半屏做出"两方对峙"：左半深色版 dashboard（旧方案）、右半浅色版（新方案），
-//   一明一暗撞在一起，不再是同一张浅灰页的两种裁切；各带一枚方名标签（撞后错峰 4f 滑入）；
-// - 建立段不再是一整屏空米灰：暗场柔光背景上，斜缝位置一根冷白细光从中点向两端长出、
-//   随两半逼近逐渐变亮（预备），撞合瞬间被实缝替代；
-// - 对冲段按速度给两半屏横向运动模糊（末速约 360px/帧，封顶 36px），撞前一帧糊成一道；
-// - 撞合实缝从 12px 实心黑条改为"撞击光缝"：2px 冷白光芯 + 外发光，撞击帧最亮、14f 收敛到常亮；
-//   两侧各压一道窄暗影，把明暗两半分开；
-// - VS 字块从白底黑框改为深色圆章：强调色渐变描边 + 顶部内高光 + 深投影，白色斜体重字；
-//   撞击帧同发一圈冲击波环（单次，14f 外扩淡出）。
-export const VERSUS_SLAM_DURATION = 100; // 建立 20 + 对冲 10 + 撞后呼吸 70
+// 第二轮重设计（瑞士海报 · 对阵比较 "月结要多久"）：
+// - look = paper（暖白纸 · 墨 · 朱红），粗黑体海报排版，不用 dashboard。两方 = 两张色块海报：
+//   左「THE OLD WAY」墨黑底 + 纸白 340px「14 days」，右「WITH TALLO」朱红底 + 纸白「9 min」——
+//   一墨一朱撞在一起，数字本身就是对比结论；说明文字 44px、清单 32px，都按"能读"排。
+// - 建立段（0–18f）不是空屏：纸面上一行「How long does it take?」（124px，墨线在字带处留空），
+//   斜缝位置一根墨线从中点向两端长出（预示撞线）；两半屏 ease-in(cubic) 10f 对冲，扫过时把设问吞掉。
+// - 撞击三件套同帧起跑（28f）：纸白闪 0.85→0 共 3f、整机震屏 16px·e^(−t/1.7)、VS 圆章弹簧压出
+//   （damping 12，一次可见过冲）；同帧再发一圈墨色冲击环 + 12 根放射速度线（6f 收）。
+//   撞合后斜缝是一道 6px 纸白"切口"，两侧各压窄投影——像两张卡纸被压在一起。
+// - 对冲按速度给横向运动模糊（末速 ~360px/帧，封顶 36px）；撞后两侧数字 1.04→1 回弹落座（晚 2f，跟随）。
+//
+// 时间表（30fps，共 105f）：
+//   0–18    建立：设问逐词升起（1–14），斜缝墨线长出
+//   18–28   对冲 10f（ease-in cubic：越来越快 = 砸）
+//   28      撞击：闪 / 震 / 章 / 冲击环 / 速度线
+//   30–44   数字回弹落座；36–60 两侧说明与清单错峰升起（左先右后，4f 错位）
+//   54–70   底部结论条「Close the month before lunch.」从下升起，压在斜缝上
+//   70–105  hold 35f：整机 1 → 1.015 极缓推进
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, Grain, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 
-const IMPACT = 30; // 撞击帧（前 20f 建立 hold + 10f ease-in 对冲）
+export const VERSUS_SLAM_DURATION = 105;
 
-// 斜缝几何：78° 斜边 → 1080 高度上水平偏移 1080/tan(78°) ≈ 230px，中线 x=960 ±115
-const SEAM_TOP_X = 1075; // 缝顶端 x
-const SEAM_BOT_X = 845; // 缝底端 x
-// CSS 旋转顺时针为正：缝顶端偏右（1075 > 845）→ 正角度 ≈ +12°
-const SEAM_DEG = (Math.atan2(SEAM_TOP_X - SEAM_BOT_X, 1080) * 180) / Math.PI;
+const P = LOOKS.paper;
+const INK = P.ink;
+const RED = P.accent;
+const PAPER = '#f8f4ec';
+const PAD = 120;
+const RUSH = 18; // 对冲起
+const IMPACT = 28; // 撞击帧
 
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+// 斜缝几何：78° 斜边 → 1080 高度上水平偏移 ≈ 230px，中线 x=960 ±115
+const SEAM_TOP_X = 1075;
+const SEAM_BOT_X = 845;
+const SEAM_DEG = (Math.atan2(SEAM_TOP_X - SEAM_BOT_X, 1080) * 180) / Math.PI; // ≈ +12°
+// 建立段墨线的留空带（线长 1400，从 y=−160 起；字在 y≈380–560 → 线内 39%–52%）
+const SEAM_GAP = 'linear-gradient(180deg, #000 0%, #000 35%, transparent 37.5%, transparent 53%, #000 55.5%, #000 100%)';
 
-// 两半屏对冲：ease-in 加速，10f 从 ±1200px 冲到位
-const leftXAt = (f: number) => interpolate(f, [20, IMPACT], [-1200, 0], { ...clamp, easing: Easing.in(Easing.cubic) });
+// 两半屏对冲：ease-in cubic，10f 从 ±1240px 冲到位
+const leftXAt = (f: number) => -1240 * (1 - Math.pow(ramp(f, RUSH, IMPACT - RUSH, EASE.linear), 3));
 
-// 方名标签：撞后滑入
-const SideTag: React.FC<{ side: 'left' | 'right'; title: string; meta: string; k: number }> = ({ side, title, meta, k }) => {
-  const dark = side === 'left';
-  const dir = side === 'left' ? -1 : 1;
+// 一侧海报
+const Side: React.FC<{ side: 'L' | 'R'; f: number }> = ({ side, f }) => {
+  const left = side === 'L';
+  const fg = PAPER;
+  const sub = left ? alpha(PAPER, 0.62) : alpha(INK, 0.82);
+  const x0 = left ? PAD : 1190;
+  // 撞后数字回弹落座（晚 2f 跟随）
+  const settle = springAt(f, IMPACT + 2, { damping: 14, stiffness: 220 });
+  const numScale = f < IMPACT ? 1 : mix(1.05, 1, settle);
+  const d = left ? 0 : 4;
+  const cap = ramp(f, IMPACT + 8 + d, 18, EASE.snappy);
+  const list = ramp(f, IMPACT + 14 + d, 18, EASE.snappy);
+  const items = left ? ['Export', 'Reconcile', 'Chase', 'Repeat'] : ['Feeds matched', 'Receipts read'];
   return (
-    <div
-      style={{
-        position: 'absolute', bottom: 64, ...(side === 'left' ? { left: 284 } : { right: 64 }),
-        display: 'flex', alignItems: 'baseline', gap: 16, padding: '18px 28px', borderRadius: 18,
-        background: dark ? 'rgba(24,25,30,0.86)' : 'rgba(255,255,255,0.9)',
-        border: `1px solid ${dark ? 'rgba(255,255,255,0.10)' : G.hairlineStrong}`,
-        boxShadow: dark
-          ? 'inset 0 1px 0 rgba(255,255,255,0.06), 0 18px 48px -12px rgba(0,0,0,0.7)'
-          : 'inset 0 1px 0 rgba(255,255,255,0.9), 0 18px 48px -14px rgba(16,18,24,0.28)',
-        backdropFilter: 'blur(10px)',
-        opacity: k, transform: `translateX(${(dir * (1 - k) * 36).toFixed(2)}px)`,
-        fontFamily: FONT.sans,
-      }}
-    >
-      <span style={{ fontSize: 48, fontWeight: 700, letterSpacing: tracking(48), color: dark ? '#f1f1f4' : G.ink1 }}>{title}</span>
-      <span style={{ fontSize: 32, fontWeight: 500, color: dark ? 'rgba(255,255,255,0.5)' : G.ink2, fontVariantNumeric: 'tabular-nums' }}>{meta}</span>
-    </div>
+    <>
+      <div style={{ position: 'absolute', left: x0, top: 140, display: 'flex', alignItems: 'center', gap: 16, ...type(30, 800, { caps: true }), letterSpacing: '0.16em', color: left ? alpha(PAPER, 0.7) : INK }}>
+        <span style={{ width: 16, height: 16, background: left ? alpha(PAPER, 0.7) : INK, borderRadius: left ? 0 : 8 }} />
+        {left ? 'The old way' : 'With Tallo'}
+      </div>
+      <div style={{
+        position: 'absolute', left: x0 - 14, top: 196, display: 'flex', alignItems: 'baseline', gap: 22,
+        transform: `scale(${numScale.toFixed(4)})`, transformOrigin: 'left bottom',
+      }}>
+        <span style={{ fontFamily: FONT.sans, fontSize: 360, fontWeight: 900, letterSpacing: '-0.07em', lineHeight: 0.9, color: fg, fontVariantNumeric: 'tabular-nums' }}>
+          {left ? '14' : '9'}
+        </span>
+        <span style={{ ...type(96, 800), color: fg }}>{left ? 'days' : 'min'}</span>
+      </div>
+      <div style={{ position: 'absolute', left: x0, top: 590, width: left ? 640 : 620, ...type(44, 600), lineHeight: 1.18, color: fg, opacity: cap, transform: `translateY(${(1 - cap) * 26}px)` }}>
+        {left ? <>Spreadsheets, email threads and three people chasing paper.</> : <>The books close themselves while you sleep.</>}
+      </div>
+      <div style={{ position: 'absolute', left: x0, top: 800, display: 'flex', gap: 30, width: left ? 680 : 620, opacity: list, transform: `translateY(${(1 - list) * 20}px)` }}>
+        {items.map((it, i) => (
+          <span key={it} style={{ display: 'flex', alignItems: 'center', gap: 12, ...type(32, 600), color: sub }}>
+            <span style={{ fontFamily: FONT.mono, fontSize: 26, color: left ? alpha(PAPER, 0.4) : alpha(INK, 0.55) }}>{left ? `0${i + 1}` : '✓'}</span>
+            <span style={{ textDecoration: left ? 'line-through' : undefined, textDecorationThickness: 2 }}>{it}</span>
+          </span>
+        ))}
+      </div>
+    </>
   );
 };
 
 export const VersusSlam: React.FC = () => {
   const frame = useCurrentFrame();
-
   const leftX = leftXAt(frame);
-  const rightX = -leftX;
-  const v = velocity(leftXAt, frame); // 对冲速度（px/帧），驱动运动模糊
-
-  // 撞击帧起：整机震屏 12px 指数衰减（约 5f 收干）
-  const since = frame - IMPACT;
-  const env = since >= 0 ? 12 * Math.exp(-since / 1.6) : 0;
-  const shakeX = env * Math.sin(since * 3.4);
-  const shakeY = env * 0.6 * Math.sin(since * 4.1 + 0.7);
-
-  // 白闪：撞击帧 0.9 → 0，3f 收掉（撞前为 0——旧版左侧钳位让 0–29f 整段是 0.9 白屏）
-  const flash = frame < IMPACT ? 0 : interpolate(frame, [IMPACT, IMPACT + 3], [0.9, 0], clamp);
-
-  // "VS" 盖章：scale 1.6 → 1 带 back overshoot，6f 压出
-  const vsScale = interpolate(frame, [IMPACT, IMPACT + 6], [1.6, 1], { ...clamp, easing: Easing.out(Easing.back(2.6)) });
-  const vsOpacity = interpolate(frame, [IMPACT, IMPACT + 2], [0, 1], clamp);
-
+  const v = velocity(leftXAt, frame);
   const impacted = frame >= IMPACT;
 
-  // 建立段预示光缝：0–14f 从中点向两端长出，逼近时变亮
-  const preGrow = ramp(frame, 2, 14, EASE.snappy);
-  const preGlow = 0.35 + 0.65 * ramp(frame, 18, IMPACT - 18, EASE.exit);
-  // 撞击光缝：撞击帧最亮，14f 收敛到常亮 0.4
-  const seamHot = impacted ? mix(0.4, 1, 1 - ramp(frame, IMPACT, 14, EASE.out)) : 0;
-  // 冲击波环：单次，14f 外扩淡出
-  const wave = ramp(frame, IMPACT, 14, EASE.out);
-  // 方名标签：撞后 8f / 12f 错峰滑入
-  const tagL = ramp(frame, IMPACT + 8, 14, EASE.snappy);
-  const tagR = ramp(frame, IMPACT + 12, 14, EASE.snappy);
+  // 撞击帧起：整机震屏指数衰减（~5f 收干）
+  const since = frame - IMPACT;
+  const env = since >= 0 ? 16 * Math.exp(-since / 1.7) : 0;
+  const shakeX = env * Math.sin(since * 3.3);
+  const shakeY = env * 0.55 * Math.sin(since * 4.2 + 0.8);
+  const push = 1 + 0.015 * ramp(frame, IMPACT + 10, 105 - IMPACT - 10, EASE.smooth);
 
-  const seamLine = (opacity: number, scaleY: number, glow: number) => (
-    <div
-      style={{
-        position: 'absolute', left: 960 - 1, top: 540 - 700, width: 2, height: 1400,
-        transform: `rotate(${SEAM_DEG}deg) scaleY(${scaleY})`,
-        background: 'linear-gradient(180deg, rgba(235,238,255,0) 0%, rgba(235,238,255,0.95) 18%, #ffffff 50%, rgba(235,238,255,0.95) 82%, rgba(235,238,255,0) 100%)',
-        boxShadow: `0 0 ${(10 + glow * 30).toFixed(1)}px ${(1 + glow * 3).toFixed(1)}px rgba(150,160,255,${(0.35 + glow * 0.5).toFixed(3)})`,
-        opacity,
-      }}
-    />
+  const flash = impacted ? 0.85 * (1 - ramp(frame, IMPACT, 3, EASE.linear)) : 0;
+  const stamp = springAt(frame, IMPACT, { damping: 12, stiffness: 260 });
+  const wave = ramp(frame, IMPACT, 16, EASE.out);
+  const lines = ramp(frame, IMPACT, 7, EASE.out);
+
+  // 建立段墨线：中点向两端长出，逼近时加粗
+  const preGrow = ramp(frame, 2, 14, EASE.snappy);
+  const preW = mix(2, 6, ramp(frame, RUSH, IMPACT - RUSH, EASE.exit));
+  const verdict = ramp(frame, IMPACT + 26, 18, EASE.snappy);
+
+  const half = (side: 'L' | 'R') => (
+    <SpeedBlur vx={side === 'L' ? v : -v} amount={0.1} max={36}>
+      <div style={{
+        position: 'absolute', inset: 0, transform: `translateX(${(side === 'L' ? leftX : -leftX).toFixed(2)}px)`,
+        clipPath: side === 'L'
+          ? `polygon(0px 0px, ${SEAM_TOP_X}px 0px, ${SEAM_BOT_X}px 1080px, 0px 1080px)`
+          : `polygon(${SEAM_TOP_X}px 0px, 1920px 0px, 1920px 1080px, ${SEAM_BOT_X}px 1080px)`,
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: side === 'L'
+            ? `radial-gradient(ellipse 70% 80% at 18% 10%, #2a231c 0%, ${INK} 60%, #0e0b08 100%)`
+            : `radial-gradient(ellipse 70% 80% at 85% 10%, #f25a3f 0%, ${RED} 55%, #c9341f 100%)`,
+        }} />
+        <Side side={side} f={frame} />
+      </div>
+    </SpeedBlur>
   );
 
   return (
-    <AbsoluteFill style={{ background: G.dark, overflow: 'hidden' }}>
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.42 }} accent={G.accent} grain={0} />
-      <div style={{ position: 'absolute', inset: 0, transform: `translate(${shakeX}px, ${shakeY}px)` }}>
-        {/* 建立段的斜缝光线预示（撞合后被实缝替代） */}
-        {!impacted && seamLine(preGlow, preGrow, preGlow * 0.6)}
-        {/* 左半屏：深色版 dashboard A 裁左半，斜边 78°，对冲期横向运动模糊 */}
-        <SpeedBlur vx={v} amount={0.1} max={36}>
-          <div style={{
-            position: 'absolute', inset: 0,
-            transform: `translateX(${leftX}px)`,
-            clipPath: `polygon(0px 0px, ${SEAM_TOP_X}px 0px, ${SEAM_BOT_X}px 1080px, 0px 1080px)`,
-          }}>
-            <FakeDashboard variant="A" tone="dark" />
-            <SideTag side="left" title="Legacy" meta="v1.8" k={tagL} />
-          </div>
-        </SpeedBlur>
-        {/* 右半屏：浅色版 dashboard B 裁右半 */}
-        <SpeedBlur vx={-v} amount={0.1} max={36}>
-          <div style={{
-            position: 'absolute', inset: 0,
-            transform: `translateX(${rightX}px)`,
-            clipPath: `polygon(${SEAM_TOP_X}px 0px, 1920px 0px, 1920px 1080px, ${SEAM_BOT_X}px 1080px)`,
-          }}>
-            <FakeDashboard variant="B" />
-            <SideTag side="right" title="Next" meta="v2.0" k={tagR} />
-          </div>
-        </SpeedBlur>
-        {/* 撞合后的撞击光缝：两侧窄暗影 + 冷白光芯 */}
-        {impacted && (
+    <AbsoluteFill style={{ background: P.bg[1], overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, transform: `translate(${shakeX.toFixed(2)}px, ${shakeY.toFixed(2)}px) scale(${push.toFixed(5)})` }}>
+        {/* 建立段：纸面 + 设问 + 斜缝墨线 */}
+        {!impacted && (
           <>
+            <Stage look={P} keyLight={{ x: 0.5, y: 0.2 }} fill={null} vignette={0.14} grain={0} />
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 386, textAlign: 'center' }}>
+              <div style={{ ...type(30, 800, { caps: true }), letterSpacing: '0.2em', color: RED, marginBottom: 30 }}>Month-end close</div>
+              <div style={{ ...type(124, 880), color: INK }}>
+                <TextReveal text="How long does it take?" by="word" variant="rise" start={1} each={14} gap={3} />
+              </div>
+            </div>
             <div style={{
-              position: 'absolute', left: 960 - 14, top: 540 - 700, width: 28, height: 1400,
-              transform: `rotate(${SEAM_DEG}deg)`,
-              background: 'linear-gradient(90deg, rgba(6,7,10,0) 0%, rgba(6,7,10,0.45) 42%, rgba(6,7,10,0.45) 58%, rgba(6,7,10,0) 100%)',
+              position: 'absolute', left: 960 - preW / 2, top: 540 - 700, width: preW, height: 1400, background: INK,
+              transform: `rotate(${SEAM_DEG}deg) scaleY(${preGrow.toFixed(4)})`,
+              // 设问那一带留空：墨线只在字的上下长出，不划过字
+              WebkitMaskImage: SEAM_GAP, maskImage: SEAM_GAP,
             }} />
-            {seamLine(1, 1, seamHot)}
           </>
         )}
-        {/* 冲击波环：撞击帧同发，单次 */}
-        {impacted && wave < 1 && (
-          <div style={{
-            position: 'absolute', left: 960, top: 540, width: 0, height: 0,
-          }}>
-            <div style={{
-              position: 'absolute', left: -mix(130, 560, wave), top: -mix(130, 560, wave),
-              width: mix(260, 1120, wave), height: mix(260, 1120, wave), borderRadius: '50%',
-              border: `${mix(6, 1, wave).toFixed(2)}px solid rgba(225,230,255,${(0.7 * (1 - wave)).toFixed(3)})`,
-              boxShadow: `0 0 40px rgba(150,160,255,${(0.4 * (1 - wave)).toFixed(3)})`,
-            }} />
-          </div>
-        )}
-        {/* "VS" 圆章盖章：贴缝、随缝倾斜 */}
+
+        {half('L')}
+        {half('R')}
+
         {impacted && (
-          <div style={{
-            position: 'absolute', left: 960, top: 540,
-            transform: `translate(-50%, -50%) rotate(${SEAM_DEG}deg) scale(${vsScale})`,
-            opacity: vsOpacity,
-            width: 236, height: 236, borderRadius: '50%', padding: 4, boxSizing: 'border-box',
-            background: `linear-gradient(150deg, #9aa0f5 0%, ${G.accent} 55%, #3a40a8 100%)`,
-            boxShadow: '0 30px 70px -10px rgba(4,5,10,0.75), 0 8px 18px rgba(4,5,10,0.45)',
-          }}>
+          <>
+            {/* 撞合切口：纸白 6px + 两侧窄投影 */}
             <div style={{
-              width: '100%', height: '100%', borderRadius: '50%',
-              background: 'radial-gradient(circle at 38% 28%, #2c2e38 0%, #17181d 62%, #0e0f13 100%)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -10px 24px rgba(0,0,0,0.45)',
+              position: 'absolute', left: 960 - 22, top: 540 - 700, width: 44, height: 1400, transform: `rotate(${SEAM_DEG}deg)`,
+              background: `linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(10,6,4,0.35) 38%, ${PAPER} 43%, ${PAPER} 57%, rgba(10,6,4,0.35) 62%, rgba(0,0,0,0) 100%)`,
+            }} />
+            {/* 冲击环 + 放射速度线（单次） */}
+            {wave < 1 && (
+              <div style={{
+                position: 'absolute', left: 960 - mix(130, 640, wave), top: 540 - mix(130, 640, wave),
+                width: mix(260, 1280, wave), height: mix(260, 1280, wave), borderRadius: '50%',
+                border: `${mix(14, 1, wave).toFixed(2)}px solid ${alpha(PAPER, 0.85 * (1 - wave))}`,
+              }} />
+            )}
+            {lines < 1 && (
+              <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
+                {Array.from({ length: 12 }, (_, i) => {
+                  const a = (i / 12) * Math.PI * 2 + 0.26;
+                  const r0 = mix(170, 420, lines);
+                  const r1 = mix(260, 720, lines);
+                  return (
+                    <line key={i} x1={960 + Math.cos(a) * r0} y1={540 + Math.sin(a) * r0} x2={960 + Math.cos(a) * r1} y2={540 + Math.sin(a) * r1}
+                      stroke={PAPER} strokeWidth={mix(8, 2, lines)} strokeLinecap="round" opacity={1 - lines} />
+                  );
+                })}
+              </svg>
+            )}
+            {/* VS 圆章 */}
+            <div style={{
+              position: 'absolute', left: 960 - 130, top: 540 - 130, width: 260, height: 260, borderRadius: '50%',
+              transform: `rotate(${(SEAM_DEG - 8 * (1 - stamp)).toFixed(3)}deg) scale(${mix(1.9, 1, stamp).toFixed(4)})`,
+              opacity: Math.min(1, stamp * 4),
+              background: PAPER, border: `8px solid ${INK}`, boxSizing: 'border-box',
+              boxShadow: `0 4px 0 ${alpha(INK, 0.9)}, 0 30px 60px -12px rgba(10,6,4,0.6)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontFamily: FONT.sans, fontSize: 108, fontWeight: 900, fontStyle: 'italic',
-              letterSpacing: '-0.05em', color: '#f6f6fa', paddingRight: 6, boxSizing: 'border-box',
-              textShadow: '0 2px 0 rgba(0,0,0,0.35)',
             }}>
-              VS
+              <div style={{ position: 'absolute', inset: 10, borderRadius: '50%', border: `2px solid ${alpha(INK, 0.35)}` }} />
+              <span style={{ fontFamily: FONT.sans, fontSize: 124, fontWeight: 900, fontStyle: 'italic', letterSpacing: '-0.06em', color: INK, marginLeft: -10, marginTop: -4 }}>
+                VS
+              </span>
             </div>
-          </div>
+            {/* 结论条 */}
+            <div style={{
+              position: 'absolute', left: 960, top: 930, transform: `translate(-50%, ${((1 - verdict) * 40).toFixed(2)}px)`, opacity: verdict,
+              height: 84, padding: '0 44px', borderRadius: 42, background: PAPER, display: 'flex', alignItems: 'center', gap: 18, whiteSpace: 'nowrap',
+              boxShadow: '0 20px 44px -14px rgba(10,6,4,0.55)', ...type(38, 800), color: INK,
+            }}>
+              <span style={{ width: 14, height: 14, borderRadius: 7, background: RED }} />
+              Close the month before lunch.
+            </div>
+          </>
         )}
       </div>
-      {/* 撞击白闪（不随震屏位移） */}
-      <AbsoluteFill style={{ background: '#ffffff', opacity: flash, pointerEvents: 'none' }} />
-      <Grain opacity={0.05} step={2} blend="soft-light" />
+      {/* 撞击白闪（不随震屏） */}
+      <AbsoluteFill style={{ background: PAPER, opacity: flash, pointerEvents: 'none' }} />
+      <Grain opacity={0.06} step={2} blend="overlay" />
     </AbsoluteFill>
   );
 };
