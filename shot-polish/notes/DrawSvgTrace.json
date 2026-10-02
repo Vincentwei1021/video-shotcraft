@@ -1,32 +1,31 @@
 {
   "stem": "DrawSvgTrace",
   "issues": [
-    "没有导出时长常量，工作台按卡片 md 猜成 40f，改版前视频只演到描边一半就结束，闭合闪、交棒、下划线全没出现",
-    "左上角打着调试标题 DRAW SVG TRACE，背景是纯色灰底",
-    "笔头只是一段更粗的同色线段，读不出'有一支笔在画'",
-    "闭合后填进来的是灰色骨架条 + 灰圆头像，交棒的 2px 灰边比墨线还粗糙",
-    "内容一次性整体淡入，卡片本身没有任何体积变化"
+    "浅灰底中央一张 560×380 的骨架占位卡，左上角打着调试标题「DRAW SVG TRACE」，主体只占画宽 29%",
+    "描边开始前 8 帧完全空白，描边阶段画面里只有一根细线，大面积死白",
+    "交棒后的卡片内容是灰条占位，下划线画在灰条上，\"重点词\"根本不存在",
+    "背景是均匀的灰，没有纸感、没有光，和\"纸墨\"的手法隐喻脱节"
   ],
   "changes": [
-    "补导出 DRAW_SVG_TRACE_DURATION = 126：描边 40f → 闪黑交棒 16f → 下划线 18f → 真静止 40f（R1）",
-    "去掉调试标题；柔光纸面底 + 暗角 + 颗粒；墨色换成带冷调的 #17181c，闭合仍冲纯黑 + 4→8px 加粗",
-    "笔头改为三段渐细 dash（5.2/6.4/7.6px）+ 按圆角矩形弧长参数精确定位的圆形笔尖（带落影与一点高光），起收 2f 淡入淡出",
-    "卡片内容换成出版级指标卡：标签 + 'Revenue grew 38% in Q3' 标题 + 正文 + 12 柱趋势图 + 署名行；第二用法改为只给重点词 38% 画下划线",
-    "闭合后各元素自上而下 2f 错峰 8f 上浮淡入，卡片阴影随'上色'从贴地长到静置高度；交棒 border 改为 1px 发丝线"
+    "look 换成 paper（暖白纸 · 墨 · 朱红），主体放大到 1120×660（画宽 58%），内容是出版级季度指标卡：mono 眉题、「Revenue grew / 38%」两段式大标题（38% 用 212px 820 字重）、32px 说明、12 根柱图（末三根朱红）、署名行",
+    "开场就有东西：中心清晰四周隐去的绘图纸点阵 + 四角先长出裁切标记（印刷对位线，错峰 2f），闭合时外弹淡出",
+    "笔更像笔：主线 6px + 三段渐细笔头 + 按圆角弧长精确定位的实心笔尖（带落影）；闭合 2f 冲黑加粗到 11px、6f 回落（白底不发光）",
+    "上墨有层次：卡片从贴地升起（阴影长出来），内容自上而下 3f 错峰由虚到实上浮，柱图错峰从基线长出；第二用法给「38%」画一笔带手绘弧度的朱红马克笔下划线",
+    "时长 126f → 132f：预告 10f + 描边 40f + 交棒 16f + 下划线 18f + hold 40f（0.9% 极缓推近）"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench guessed 40f from the card md; the before video stopped mid-trace, never reaching the close flash, handoff or underline",
-    "A debug title DRAW SVG TRACE sat top-left over a flat grey background",
-    "The pen tip was just a thicker segment of the same line, not reading as a pen drawing",
-    "After closing, the card filled with grey skeleton bars and a grey dot avatar, and the 2px grey handoff border looked cruder than the ink line",
-    "Content faded in all at once and the card itself had no sense of volume"
+    "A 560x380 skeleton placeholder card in the middle of a light grey floor, with a debug title \"DRAW SVG TRACE\" in the corner; the subject covered only 29% of the width",
+    "The first 8 frames were completely blank, and during the trace the frame held a single thin line in a sea of empty white",
+    "After the handoff the card content was grey placeholder bars, and the underline was drawn under a grey bar: there was no actual key word",
+    "The background was flat grey with no paper texture or light, disconnected from the pen-and-ink metaphor"
   ],
   "changesEn": [
-    "Exported DRAW_SVG_TRACE_DURATION = 126: 40f trace → 16f flash/handoff → 18f underline → 40f true hold (R1)",
-    "Removed the debug title; soft paper backdrop with vignette and grain; ink is a cool #17181c, still flashing to pure black with a 4→8px weight on close",
-    "Pen is three tapered dashes (5.2/6.4/7.6px) plus a round nib placed exactly by rounded-rect arc length, with a drop shadow and tiny highlight, fading in/out over 2f",
-    "Card content is a publication-grade metric card: label, 'Revenue grew 38% in Q3' headline, body copy, a 12-bar trend and a byline; the second usage now underlines only the key figure 38%",
-    "After closing, elements rise and fade in top-down with a 2f stagger over 8f, the card shadow grows from flat to resting height, and the handoff border is a 1px hairline"
+    "Paper look (warm white paper, ink, vermilion) with the subject enlarged to 1120x660 (58% of the width): a publication-grade quarterly metric card with a mono kicker, a two-part headline \"Revenue grew / 38%\" (38% at 212px, weight 820), a 32px note, a 12-bar chart with the last three in vermilion and a byline",
+    "Something on screen from frame 1: a drafting dot grid sharp in the centre and fading out, plus crop marks growing from the four corners (staggered 2f) that spring outward and fade on closure",
+    "A more convincing pen: a 6px line with a three-step tapering nib and a solid pen tip placed exactly by rounded-rect arc length, with a drop shadow; on closure the stroke hits pure black and 11px in 2f and settles over 6f (no glow on white)",
+    "Layered inking: the card lifts off the paper as its shadow grows, content resolves top to bottom with 3f staggers from blur and a small rise, bars grow from the baseline in sequence; the second use draws a hand-curved vermilion marker underline under \"38%\"",
+    "Duration 126f to 132f: 10f preview, 40f trace, 16f handoff, 18f underline, 40f hold with a 0.9% push-in"
   ],
+  "look": "paper",
   "mdChanged": true
 }

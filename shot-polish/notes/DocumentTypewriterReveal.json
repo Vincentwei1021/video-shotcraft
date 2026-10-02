@@ -1,32 +1,31 @@
 {
   "stem": "DocumentTypewriterReveal",
   "issues": [
-    "开场标题特写机位 cy=280 低于下限，画面上方露出约 150px 页面以外的空底，页顶被拦腰截断",
-    "标题块测量宽度比粗体实际字宽短约 70px，打字遮罩盖不住尾词，'Weekly' 在写到之前就从右侧漏出来",
-    "人名 @-mention 的琥珀底色盖在纹理文字上方，Lin / Marco 等人名被洗成浅色，反而不如普通标题醒目",
-    "相机关键帧逐段 ease-in-out，在 f22 处速度归零再起步，拉远过程一顿",
-    "右上角 kicker 是悬浮的灰色等宽字，和页面顶栏叠在一起像调试标签；写入遮罩色与纸面差 1–2 级"
+    "截图页面铺满全屏、纸色平铺，没有舞台、没有光，开场和结尾都只是一张网页",
+    "全页 1x 时正文 14px 级完全读不清，相机全程正视，没有空间感",
+    "右上角悬浮一个小号等宽字 chip 当标题，像调试标签",
+    "节奏前紧后松：写入结束后只有极轻的呼吸，尾段近 2 秒没有信息落点"
   ],
   "changes": [
-    "开场机位改为贴住页顶的标题特写（zoom 1.25 时 cy=440），首帧即完整的编辑器顶栏 + 标题",
-    "写入遮罩右侧多盖（标题 120px、正文 24px），遮罩色改为纹理纸面实测色 #fefcf9，无漏字、无色块",
-    "@-mention 底色改为 multiply 混合、opacity 0.9：只染纸面不洗字，人名保持深色并被标出",
-    "相机改为过同一组关键帧的单调三次 Hermite 样条逐帧展开，拉远一气呵成，末段微呼吸保留",
-    "kicker 改为带底的发丝线 chip（琥珀圆点 + 内高光 + 柔影），ease-out 从右侧 12px 滑入；caret 加同色柔光"
+    "look 换成 aurora（紫夜 + 紫/粉光）：真实周报截图保留，但变成一扇悬浮在暗场里的应用窗口——圆角、亮边、背后一圈紫色背光、长投影，暖白纸面在冷紫夜里像一盏灯",
+    "相机改成自写 3D 窗口相机（布局级 zoom 保清晰）+ 单调 Hermite 样条：开场 1.42x 斜侧（rotY −18°）特写标题、窗口左上角与舞台光同时入画，笔尖往下写时一路后撤到全窗，最后微俯上移",
+    "笔尖换成 3px 深紫 caret + 柔光、只骑在实际文字宽度内，开写前 8f 在标题起点闪烁待命；人名标题长出极光紫 multiply 底",
+    "节奏重排为 150f：写入 8→57f（cue = 8 + 4.4g、每块 9f）→ 双栏 54/62f 揭开 → 历史周报 66f 起每 5f 落一条 → 标语 100f 起逐词升起 → hold 24f",
+    "去掉右上角 chip，收尾加一行 84px 标语「The weekly brief writes itself.」（后半句强调色），左对齐窗口左缘，尾帧是一张产品海报"
   ],
   "issuesEn": [
-    "The opening close-up used cy=280, below the minimum, exposing ~150px of empty canvas above the page and cutting the page top in half",
-    "The h1 block was measured ~70px narrower than the bold title, so the typing mask didn't cover the tail and 'Weekly' leaked out before being typed",
-    "The amber @-mention wash sat on top of the texture text, bleaching names like Lin and Marco so they looked weaker than plain headings",
-    "Per-segment ease-in-out camera keys hit zero velocity at f22, so the pull-back hitched",
-    "The top-right kicker was floating grey mono text overlapping the page header like a debug label; the mask color was 1–2 levels off the paper"
+    "The screenshot filled the frame as flat paper with no stage or light, so it opened and ended as just a web page",
+    "At full-page 1x the 14px-class body text was unreadable and the camera stayed frontal throughout, with no sense of space",
+    "A small monospace chip floating at top right served as the title and looked like a debug label",
+    "Front-loaded rhythm: after writing ended there was only a faint breathing move, leaving nearly two seconds without a point"
   ],
   "changesEn": [
-    "Opening framing is a title close-up flush with the page top (cy=440 at zoom 1.25), showing the full editor header and title from frame 0",
-    "Typing masks extend further right (120px for headings, 24px for body) and use the measured paper color #fefcf9: no leaks, no tonal blocks",
-    "@-mention wash uses multiply blending at 0.9 opacity, tinting the paper without bleaching the text, so names stay dark and highlighted",
-    "Camera follows a monotone cubic Hermite spline through the same keys, expanded per frame, giving one continuous pull-back with the micro-breathing kept",
-    "Kicker is now a hairline chip (amber dot, inner highlight, soft shadow) that eases in 12px from the right; the caret gets a soft same-color glow"
+    "Aurora look (violet night, violet/pink light): the real weekly-brief screenshot stays but becomes an app window floating in the dark, with rounded corners, a bright rim, a violet backlight and a long shadow, so the warm paper glows like a lamp in the cool night",
+    "A custom 3D window camera (layout-level zoom keeps text sharp) on a monotone Hermite spline: it opens on a 1.42x oblique close-up of the title (rotY -18°) with the window corner and stage light in frame, pulls back as the caret writes down the page to the full window, then tilts slightly and lifts",
+    "The caret is now a 3px deep-violet bar with a soft glow that stays within the actual text width and blinks at the title start for 8f before writing; member-name headings grow a violet multiply wash",
+    "Rhythm rebuilt to 150f: writing 8-57f (cue = 8 + 4.4g, 9f per block), side rails reveal at 54/62f, past weeks drop in every 5f from 66f, the tagline rises word by word from 100f, then a 24f hold",
+    "The corner chip is gone; the shot ends on an 84px tagline \"The weekly brief writes itself.\" (second half in accent) aligned to the window's left edge, making the last frame a product poster"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

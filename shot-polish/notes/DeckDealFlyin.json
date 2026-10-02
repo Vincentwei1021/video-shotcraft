@@ -1,30 +1,31 @@
 {
   "stem": "DeckDealFlyin",
   "issues": [
-    "相机关键帧逐段 ease-in-out，在 f34、f62、f82 三处速度归零再起步，追逐 scroll 一顿一顿，不是'越来越快'",
-    "金属桌面是两层 repeating-linear-gradient 交叉条纹，读作粗糙的滚花网纹而不是拉丝金属",
-    "金属层整体半透明淡出，转场中段整个页面被盖成一片脏灰",
-    "开场暗场没有暗角和颗粒，牌堆在桌面上没有落影，像贴在纹理上"
+    "开场的拉丝金属牌堆特写之后，整屏切成白纸页面，暗场质感在镜头中段整个丢掉，后半段是一块平铺的浅色网页",
+    "收尾停在页面底部几排卡的正视平铺上，看不到\"满板\"的整体体量，尾帧没有构图也没有文字",
+    "金属→页面的过渡中段是半透明叠化的灰色，牌堆所在的桌面和页面不是同一个空间",
+    "卡片阴影是暖棕色浅影，放在暗桌上发脏；整镜头没有景深与光的方向"
   ],
   "changes": [
-    "相机改为过同一组关键帧的单调三次 Hermite（Fritsch–Carlson）样条，逐帧展开喂给 PageCam2D（线性插值），关键帧处速度连续，满板 rest 段速度为 0 稳停",
-    "拉丝纹换成确定性 feTurbulence 各向异性噪声小图平铺（x 0.0018 / y 0.62）+ 104° 宽幅镜面高光带 + 冷灰钢色底 + 暖主光",
-    "金属 → 页面改为以牌堆为圆心的柔边光圈揭开（f34→58，半径 0→3400px、羽化 520→1420px），像灯从牌堆处亮起，无灰色中间态",
-    "开场段叠暗角（0.55）+ soft-light 颗粒，随金属一同在 f30→56 退场；牌堆最底一张在金属上投大而虚的落影，随揭开减弱",
-    "发牌节拍、预备拍 48/30px、单卡飞行 / settle / press、0.5s 满板静止等全部原参数保持不变"
+    "look 换成 graphite（近单色暗场 + 一点香槟金）：整镜头都在一张暗色拉丝石墨桌面上，牌堆放在真实 projects 页面板的右侧；页面板始终是摆在暗桌上的白色展板，暗/亮反差贯穿到最后一帧",
+    "拉远时\"灯\"从牌堆亮到页面板：板面开场盖着 0.88 暗层，以牌堆为圆心的柔边光圈把它照亮，落进暗区的卡同步压暗",
+    "相机是一条连续 Hermite 样条：低机位侧斜绕牌堆 → 拉远正视板顶 → 追着越发越快的牌往板尾走、同时升高后仰侧转 → 落在一张跑道式俯瞰（26 张卡全部在画，远端压暗做景深），persp 随后仰从 1100 加到 3300",
+    "保留发牌核心：预备拍 48/30px、cue = 36 + 4k − 0.0792·k(k−1) 硬加速、8f 俯冲 + 4f 过冲 + 2f press；阴影改成暗桌上的黑色重影、落地后在纸面收成静置影（滞后 ~3f）",
+    "满板后左下升起 120px 标语「Every project. / One board.」（800/300 字重对比）+ mono 计数行「26 PROJECTS · 4 TEAMS」；时长 113f → 150f，hold 42f 只留 1.5% 推近"
   ],
   "issuesEn": [
-    "Per-segment ease-in-out camera keys hit zero velocity at f34, f62 and f82, so the chase scroll stuttered instead of accelerating",
-    "The metal table was two crossed repeating-linear-gradients that read as coarse knurling rather than brushed metal",
-    "The whole metal layer faded out translucently, turning the page into a muddy grey mid-transition",
-    "The dark opening had no vignette or grain, and the pile cast no shadow on the table, looking pasted on"
+    "After the brushed-metal pile close-up the whole frame cut to a white page, so the dark-stage quality vanished mid-shot and the second half was a flat light web page",
+    "It ended on a frontal view of the bottom rows of the page, so the size of the full board was never visible; the last frame had no composition and no copy",
+    "The metal-to-page transition passed through a muddy translucent grey crossfade; the table under the pile and the page did not feel like one space",
+    "Card shadows were pale warm browns that looked dirty on the dark table, and the shot had no depth of field or light direction"
   ],
   "changesEn": [
-    "Camera now follows a monotone cubic Hermite (Fritsch–Carlson) spline through the same keys, expanded per frame into PageCam2D keys (linear), with continuous velocity at keys and zero velocity into the full-board rest",
-    "Brushed texture is a deterministic anisotropic feTurbulence tile (x 0.0018 / y 0.62) plus a 104° broad specular band, cool steel base and warm key light",
-    "Metal-to-page is a soft iris reveal centered on the pile (f34→58, radius 0→3400px, feather 520→1420px), like lights coming up from the pile, with no grey midpoint",
-    "Opening adds a vignette (0.55) and soft-light grain that leave with the metal (f30→56); the bottom pile card casts a large soft shadow on the metal that weakens with the reveal",
-    "Deal cadence, 48/30px anticipation, per-card flight/settle/press and the 0.5s full-board rest are all unchanged"
+    "Graphite look (near-monochrome dark with a touch of champagne): the whole shot happens on a dark brushed graphite table, with the pile beside the real projects page board; the board stays a white panel lying on the dark table, so the dark/light contrast holds to the last frame",
+    "On the pull-out the light spreads from the pile onto the board: the board starts under a 0.88 dark layer that a soft iris centred on the pile lifts, and cards landing in the dark zone are dimmed to match",
+    "The camera is one continuous Hermite spline: a low oblique orbit around the pile, a pull-out to a frontal view of the board top, a chase down the board after the accelerating deal while rising, tilting and rolling, ending on a runway-style overview with all 26 cards in frame and the far end darkened for depth (perspective grows from 1100 to 3300)",
+    "The deal itself is kept: 48/30px anticipation, hard-accelerating cues 36 + 4k - 0.0792k(k-1), 8f dive + 4f overshoot + 2f press; shadows are now black on the dark table and settle into resting shadows on the paper about 3f after the card",
+    "Once the board is full a 120px tagline \"Every project. / One board.\" (800 vs 300 weight) rises at bottom left with a mono counter line \"26 PROJECTS · 4 TEAMS\"; duration goes from 113f to 150f with a 42f hold and only a 1.5% push-in"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

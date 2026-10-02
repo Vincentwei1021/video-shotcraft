@@ -1,32 +1,31 @@
 {
   "stem": "DocParkLeftPillDeal",
   "issues": [
-    "自动滚动用 (t*3 % 1)*40 取模，而文档内容并不周期，每 1/3 片长整页向下回跳 40px，肉眼可见",
-    "左侧'文档'只是三栏灰色骨架条，看不出是一份什么文档，'结论从文档里来'无从读起",
-    "药丸只是白底 + 1px 灰边，图标是纯黑细线，和文档、背景同一灰阶，毫无层次",
-    "文档与药丸之间是一大片空白，结论和来源之间没有任何视觉关联",
-    "纯色浅灰平底"
+    "整镜头在 480×270 设计坐标里排版再放大，文档是灰色骨架条、药丸名称 12px 级，说明句只有 11px，全片几乎没有能读的字",
+    "浅灰底 + 白卡 + 灰字，没有强调色和光，画面平且空，右侧一半画面长时间空着",
+    "药丸只是在原位弹出，和左侧文档没有任何联系，\"结论从文档里来\"这件事看不出来",
+    "说明句淡出后画面只剩三个药丸，尾帧没有信息落点"
   ],
   "changes": [
-    "自动滚动改为连续匀速 −t×120（速度与原 3×40 相同，≈0.7px/f），不再回跳；文档内容加长到 330 设计 px",
-    "文档换成出版级'客户档案'正文：标题 / 元信息 / PROFILE·PREFERENCES·USAGE·ORDERS 等分节正文，系统字体与字重层级",
-    "每张药丸落定时，文档中对应依据句被强调色荧光笔自左向右划出，并有一条强调色细线（pathLength draw-on）从该句行尾连到药丸，随该句字幕退场淡出",
-    "药丸改为受光白面 + 0.5px 发丝线 + 内高光 + 随落定收敛的两层软阴影，图标放进强调色浅底圆，右侧加 tabular-nums 置信度",
-    "柔光浅底（主光右上 + 靛蓝余光 + 暗角 + 颗粒）；发牌节奏 T0、outBack 弹入、逐词字幕编排全部保持原参数"
+    "look 换成 porcelain（冷白 + 钴蓝 + 青绿点缀），原生 1920 排版：出版级\"客户档案\"文档（标题 52px / 正文 30px）、128px 高结论药丸（名称 54px + 渐变图标 + 匹配度 chip）、说明句 44px",
+    "开场加\"在读\"的交代：文档居中，一道钴蓝扫描光带自上而下扫过整页（裁在纸面圆角内），眉题 ANALYZING · 12 SOURCES",
+    "因果链：每张药丸先让依据句被钴蓝荧光笔划出，再从这句话的位置飞出、overshoot 14f 落进右栏槽位（飞行按速度模糊），最后一条钴蓝细线从句尾连到药丸",
+    "保留节奏骨架：驻留 18→46f（只露约 40%、scale 0.92）、发牌间隔 38f、透明度先到位移后到；文档全程 1.4px/f 连续滚动，纸面上下渐隐",
+    "说明句逐词由灰到墨 + 上浮，下一张前上移淡出；末句留到底，尾帧是三条结论 + 一句理由的完整画面（时长 174f → 180f）"
   ],
   "issuesEn": [
-    "Auto-scroll used (t*3 % 1)*40 on non-periodic content, so the doc visibly snapped back 40px every third of the shot",
-    "The 'document' was three columns of grey skeleton bars; nothing said what it was, so 'conclusions come from the doc' didn't read",
-    "Pills were white with a 1px grey border and pure-black line icons, the same grey value as doc and background, no hierarchy",
-    "A large empty gap separated doc and pills, with no visual link between a conclusion and its source",
-    "Flat light-grey background"
+    "The whole shot was laid out in 480x270 design units and scaled up: the document was grey skeleton bars, pill labels were ~12px class and captions 11px, so almost nothing was readable",
+    "Light grey floor, white cards and grey text with no accent or light: flat and empty, with the right half of the frame idle for long stretches",
+    "Pills simply popped in place with no link to the document, so \"the conclusions come from the document\" never showed",
+    "After the captions faded only three pills remained, leaving the last frame without a point"
   ],
   "changesEn": [
-    "Auto-scroll is now continuous −t×120 (same ~0.7px/f speed as the old 3×40), no snap-back; doc content extended to 330 design px",
-    "The doc is a publication-grade 'account review' with title, meta line and PROFILE/PREFERENCES/USAGE/ORDERS sections in the system font with clear weight hierarchy",
-    "As each pill lands, its evidence sentence in the doc gets an accent highlighter wiping left→right, and a thin accent connector (pathLength draw-on) links that line to the pill, fading with its caption",
-    "Pills are top-lit white with a 0.5px hairline, inner highlight and a two-layer shadow that settles on landing; icons sit in a soft accent circle, with a tabular-nums confidence on the right",
-    "Soft-lit light backdrop (key light upper right, indigo spill, vignette, grain); T0 cadence, outBack pop and word-by-word captions keep their original parameters"
+    "Porcelain look (cool white, cobalt, a teal accent) with native 1920 layout: a publication-grade account review document (52px title, 30px body), 128px-tall conclusion pills (54px names, gradient icons, match chips) and 44px captions",
+    "An opening that shows reading: the document starts centred while a cobalt scan band sweeps down the page (clipped to the paper corners) under an ANALYZING · 12 SOURCES kicker",
+    "A visible chain of cause: before each pill the evidence sentence gets a cobalt highlighter stroke, then the pill flies out from that line and lands in its right-column slot with a 14f overshoot (speed blur in flight), and a cobalt line draws from the sentence end to the pill",
+    "The rhythm skeleton is kept: park at 18-46f (about 40% visible, scale 0.92), 38f between pills, opacity before position; the document scrolls continuously at 1.4px/f with soft top and bottom fades",
+    "Captions darken word by word from grey to ink with a small rise and slide out before the next pill; the last one stays, so the final frame shows three conclusions and one reason (174f to 180f)"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

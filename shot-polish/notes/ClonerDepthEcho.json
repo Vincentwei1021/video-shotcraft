@@ -1,32 +1,31 @@
 {
   "stem": "ClonerDepthEcho",
   "issues": [
-    "没有导出时长常量，工作台按 inline 猜成 10f，改版前视频只有一张静止主卡，排开/吸回整段都没演",
-    "画面上方打着调试标题 CLONER DEPTH ECHO，背景是纯色灰底",
-    "克隆体是半透明白卡叠在浅灰底上，越往后越接近背景色，纵队几乎读不出来",
-    "主卡在画面里偏小、无落地参照；吸回是 10f 高速位移却没有任何运动模糊",
-    "复印前主卡没有预备动作，'一个 = 很多'只能靠观众自己数"
+    "浅灰底上一张灰色骨架占位卡，左上角还打着调试标题「CLONER DEPTH ECHO」，画面像线框图",
+    "主卡只占画宽 ~25%，四周大面积空白；克隆纵队挤成一叠白纸，几乎读不出纵深",
+    "克隆体只是同色半透明白卡，越远越淡但没有层次和光，像贴纸阵",
+    "合体后什么也没留下：没有数字、没有文案，\"一个 = 很多\"的卖点没有落到画面上"
   ],
   "changes": [
-    "补导出 CLONER_DEPTH_ECHO_DURATION = 120（4s，卡片 md 4–5s 下限）：入场 16f → f18 排开 → 停 25f → 10f 吸回 → 弹跳 → 静止 37f",
-    "去掉调试标题；柔光浅底 + 暗角 + 颗粒，主卡下方加随合体弹跳的地面接触影；整组以纵队重心放大 1.22 取景",
-    "克隆体叠一层随纵深加深的强调色染色（5%→18%）+ 强调色发丝边，透明度 100%→20% 衰减保持不变，纵队清晰可数",
-    "吸回段按每个克隆的实际位移速度给沿 (64,−34) 方向的近似方向模糊，静止时为 0；主卡阴影随弹跳抬高",
-    "复印前主卡先按压到 0.965（f10→18）再随排开回弹；右上角实例计数 chip 随克隆弹出从 ×1 数到 ×8，每跳一次小脉冲，合体后停在 ×8"
+    "look 换成 lime（石墨黑 + 荧光黄绿）：主角是一张边缘函数实例卡「checkout-api」——132px p95 读数 + 柠檬绿折线 + 底部 8 个区域位，把\"一个 = 很多\"落到\"一次部署 = 8 个区域\"",
+    "真 3D 纵深：perspective 1500、消失点放在左上，克隆体只做 translateZ 后退就排向左上；越远越淡、越虚、填充褪掉只剩柠檬绿描边，像 C4D Cloner 的线框回声，每个克隆顶栏换成自己的区域码",
+    "时间表重写为 138f：入场 16f → 按压预备 8f → spring 错峰 2.2f/个排开 → 停 32f（相机推近 2% + 视差漂移）→ 强 ease-in 10f 同步吸回（按速度拖影）→ 1.06 单脉冲 + 一次描边光",
+    "左下 260px 计数器「×N」随每个克隆弹出滚一格（出场格上移淡出、速度竖向虚化），合体同帧 8 个区域位全亮、计数回弹",
+    "合体后左上空位升起 112px 标题「Deploy once. / Run everywhere.」，尾帧是标题 + 计数 + 实例卡的完整海报"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench guessed 10f from inline code; the before video was a single static card with no spread or merge",
-    "A debug title CLONER DEPTH ECHO sat at the top over a flat grey background",
-    "Clones were translucent white cards on light grey, fading into the background so the column barely read",
-    "The hero was small with no grounding; the 10f merge was very fast but had no motion blur",
-    "No anticipation before the 'copy', and 'one = many' relied on viewers counting"
+    "A grey skeleton placeholder card on a light grey floor, with a debug title \"CLONER DEPTH ECHO\" in the corner: it read like a wireframe",
+    "The hero card covered only ~25% of the width in a mostly empty frame; the clone column collapsed into a stack of white sheets with almost no visible depth",
+    "Clones were just translucent copies of the same white card, fading with distance but with no light or layering, like a sticker array",
+    "Nothing remained after the merge: no number, no copy, so the \"one = many\" message never landed on screen"
   ],
   "changesEn": [
-    "Exported CLONER_DEPTH_ECHO_DURATION = 120 (4s, the low end of the card's 4–5s): 16f entrance → spread at f18 → 25f hold → 10f merge → pop → 37f rest",
-    "Removed the debug title; soft-lit light backdrop with vignette and grain, a floor contact shadow that reacts to the pop, and the group framed 1.22x around the column's center",
-    "Clones get a depth-increasing accent tint (5%→18%) and accent hairline while keeping the 100%→20% opacity falloff, so the column is clearly countable",
-    "During the merge each clone gets approximate directional blur along (64,−34) from its actual velocity, zero at rest; hero shadow lifts with the pop",
-    "The hero presses to 0.965 (f10→18) before springing back as clones spread; an instance chip counts ×1→×8 with a pulse per tick and stays ×8 after the merge"
+    "Lime look (graphite black, neon yellow-green): the hero is an edge-function instance card \"checkout-api\" with a 132px p95 readout, a lime sparkline and eight region slots, turning \"one = many\" into \"one deploy = eight regions\"",
+    "Real 3D depth: perspective 1500 with the vanishing point at top left, so clones recede into a column just by translating in Z; distant clones fade, blur and lose their fill down to a lime outline like a C4D Cloner echo, each header showing its own region code",
+    "New 138f timeline: 16f entrance, 8f press anticipation, springs staggered 2.2f per clone, a 32f hold (2% push-in plus parallax drift), a synchronized 10f strong ease-in merge with speed blur, then a single 1.06 pulse and one rim glow",
+    "A 260px counter \"xN\" at bottom left rolls one step per clone (outgoing digit slides up and fades, speed-based vertical blur); on merge all eight region slots light up and the counter bounces",
+    "After the merge a 112px headline \"Deploy once. / Run everywhere.\" rises into the freed top-left space, so the last frame is a complete poster of headline, counter and card"
   ],
-  "mdChanged": false
+  "look": "lime",
+  "mdChanged": true
 }
