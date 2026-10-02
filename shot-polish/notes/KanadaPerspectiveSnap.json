@@ -1,0 +1,28 @@
+{
+  "stem": "KanadaPerspectiveSnap",
+  "issues": [
+    "没有导出时长，工作台按卡片 md 的 22f 渲染，只剩甩入动作、落定后的 hold 全被截掉",
+    "画面上方印着调试标题 KANADA PERSPECTIVE SNAP，落点是 3px 灰色虚线框，背景纯灰平铺",
+    "甩入全程是固定 blur(2px)，在落定那一帧突然摘掉，画面\"跳清\"一下，且模糊与方向无关",
+    "斜影用 filter drop-shadow 一层黑影，飞行与落定都显得脏；主角卡只有 520×340，落定后内容太小"
+  ],
+  "changes": [
+    "补导出 KANADA_PERSPECTIVE_SNAP_DURATION = 130（源码时间轴：22f 动作 + 108f 静止 hold）",
+    "去掉调试标题，换柔光渐变底 + 颗粒；落点改成浅浅凹进去的圆角槽 + 1.5px 发丝虚线，卡片盖上后 18–30f 隐去",
+    "固定 blur 换成按 translateX 速度计算的水平 SpeedBlur（0.16×速度、≤22px），身后拖 5 条随减速收短淡出的动漫速度线，速度归零自然清晰",
+    "阴影改两层 box-shadow：近地实影 + 远地长斜虚影，落定收成静置卡片的软投影；主角卡放大到 660×430，透视 / 过冲 / 6px 震屏节拍不变"
+  ],
+  "issuesEn": [
+    "No duration was exported, so the workbench rendered the card md's 22f: only the swing-in survived and the whole post-landing hold was cut off",
+    "A debug title KANADA PERSPECTIVE SNAP was printed on screen, the landing spot was a 3px grey dashed box, and the background was flat grey",
+    "The swing-in carried a constant blur(2px) that was removed abruptly on the landing frame, so the image visibly snapped sharp, and the blur ignored direction",
+    "The slanted shadow was a single black filter drop-shadow that looked dirty in flight and at rest; the hero card was only 520×340, too small once landed"
+  ],
+  "changesEn": [
+    "Exported KANADA_PERSPECTIVE_SNAP_DURATION = 130 (from the source timeline: 22f of action plus a 108f still hold)",
+    "Removed the debug title for a soft gradient backdrop with grain; the landing spot is now a shallow recessed rounded slot with a 1.5px hairline dash that fades out 18–30f after the card covers it",
+    "The constant blur became a horizontal SpeedBlur driven by translateX velocity (0.16×speed, max 22px) plus five anime speed lines that shorten and fade as it decelerates, so it sharpens naturally as speed reaches zero",
+    "Shadow is now two box-shadow layers, a firm contact shadow and a long soft slanted one, settling into a resting card shadow; the hero card is enlarged to 660×430 with the perspective, overshoot and 6px shake beats unchanged"
+  ],
+  "mdChanged": true
+}

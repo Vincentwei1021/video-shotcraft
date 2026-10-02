@@ -1,0 +1,28 @@
+{
+  "stem": "ImpactBurstKit",
+  "issues": [
+    "没有导出时长，工作台按 md 的 22f 渲染——砸落刚到落点就结束，邻卡被波及与回弹全被截掉",
+    "主卡在 0–14f 以 1.8 倍死停悬在空中，并盖住调试标题 IMPACT BURST KIT",
+    "冲击环是 3px 实黑线、粒子是纯黑方点和圆点，与浅色界面格格不入",
+    "邻卡被推开没有速度感和高度变化，背景是纯灰平铺"
+  ],
+  "changes": [
+    "补导出 IMPACT_BURST_KIT_DURATION = 140（源码时间轴：63f 动作与余波 + 77f 静止 hold）",
+    "调试标题换成页面里的区块标题 Overview / This week · 3 widgets；悬停段改为蓄力——主卡缓缓上提 18px、放大到 1.84，离镜头近时景深虚化，地面接触影随下落变实",
+    "冲击环改强调色细亮环（4.5→1px）+ 柔辉；14 粒子改为一半强调色碎片、一半带投影的浅色碎屑，自旋并按速度沿飞行方向拉长",
+    "邻卡被推开那一下按速度给水平 SpeedBlur，阴影随推力抬高；柔光底 + 颗粒；460px 中心距与落点后 3f 的波及帧不变"
+  ],
+  "issuesEn": [
+    "No duration was exported, so the workbench rendered md's 22f: it ended right at the impact and cut off the neighbours being hit and springing back",
+    "The main card hung frozen at 1.8× for frames 0–14, covering the debug title IMPACT BURST KIT",
+    "The shockwave was a 3px solid black line and the particles were pure black squares and dots, clashing with the light UI",
+    "Neighbour cards were pushed with no sense of speed or lift, on a flat grey background"
+  ],
+  "changesEn": [
+    "Exported IMPACT_BURST_KIT_DURATION = 140 (from the source timeline: 63f of action and aftermath plus a 77f still hold)",
+    "The debug title became an in-page section header, Overview / This week · 3 widgets; the hover is now a wind-up, the card rising 18px and growing to 1.84× with depth-of-field blur near the lens, and a floor contact shadow that firms up as it falls",
+    "The ring is now a thin accent ring (4.5→1px) with a soft glow; the 14 particles are half accent shards and half light debris with shadows, spinning and stretching along their flight direction with speed",
+    "Neighbours get a horizontal SpeedBlur on the push and their shadows lift with it; soft backdrop with grain; the 460px centre distance and the hit 3f after impact are unchanged"
+  ],
+  "mdChanged": true
+}

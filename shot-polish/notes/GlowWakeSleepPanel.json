@@ -1,0 +1,28 @@
+{
+  "stem": "GlowWakeSleepPanel",
+  "issues": [
+    "斜置面板是灰阶骨架条（灰色圆角条当文字、灰方块当图标），光照亮的是一张线框图",
+    "显影罩是单段线性衰减，光池中心以外整圈被照成灰雾，没有\"照到 / 照不到\"的明确界线",
+    "logo 描光是一个套住整块区域的 150×66 大矩形发光框，不贴着任何具体形状",
+    "没有导出时长（默认 150f），大面积暗场渐变没有颗粒，有色带"
+  ],
+  "changes": [
+    "面板换成可信的看板界面：Northwind 工作区 logo、带图标与未读徽标的导航、Spaces 色块、In review / Shipped 两列各 4 张白底任务卡（标题 / 标签 / 到期或已发布 / 头像）+ New task 虚线位",
+    "显影罩改为\"中心 ~22% 平台亮区 + S 形衰减\"的多停靠点光池，暗部带一点紫调，光照到的地方干净发白、边缘利落沉黑",
+    "logo 描光改为贴着工作区图标的 1.5px 圆角描边 + 两层紫色辉光，经过时才亮",
+    "补导出 GLOW_WAKE_SLEEP_PANEL_DURATION = 140（扫过 → 沉回黑暗 → 右缘残光收尾）；加暗角与颗粒；匀速扫光、贴边光线几何与醒睡包络不变"
+  ],
+  "issuesEn": [
+    "The tilted panel was grey skeleton bars (rounded grey bars for text, grey squares for icons), so the light revealed a wireframe",
+    "The reveal mask used a single linear falloff, washing everything outside the centre in grey haze with no clear lit/unlit boundary",
+    "The logo glow was a 150×66 glowing rectangle around a whole area, not hugging any actual shape",
+    "No duration was exported (default 150f) and the large dark gradients had no grain, so they banded"
+  ],
+  "changesEn": [
+    "The panel is now a believable board UI: a Northwind workspace logo, navigation with icons and an unread badge, colour-coded Spaces, and In review / Shipped columns with four white task cards each (title, tag, due date or shipped, avatar) plus a dashed New task slot",
+    "The mask is now a multi-stop light pool, a flat bright plateau over the inner ~22% then an S-shaped falloff with slightly violet shadows, so lit areas are clean and edges drop crisply to black",
+    "The logo glow now hugs the workspace icon as a 1.5px rounded outline with two violet glow layers, lighting only as the beam passes",
+    "Exported GLOW_WAKE_SLEEP_PANEL_DURATION = 140 (sweep → sink back to dark → right-edge ember); vignette and grain added; the linear sweep, edge-streak geometry and wake/sleep envelope are unchanged"
+  ],
+  "mdChanged": true
+}

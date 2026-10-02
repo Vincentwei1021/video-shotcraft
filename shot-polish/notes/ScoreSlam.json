@@ -1,0 +1,28 @@
+{
+  "stem": "ScoreSlam",
+  "issues": [
+    "没有导出时长，工作台按 md 的 22f 渲染，砸落后的 hold 被截掉",
+    "调试标题 SCORE SLAM 压在虚化 dashboard 上还被切掉一半；背景虚化后依然抢眼，没有把视线收到卡上",
+    "KPI 卡是 3px 灰边 + Helvetica 粗字 + 宽字距标签，像线框稿；高空 2.5 倍大时和落地后一样锐利，读不出\"从镜头前砸下\"",
+    "冲击环是 6px 实黑圈、尘点是黑色小方块，读作贴纸而不是冲击"
+  ],
+  "changes": [
+    "补导出 SCORE_SLAM_DURATION = 135（源码时间轴：30f 动作与余波 + 105f 静止 hold）",
+    "去掉调试标题；dashboard 虚化加到 9px，砸落途中压上一层径向 scrim，把视线收到 KPI 卡",
+    "卡片换成出版级 KPI 面板：发丝线 + 内高光 + 随高度变化的两层阴影、系统字体 tabular 大数字、Q3 chip、本季强调色的迷你柱状图；离镜头近时按高度给 ≤5px 景深虚化，落地清晰",
+    "圆环改白色细亮环（7→1.4px 越扩越细）+ 柔辉两层；尘点改带翻转与投影的浅色碎屑 + 12 条径向拉长的细火花；震屏偏竖向，砸落节拍与 18px 衰减不变"
+  ],
+  "issuesEn": [
+    "No duration was exported, so the workbench rendered md's 22f and cut off the hold after the slam",
+    "The debug title SCORE SLAM sat on the blurred dashboard and was half clipped; the blurred background still competed for attention instead of focusing on the card",
+    "The KPI card had a 3px grey border, heavy Helvetica and widely tracked label, like a wireframe; at 2.5× near the lens it was as sharp as when landed, so it never read as slamming down from in front of the camera",
+    "The shockwave was a 6px solid black circle and the dust was black squares, reading as stickers rather than impact"
+  ],
+  "changesEn": [
+    "Exported SCORE_SLAM_DURATION = 135 (from the source timeline: 30f of action and aftermath plus a 105f still hold)",
+    "Removed the debug title; dashboard blur raised to 9px with a radial scrim darkening in during the drop to pull focus onto the KPI card",
+    "The card is now a publication-grade KPI panel: hairline, inner highlight, a two-layer shadow that changes with height, system-font tabular figures, a Q3 chip and a mini bar chart with this quarter in the accent; depth-of-field blur up to 5px while near the lens, sharp on landing",
+    "The ring is now a thin white ring (thinning 7→1.4px as it grows) with a soft glow; dust became light debris that flips and casts shadows plus 12 radially stretched sparks; shake is biased vertically, with slam timing and the 18px decay unchanged"
+  ],
+  "mdChanged": true
+}

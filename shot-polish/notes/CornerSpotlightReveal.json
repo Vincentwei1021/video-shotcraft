@@ -1,0 +1,28 @@
+{
+  "stem": "CornerSpotlightReveal",
+  "issues": [
+    "Inbox 界面是灰色骨架条（黑色长条当姓名、紫色长条当摘要），显影后读不出是一个收件箱",
+    "相机漂移插值没有钳位，扩张结束后继续外推缩放，画面底边露出一条黑边",
+    "没有导出时长，工作台按默认 150f 渲染，全亮后空停 50f",
+    "开场 1.75 倍特写把 Inbox 的 I 和 All tab 裁掉半截；光前沿只是一圈灰色过渡，没有这张卡\"紫光\"的身份"
+  ],
+  "changes": [
+    "界面换成可信的收件箱：Inbox 标题 + 12 new chip、分类 tab、4 条消息（复选框 / 未读点 / 首字母头像 / 发件人 + 动作 + 时间 / 摘要 / 类型 chip），系统字体与发丝分隔线",
+    "相机漂移改为 0–112f 缓出收住后静止并钳位，底边露黑消失；补导出 CORNER_SPOTLIGHT_REVEAL_DURATION = 130（100f 匀速扩张 + 30f 全亮停留）",
+    "光前沿羽化带挂一圈 screen 叠加的紫色辉边：黑场里是紫光、照亮处自然消失，全亮前淡出；聚光半径与光心仍严格 linear",
+    "内容左上留足边距，开场特写不再裁字；光心白热光晕降一档并偏暖；加轻暗角与颗粒防暗场色带"
+  ],
+  "issuesEn": [
+    "The Inbox UI was grey skeleton bars (black bars for names, purple bars for previews), so once lit it never read as an inbox",
+    "The camera drift interpolation was unclamped and kept extrapolating after the reveal, exposing a black strip along the bottom edge",
+    "No duration was exported, so the workbench used the default 150f and the fully lit frame sat idle for 50f",
+    "The 1.75× opening close-up cut the I of Inbox and the All tab in half; the light front was just a grey transition with none of this card's violet identity"
+  ],
+  "changesEn": [
+    "The UI is now a believable inbox: Inbox title with a 12 new chip, category tabs and four messages (checkbox, unread dot, initials avatar, sender + action + time, preview, type chip) in the system font with hairline dividers",
+    "Camera drift now eases out over 0–112f then holds, clamped, so the black edge is gone; exported CORNER_SPOTLIGHT_REVEAL_DURATION = 130 (100f linear expansion + 30f fully lit hold)",
+    "A screen-blended violet rim rides the middle of the light front's feather band: violet glow in the dark, vanishing where lit, fading before full reveal; spotlight radius and centre remain strictly linear",
+    "Content has enough top-left margin that the opening close-up no longer clips text; the hot spot is one notch dimmer and warmer; light vignette and grain prevent banding in the dark"
+  ],
+  "mdChanged": true
+}

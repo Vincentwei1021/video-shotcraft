@@ -1,0 +1,28 @@
+{
+  "stem": "SlideSpotlightPan",
+  "issues": [
+    "超宽面板是灰阶骨架条，三列看板只有灰色长条和灰方块，光扫过的内容没有可读信息",
+    "压暗罩是三段线性，光池中心之外是一大片灰雾，亮部不干净",
+    "没有导出时长（默认 150f），面板与光头的插值不钳位，132f 之后继续外推",
+    "大面积暗场渐变没有颗粒，有色带"
+  ],
+  "changes": [
+    "面板换成可信的三列看板：Northwind 侧栏（logo / 带图标的导航 / 未读徽标 / Spaces）、Product launch 顶栏与视图 tab、In progress / In review / Shipped 各 3 张白底任务卡（标题、进度条、标签、到期 / 已发布、叠放头像）",
+    "压暗罩改为\"中心平台亮区 + S 形衰减\"的多停靠点光池，暗部带紫调，光头下的卡片干净发白",
+    "补导出 SLIDE_SPOTLIGHT_PAN_DURATION = 132（匀速段），面板左滑与光头右移插值钳位",
+    "加暗角与颗粒；贴边紫光的几何、竖缘→顶边的转角路径与严格匀速节奏一律不动"
+  ],
+  "issuesEn": [
+    "The ultra-wide panel was grey skeleton bars; the three-column board had only grey bars and squares, so the beam revealed nothing readable",
+    "The darkening mask was three linear stops, leaving a wide grey haze outside the pool and muddy highlights",
+    "No duration was exported (default 150f) and the panel/head interpolations were unclamped, extrapolating past 132f",
+    "Large dark gradients had no grain and banded"
+  ],
+  "changesEn": [
+    "The panel is now a believable three-column board: a Northwind sidebar (logo, icon navigation, unread badge, Spaces), a Product launch header with view tabs, and In progress / In review / Shipped columns with three white task cards each (title, progress bar, tag, due or shipped, stacked avatars)",
+    "The mask is now a multi-stop light pool, a flat bright centre with an S-shaped falloff and violet-tinted shadows, so cards under the head read clean and white",
+    "Exported SLIDE_SPOTLIGHT_PAN_DURATION = 132 (the linear segment) and clamped the panel slide and head interpolations",
+    "Vignette and grain added; the violet edge-light geometry, the vertical-edge-to-top-edge corner path and the strictly linear pacing are untouched"
+  ],
+  "mdChanged": true
+}

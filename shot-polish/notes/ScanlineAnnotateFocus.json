@@ -1,0 +1,32 @@
+{
+  "stem": "ScanlineAnnotateFocus",
+  "issues": [
+    "页面是一眼占位的模板文案（The headline for / your product here、sample、@USERNAME、app.example.com）",
+    "H1 的标注 \"H1 · SERIF DISPLAY\" 直接压在右侧模块卡上，两块内容撞在一起",
+    "标注是 6.5px（成片约 26px）浅灰等宽字，类目与细项没有层级，小窗下读不清（Q11）",
+    "扫描线是一根白线配极淡的拖尾，扫过的区域与没扫过的区域没有任何区别，看不出\"机器读过\"",
+    "取景框是 6px 粗的方头白边，收拢后就定死，没有跟随动作；背景死平无暗角颗粒"
+  ],
+  "changes": [
+    "页面换成可信的工作室官网 Arden Studio：带锁的地址栏、Type that moves / the way you speak 双行衬线标题、实心主按钮 + 幽灵链接、kinetic 样片卡与四格关键姿态缩略帧、真实页脚与社交账号",
+    "H1 标注挪到标题正下方（替掉页面里重复的字体注释），所有标注不再与相邻模块碰撞",
+    "标注升到 8px（成片 32px）：先亮一颗强调色定位点，再从左向右擦出文字并上移 3px，类目词亮、细项暗两级",
+    "扫描线改为白热光芯 + 冷蓝三层辉光、左右两端各 18% 渐隐，身后留一层 70px 内衰减的点阵网格余晖；修掉 mask 裁掉下侧辉光的问题",
+    "取景框角标改 1px 圆头细臂 + 微弱辉光，收拢后臂长 12→9px 再收一档（比框晚落定）；状态行下加扫描进度细条，背景加顶部冷光、暗角与颗粒"
+  ],
+  "issuesEn": [
+    "The page used obvious template copy (The headline for / your product here, sample, @USERNAME, app.example.com)",
+    "The H1 annotation \"H1 · SERIF DISPLAY\" sat right on top of the module card on the right, colliding with it",
+    "Annotations were 6.5px (about 26px on output) light-grey mono with no hierarchy between category and detail, unreadable in a small player (Q11)",
+    "The scanline was a single white line with a faint tail; scanned and unscanned areas looked identical, so nothing read as \"the machine has read this\"",
+    "Viewfinder corners were 6px square-capped white borders that froze once they closed, with no follow-through; the background was flat with no vignette or grain"
+  ],
+  "changesEn": [
+    "The page is now a believable studio site, Arden Studio: padlocked address pill, a two-line serif headline Type that moves / the way you speak, solid primary button plus ghost link, a kinetic sample card with four key-pose thumbnails, and a real footer and social handle",
+    "The H1 annotation moved directly under the headline (replacing the page's redundant font note), so no label collides with a neighbouring module",
+    "Annotations are 8px (32px on output): an accent locator dot lights first, then the text wipes in left to right while rising 3px, with a bright category word and a dimmer detail",
+    "The scanline has a white-hot core with three layers of cool-blue glow and 18% fades at both ends, leaving a dot-grid afterglow that decays within 70px; fixed a mask that was clipping the glow below the core",
+    "Corners are 1px round-capped arms with a faint glow whose arms tighten 12→9px after the frame closes (settling later than the frame); a scan progress hairline sits under the status line; top cool light, vignette and grain added to the background"
+  ],
+  "mdChanged": true
+}
