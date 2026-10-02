@@ -1,0 +1,28 @@
+{
+  "stem": "VoiceWaveformLive",
+  "issues": [
+    "麦克风是 🎙️ emoji 加 grayscale 滤镜的占位，字形在 1080p 下发糊且风格与 UI 不搭",
+    "声纹条是统一的半透明白色 4px 圆角块，左右两端同样生硬截断，读不出\"历史向左流走\"",
+    "背景是 #08080a 近纯黑 + 一块线性平移的灰光斑；玻璃胶囊的 backdropFilter 背后没有可模糊的东西，实际只是平涂",
+    "提交只有按钮缩放 + 常亮白辉光，箭头一直不变，\"已提交\"没有落点"
+  ],
+  "changes": [
+    "麦克风换 SVG 线性图标，按钮做径向受光面 + 内描边；说话时外圈强调色呼吸环随包络外扩、亮度随包络变化",
+    "声纹条改全圆角、白→淡靛→白的纵向渐变（越高越带色），条区左端 16% alpha 渐隐、最右一条略亮作\"现在\"；64 条 / 1.6 帧滚动 / 说停包络 / 5px 点线钳位全部不变",
+    "背景换带冷色相的 Backdrop（顶光缓慢漂移 + 暗角 + 颗粒），胶囊下方加一块随最近 10 条音量亮灭的强调色地面光；胶囊改 1.5px 渐变玻璃边 + 上亮下暗实底 + 两层落地影，入场带 6px→0 收焦",
+    "提交：按钮仍 3f 压缩回弹，箭头 6f 上飞淡出、对勾带回弹落入，按钮一次柔光后收到 0.35；胶囊 0.96 收缩缩到 14f 内完成，尾段多留 10f 静止；补导出 VOICE_WAVEFORM_LIVE_DURATION = 150"
+  ],
+  "issuesEn": [
+    "The mic was a 🎙️ emoji with a grayscale filter as a placeholder, soft at 1080p and off-style for the UI",
+    "Waveform bars were uniform translucent white 4px-radius blocks, hard-cut at both ends, so history didn't read as flowing left",
+    "The background was near-black #08080a with a linearly sliding grey blob; the capsule's backdropFilter had nothing behind it to blur, so it was effectively flat",
+    "Submitting only scaled the button and left a constant white glow; the arrow never changed, so \"sent\" had no landing"
+  ],
+  "changesEn": [
+    "The mic is an SVG line icon on a radially lit button with an inner stroke; while speaking an accent breathing ring expands with the envelope and the button brightens with it",
+    "Bars are fully rounded with a white→pale indigo→white vertical gradient (taller bars carry more colour); the bar area fades out over its left 16% with an alpha mask and the rightmost bar is slightly brighter as \"now\"; 64 bars, 1.6 frames per sample, the talk/pause envelope and the 5px dotted floor are unchanged",
+    "The background is a cool-tinted dark Backdrop (slowly drifting key light, vignette, grain) with an accent floor glow under the capsule that follows the last 10 bars' level; the capsule gets a 1.5px gradient glass rim, a top-lit solid body and a two-layer ground shadow, and enters with a 6px→0 focus pull",
+    "On submit the button keeps its 3f squash-and-rebound, the arrow flies up and fades over 6f, a check drops in with a slight overshoot, and the button glows once before easing to 0.35; the 0.96 capsule shrink now finishes within 14f for 10 more frames of stillness; exported VOICE_WAVEFORM_LIVE_DURATION = 150"
+  ],
+  "mdChanged": true
+}

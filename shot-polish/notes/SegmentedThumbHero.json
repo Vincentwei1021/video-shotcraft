@@ -1,0 +1,30 @@
+{
+  "stem": "SegmentedThumbHero",
+  "issues": [
+    "平涂灰底 + 3px 灰实线描边的轨道，外加一层很重的黑色单层阴影，控件像一块贴纸",
+    "thumb 8f 位移是一块刚体平移，没有拉伸也没有到位后的落定；段标签在 thumb 过半那一帧硬跳颜色",
+    "光标起点 (1780,1020) 仍有半只在画内，违反\"起点必须画外\"；涟漪圆心偏在段中心而不在光标尖端",
+    "Helvetica 700 字形、图标线宽偏粗，新图标没有任何\"奖励\"色彩"
+  ],
+  "changes": [
+    "背景换柔光纸面 Backdrop + 控件身下光池；轨道做成下凹槽（内阴影 + 底沿高光 + 发丝线），浮入时外影 30→14px 随落位收小",
+    "thumb 保持 8f out-cubic 主曲线，前缘 out-quart、后缘 out-quad 错开形成约 18% 的橡皮筋拉伸，叠速度拖影，到位后 1.5% 过冲 6f 收敛；thumb 补顶沿高光与两层软影",
+    "段标签颜色随 thumb 位置连续过渡（0.2→0.8 区间），新图标笑脸改用唯一强调色",
+    "光标起点移到 (2020,1200) 真正画外，终点抬到文字下沿，两层投影随按下收紧；涟漪改 3px 强调色细环、圆心锁光标尖端",
+    "补导出 SEGMENTED_THUMB_HERO_DURATION = 110；浮入 spring、24f 光标、48 点击、52–60 滑动、图标 spring 参数全部不变"
+  ],
+  "issuesEn": [
+    "Flat grey background, a track with a 3px solid grey border and one heavy black shadow, so the control reads as a sticker",
+    "The 8f thumb move is a rigid translation with no stretch and no settle, and the segment labels hard-switch colour at the halfway frame",
+    "The cursor started at (1780,1020) with half of it inside the frame, breaking the \"start off-frame\" rule; the ripple was centred on the segment rather than the cursor tip",
+    "Helvetica 700 glyphs, heavy icon strokes, and no reward colour on the new icon"
+  ],
+  "changesEn": [
+    "Soft paper Backdrop with a light pool under the control; the track is a recessed groove (inner shadow, lower-edge highlight, hairline) whose outer shadow shrinks 30→14px as it floats in",
+    "The thumb keeps the 8f out-cubic main curve, with the leading edge on out-quart and the trailing edge on out-quad for a ~18% rubber-band stretch, plus speed blur and a 1.5% overshoot that settles in 6f; it gains a top highlight and two-layer shadow",
+    "Segment label colour now follows thumb position continuously (0.2→0.8), and the new icon's smile uses the single accent colour",
+    "The cursor starts truly off-frame at (2020,1200) and ends just under the text, with a two-layer shadow that tightens on press; the ripple is a 3px accent ring centred on the cursor tip",
+    "Exported SEGMENTED_THUMB_HERO_DURATION = 110; the float spring, 24f cursor, click at 48, 52–60 slide and icon spring are all unchanged"
+  ],
+  "mdChanged": true
+}

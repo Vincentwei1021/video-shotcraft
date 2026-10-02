@@ -1,0 +1,28 @@
+{
+  "stem": "ThemeSweepToggle",
+  "issues": [
+    "两版 dashboard 都是本文件手抄的旧灰阶骨架（2px 灰边、灰条），与升级后的 FakeDashboard 完全不一致",
+    "没有导出时长，工作台按 default 渲 150f，64f 坐实之后死寂 86f",
+    "扫场没有起因：画面静置 14f 后边界凭空出现",
+    "边界是一根 4px 纯白线 + 白辉光，在浅色侧几乎看不见，读不出\"深色幕布压过来\"；坐实 0.995 肉眼不可见"
+  ],
+  "changes": [
+    "两版直接用 <FakeDashboard tone=\"light\"/\"dark\" />，同布局逐像素一致，扫场只换肤",
+    "补导出 THEME_SWEEP_TOGGLE_DURATION = 120（64f 后静止 56f）；14/52/64 关键帧、15° 斜边、out poly3 曲线与超扫量不变",
+    "顶栏搜索框左侧加主题开关：f6–13 旋钮带轻微过冲拨到右侧、太阳交叉淡成月亮、轨道转强调色，扫场下一帧开始；深色版里开关是同位置的开启态",
+    "边界改为 2px 亮线核心 + 偏向深色侧的强调色辉光（宽度随边界速度 22→92px 拉伸）+ 投在浅色侧的 160px 柔影，读作幕布扫过；坐实改 0.99→1"
+  ],
+  "issuesEn": [
+    "Both dashboards were hand-copied old grey skeletons in this file (2px grey borders, grey bars), nothing like the upgraded FakeDashboard",
+    "No exported duration, so the workbench rendered the 150f default with 86f of dead air after the 64f settle",
+    "The sweep had no cause: after 14f of stillness the edge simply appears",
+    "The edge was a 4px pure-white line with white glow, nearly invisible over the light side and not reading as a dark curtain; the 0.995 settle was imperceptible"
+  ],
+  "changesEn": [
+    "Both versions are <FakeDashboard tone=\"light\"/\"dark\" /> with pixel-identical layout, so the sweep only re-skins",
+    "Exported THEME_SWEEP_TOGGLE_DURATION = 120 (56f still after 64f); the 14/52/64 keyframes, 15° slant, out-poly3 curve and overscan are unchanged",
+    "A theme switch sits left of the top-bar search: at f6–13 the knob flips right with a slight overshoot, the sun cross-fades to a moon and the track turns accent, and the sweep starts the next frame; the dark version shows the switch on in the same spot",
+    "The edge is a 2px bright core with an accent glow trailing on the dark side (width stretching 22→92px with edge speed) and a 160px soft shadow cast on the light side, reading as a curtain passing; the settle is now 0.99→1"
+  ],
+  "mdChanged": true
+}

@@ -5,14 +5,22 @@
 //  3) 停约 0.6s → 整体平滑缩小（→~0.55x）并左移落到页面标签位（约 0.55s，easeInOut）
 //  4) 再 1 帧硬切揭示成品笔记页：奶油底、墨绿大标题 "My favorite bands"、胶囊换成鼠尾草绿、正文三行——
 //     原片没有"胶囊飞入下方滑入卡片"的段落（批次 8 的飞行段为杜撰，已砍）
+// 质感升级：两张底都换成带极淡纸感的渐变 + 颗粒（防大面积纯色死平）；胶囊是"实体"——受光上沿
+// 内高光 + 微体积渐变 + 离地软影（hero 时浮起 10px，缩移中随落位降到 0，归位即"嵌进"页面）；
+// 缩移段按速度给方向性运动模糊；成品页补一行页眉元信息（面包屑 + 编辑时间），版式完整。
+// 两次硬切、缩移曲线与全部时间点不变。
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
+import { Grain, SpeedBlur, velocity } from '../../_fixtures/Polish';
 
+// 揭示 83f 后真静止 37f（≈1.2s 呼吸，R1），全段 4s
+export const HASHTAG_TO_PILL_MATERIALIZE_DURATION = 120;
 const FONT = "Futura, 'Century Gothic', 'Avenir Next', 'Trebuchet MS', sans-serif";
 
 const C = {
-  bgWhite: '#fcfcfb',
-  bgCream: '#f4f1e5',
+  bgWhite: 'linear-gradient(180deg, #fdfdfc 0%, #fbfbfa 60%, #f6f6f3 100%)',
+  bgCream: 'linear-gradient(180deg, #f6f3e8 0%, #f3f0e4 55%, #eeeadc 100%)',
+  meta: '#a7a392',
   ink: '#454543',
   cursor: '#e0453f',
   pillGray: '#e9e9e7',
@@ -76,9 +84,15 @@ const NoteIcon: React.FC<{ size: number; color: string }> = ({ size, color }) =>
 );
 
 // 胶囊（大字号绘制，整体 transform 缩放，保证实体化前后文字原位等大）
-const Pill: React.FC<{ bg: string; iconColor: string; textColor: string }> = ({ bg, iconColor, textColor }) => (
+// lift = 离地高度（大字号坐标 px）：hero 时浮起，落位时归零贴进页面
+const Pill: React.FC<{ bg: string; iconColor: string; textColor: string; lift: number }> = ({ bg, iconColor, textColor, lift }) => (
   <div style={{
-    width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2, background: bg,
+    width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2,
+    // 无描边：实体感来自上亮下暗的微体积 + 顶沿内高光 + 离地软影（不是边框）
+    background: `linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 46%, rgba(0,0,0,0.025) 100%), ${bg}`,
+    boxShadow: `inset 0 3px 0 rgba(255,255,255,0.7), inset 0 -2px 0 rgba(40,40,30,0.03), ` +
+      `0 ${(1 + lift * 0.12).toFixed(1)}px ${(2 + lift * 0.3).toFixed(1)}px rgba(40,40,30,${(0.04 + lift * 0.003).toFixed(3)}), ` +
+      `0 ${(lift * 1.6).toFixed(1)}px ${(lift * 4).toFixed(1)}px ${(-lift * 0.6).toFixed(1)}px rgba(40,40,30,${(lift * 0.009).toFixed(3)})`,
     display: 'flex', alignItems: 'center', paddingLeft: 96, boxSizing: 'border-box', gap: 66,
   }}>
     <NoteIcon size={104} color={iconColor} />
@@ -94,13 +108,21 @@ export const HashtagToPillMaterialize: React.FC = () => {
   const typed = TEXT.slice(0, typedCount);
 
   // ---- 缩小左移 ----
-  const moveT = interpolate(frame, [MOVE_START, MOVE_END], [0, 1], {
+  const moveAt = (f: number) => interpolate(f, [MOVE_START, MOVE_END], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
     easing: Easing.bezier(0.5, 0, 0.25, 1),
   });
-  const px = interpolate(moveT, [0, 1], [HERO.x, SLOT.x]);
-  const py = interpolate(moveT, [0, 1], [HERO.y, SLOT.y]);
+  const pxAt = (f: number) => interpolate(moveAt(f), [0, 1], [HERO.x, SLOT.x]);
+  const pyAt = (f: number) => interpolate(moveAt(f), [0, 1], [HERO.y, SLOT.y]);
+  const moveT = moveAt(frame);
+  const px = pxAt(frame);
+  const py = pyAt(frame);
   const ps = interpolate(moveT, [0, 1], [1, END_SCALE]);
+  // 缩移峰值 ~70px/帧：按速度沿运动方向给拖影，起止处速度→0 自动无模糊
+  const vx = velocity(pxAt, frame);
+  const vy = velocity(pyAt, frame);
+  // 离地：hero hold 时浮 10px，缩移后半程降落，落位贴平（Q9：归位即嵌入页面）
+  const lift = 10 * (1 - interpolate(moveT, [0.35, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }));
   // 实体化瞬间极轻微落定（原片近乎硬切，仅 3 帧 1.03→1，避免死板）
   const settle = interpolate(frame, [MORPH, MORPH + 3], [1.03, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
@@ -113,6 +135,20 @@ export const HashtagToPillMaterialize: React.FC = () => {
       {/* 成品页（硬切揭示，之后全静） */}
       {revealed && (
         <>
+          {/* 页眉元信息：面包屑 + 编辑时间，让"成品页"版式完整（辅助文字 32px，低对比不抢标题） */}
+          <div style={{
+            position: 'absolute', left: 164, right: 160, top: 86, display: 'flex', alignItems: 'center',
+            fontSize: 32, fontWeight: 500, color: C.meta, letterSpacing: 0.6,
+          }}>
+            <span>Notes</span>
+            <span style={{ margin: '0 18px', opacity: 0.7 }}>/</span>
+            <span>Music</span>
+            <span style={{ marginLeft: 'auto' }}>Edited just now</span>
+          </div>
+          <div style={{
+            position: 'absolute', left: 164, right: 160, top: 144, height: 1,
+            background: 'linear-gradient(90deg, rgba(120,112,80,0.16), rgba(120,112,80,0.06))',
+          }} />
           <div style={{
             position: 'absolute', left: 160, top: 168,
             fontSize: 122, fontWeight: 700, color: C.titleGreen, letterSpacing: 0.5,
@@ -147,6 +183,7 @@ export const HashtagToPillMaterialize: React.FC = () => {
 
       {/* 胶囊层：实体化 1 帧硬切出现 → hold → 缩小左移落位 → 揭示帧换鼠尾草绿 */}
       {frame >= MORPH && (
+        <SpeedBlur vx={vx} vy={vy} amount={0.1} max={7}>
         <div style={{
           position: 'absolute', left: 0, top: 0,
           // origin 必须是 0 0：translate 先把原点送到目标中心，scale 绕该点缩放，
@@ -156,11 +193,14 @@ export const HashtagToPillMaterialize: React.FC = () => {
         }}>
           <div style={{ transform: 'translate(-50%, -50%)' }}>
             {revealed
-              ? <Pill bg={C.pillSage} iconColor={C.iconSage} textColor={C.pillSageText} />
-              : <Pill bg={C.pillGray} iconColor={C.iconGray} textColor={C.pillTextGray} />}
+              ? <Pill bg={C.pillSage} iconColor={C.iconSage} textColor={C.pillSageText} lift={0} />
+              : <Pill bg={C.pillGray} iconColor={C.iconGray} textColor={C.pillTextGray} lift={lift} />}
           </div>
         </div>
+        </SpeedBlur>
       )}
+      {/* 极弱纸面颗粒：防大面积浅底色带，揭示帧随底色一起硬切（同一层，不做过渡） */}
+      <Grain opacity={0.05} step={2} />
     </AbsoluteFill>
   );
 };

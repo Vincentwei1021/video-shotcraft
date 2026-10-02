@@ -1,0 +1,30 @@
+{
+  "stem": "TypeAndFilter",
+  "issues": [
+    "相机 zoom 0.9 让页面窄于画框：顶部露出约 200px 页面外空白带，页眉白条两端断边可见",
+    "输入框里的 \"nano-lab\" 只有约 13px 高，观众看不清打了什么，\"跟着做一遍\"落空",
+    "只有涟漪没有指针，看不出\"点了哪里\"；目标卡 10f 滑过约 1150px 却完全锐利",
+    "选中描边圆角 16 套在外扩 6px 的框上，与卡片圆角不同心，40px 辉光偏糊偏重；退场卡只是淡出下沉"
+  ],
+  "changes": [
+    "相机跟着动作走：打字段贴近搜索框（zoom 2.0，输入字有效字高约 30px），打完的 34–46f 呼吸位拉开到满幅全景 zoom 1.0（页面铺满画框），56–72f 推进点击点 zoom 2.2 不变",
+    "输入框加强调色聚焦环（1px 描边 + 3px 浅外环，打字前 4f 亮、点击后退），文字光标细化为 1.5px 圆角",
+    "补一只 macOS 指针：全景落定时出现，46–57f 带弧线滑到目标卡，58f 点击按下，按相机 zoom 反向缩放保持屏幕尺寸恒定，推进途中淡出",
+    "目标卡滑位加纵向速度拖影与两层浮起投影；退场卡加 1.5% 缩小 + 1.5px 虚化；选中描边改同心圆角 22 + 收敛辉光并 1.015→1 落定",
+    "时长 73f、3f/字符、FILTER_START 42、0.4f 错峰、10f 滑位曲线、58f 点击与双圈 ripple 全部不变"
+  ],
+  "issuesEn": [
+    "At zoom 0.9 the page was narrower than the frame: a ~200px band of off-page blank showed at the top and the header bar's cut ends were visible",
+    "The typed \"nano-lab\" was only ~13px tall, so viewers couldn't read what was typed and the follow-along intent failed",
+    "There was a ripple but no pointer, so you couldn't see where the click happened; the target card slid ~1150px in 10f yet stayed razor sharp",
+    "The selection outline used radius 16 on a box 6px larger than the card, so the corners weren't concentric, with a heavy, muddy 40px glow; departing cards merely faded and sank"
+  ],
+  "changesEn": [
+    "The camera follows the action: typing happens close on the search box (zoom 2.0, typed text ~30px tall), the 34–46f breath pulls back to a full-bleed zoom 1.0 overview, and the 56–72f push to the click point at zoom 2.2 is unchanged",
+    "The search field gains an accent focus ring (1px stroke plus a 3px soft outer ring, lit 4f before typing and released after the click), and the caret is refined to 1.5px with rounded ends",
+    "Added a macOS pointer: it appears as the overview settles, arcs to the target card over 46–57f, presses at 58f, is counter-scaled by camera zoom to keep a constant screen size, and fades during the push",
+    "The target card's slide gets vertical speed blur and a two-layer lift shadow; departing cards add a 1.5% shrink and 1.5px blur; the selection outline uses a concentric radius 22 with a tighter glow and settles 1.015→1",
+    "The 73f duration, 3f per character, FILTER_START 42, 0.4f stagger, 10f slide curve, click at 58f and double ripple are all unchanged"
+  ],
+  "mdChanged": true
+}

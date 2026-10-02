@@ -1,0 +1,30 @@
+{
+  "stem": "CursorPerformancePunchIn",
+  "issues": [
+    "Deploy 按钮是一块悬在 Revenue 卡上的灰色圆角块，正好盖住新 dashboard 的 \"+6.3%\" chip，不属于任何布局槽位",
+    "光标从画内 (180,1000) 以 out-cubic 最高速起步，第一帧就在全速飞；白芯灰边箭头像 Windows 指针，飞行时完全锐利",
+    "涟漪是 9px 深灰实线圆环，读作一圈墨迹而不是点击反馈",
+    "点击之后什么都没发生：推近、退回，按钮仍是 Deploy，扳机没有\"枪响\""
+  ],
+  "changes": [
+    "按钮改为 Deploys 卡头部里的真实主按钮（12w chip 左侧槽位，152×42、深色渐变面 + 内高光 + 1px 外描边 + 两层随悬停加深的软影），推近 1.4x 后主体落在画面中右偏下",
+    "光标改 macOS 式黑芯白边 + 两层投影，路径起点移到画外（-60,1180），快速段按速度做方向性运动模糊并随横向速度前倾 ≤9°",
+    "涟漪换成强调色 5→1.5px 细环 + 极淡内填；点击帧按钮内一团裁进圆角的柔光（只此一次）；按下 0.94 后用 overshoot 弹回",
+    "按钮讲完因果：f44–50 Deploy 上滑淡出、Deploying… 带转圈进场，f76–84 落成深绿 Deployed ✓，90f 后真静止 60f",
+    "推近改 EASE.snappy、退回 EASE.smooth，40/52/72/90 时间点不变；补导出 CURSOR_PERFORMANCE_PUNCH_IN_DURATION = 150"
+  ],
+  "issuesEn": [
+    "The Deploy button was a grey block floating over the Revenue card, covering the new dashboard's \"+6.3%\" chip and belonging to no layout slot",
+    "The cursor started inside the frame at (180,1000) at peak out-cubic speed, flying at full speed from frame one; the white-fill grey-stroke arrow reads as a Windows pointer and stays razor sharp in flight",
+    "The ripple was a 9px solid dark-grey ring, reading as an ink circle rather than click feedback",
+    "Nothing happens after the click: push in, pull back, and the button still says Deploy, so the trigger never fires"
+  ],
+  "changesEn": [
+    "The button is now a real primary button in the Deploys card header (left of the 12w chip, 152×42, dark gradient face, inner highlight, 1px outer stroke, two-layer shadow that deepens on hover), so after the 1.4x push the subject sits centre-right, slightly low",
+    "The cursor is a macOS-style black arrow with white outline and two-layer shadow; its path starts off-frame at (-60,1180), the fast segment gets velocity-driven directional blur, and it leans forward up to 9° with horizontal speed",
+    "The ripple is a 5→1.5px accent ring with a faint inner fill; the click frame adds one soft glow clipped inside the button's radius; the 0.94 press springs back with overshoot",
+    "The button completes the cause and effect: at f44–50 Deploy slides out and Deploying… with a spinner slides in, at f76–84 it lands on a deep-green Deployed ✓, then 60f of true stillness after 90f",
+    "Push uses EASE.snappy and return EASE.smooth with the 40/52/72/90 beats unchanged; exported CURSOR_PERFORMANCE_PUNCH_IN_DURATION = 150"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "GlassPillDictationTyping",
+  "issues": [
+    "纯 #000 平铺底，胶囊悬在虚空里，没有光源、地面与空间感",
+    "胶囊是一块平涂 #0d0d13，只有一圈 1px 内描边，读不出玻璃的厚度与受光上沿",
+    "DesignStage 走 transform 放大 4 倍，字形与 1.5px 描边是合成期放大的位图",
+    "1.25→1 的落位只有缩放，没有\"从镜头前落回去\"的景深变化；声波图标 1.5px 半透明白框偏粗"
+  ],
+  "changes": [
+    "背景换成带冷色相的近黑渐变 + 顶部柔和主光 + 暗角 0.55 + 软光颗粒；胶囊下方加一抹强调色地面反光，与内嵌光同挂 g 一起熄灭",
+    "胶囊加上亮下暗的体积渐变、两端渐隐的顶沿高光线、底缘内暗边与两层落地影（随缩放收紧），收尾落成有厚度的中性深色玻璃条",
+    "改用 DesignStage raster=\"zoom\" 按 1080p 原生栅格化，文字与细线锐利",
+    "落位前 0.16 段叠 0.75 设计 px（≈3px）的失焦模糊，随落位收焦；声波方块改 1px 发丝描边 + 微渐变 + 内高光，光标掺强调色随 g 回中性",
+    "时间轴、缩放 1.25→1、匀速打字窗口、g 的三层阴影收敛与定宽规则全部保持原值"
+  ],
+  "issuesEn": [
+    "A flat #000 background leaves the pill floating in a void with no light source, ground or depth",
+    "The pill is a flat #0d0d13 fill with one 1px inner stroke, so it reads neither as thick glass nor as lit from above",
+    "DesignStage upscaled 4x via transform, so glyphs and the 1.5px stroke were bitmap-scaled at composite time",
+    "The 1.25→1 settle is scale only, with no sense of dropping back from the lens; the 1.5px translucent icon frame is heavy"
+  ],
+  "changesEn": [
+    "Background is a cool-tinted near-black gradient with a soft top key light, 0.55 vignette and soft-light grain; an accent floor bounce under the pill fades on the same g as the inner glow",
+    "The pill gains a top-lit volume gradient, an edge-faded specular top line, a dark inner bottom rim and a two-layer contact/ambient shadow that tightens with the scale, ending as a neutral dark glass bar with thickness",
+    "Switched to DesignStage raster=\"zoom\" so text and hairlines rasterize natively at 1080p",
+    "The first 0.16 of the settle carries a 0.75 design-px (~3px) defocus that racks into focus; the wave icon gets a 1px hairline, subtle gradient and inner highlight, and the caret carries a hint of accent that neutralizes with g",
+    "Timeline, 1.25→1 scale, linear typing window, the three g-driven shadow layers and the fixed-width rule are all unchanged"
+  ],
+  "mdChanged": true
+}
