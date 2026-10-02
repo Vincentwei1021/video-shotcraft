@@ -1,32 +1,31 @@
 {
   "stem": "RadialWave",
   "issues": [
-    "点阵在 480×270 设计坐标里经 transform 放大，第二道波的光晕被栅格化成成片的方块光雾",
-    "第二道波在 pulse2>0.3 处硬切颜色和光晕，每个点亮/灭都是开关式跳变",
-    "未点亮的点 scale 为 0，开场几乎全黑，交代不出阵列规模",
-    "纯色 #0a0b10 底、扁平圆片，没有空间与受光",
-    "末帧中心点仍在高亮脉冲中，没有落定"
+    "正视的 17×9 平面点阵铺满画面，像一张静态图案，没有空间感",
+    "波只是点的放大和变亮，读作「闪」而不是「波」",
+    "全片只有蓝色点和深蓝底，没有主体、没有文字，结尾不知道这一拍在说什么",
+    "第二道波和第一道波颜色接近（蓝 / 青），回执感弱"
   ],
   "changes": [
-    "改为 1920×1080 原生 SVG 作画、正方格距 100px（波前成正圆），光晕用径向渐变按目标分辨率光栅化",
-    "第二道波颜色与 2.3R 青色光晕按 pulse2 连续插值；第一道波前按 sin(w1π) 提亮并带淡蓝辉光，读得出“亮边推过去”",
-    "每格先有一枚暗“插座”（r=4，16%），通电时点从插座里鼓出；圆点加左上受光的球面明暗",
-    "暗场柔光底 + 中心能量辉光（随起手爆发与汇聚两次起落）+ 暗角 + 颗粒",
-    "第二道波压到 0.57+(1−d)·0.18、窗 0.12，汇到中心时放一圈外扩淡出的回执细环，尾段约 15f 完全静止"
+    "look 换成 aurora（深紫夜 + 紫光 + 粉色点缀），点阵改成一张铺向地平线的透视 LED 地面，约 2,100 个点按真实透视近大远小、远处渐隐",
+    "波变成真的波：波前经过时点被抬起（近处 ~60px crest）+ scale 过冲到 1.5 + 提亮到近白光晕，之后留在常亮紫",
+    "波源是地面中央的能量核：0–8f 先蓄能（预备）再放波，第一道 1.3f/格外扩，第二道粉色脉冲 0.9f/格向内越收越急",
+    "汇聚时核爆亮 + 软边竖向光柱 + 外扩回执环，随后天空区 120px 标题「Every node, online.」逐词由虚到实，等宽副标计数到 2,048",
+    "时长 114f→156f，汇聚后留标题揭示 + 30f 呼吸定格"
   ],
   "issuesEn": [
-    "The grid was drawn in 480×270 design units and transform-upscaled, so the second wave's glow rasterized into blocky square haze",
-    "The second wave hard-switched color and glow at pulse2>0.3, so every dot popped on/off",
-    "Unlit dots had scale 0, so the opening was nearly black and the grid's size was never established",
-    "Flat #0a0b10 background and flat discs, no space or lighting",
-    "The center dot was still mid-pulse on the last frame; no settle"
+    "A front-on flat 17x9 dot grid filled the frame like a static pattern with no sense of space",
+    "The wave was just dots growing and brightening, so it read as a flash rather than a wave",
+    "Only blue dots on navy with no subject or text; at the end it was unclear what the beat was saying",
+    "The second wave's colour (cyan) was close to the first (blue), so the 'reply' read weakly"
   ],
   "changesEn": [
-    "Redrawn as native 1920×1080 SVG on a square 100px pitch (circular wavefront); glows are radial gradients rasterized at output resolution",
-    "Second-wave color and a 2.3R cyan glow interpolate continuously with pulse2; the first wavefront brightens by sin(w1π) with a faint blue halo so a bright edge visibly sweeps out",
-    "Every cell starts as a dim 'socket' (r=4, 16%) that the lit dot swells out of; dots get top-left spherical shading",
-    "Dark soft-lit backdrop, a center energy glow that rises with the initial burst and again on convergence, vignette and grain",
-    "Second wave tightened to 0.57+(1−d)·0.18 with a 0.12 window; on reaching the center it emits one expanding receipt ring, then ~15f of full stillness"
+    "Aurora look (deep violet night, violet light, pink accent); the grid becomes a perspective LED floor running to the horizon, ~2,100 dots scaled by true perspective and fading in the distance",
+    "The wave is a real wave: passing dots lift (a ~60px crest up close), overshoot to 1.5x and flare to near-white halos, then stay lit violet",
+    "The source is an energy core on the floor: it charges for 0-8f, then fires; wave one expands at 1.3f per cell, wave two (pink) converges at 0.9f per cell, speeding up as it closes",
+    "On convergence the core flares with a soft vertical beam and an expanding echo ring, then the 120px headline 'Every node, online.' resolves word by word with a mono counter running to 2,048",
+    "114f to 156f, leaving room for the headline reveal and a 30f breathing hold"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

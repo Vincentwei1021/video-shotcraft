@@ -1,32 +1,33 @@
 {
   "stem": "ProductCardProgressiveAssemble",
   "issues": [
-    "纯色 #0d0e13 暗底 + 单层重投影，卡片像贴在黑板上，没有空间关系",
-    "商品图是一块深色圆角色块加一根竖线，看不出是什么",
-    "文案全是占位（Sample Product Title / Placeholder copy / Category·Subgroup·Detail）",
-    "价格降级是同帧硬切：字号、颜色、删除线一帧跳变，读不出“被划掉”",
-    "字段落位只有 6px 平移淡入，pop 用 outBack 过冲偏大；高亮是高饱和橙色方块"
+    "480×270 设计坐标放大：正文 10、pill 7.5、眉标 6.5 设计 px，小字段在成片里读不清，也没有为镜头放大的层级",
+    "暗底上一张米白卡，卡外大片空黑，主体只占画宽 78% 但内部留白杂乱",
+    "字段只是各自淡入，缺少「被抓取/被填写」的叙事线索，读作普通的逐个出现",
+    "节奏靠 60 分母配方帧，间隔 2 帧过密，价格降级这一核心事件不够突出"
   ],
   "changes": [
-    "暗场柔光底（顶光 + 极淡暖色余光）+ 暗角 + 1920 原生颗粒；卡面微渐变、0.25 设计 px 发丝线与顶部内高光、两层投影 + 地面接触影",
-    "商品图改为棚拍渐变底 + 矢量双肩包（提手/拉链/前袋/织标/左上主光边缘高光）+ 双层接触影，图内容 1.06→1 慢收晚于外框落定",
-    "出版级虚构内容：品牌眉标 + “Transit Daypack 22L”、Bags/Backpacks/Commuter 面包屑（末级选中态）、三行卖点、色名 Graphite",
-    "价格降级改为 6f 急变：旧价 21→14px 变灰 + 删除线从左划过，新价 spring 跳出，f=29 跟一枚 SAVE 24% chip",
-    "rise 改强 ease-out + 1.1px→0 失焦淡入，pop 改 overshoot(0.34,1.45,0.64,1)；高亮降到 30% 透明度并做斜切笔头；整卡前推改不对称 in-out"
+    "look 换成 porcelain（冷白 + 钴蓝），原生 1920 重画：1520×840 卡片，标题 108px、价格 112px、正文 34px、pill 28px",
+    "加入钴蓝「填充光标」：描边框 + AUTOFILL 签领先每个字段 2f 跳到槽位，框形 6f 不对称 in-out 变形移动，最后收进按钮——全片唯一光效",
+    "字段落位前槽位里是浅灰骨架条，落位时骨架淡出、内容升起，读作表单被一格一格自动填好",
+    "价格事件放大：$449 完整落位 hold 18f → 6f 同窗缩小变灰划线 → 钴蓝 $349 弹簧从 1.18 收到 1 → SAVE 22% 滑入",
+    "商品图换成矢量头戴耳机「Aero Max」棚拍 + 接触影；收尾加墨黑按钮由左向右填满",
+    "时长 150f→172f，按 30fps 帧号重排：组内 3f、跨组 10–20f，末段 40f 定格"
   ],
   "issuesEn": [
-    "Flat #0d0e13 background with one heavy drop shadow; the card looked pasted on a blackboard",
-    "The product image was a dark rounded blob with a vertical line, unreadable as a product",
-    "All copy was placeholder (Sample Product Title / Placeholder copy / Category·Subgroup·Detail)",
-    "The price downgrade was a same-frame hard cut: size, color and strike all jumped in one frame",
-    "Fields only slid 6px; pops used a large outBack overshoot; highlights were saturated orange blocks"
+    "Built at 480x270 design coordinates and scaled: body 10, pills 7.5 and eyebrow 6.5 design px, so small fields were hard to read and there was no shot-scale hierarchy",
+    "A cream card on a dark backdrop with lots of empty black around it and cluttered spacing inside",
+    "Fields simply faded in one by one, with no cue that the card was being extracted or filled in",
+    "Timing used 60-denominator recipe frames with 2-frame gaps that were too dense, so the price drop did not stand out"
   ],
   "changesEn": [
-    "Dark soft-lit backdrop (top light + faint warm tint), vignette and native-resolution grain; card gets a subtle gradient, 0.25-unit hairline, top inner highlight, two-layer shadow and floor contact shadow",
-    "Product image is now a studio sweep with a vector backpack (handle, zips, front pocket, woven tag, top-left rim light) and layered contact shadow; the image content settles 1.06→1 after its frame",
-    "Publication-grade fictional content: brand eyebrow, “Transit Daypack 22L”, Bags/Backpacks/Commuter breadcrumb with selected last step, three feature lines, color name Graphite",
-    "Price downgrade is now a 6f snap: old price shrinks 21→14px and greys while a strike line draws left-to-right, the new price springs in and a SAVE 24% chip follows at f=29",
-    "Rise uses a strong ease-out plus 1.1px→0 defocus fade, pop uses overshoot(0.34,1.45,0.64,1); highlights drop to 30% alpha with a skewed marker tip; the card push uses an asymmetric in-out"
+    "Porcelain look (cool white, cobalt), redrawn at native 1920: a 1520x840 card with a 108px title, 112px price, 34px body and 28px pills",
+    "A cobalt autofill cursor (outline box plus AUTOFILL tag) jumps to each slot 2f ahead of the field, morphing between boxes with a 6f asymmetric in-out, and finally folds into the button: the only light effect",
+    "Before landing, each slot holds a light-grey skeleton bar that fades as the content rises, so the form reads as being filled in cell by cell",
+    "The price beat is bigger: $449 lands and holds 18f, then shrinks, greys and gets struck through in one 6f window, cobalt $349 springs from 1.18 to 1 and SAVE 22% slides in",
+    "The product shot is a vector over-ear headphone 'Aero Max' with a contact shadow; the end adds an ink button that fills left to right",
+    "150f to 172f, retimed in 30fps frames: 3f inside a group, 10-20f between groups, 40f hold at the end"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

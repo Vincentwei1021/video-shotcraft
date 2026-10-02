@@ -1,30 +1,33 @@
 {
   "stem": "PopupBookRise",
   "issues": [
-    "没有导出时长，工作台从源码抓到 34f，只渲出前两张卡起身，回弹与场景回正都看不到",
-    "书页底板是灰条骨架壳（灰侧栏条、灰顶栏条），平灰 #dddddb 底没有任何桌面/纸张感",
-    "近排立墙后两侧卡片出画，左侧露出半截黑色侧栏楔形",
-    "卡片立起后像贴图：卡位处没有留下任何痕迹，根部只有一团模糊阴影，卡面明暗不随角度变化"
+    "主体是 6 张灰条骨架卡，没有任何可读内容，立起来也看不出是什么",
+    "平灰底 + 黑色侧栏楔形露在左边，画面像未完成的线框图",
+    "相机角度从头到尾几乎不变，躺平态和立起态差别小，「立起来」的戏剧性弱",
+    "6 张卡尺寸一样、等距错峰，没有前后层次，也没有收尾的重音"
   ],
   "changes": [
-    "补导出 POPUP_BOOK_RISE_DURATION=160（108f 回正后静止 52f，md 的 4–5.5s 内）",
-    "底板换成完整 FakeDashboard(A)（侧栏/顶栏真实内容），卡位处是模切留下的浅凹槽（内阴影），卡立起后露出；背景换暖调纸面桌 + 纸纤维颗粒 + 暖色暗角，与 masking-tape-slap 同材料语言",
-    "整页缩到 0.8，近排立墙后左右都留在画内",
-    "根部投影改为两层（随立起收窄的软影 + 立直后出现的贴地接触线）；立起的卡面靠铰链底部加随角度出现的环境遮蔽，立起中段有一次上亮下暗的受光变化",
-    "立起 spring（damping 11，过冲到 −95° 回 −90°）、远排先近排后 7f 错峰与 75°→68° 回正全部保留"
+    "look 换成 paper（暖白纸 + 墨 + 朱红）：一本摊开的年度报告立体书，中缝阴影、页边厚度、纸纤维",
+    "主体换成 7 张为镜头设计的数据纸片：后排营收主图 $4.82M / 活跃团队 / NPS 环三张高卡，前排可用性 / 流失 / 发布节奏三张矮卡，最前一条墨黑标题横幅「Year in review.」",
+    "版式：72–150px 粗黑体数字 + 等宽小标签，朱红只给营收曲线、标题句点和年份",
+    "节奏：后排间隔 6f、前排 5f（越来越密），横幅 52f 最后立起做收尾重音；spring damping 11 过冲到 ~95° 回弹",
+    "相机降臂 55°→70°：开场俯看整页印刷件可读，收尾贴近桌面，立起的纸墙正对镜头形成三层错落剧场",
+    "立起后露出模切凹槽，根部投影随角度收窄、铰链处环境遮蔽、立起中段受光提亮一次；时长 156f"
   ],
   "issuesEn": [
-    "No duration export, so the workbench grabbed 34f from the source and rendered only the first two cards starting to rise; the rebound and scene settle never appeared",
-    "The page base was a grey skeleton shell (grey sidebar and top-bar bars) on a flat #dddddb background with no sense of desk or paper",
-    "After the near row stood up, the side cards left the frame and half a black sidebar wedge showed on the left",
-    "Risen cards read as decals: nothing was left in their slots, the root was one blurry shadow, and face shading never changed with angle"
+    "The subjects were six grey skeleton cards with nothing readable, so standing them up revealed nothing",
+    "Flat grey background with a black sidebar wedge poking in on the left: it looked like an unfinished wireframe",
+    "The camera angle barely changed, so lying and standing states looked alike and the rise had little drama",
+    "Six identical cards at even spacing and even stagger: no depth layers and no closing accent"
   ],
   "changesEn": [
-    "Added POPUP_BOOK_RISE_DURATION=160 (52f hold after the 108f settle, within the md's 4–5.5s)",
-    "The base is the full FakeDashboard(A) with real sidebar/top-bar content, and each slot is a shallow die-cut recess with an inner shadow revealed as its card rises; the background is a warm paper desk with fiber grain and warm vignette, matching masking-tape-slap",
-    "The whole page is scaled to 0.8 so the standing near row stays inside the frame",
-    "Root shadow is two layers (a soft shadow that narrows as the card rises plus a contact line once upright); risen faces get angle-driven occlusion near the hinge and one top-lit/bottom-shaded pass mid-rise",
-    "The rise spring (damping 11, overshoot to −95° back to −90°), far-row-first 7f stagger and 75°→68° settle are unchanged"
+    "Paper look (warm paper, ink, vermilion): an open annual-report pop-up book with a gutter shadow, page-edge thickness and paper fibre",
+    "Seven shot-designed data pieces: three tall back cards (revenue chart $4.82M, active teams, NPS ring), three short front cards (uptime, churn, releases) and a front ink banner 'Year in review.'",
+    "Typography: 72-150px heavy numerals with mono labels; vermilion only on the revenue line, the title period and the year",
+    "Rhythm: back row 6f apart, front row 5f apart (accelerating), banner last at 52f as the closing accent; springs at damping 11 overshoot to ~95 degrees and settle",
+    "The camera cranes down from 55 to 70 degrees: the opening reads as a printed spread, the end sits low at the desk with the paper walls facing camera in three layers",
+    "Standing pieces reveal die-cut recesses, root shadows narrow with the angle, hinge occlusion and a one-time light pass mid-rise; 156f total"
   ],
-  "mdChanged": false
+  "look": "paper",
+  "mdChanged": true
 }

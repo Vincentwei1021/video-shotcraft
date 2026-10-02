@@ -1,268 +1,239 @@
 // platform-hinge-rise — 平台建立后，两块主体从相邻底部铰点反向翻起，最后结论台升入。
-// 从独立 motion-blocking 研究中整理为纯 DOM/SVG 的通用 Remotion demo。
-// 质感层（改版）：灰块 + 大写占位字（SUBJECT / CONTEXT / OUTCOME）换成一组可读的"方案对比"内容
-// （两张方案卡 + 背景语境盘 + 结论台），几何、铰点与全部时间轴不变；
-// 主体改为从平台**后方**翻起（裁切线对齐平台上缘、平台压在主体之上），不再盖在平台上；
-// 材质：石墨渐变卡面 + 顶部受光沿 + drop-shadow（clipPath 会吞掉 box-shadow），平台/结论台为
-// 浅石材渐变 + 上缘高光 + 落地接触影；翻起段按速度加纵向运动模糊；主体落定时平台有 0.6px 承重下沉；
-// 背景换柔光底 + 颗粒。
+// 舞台 → 证据 → 结论 的三段式揭示；核心是两个相邻铰点产生方向相反的展开力（像一本书向上打开）。
+//
+// 第二轮重设计（石墨夜场 · 荧光黄绿发布会数据台）：
+// - look = lime（石墨底 + 荧光黄绿）。原生 1920 坐标重画（不再是 480×270 小画布放大）。
+// - 平台是一块 1280 宽的舞台台口：先由中心向两侧拉出一条荧光边线（16f expo-out），再向下"挤出"
+//   台身前脸与顶面；台口边线是全场唯一的自发光体，给翻起的两块主体打底光。
+// - 两块主体是为镜头设计的大数字证据牌：左「Cold build 9.4s」（620×430）、右「Cloud cost −41%」
+//   （560×390，不对称）。铰点钉在台口中心两侧相邻的下角，左块从 -34° / 右块从 +34° 被平台上缘裁住、
+//   从台后翻起（in-out 22f，按速度加纵向运动模糊），落定后一次阻尼回摆（左 1.6° / 右 -1.3°，右晚 1f）；
+//   数字在落定前后从旧值滚到新值（38.0→9.4s / 0→−41%），读作"证据被摆上台"。
+// - 背景语境：一枚大刻度环（基准测试表盘）比主体早 2f 起、晚 2f 收，低对比；远景透视网格地面 + 地平线光带。
+// - 结论台从画外升入（24f expo-out），低对比石墨台面 + 64px 结论句「Forge ships 4× faster — for less.」，
+//   只有「4× faster」用荧光色；词级错峰升起。
+//
+// 时间表（30fps，共 124f）：
+//   0–16    台口荧光线由中心拉开（首帧就有一粒中心光点）；6–22 台身挤出
+//   12–36   语境刻度环 scale .9→1 + 上浮淡入
+//   16–38   双主体从相邻铰点反向翻起（22f in-out）；30–48 数字滚动到新值
+//   38–56   阻尼回摆（三半波，振幅 ×(1-p)²），台口承重下沉 1.5px 回弹
+//   62–86   结论台升入；68–90 结论句逐词升起（证据落定与结论之间隔 ≥ 6f）
+//   90–124  hold：极缓推近 1→1.02，台口光呼吸
 import React from 'react';
-import { Easing, interpolate, useCurrentFrame } from 'remotion';
-import { DesignStage } from '../../_fixtures/Motion';
-import { Backdrop, FONT, Grain, SpeedBlur, velocity } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
+import { GridFloor, LOOKS, Stage, TextReveal, alpha, glow, type } from '../../_fixtures/Look';
 
-export const PLATFORM_HINGE_RISE_DURATION = 104;
+export const PLATFORM_HINGE_RISE_DURATION = 124;
 
-const CLAMP = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
-const ACCENT = '#5b63d3';
-const PLATFORM_TOP = 174; // 平台上缘：主体从它后面翻起
+const L = LOOKS.lime;
+const W = 1920;
+const CX = W / 2;
+const DECK_Y = 652; // 台口上缘（主体从它后面翻起）
+const DECK_W = 1280;
+const DECK_DEPTH = 34; // 顶面透视进深
+const DECK_FACE = 46; // 前脸高度
 
-const ease = (frame: number, start: number, end: number, from = 0, to = 1) =>
-  interpolate(frame, [start, Math.max(start + 1, end)], [from, to], {
-    ...CLAMP,
-    easing: Easing.bezier(0.16, 1, 0.3, 1),
-  });
+// 双主体几何：铰点在台口中心两侧相邻（缝 16px）
+const GAP = 16;
+const LEFT = { w: 620, h: 430, rise: 400, rot: -34, wob: 1.6, delay: 0 };
+const RIGHT = { w: 560, h: 390, rise: 360, rot: 34, wob: -1.3, delay: 1 };
+const HINGE0 = 16;
+const HINGE_DUR = 22;
 
-const hingeEase = (frame: number, start: number, end: number) =>
-  interpolate(frame, [start, Math.max(start + 1, end)], [0, 1], {
-    ...CLAMP,
-    easing: Easing.bezier(0.4, 0, 0.2, 1),
-  });
-
-const dampedWobble = (frame: number, start: number, duration: number, amplitude: number) => {
-  if (frame <= start || frame >= start + duration) return 0;
-  const p = (frame - start) / duration;
-  return amplitude * Math.sin(p * Math.PI * 3) * Math.pow(1 - p, 2);
+const hingeP = (f: number) => ramp(f, HINGE0, HINGE_DUR, EASE.swift);
+const wobble = (f: number, start: number, dur: number, amp: number) => {
+  if (f <= start || f >= start + dur) return 0;
+  const p = (f - start) / dur;
+  return amp * Math.sin(p * Math.PI * 3) * (1 - p) ** 2;
 };
 
-// 两张方案卡的内容（左：自建，右：云端——结论指向右）
-const PLANS = {
-  left: { tag: 'OPTION A', name: 'Self-hosted', cost: '$18.4k', bars: [0.5, 0.58, 0.66, 0.62, 0.8, 0.96] },
-  right: { tag: 'OPTION B', name: 'Managed cloud', cost: '$11.4k', bars: [0.92, 0.82, 0.74, 0.66, 0.58, 0.5] },
-};
-
-const SubjectPanel: React.FC<{
-  side: 'left' | 'right';
-  progress: number;
-  wobble: number;
-}> = ({ side, progress, wobble }) => {
-  const isLeft = side === 'left';
-  const x = isLeft ? 165 : 249;
-  const w = isLeft ? 92 : 78;
-  const h = isLeft ? 72 : 59;
-  const top = isLeft ? 108 : 117; // 两块底边都略低于平台上缘，被平台压住
-  const rise = isLeft ? 112 : 90;
-  const startRotation = isLeft ? -18 : 18;
-  const plan = PLANS[side];
-  const s = isLeft ? 1 : 0.86; // 右块内容随尺寸缩一档，保持不对称轮廓
+const Panel: React.FC<{
+  side: 'left' | 'right'; frame: number;
+}> = ({ side, frame }) => {
+  const g = side === 'left' ? LEFT : RIGHT;
+  const isL = side === 'left';
+  const p = hingeP(frame - g.delay);
+  const wob = wobble(frame, HINGE0 + HINGE_DUR + g.delay, 18, g.wob);
+  const rot = mix(g.rot, 0, p) + wob;
+  const ty = mix(g.rise, 0, p);
+  const left = isL ? CX - GAP / 2 - g.w : CX + GAP / 2;
+  // 数字滚动（落定前 8f 起，14f expo-out）
+  const roll = ramp(frame, 30 + g.delay, 16, EASE.snappy);
+  const pct = Math.round(mix(0, 41, roll));
+  const value = isL ? `${mix(38.0, 9.4, roll).toFixed(1)}s` : `${pct > 0 ? '−' : ''}${pct}%`;
+  const was = isL ? 'was 38.0s on v3' : 'per deploy vs. v3';
+  // 底光：台口荧光线照亮主体下沿（越立直越亮）
+  const under = Math.min(1, p * 1.2);
   return (
-    <div
-      style={{
-        position: 'absolute',
-        left: x,
-        top,
-        width: w,
-        height: h,
-        transformOrigin: isLeft ? '100% 100%' : '0% 100%',
-        transform: `translateY(${interpolate(progress, [0, 1], [rise, 0]).toFixed(3)}px) rotate(${(interpolate(
-          progress,
-          [0, 1],
-          [startRotation, 0],
-        ) + wobble).toFixed(4)}deg)`,
-        // clipPath 会裁掉 box-shadow，投影挂在外层 drop-shadow 上
-        filter: 'drop-shadow(0 0.6px 0.8px rgba(14,16,24,0.25)) drop-shadow(0 5px 7px rgba(14,16,24,0.16))',
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          clipPath: 'polygon(8% 10%,92% 0,100% 100%,0 100%)',
-          background: isLeft
-            ? 'linear-gradient(170deg, #3a3c44 0%, #24262c 100%)'
-            : 'linear-gradient(170deg, #4a4d58 0%, #31333b 100%)',
-          fontFamily: FONT.sans,
-          color: '#f3f4f7',
-        }}
-      >
-        {/* 顶部受光沿（沿梯形上边的斜线） */}
-        <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} style={{ position: 'absolute', inset: 0 }}>
-          <line
-            x1={isLeft ? w * 0.08 : w * 0.08}
-            y1={h * 0.1 + 0.25}
-            x2={w * 0.92}
-            y2={0.25}
-            stroke="rgba(255,255,255,0.28)"
-            strokeWidth={0.5}
-          />
-        </svg>
-        <div style={{ position: 'absolute', left: 11 * s, top: 13 * s + (isLeft ? 1 : 0), fontSize: 4.6 * s, fontWeight: 650, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.5)' }}>
-          {plan.tag}
-        </div>
-        <div style={{ position: 'absolute', left: 11 * s, top: 20 * s + (isLeft ? 1 : 0), fontSize: 7.4 * s, fontWeight: 600, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
-          {plan.name}
-        </div>
-        <div style={{ position: 'absolute', left: 11 * s, top: 31 * s + (isLeft ? 1 : 0), fontSize: 14 * s, fontWeight: 700, letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
-          {plan.cost}
-          <span style={{ fontSize: 4.8 * s, fontWeight: 500, color: 'rgba(255,255,255,0.5)', marginLeft: 1.5 * s, letterSpacing: 0 }}>/mo</span>
-        </div>
-        {/* 月度成本小柱：左增右减（右块用强调色） */}
-        <div style={{ position: 'absolute', left: 11 * s, bottom: 9 * s, display: 'flex', alignItems: 'flex-end', gap: 2 * s, height: 13 * s }}>
-          {plan.bars.map((b, i) => (
-            <div
-              key={i}
-              style={{
-                width: 4 * s,
-                height: `${b * 100}%`,
-                borderRadius: 1,
-                background: isLeft ? 'rgba(255,255,255,0.32)' : i === plan.bars.length - 1 ? '#8e95f0' : 'rgba(142,149,240,0.45)',
-              }}
-            />
-          ))}
-        </div>
+    <div style={{
+      position: 'absolute', left, top: DECK_Y - g.h + 6, width: g.w, height: g.h,
+      transformOrigin: isL ? '100% 100%' : '0% 100%',
+      transform: `translateY(${ty.toFixed(2)}px) rotate(${rot.toFixed(3)}deg)`,
+      borderRadius: 18, overflow: 'hidden',
+      background: `linear-gradient(170deg, #1d2118 0%, ${L.surface} 55%, #0d0f0b 100%)`,
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,0.09), inset 0 0 0 1.5px ${L.line}, 0 30px 70px rgba(0,0,0,0.55)`,
+      fontFamily: FONT.sans, color: L.ink,
+    }}>
+      {/* 底光 */}
+      <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(0deg, ${alpha(L.accent, 0.2 * under)} 0%, ${alpha(L.accent, 0.05 * under)} 22%, rgba(0,0,0,0) 45%)` }} />
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 2, background: alpha(L.accent, 0.6 * under) }} />
+      <div style={{ position: 'absolute', left: 48, top: 44, right: 48, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: FONT.mono, fontSize: 24, letterSpacing: '0.16em', color: L.ink2 }}>{isL ? 'COLD BUILD' : 'CLOUD COST'}</span>
+        <span style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink3 }}>{isL ? 'A' : 'B'}</span>
+      </div>
+      <div style={{ position: 'absolute', left: 44, top: isL ? 104 : 112, ...type(isL ? 210 : 172, 800), letterSpacing: '-0.055em', whiteSpace: 'nowrap' }}>
+        {value}
+      </div>
+      <div style={{ position: 'absolute', left: 48, bottom: 52, display: 'flex', alignItems: 'center', gap: 16 }}>
+        <span style={{
+          ...type(28, 700), color: L.onAccent, background: L.accent, borderRadius: 99, padding: '6px 16px', letterSpacing: '-0.01em',
+          opacity: roll, transform: `translateY(${((1 - roll) * 10).toFixed(2)}px)`,
+        }}>
+          {isL ? '4.0× faster' : 'saves $7.0k/mo'}
+        </span>
+        <span style={{ ...type(30, 500), color: L.ink2 }}>{was}</span>
       </div>
     </div>
   );
 };
 
-// 浅石材梯形（平台 / 结论台共用质感）
-const stone = (top: string, bottom: string): React.CSSProperties => ({
-  background: `linear-gradient(180deg, ${top} 0%, ${bottom} 100%)`,
-});
+// 语境刻度环：基准测试表盘（低对比背景层）
+const ContextDial: React.FC<{ p: number; frame: number }> = ({ p, frame }) => {
+  const R = 400;
+  const ticks = 120;
+  return (
+    <div style={{
+      position: 'absolute', left: CX - R, top: 330 - R, width: R * 2, height: R * 2,
+      opacity: p * 0.9, transform: `translateY(${((1 - p) * 30).toFixed(2)}px) scale(${mix(0.9, 1, p).toFixed(4)})`,
+    }}>
+      <svg width={R * 2} height={R * 2} viewBox={`0 0 ${R * 2} ${R * 2}`} style={{ position: 'absolute', inset: 0 }}>
+        <defs>
+          <radialGradient id="phr-disc">
+            <stop offset="0" stopColor={L.accent} stopOpacity={0.07} />
+            <stop offset="0.7" stopColor={L.accent} stopOpacity={0.025} />
+            <stop offset="1" stopColor={L.accent} stopOpacity={0} />
+          </radialGradient>
+        </defs>
+        <circle cx={R} cy={R} r={R - 4} fill="url(#phr-disc)" />
+        <circle cx={R} cy={R} r={R - 40} fill="none" stroke={alpha(L.ink, 0.08)} strokeWidth={1.5} />
+        {Array.from({ length: ticks }, (_, i) => {
+          const a = (i / ticks) * Math.PI * 2 + frame * 0.0012;
+          const long = i % 10 === 0;
+          const r0 = R - 40;
+          const r1 = r0 - (long ? 22 : 10);
+          return (
+            <line key={i} x1={R + Math.cos(a) * r0} y1={R + Math.sin(a) * r0} x2={R + Math.cos(a) * r1} y2={R + Math.sin(a) * r1}
+              stroke={alpha(L.ink, long ? 0.3 : 0.13)} strokeWidth={long ? 2 : 1.2} />
+          );
+        })}
+      </svg>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 18, textAlign: 'center', fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.24em', color: alpha(L.ink2, 0.75) }}>
+        FORGE BENCHMARK · Q3 2026
+      </div>
+    </div>
+  );
+};
 
 export const PlatformHingeRise: React.FC = () => {
   const frame = useCurrentFrame();
-  const platform = ease(frame, 0, 15, 0.012, 1);
-  const context = ease(frame, 12, 32);
-  const left = hingeEase(frame, 14, 30);
-  const right = hingeEase(frame, 14, 30);
-  const conclusion = ease(frame, 52, 74);
-  const leftWobble = dampedWobble(frame, 30, 16, 1.5);
-  const rightWobble = dampedWobble(frame, 31, 16, -1.2);
-  // 翻起段纵向速度（设计 px/帧，取左块行程）→ 运动模糊；静止为 0
-  const riseV = velocity((f) => 112 * (1 - hingeEase(f, 14, 30)), frame);
-  // 承重：主体落定瞬间平台下沉 0.6px 再回弹
-  const press = interpolate(frame, [29, 32, 38], [0, 0.6, 0], { ...CLAMP, easing: Easing.inOut(Easing.sin) });
+  const line = ramp(frame, 0, 16, EASE.snappy); // 台口光线拉开
+  const extrude = ramp(frame, 6, 16, EASE.out); // 台身挤出
+  const ctx = ramp(frame, 12, 24, EASE.out);
+  const verdict = ramp(frame, 62, 24, EASE.snappy);
+  const press = (() => {
+    const t0 = HINGE0 + HINGE_DUR - 1;
+    if (frame < t0) return 0;
+    return 1.5 * Math.sin(Math.min(1, (frame - t0) / 8) * Math.PI) * Math.exp(-(frame - t0) / 10);
+  })();
+  const riseV = velocity((f) => LEFT.rise * (1 - hingeP(f)), frame);
+  const push = 1 + 0.02 * ramp(frame, 70, 54, EASE.swift);
+  const breathe = 0.85 + 0.15 * Math.sin(frame / 14);
+  const lineGlow = line * (frame > 90 ? breathe : 1);
 
+  const deckL = CX - DECK_W / 2;
   return (
-    <DesignStage bg="#f2f2ef" raster="zoom">
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.22 }} grain={0} vignette={0.12} />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          overflow: 'hidden',
-          fontFamily: FONT.sans,
-        }}
-      >
-        {/* 背景语境盘：极淡的强调色圆 + 发丝环 + 小标签（低能量背景层） */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 190,
-            top: 65,
-            width: 100,
-            height: 100,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at 50% 30%, rgba(91,99,211,0.10) 0%, rgba(91,99,211,0.05) 60%, rgba(91,99,211,0.03) 100%)',
-            boxShadow: 'inset 0 0 0 0.3px rgba(91,99,211,0.22)',
-            opacity: context,
-            transform: `translateY(${interpolate(context, [0, 1], [18, 0]).toFixed(3)}px) scale(${interpolate(
-              context,
-              [0, 1],
-              [0.88, 1],
-            ).toFixed(4)})`,
-            display: 'grid',
-            placeItems: 'start center',
-            paddingTop: 16,
-            boxSizing: 'border-box',
-            color: 'rgba(60,66,140,0.62)',
-            fontSize: 5,
-            fontWeight: 650,
-            letterSpacing: '0.14em',
-          }}
-        >
-          INFRA REVIEW · Q3
-        </div>
+    <AbsoluteFill style={{ background: L.bg[2], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.02 }} fill={{ x: 0.5, y: 1.05 }} horizon={DECK_Y / 1080} intensity={0.42}>
+        <GridFloor look={L} horizon={DECK_Y / 1080 + 0.02} cell={1.1} opacity={0.22} scroll={frame * 0.004} />
+      </Stage>
 
-        {/* 主体：裁切线对齐平台上缘，从平台后方翻起 */}
-        <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 0 ${270 - PLATFORM_TOP}px 0)` }}>
-          <SpeedBlur vx={0} vy={riseV} amount={0.1} max={2.4}>
-            <SubjectPanel side="left" progress={left} wobble={leftWobble} />
-            <SubjectPanel side="right" progress={right} wobble={rightWobble} />
+      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})`, transformOrigin: '50% 58%' }}>
+        <ContextDial p={ctx} frame={frame} />
+
+        {/* 主体：裁切线 = 台口上缘，从台后翻起 */}
+        <AbsoluteFill style={{ clipPath: `inset(0 0 ${1080 - DECK_Y - press}px 0)` }}>
+          <SpeedBlur vx={0} vy={riseV} amount={0.35} max={14}>
+            <Panel side="left" frame={frame} />
+            <Panel side="right" frame={frame} />
           </SpeedBlur>
-        </div>
+        </AbsoluteFill>
 
-        {/* 平台落地接触影：随平台建立横向铺开 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 149,
-            top: 186,
-            width: 182,
-            height: 10,
-            borderRadius: '50%',
-            background: 'radial-gradient(closest-side, rgba(20,22,30,0.22), rgba(20,22,30,0))',
-            transform: `scaleX(${platform.toFixed(4)})`,
-            opacity: Math.min(1, platform * 1.4),
-          }}
-        />
-        {/* 平台：浅石材梯形 + 上缘高光，压在主体底部之上 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 149,
-            top: PLATFORM_TOP,
-            width: 182,
-            height: 16,
-            transformOrigin: '50% 50%',
-            transform: `translateY(${press.toFixed(3)}px) scaleX(${platform.toFixed(4)})`,
-          }}
-        >
-          <div style={{ position: 'absolute', inset: 0, clipPath: 'polygon(5% 0,95% 0,100% 100%,0 100%)', ...stone('#b9b9b5', '#8f8f8b') }}>
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 0.5, background: 'rgba(255,255,255,0.75)' }} />
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0.5, height: 3, background: 'linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0))' }} />
+        {/* 台口：顶面（透视梯形）+ 前脸 + 荧光边线 */}
+        <div style={{ position: 'absolute', left: 0, top: 0, width: W, height: 1080, transform: `translateY(${press.toFixed(3)}px)` }}>
+          {/* 落地接触影 / 台口在地面上的反光 */}
+          <div style={{
+            position: 'absolute', left: deckL - 60, width: DECK_W + 120, top: DECK_Y + DECK_FACE - 10, height: 90, borderRadius: '50%',
+            background: `radial-gradient(closest-side, ${alpha(L.accent, 0.16 * extrude)}, rgba(0,0,0,0))`, filter: 'blur(8px)',
+          }} />
+          {/* 顶面：从中心向两侧随光线一起展开 */}
+          <div style={{
+            position: 'absolute', left: deckL, top: DECK_Y - 2, width: DECK_W, height: DECK_DEPTH * extrude,
+            transform: `scaleX(${line.toFixed(4)})`, transformOrigin: '50% 0%',
+            clipPath: 'polygon(1.6% 0, 98.4% 0, 100% 100%, 0 100%)',
+            background: `linear-gradient(180deg, #2a2f22 0%, #1a1d15 100%)`,
+          }} />
+          {/* 前脸 */}
+          <div style={{
+            position: 'absolute', left: deckL, top: DECK_Y - 2 + DECK_DEPTH * extrude, width: DECK_W, height: DECK_FACE * extrude,
+            transform: `scaleX(${line.toFixed(4)})`, transformOrigin: '50% 0%',
+            background: `linear-gradient(180deg, #14170f 0%, #0b0c09 100%)`,
+            boxShadow: `inset 0 1px 0 ${alpha(L.accent, 0.5)}`,
+          }}>
+            {/* 前脸刻度（纹理） */}
+            <div style={{
+              position: 'absolute', inset: '14px 40px', opacity: 0.5,
+              background: `repeating-linear-gradient(90deg, ${alpha(L.ink, 0.16)} 0 2px, transparent 2px 40px)`,
+            }} />
           </div>
+          {/* 荧光边线（台口上缘）：中心先亮，向两侧拉开 */}
+          <div style={{
+            position: 'absolute', left: deckL, top: DECK_Y - 3, width: DECK_W, height: 4, borderRadius: 2,
+            transform: `scaleX(${Math.max(0.006, line).toFixed(4)})`, transformOrigin: '50% 50%',
+            background: `linear-gradient(90deg, ${alpha(L.accent, 0)} 0%, ${L.accent} 12%, #f4ffd0 50%, ${L.accent} 88%, ${alpha(L.accent, 0)} 100%)`,
+            boxShadow: glow(L.accent, 0.9 * lineGlow),
+          }} />
+          {/* 台口光往上的一层薄雾（照亮主体底部区域） */}
+          <div style={{
+            position: 'absolute', left: deckL + 80, width: DECK_W - 160, top: DECK_Y - 140, height: 140,
+            background: `radial-gradient(ellipse 50% 100% at 50% 100%, ${alpha(L.accent, 0.14 * lineGlow)}, rgba(0,0,0,0) 80%)`,
+            transform: `scaleX(${line.toFixed(4)})`,
+          }} />
         </div>
 
-        {/* 结论台：总结层，对比低于两张方案卡 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 108,
-            top: 205,
-            width: 264,
-            height: 74,
-            opacity: interpolate(conclusion, [0, 0.18, 1], [0, 0.45, 1], CLAMP),
-            transform: `translateY(${interpolate(conclusion, [0, 1], [96, 0]).toFixed(3)}px)`,
-            filter: 'drop-shadow(0 -0.5px 0 rgba(255,255,255,0.9)) drop-shadow(0 -3px 6px rgba(20,22,30,0.06))',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              clipPath: 'polygon(18% 0,82% 0,100% 100%,0 100%)',
-              ...stone('#e6e6e2', '#d4d4cf'),
-              display: 'grid',
-              placeItems: 'start center',
-              paddingTop: 14,
-              boxSizing: 'border-box',
-            }}
-          >
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 0.5, background: 'rgba(255,255,255,0.9)' }} />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '-0.025em', color: '#33353c' }}>
-                Cloud saves <span style={{ color: ACCENT, fontVariantNumeric: 'tabular-nums' }}>38%</span>
-              </div>
-              <div style={{ marginTop: 3, fontSize: 5.2, fontWeight: 500, color: '#7c7e85', letterSpacing: '0.01em' }}>
-                12-month total cost vs. self-hosted
-              </div>
+        {/* 结论台：总结层，台面对比低于两块主体；从画外升入 */}
+        <div style={{
+          position: 'absolute', left: CX - 720, top: 790, width: 1440, height: 230,
+          transform: `translateY(${((1 - verdict) * 320).toFixed(2)}px)`,
+          opacity: Math.min(1, verdict * 2.2),
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, clipPath: 'polygon(7% 0, 93% 0, 100% 100%, 0 100%)',
+            background: `linear-gradient(180deg, ${alpha('#20241a', 0.92)} 0%, ${alpha('#0e100b', 0.6)} 100%)`,
+          }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 1.5, background: alpha(L.ink, 0.18) }} />
+          </div>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: 36, textAlign: 'center' }}>
+            <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.28em', color: L.ink3, marginBottom: 14 }}>VERDICT</div>
+            <div style={{ ...type(64, 700), color: L.ink, letterSpacing: '-0.03em' }}>
+              <TextReveal text="Forge ships" by="word" variant="rise" start={68} each={16} gap={4} />{' '}
+              <TextReveal text="4× faster" by="word" variant="rise" start={76} each={16} gap={4} unitStyle={() => ({ color: L.accent })} />{' '}
+              <TextReveal text="— for less." by="word" variant="rise" start={84} each={16} gap={4} />
             </div>
           </div>
         </div>
-      </div>
-      <Grain opacity={0.05} scale={0.25} />
-    </DesignStage>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };

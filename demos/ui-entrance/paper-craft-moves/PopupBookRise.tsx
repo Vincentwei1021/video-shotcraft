@@ -1,137 +1,196 @@
 // popup-book-rise —— 立体书立起
-// FakeDashboard(A) 打平躺下（场景 rotateX 75° 透视俯视），6 张卡片是贴在页上的
-// 纸片，沿各自底边从平躺错峰立起（rotateX 90°→-5° 过冲→0° 回弹，即立到 95° 再回 90°），
-// 根部投影随立起角度收窄变淡。全部立起后整个场景轻微回正（75°→68°）收尾。
-// 卡片用独立网格复刻 dashboard A 区布局（Fixtures 内嵌卡无法单独驱动）。
-// 收尾 f108 后真静止 ≥52f。帧确定性：全由 frame 派生。
-// 质感层（改版）：书页底板从灰条骨架壳换成完整 FakeDashboard(A)（侧栏 / 顶栏真实内容），
-// 卡位处是"模切"留下的浅凹槽（卡立起后露出，带内阴影）；平灰 #dddddb 底换成暖调纸面桌
-// （柔光 + 纸纤维颗粒 + 暗角），与 masking-tape-slap 同一材料语言；根部投影改两层
-// （贴地接触线 + 随立起收窄的软影）；立起的卡面靠铰链底部有一层随角度出现的环境遮蔽，
-// 立起中段卡面有一次随角度变化的受光明暗，纸片读作有体积的实物而不是贴图；
-// 整页缩到 0.8（原近排立墙后两侧出画、左侧露出半截黑侧栏楔形）。
+// 一本摊开的"年度报告"立体书平躺在桌上，页面上印着的 dashboard 卡片是模切纸片：沿各自底边
+// 由远到近错峰立起成墙（spring 过冲到 ~95° 再回弹 90°，纸的韧性），最后最近的一条标题横幅立起收尾。
+//
+// 第二轮重设计（暖白纸 · 瑞士网格数据报告 · 立体书剧场）：
+// - look = paper（暖白纸 + 墨 + 朱红）。主体不再是灰条骨架卡，而是 7 张为镜头设计的数据纸片：
+//   后排 3 张高卡（营收主图 / 活跃团队 / NPS 环）、前排 3 张矮卡（可用性 / 流失 / 发布节奏）、
+//   最前一条 1200 宽标题横幅「Year in review.」。数字 72–150px 粗黑体 + 等宽小标签，
+//   朱红只给营收曲线、标题句点与横幅年份。
+// - 舞台：一本对开书（中缝阴影 + 页边厚度 + 两侧页面微弧光）躺在暖纸桌面上；卡片躺平时是
+//   页面上的"印刷件"（看得到版式），立起后露出模切凹槽，根部投影随立起收窄。
+// - 景深层次：后排高、前排矮、横幅最近——立起后形成三层错落的纸艺剧场，前层挡住后层的下沿。
+// - 相机：只做一次缓慢降臂 rotateX 55°→70°（0–96f in-out，之后再极缓 1°）：开场俯看整页印刷，
+//   收尾贴近桌面，立起的纸片越来越正对镜头（构件自己立起是主角，相机只是陪着落低）。
+//
+// 时间表（30fps，共 156f）：
+//   0–10    预备：书页平躺、印刷件可读，相机已在缓慢降臂（首帧不空）
+//   10–22   后排三张错峰立起（间隔 6f，spring damping 11 → 过冲 ~5° 回弹）
+//   30–40   前排三张错峰立起（间隔 5f，更密 = 越来越快）
+//   52      标题横幅立起（最大、最近、最后——收尾重音）
+//   52–92   余波：横幅回弹落定，所有根部投影收窄
+//   92–156  hold：相机降臂收尾（96f 后只剩 1° 极缓漂移），干净定格
 import React from 'react';
-import { useCurrentFrame, interpolate, spring, Easing } from 'remotion';
-import { Card, FakeDashboard } from '../../_fixtures/Fixtures';
-import { Grain, Vignette } from '../../_fixtures/Polish';
+import { useCurrentFrame } from 'remotion';
+import { EASE, FONT, Grain, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const POPUP_BOOK_RISE_DURATION = 160; // 108f 场景回正后静止 52f
+export const POPUP_BOOK_RISE_DURATION = 156;
 
-const FPS = 30;
-const HOLD = 14; // 开头静置
-const STAGGER = 7;
-const RISE_DUR = 34; // spring 视觉收敛帧数
-const LAST_START = HOLD + 5 * STAGGER; // 49
-const SETTLE = LAST_START + RISE_DUR; // 83：全部立起
-const REST = SETTLE + 25; // 108：场景回正完成
+// paper 微调：远处桌面/背景压暗一档（顶 → 底由暗到亮），白纸片立起后轮廓更清楚
+const L = { ...LOOKS.paper, bg: ['#cfc5b5', '#e2d9ca', '#eee7da'] as [string, string, string] };
 
-// dashboard A 区几何（照抄 FakeDashboard：侧栏 220 + 顶栏 72 + padding 36 + gap 28）
-const AREA_X = 220 + 36;
-const AREA_Y = 72 + 36;
-const AREA_W = 1920 - 220 - 72;
-const AREA_H = 1080 - 72 - 72;
-const GAP = 28;
-const CELL_W = (AREA_W - 2 * GAP) / 3;
-const CELL_H = (AREA_H - GAP) / 2;
+// 书页（对开）坐标系：PW×PH 设计 px，卡片沿 hinge 线立起
+const PW = 1800;
+const PH = 1560;
 
-const PageCard: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
-  const col = i % 3;
-  const row = Math.floor(i / 3);
-  // 远排（row 0）先立，近排后立；同排从左到右
-  const order = row === 0 ? col : 3 + col;
-  const start = HOLD + order * STAGGER;
+type Piece = {
+  id: string; x: number; hinge: number; w: number; h: number; start: number; kind: 'teams' | 'revenue' | 'nps' | 'uptime' | 'churn' | 'cadence' | 'banner';
+};
+const BACK = 620;
+const FRONT = 1040;
+const BANNER = 1460;
+const PIECES: Piece[] = [
+  { id: 'teams', kind: 'teams', x: 110, hinge: BACK, w: 440, h: 480, start: 10 },
+  { id: 'revenue', kind: 'revenue', x: 580, hinge: BACK, w: 640, h: 540, start: 16 },
+  { id: 'nps', kind: 'nps', x: 1250, hinge: BACK, w: 440, h: 480, start: 22 },
+  { id: 'uptime', kind: 'uptime', x: 170, hinge: FRONT, w: 440, h: 240, start: 30 },
+  { id: 'churn', kind: 'churn', x: 680, hinge: FRONT, w: 440, h: 240, start: 35 },
+  { id: 'cadence', kind: 'cadence', x: 1190, hinge: FRONT, w: 440, h: 240, start: 40 },
+  { id: 'banner', kind: 'banner', x: 280, hinge: BANNER, w: 1240, h: 200, start: 52 },
+];
 
-  const s = spring({
-    frame: frame - start,
-    fps: FPS,
-    config: { damping: 11, stiffness: 130, mass: 0.9 },
-    durationInFrames: RISE_DUR,
-    durationRestThreshold: 0.0001,
-  });
-  // 平躺（贴页面 = local 0°）→ 立起（垂直页面 = local -90°，顶边朝观众翻起），
-  // spring 过冲自然冲过 -90° 到约 -95°（纸的韧性）再回弹。
-  const rx = interpolate(s, [0, 1], [0, -90]);
+const INK = L.ink;
+const INK2 = L.ink2;
+const INK3 = L.ink3;
+const RED = L.accent;
 
-  // 根部投影：躺平时长影（卡片盖在页面上），立起后收成窄条
-  const lie = 1 - Math.min(Math.abs(rx) / 90, 1); // 1 = 躺平, 0 = 立直
-  const stand = 1 - Math.max(lie, 0); // 0 = 躺平, 1 = 立直（含过冲时 >1 截断）
-  const shH = 14 + 90 * Math.max(lie, 0);
-  const shAlpha = 0.1 + 0.16 * Math.max(lie, 0);
-  // 受光：主光在观众头顶偏前，卡面从朝天转到朝镜头的中段（~45°）最亮，躺平/立直时回到常态
-  const sheen = Math.sin(Math.min(1, Math.max(0, stand)) * Math.PI);
+const Label: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color }) => (
+  <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.16em', color: color ?? INK2, textTransform: 'uppercase' }}>{children}</div>
+);
 
+// 营收曲线（朱红）：12 个月
+const REV = [0.18, 0.22, 0.2, 0.3, 0.34, 0.33, 0.45, 0.52, 0.5, 0.66, 0.78, 0.94];
+
+const PieceFace: React.FC<{ p: Piece }> = ({ p }) => {
+  const pad = 36;
+  if (p.kind === 'banner') {
+    return (
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 56px', boxSizing: 'border-box', background: INK, color: '#f6f2ea' }}>
+        <div style={{ ...type(118, 800), letterSpacing: '-0.05em', whiteSpace: 'nowrap' }}>
+          Year in review<span style={{ color: RED }}>.</span>
+        </div>
+        <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+          <div style={{ fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.18em', color: alpha('#f6f2ea', 0.6) }}>NORTHWIND</div>
+          <div style={{ ...type(64, 700), color: RED, marginTop: 4 }}>2026</div>
+        </div>
+      </div>
+    );
+  }
+  const frame: React.CSSProperties = { position: 'absolute', inset: 0, padding: pad, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', color: INK };
+  if (p.kind === 'revenue') {
+    const cw = p.w - pad * 2;
+    const ch = 190;
+    const pts = REV.map((v, i) => [(i / (REV.length - 1)) * cw, ch - v * ch] as const);
+    const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+    return (
+      <div style={frame}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Label>Annual revenue</Label>
+          <div style={{ ...type(30, 700), color: RED }}>▲ 41%</div>
+        </div>
+        <div style={{ ...type(150, 800), letterSpacing: '-0.055em', marginTop: 14 }}>$4.82M</div>
+        <svg width={cw} height={ch + 30} style={{ marginTop: 26, overflow: 'visible' }}>
+          {[0, 0.5, 1].map((g) => <line key={g} x1={0} x2={cw} y1={ch * g} y2={ch * g} stroke={L.line} strokeWidth={1.5} />)}
+          <path d={`${d} L${cw},${ch} L0,${ch} Z`} fill={alpha(RED, 0.1)} />
+          <path d={d} fill="none" stroke={RED} strokeWidth={5} strokeLinejoin="round" strokeLinecap="round" />
+          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r={9} fill={RED} />
+          {['JAN', 'APR', 'JUL', 'OCT'].map((m, i) => (
+            <text key={m} x={(i / 3) * cw * 0.92} y={ch + 28} fontFamily={FONT.mono} fontSize={20} letterSpacing="0.1em" fill={INK3}>{m}</text>
+          ))}
+        </svg>
+      </div>
+    );
+  }
+  if (p.kind === 'teams') {
+    const bars = [0.3, 0.38, 0.35, 0.48, 0.55, 0.52, 0.64, 0.72, 0.7, 0.84, 0.9, 1];
+    return (
+      <div style={frame}>
+        <Label>Active teams</Label>
+        <div style={{ ...type(104, 800), letterSpacing: '-0.05em', marginTop: 14 }}>12,480</div>
+        <div style={{ ...type(32, 600), color: INK2, marginTop: 6 }}>+38% year over year</div>
+        <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 9, height: 110 }}>
+          {bars.map((b, i) => <div key={i} style={{ flex: 1, height: `${b * 100}%`, background: i === bars.length - 1 ? INK : alpha(INK, 0.18), borderRadius: 2 }} />)}
+        </div>
+      </div>
+    );
+  }
+  if (p.kind === 'nps') {
+    const r = 92;
+    const c = 2 * Math.PI * r;
+    return (
+      <div style={frame}>
+        <Label>Customer NPS</Label>
+        <div style={{ position: 'relative', marginTop: 'auto', marginBottom: 'auto', alignSelf: 'center', width: 250, height: 250 }}>
+          <svg width={250} height={250} viewBox="0 0 250 250" style={{ position: 'absolute', inset: 0 }}>
+            <circle cx={125} cy={125} r={r} fill="none" stroke={alpha(INK, 0.1)} strokeWidth={22} />
+            <circle cx={125} cy={125} r={r} fill="none" stroke={INK} strokeWidth={22} strokeDasharray={`${c * 0.72} ${c}`} transform="rotate(-90 125 125)" strokeLinecap="butt" />
+          </svg>
+          <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', ...type(96, 800), letterSpacing: '-0.05em' }}>72</div>
+        </div>
+      </div>
+    );
+  }
+  const small = {
+    uptime: { label: 'Uptime', value: '99.98%', note: '12 of 12 regions' },
+    churn: { label: 'Net churn', value: '1.2%', note: 'down from 3.4%' },
+    cadence: { label: 'Releases', value: '164', note: '3.1 per week' },
+  }[p.kind];
   return (
-    <div
-      style={{
-        position: 'absolute',
-        left: AREA_X + col * (CELL_W + GAP),
-        top: AREA_Y + row * (CELL_H + GAP),
-        width: CELL_W,
-        height: CELL_H,
-        transformStyle: 'preserve-3d',
-      }}
-    >
-      {/* 模切凹槽：卡片原位留下的浅槽（被躺平的卡完全盖住，立起后露出） */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: 14,
-          background: 'linear-gradient(180deg, #e9e8e4 0%, #eeede9 100%)',
-          boxShadow: 'inset 0 2px 6px rgba(30,24,14,0.16), inset 0 0 0 1px rgba(30,24,14,0.07)',
-        }}
-      />
-      {/* 根部投影贴在页面上，不随卡片立起：软影随立起收窄 + 一条贴地接触线 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 6,
-          right: 6,
-          bottom: -4,
-          height: shH,
-          background: `rgba(30,22,10,${shAlpha.toFixed(3)})`,
-          borderRadius: 12,
-          filter: 'blur(10px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          left: 10,
-          right: 10,
-          bottom: -2,
-          height: 5,
-          background: `rgba(30,22,10,${(0.28 * Math.min(1, stand)).toFixed(3)})`,
-          borderRadius: 3,
-          filter: 'blur(2.5px)',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          transform: `rotateX(${rx}deg)`,
-          transformOrigin: '50% 100%',
-          backfaceVisibility: 'hidden',
-        }}
-      >
-        <Card w={0} h={0} seed={i + 1} style={{ width: '100%', height: '100%' }} />
-        {/* 铰链环境遮蔽：立起后靠底边一层渐暗 */}
-        <div
-          style={{
-            position: 'absolute', inset: 0, borderRadius: 14, pointerEvents: 'none',
-            background: 'linear-gradient(0deg, rgba(40,30,15,0.16) 0%, rgba(40,30,15,0) 26%)',
-            opacity: Math.min(1, Math.max(0, stand)),
-          }}
-        />
-        {/* 立起中段的受光明暗：上沿亮、下沿暗，随角度起落 */}
-        <div
-          style={{
-            position: 'absolute', inset: 0, borderRadius: 14, pointerEvents: 'none',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 45%, rgba(30,22,10,0.10) 100%)',
-            opacity: sheen * 0.9,
-          }}
-        />
+    <div style={frame}>
+      <Label>{small.label}</Label>
+      <div style={{ ...type(84, 800), letterSpacing: '-0.05em', marginTop: 12 }}>{small.value}</div>
+      <div style={{ ...type(30, 550), color: INK2, marginTop: 8 }}>{small.note}</div>
+    </div>
+  );
+};
+
+const PopPiece: React.FC<{ p: Piece; frame: number }> = ({ p, frame }) => {
+  // 0 = 平躺在页面上，1 = 立直（局部 rotateX -90°）；damping 11 过冲到 ~1.05（≈95°）再回弹
+  const s = springAt(frame, p.start, { damping: 11, stiffness: 120, mass: 0.9 });
+  const rx = -90 * s;
+  const stand = Math.min(1, Math.max(0, s));
+  const lie = 1 - stand;
+  // 立起中段卡面朝向主光（≈45°）最亮，落定回常态
+  const facing = Math.sin(stand * Math.PI);
+  const isBanner = p.kind === 'banner';
+  return (
+    <div style={{ position: 'absolute', left: p.x, top: p.hinge - p.h, width: p.w, height: p.h, transformStyle: 'preserve-3d' }}>
+      {/* 模切凹槽（立起后露出）：浅槽 + 内阴影 */}
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 4,
+        background: `linear-gradient(180deg, ${alpha('#d9cfbf', 0.7)} 0%, ${alpha('#e7dfd2', 0.6)} 100%)`,
+        boxShadow: 'inset 0 3px 8px rgba(42,29,16,0.16), inset 0 0 0 1.5px rgba(42,29,16,0.08)',
+      }} />
+      {/* 根部投影：贴在页面上不随立起（光在左上 → 影往卡后右侧拖），随立起收窄 */}
+      <div style={{
+        position: 'absolute', left: 10, right: -10, bottom: 0, height: 26 + 110 * lie,
+        background: `rgba(42,29,16,${(0.1 + 0.14 * lie).toFixed(3)})`, borderRadius: 8, filter: 'blur(12px)',
+        opacity: stand > 0.02 ? 1 : 0,
+      }} />
+      <div style={{
+        position: 'absolute', left: 6, right: 6, bottom: -3, height: 6, borderRadius: 3,
+        background: `rgba(42,29,16,${(0.32 * stand).toFixed(3)})`, filter: 'blur(3px)',
+      }} />
+      {/* 纸片本体：沿底边立起 */}
+      <div style={{
+        position: 'absolute', inset: 0, transform: `rotateX(${rx.toFixed(3)}deg)`, transformOrigin: '50% 100%',
+        backfaceVisibility: 'hidden', borderRadius: 4, overflow: 'hidden',
+        background: isBanner ? INK : `linear-gradient(180deg, ${L.surface} 0%, #f9f4ea 100%)`,
+        boxShadow: isBanner ? 'none' : `inset 0 0 0 1.5px ${alpha(INK, 0.08)}`,
+      }}>
+        <PieceFace p={p} />
+        {/* 纸纤维 */}
+        <Grain opacity={0.08} freq={1.2} blend="multiply" step={1000} />
+        {/* 铰链处环境遮蔽：立起后底边一层渐暗 */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(0deg, rgba(42,29,16,0.16) 0%, rgba(42,29,16,0) 22%)', opacity: stand }} />
+        {/* 受光：立起中段整面提亮一次（上亮下暗） */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: facing * 0.85,
+          background: 'linear-gradient(180deg, rgba(255,252,244,0.38) 0%, rgba(255,252,244,0) 50%, rgba(42,29,16,0.08) 100%)',
+        }} />
+        {/* 躺平时卡面朝天、略灰（离光远）；立起后回到正常亮度 */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'rgba(60,44,24,0.06)', opacity: lie }} />
       </div>
     </div>
   );
@@ -139,48 +198,44 @@ const PageCard: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
 
 export const PopupBookRise: React.FC = () => {
   const frame = useCurrentFrame();
-
-  // 场景（书页）俯视角：全程 75°，全部立起后轻微回正到 68°
-  const sceneRx = interpolate(frame, [SETTLE, REST], [75, 68], {
-    easing: Easing.inOut(Easing.cubic),
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  // 相机降臂：55°（俯看整页印刷）→ 70°（贴近桌面看立起的纸墙），0–96f in-out；之后极缓再走 1°
+  const cam = ramp(frame, 0, 96, EASE.smooth);
+  const sceneRx = 55 + 15 * cam + 1 * ramp(frame, 96, 60, EASE.out);
 
   return (
-    <div style={{ width: 1920, height: 1080, background: '#e7dfd1', position: 'relative', overflow: 'hidden' }}>
-      {/* 暖调纸面桌：低对比渐变 + 上方柔光（与 masking-tape-slap 同材料语言） */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255,250,240,0.9) 0%, rgba(255,250,240,0) 70%), linear-gradient(180deg, #efe8dc 0%, #e3d9c8 100%)',
-        }}
-      />
-      <Grain opacity={0.08} freq={1.1} blend="multiply" step={4} />
-      <div style={{ position: 'absolute', inset: 0, perspective: 2600, perspectiveOrigin: '50% 30%' }}>
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            // 整页缩到 0.8：近排立墙后左右不出画，书页四边都留在桌面上
-            transform: `translateY(-40px) scale(0.8) rotateX(${sceneRx}deg)`,
-            transformOrigin: '50% 62%',
-            transformStyle: 'preserve-3d',
-          }}
-        >
-          {/* 书页底板：完整 dashboard（侧栏 + 顶栏 + 卡片网格），卡位由模切凹槽与立起的纸片覆盖 */}
-          <div style={{ position: 'absolute', inset: 0, borderRadius: 6, overflow: 'hidden', boxShadow: '0 2px 6px rgba(40,28,12,0.18), 0 50px 90px -20px rgba(40,28,12,0.35)' }}>
-            <FakeDashboard variant="A" />
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.36, y: 0.12 }} fill={null} vignette={0.42} grain={0.05}>
+        {/* 桌面纸纹 */}
+        <Grain opacity={0.08} freq={0.5} scale={2} blend="multiply" step={1000} />
+      </Stage>
+
+      <div style={{ position: 'absolute', inset: 0, perspective: 2400, perspectiveOrigin: '50% 30%' }}>
+        <div style={{
+          position: 'absolute', left: (1920 - PW) / 2, top: 972 - PH, width: PW, height: PH,
+          transform: `rotateX(${sceneRx.toFixed(3)}deg)`,
+          transformOrigin: '50% 100%', transformStyle: 'preserve-3d',
+        }}>
+          {/* 书：页边厚度（下沿几层纸）+ 桌面接触影 */}
+          <div style={{ position: 'absolute', left: -14, right: -14, top: -10, bottom: -22, borderRadius: 10, background: '#d8ccb8', boxShadow: '0 30px 80px rgba(42,29,16,0.35), 0 4px 10px rgba(42,29,16,0.25)' }} />
+          <div style={{ position: 'absolute', left: -8, right: -8, top: -5, bottom: -12, borderRadius: 8, background: 'repeating-linear-gradient(180deg, #efe6d6 0px, #efe6d6 3px, #ddd2bf 4px)' }} />
+          {/* 两页：各自向中缝微微变暗 + 外侧受光 */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: 6, overflow: 'hidden',
+            background:
+              'linear-gradient(90deg, #f7f1e6 0%, #fbf7ef 30%, #efe7d8 48.6%, #d9ceba 50%, #efe7d8 51.4%, #fbf7ef 70%, #f4ede1 100%)',
+          }}>
+            {/* 页面印刷：页眉、页码、网格线 */}
+            <div style={{ position: 'absolute', left: 80, top: 40, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.18em', color: INK3 }}>NORTHWIND — ANNUAL REPORT</div>
+            <div style={{ position: 'absolute', right: 80, top: 40, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.18em', color: INK3 }}>P. 12 — 13</div>
+            {[BACK, FRONT, BANNER].map((y) => (
+              <div key={y} style={{ position: 'absolute', left: 60, right: 60, top: y + 14, height: 1.5, background: alpha(INK, 0.12) }} />
+            ))}
+            <Grain opacity={0.1} freq={1.1} blend="multiply" step={1000} />
           </div>
-          {/* 6 张纸片卡沿底边立起 */}
-          {Array.from({ length: 6 }).map((_, i) => (
-            <PageCard key={i} i={i} frame={frame} />
-          ))}
+          {/* 纸片（远 → 近，DOM 顺序即遮挡顺序） */}
+          {PIECES.map((p) => <PopPiece key={p.id} p={p} frame={frame} />)}
         </div>
       </div>
-      <Vignette strength={0.24} inner={0.5} color="#4a3820" />
     </div>
   );
 };
