@@ -1,32 +1,31 @@
 {
   "stem": "IntegrationHubMap",
   "issues": [
-    "相机推拉/平移是 4 段关键帧、每段各自 inOut，在 f14 与 f58 处速度归零，拉远过程一顿一顿",
-    "开场 2x 近景的旧页靠 transform 放大，文字发软；正文是一排灰色骨架条",
-    "GitHub 图标只是一个黑圆、Salesforce 是三团椭圆，瓷贴外一圈白色大光晕显得廉价",
-    "光管是粗彩带，输送脉冲是一串等长白色胶囊，读作圣诞灯串而不是能量流",
-    "背景霓虹框 2.5px 粗边且持续闪烁，和主角抢戏"
+    "落定后的中枢面板 820×520，正文 11–13px，在 1080p 里只是一片灰色小字纹理",
+    "五个集成图标是真实品牌的字形（设计工具、代码托管、CRM、网盘），出现真实产品名",
+    "光管是五色彩虹渐变，背景又叠了多色霓虹矩形，色相太多、主次不清",
+    "正反两面都是浅色白页，翻面前后材质相同，\"换代\"只靠内容变化，读不出来"
   ],
   "changes": [
-    "推拉/平移合并成一条连续 bezier(0.55,0,0.18,1) 曲线（0→96f），前摇自然缓、全程无顿点；翻面 35f ease-out、侧棱 2f 闪、两拍接入时序全部保留",
-    "面板推拉改走 CSS zoom（布局级缩放），2.05x 近景与 1x 落定文字都原生栅格化；旧页换成出版级交易文档（字段行、摘要段落、待办）",
-    "瓷贴换渐变面 + 内高光 + 深投影，弹现带一次过冲（overshoot 13f），连通后才亮起暖色霓虹余光；GitHub 换分支字形、Salesforce 换平底云朵",
-    "光管收细为 12px 彩虹体 + 3px 白热芯，9f 生长期带一颗火花头；输送脉冲改为亮头 + 柔化拖尾的彗星形（速度 4.6px/f 不变），管口接入瞬间起一圈小涟漪",
-    "背景框去闪烁、1.5px 细边、轻微失焦并随相机做 18% 视差；加暗角与颗粒压住大面积暗场，并补导出 INTEGRATION_HUB_MAP_DURATION=150"
+    "look 换成 aurora（紫粉暗场）；正面旧页做成白纸文档「Weekly sync — manual export」（46px 标题、28px 清单，近景可读），背面新中枢做成深紫玻璃「Everything, connected.」（66px 标题 + 五行 30px 数据源），材质反差把换代做实",
+    "五个集成换成虚构的 Tracker / Canvas / Ledger / Inbox / Vault：120px 深色玻璃瓷贴 + 白色线性图标，皇冠形围住中枢，名字放在不压管线的一侧",
+    "光管收成单色系：粉（集成端）→ 紫（中枢端）渐变 + 暗色底轨 + 白热芯，彗星脉冲沿 集成→中枢 持续输送；远景换成失焦的幽灵瓷贴做弱视差",
+    "判例节奏全部保留：35f 快翻尾缓、90° 侧棱 2f 闪、两拍制（52f 五瓷贴同帧 → 62f 五管同帧、9f 齐长）；接通同帧五行状态一齐从 Waiting 翻成 Synced、徽章 Idle→Live",
+    "余波加一行 30px 等宽统计「5 SOURCES · 2.4M RECORDS · SYNCED IN REAL TIME」逐词升起，尾帧是完整的生态海报"
   ],
   "issuesEn": [
-    "The camera push/pan used four keyframe segments each with its own in-out, so velocity hit zero at f14 and f58 and the pull-back stuttered",
-    "The 2x opening close-up was transform-upscaled so text was soft, and the body copy was rows of grey skeleton bars",
-    "The GitHub icon was a plain black circle, Salesforce three blobby ellipses, and every tile had a cheap white halo",
-    "Pipes were thick color ribbons and the flow pulses were evenly spaced white capsules, reading as fairy lights rather than energy",
-    "Background neon frames had heavy 2.5px borders and flickered constantly, competing with the hero"
+    "The settled hub panel was 820×520 with 11–13px body text, just grey texture at 1080p",
+    "The five integration icons were glyphs of real brands (design tool, code host, CRM, cloud drive), putting real product names on screen",
+    "The pipes used a five-colour rainbow over multicolour neon rectangles: too many hues and no hierarchy",
+    "Both faces were light white pages, so the flip changed content but not material and the new-era beat didn't read"
   ],
   "changesEn": [
-    "Push and pan merged into one continuous bezier(0.55,0,0.18,1) curve over 0→96f with a naturally slow pre-roll and no stalls; the 35f ease-out flip, 2f edge flash and two-beat connect timing are unchanged",
-    "The panel's zoom now uses CSS zoom (layout-level), so text rasterizes natively at both the 2.05x close-up and the 1x rest; the old page is a publication-grade deal document with fields, summary paragraphs and next steps",
-    "Tiles get a gradient face, inner highlight and deep shadow, pop in with one overshoot (13f), and only light up with a warm neon glow once connected; GitHub uses a branch glyph, Salesforce a flat-bottomed cloud",
-    "Pipes slimmed to a 12px rainbow body with a 3px white-hot core and a spark at the growing tip; flow pulses are comets with a bright head and soft tail (still 4.6px/f), plus a small ripple at each port on arrival",
-    "Background frames no longer flicker, use 1.5px edges with slight defocus and 18% camera parallax; vignette and grain hold the dark field; added INTEGRATION_HUB_MAP_DURATION=150"
+    "Aurora look (violet-pink dark). The front is a white paper doc \"Weekly sync — manual export\" (46px title, 28px checklist, readable in close-up); the back is a deep-violet glass hub \"Everything, connected.\" (66px title + five 30px source rows), so the material contrast sells the new era",
+    "The integrations are now fictional Tracker / Canvas / Ledger / Inbox / Vault: 120px dark glass tiles with white line icons in a crown around the hub, labels placed on the side away from the pipes",
+    "Pipes are one colour family: pink at the app end to violet at the hub, with a dark groove and a white-hot core; comet pulses keep flowing app to hub, and the background is defocused ghost tiles with light parallax",
+    "All ruled timing is kept: 35f fast flip with soft landing, a 2f flash at 90°, two beats (52f all tiles at once, 62f all pipes at once, 9f grow); on connect all five rows flip from Waiting to Synced and the badge goes Idle to Live on the same frame",
+    "Follow-through adds a 30px mono stats line \"5 SOURCES · 2.4M RECORDS · SYNCED IN REAL TIME\" rising word by word, so the last frame is a complete ecosystem poster"
   ],
-  "mdChanged": false
+  "look": "aurora",
+  "mdChanged": true
 }

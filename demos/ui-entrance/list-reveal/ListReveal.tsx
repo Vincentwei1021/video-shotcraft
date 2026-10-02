@@ -1,162 +1,153 @@
-// list-reveal — List Reveal 菜单逐项找位（motion-lab 定稿转原生 Remotion）
-// 垂直菜单列表项依次 scale 找位入场（outBack 轻微过冲），同时整个列表容器
-// 全程线性缓慢上移——"整体漂移"与"逐项入场"两层运动分离叠加。
-// 设计坐标 480×270（DesignStage 等比放大，raster=zoom 让字形按成片分辨率栅格化），参数表数值以此坐标系标定。
-// 质感层（改版）：列表收紧到 ~195px 高（原 255px 顶满画面、漂移后首项出画），留足安全边；
-// 条目换成深石墨面 + 发丝线 + 顶部受光沿 + 两层软阴影，彩虹色块换成单色线性图标，
-// 仅 Dashboard 用唯一强调色表示当前项，右侧补快捷键 / 未读数；入场时条目带 1.6px→0 的
-// 对焦模糊，图标比条目晚 2f 落定（跟随）；暗场柔光底 + 暗角 + 颗粒替代纯黑平铺。
+// list-reveal — 菜单逐项找位 + 整体慢漂移（两层不相干的运动）
+//
+// 第二轮重设计（石墨暗场 · 侧边栏海报）：
+// - look = graphite（近单色暗场，白为强调、香槟金只做点缀）。主体是一列 700×92 的侧边栏条目
+//   （Home / Projects / Analytics / Messages / Settings / Sign out），46px 字、34px 线性图标、
+//   26px 等宽快捷键；当前项 Home 是一块受光的瓷白实心条（全片唯一的高亮），未读徽章用香槟金。
+//   右侧一句 120px 标题「Everything, within reach.」+ 36px 副句，构成左列表右标题的发布片海报。
+// - 手法本身（保留并做清楚）：两层运动完全解耦——
+//   ① 逐项找位：每项 24f，scale 0.82→1 + 上移 44→0 + 对焦模糊 8px→0，软 back 过冲（~1.5%，
+//      几乎读不出，只把落位那一帧"扣住"）；错峰 10f（"逐项读得完"的间隔），相邻约 2–3 项同时在动；
+//      图标晚 2f、快捷键晚 4f 落定（跟随）。
+//   ② 整体漂移：列表容器全程匀速上移 96px（≈0.8px/f），量级是单项位移的 2 倍、速度却慢一个数量级，
+//      所以读作"画面在呼吸"而不是"一起往上飘"。末帧不回位（与卡片定义一致）。
+// - 标题等列表铺到一半才进（Q5：开场只给列表一个主角），逐行从线下升起。
+//
+// 时间表（30fps，共 120f）：
+//   0–2     舞台光已在，容器开始漂移
+//   2–26    Home 找位（瓷白条，第一拍）
+//   12–86   其余五项按 10f 错峰找位（Sign out 前的分隔线随之显现）
+//   46–80   右侧标题逐行升起、副句淡入
+//   86–120  hold：漂移继续、光呼吸，尾帧是完整海报
 import React from 'react';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, FONT, Grain } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, bezier, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Sheen, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 
-export const LIST_REVEAL_DURATION = 108; // 3600ms @30fps
+export const LIST_REVEAL_DURATION = 120;
 
-const LABELS = ['Dashboard', 'Projects', 'Analytics', 'Messages', 'Settings', 'Sign out'];
-const KEYS = ['⌘1', '⌘2', '⌘3', '', '⌘,', ''];
-const ACCENT = '#7b83f0'; // 暗场里提亮一档的靛蓝（与 fixture accent 同色相）
-const DUR = LIST_REVEAL_DURATION;
+const L = LOOKS.graphite;
 
-// 单色线性图标（16×16 视框，描边 1.5）
+const ITEMS = [
+  { label: 'Home', key: '⌘1' },
+  { label: 'Projects', key: '⌘2' },
+  { label: 'Analytics', key: '⌘3' },
+  { label: 'Messages', key: '' },
+  { label: 'Settings', key: '⌘,' },
+  { label: 'Sign out', key: '' },
+];
+
+const ROW_W = 700;
+const ROW_H = 92;
+const GAP = 14;
+const LIST_X = 170;
+const LIST_Y = 236; // 漂移中点处的列表顶
+const DRIFT = 96; // 全程总漂移（+48 → −48）
+
+const START = 2; // 首项起点
+const STAGGER = 10;
+const EACH = 24;
+const softBack = bezier(0.3, 1.18, 0.5, 1); // 软过冲 ~1.5%
+
 const Icon: React.FC<{ i: number; color: string }> = ({ i, color }) => {
-  const p = { fill: 'none', stroke: color, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const p = { fill: 'none', stroke: color, strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
-    <svg width={10} height={10} viewBox="0 0 16 16">
-      {i === 0 && (<><rect x={2} y={2} width={5} height={6} rx={1.2} {...p} /><rect x={9} y={2} width={5} height={4} rx={1.2} {...p} /><rect x={2} y={10} width={5} height={4} rx={1.2} {...p} /><rect x={9} y={8} width={5} height={6} rx={1.2} {...p} /></>)}
-      {i === 1 && (<path d="M2 5 a1.5 1.5 0 0 1 1.5-1.5 h3 l1.5 1.8 h4.5 a1.5 1.5 0 0 1 1.5 1.5 v5.2 a1.5 1.5 0 0 1-1.5 1.5 h-9 a1.5 1.5 0 0 1-1.5-1.5 Z" {...p} />)}
-      {i === 2 && (<><path d="M2.5 13.5 h11" {...p} /><path d="M4.5 11 v-3" {...p} /><path d="M8 11 v-6.5" {...p} /><path d="M11.5 11 v-4.5" {...p} /></>)}
-      {i === 3 && (<path d="M2.5 4 a1.5 1.5 0 0 1 1.5-1.5 h8 a1.5 1.5 0 0 1 1.5 1.5 v5.5 a1.5 1.5 0 0 1-1.5 1.5 h-5 l-3 2.5 v-2.5 h-0 a1.5 1.5 0 0 1-1.5-1.5 Z" {...p} />)}
-      {i === 4 && (<><circle cx={8} cy={8} r={2.2} {...p} /><path d="M8 1.8 v1.8 M8 12.4 v1.8 M1.8 8 h1.8 M12.4 8 h1.8 M3.6 3.6 l1.3 1.3 M11.1 11.1 l1.3 1.3 M3.6 12.4 l1.3-1.3 M11.1 4.9 l1.3-1.3" {...p} /></>)}
-      {i === 5 && (<><path d="M9.5 2.5 h2.5 a1.5 1.5 0 0 1 1.5 1.5 v8 a1.5 1.5 0 0 1-1.5 1.5 h-2.5" {...p} /><path d="M7 5 l-3 3 l3 3 M4 8 h7" {...p} /></>)}
+    <svg width={34} height={34} viewBox="0 0 24 24">
+      {i === 0 && (<><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19Z" {...p} /><path d="M9.5 20.5v-6h5v6" {...p} /></>)}
+      {i === 1 && <path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z" {...p} />}
+      {i === 2 && (<><path d="M4 20h16" {...p} /><path d="M7 16v-4M12 16V7M17 16v-6" {...p} /></>)}
+      {i === 3 && <path d="M4 6.5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2h-7l-4.5 3.5V16H6a2 2 0 0 1-2-2Z" {...p} />}
+      {i === 4 && (<><circle cx={12} cy={12} r={3} {...p} /><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" {...p} /></>)}
+      {i === 5 && (<><path d="M14 4h3.5A1.5 1.5 0 0 1 19 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14" {...p} /><path d="M10 8l-4 4 4 4M6 12h9" {...p} /></>)}
     </svg>
   );
 };
 
 export const ListReveal: React.FC = () => {
-  const t = useT();
+  const frame = useCurrentFrame();
+  // 整体漂移：全程匀速（"呼吸"层，故意线性，与逐项曲线无关）
+  const drift = DRIFT / 2 - (DRIFT * frame) / (LIST_REVEAL_DURATION - 1);
+
   return (
-    <DesignStage bg="#0b0c12" raster="zoom">
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.3 }} accent="#5b63d3" grain={0} vignette={0.55} />
-      {/* 居中容器：flex 撑起列表垂直水平居中 */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {/* 整体漂移层：全程线性缓慢上移 */}
-        <div
-          style={{
-            position: 'relative',
-            width: 188,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-            transform: `translateY(${lerp(t, 16, -16)}px)`,
-          }}
-        >
-          {LABELS.map((s, i) => {
-            // 逐项入场：outBack 轻微过冲找位
-            const t0 = 0.06 + i * 0.09;
-            const p = seg(t, t0, t0 + 0.24, E.outBack);
-            const pc = Math.max(0, Math.min(1, p));
-            // 图标晚 2f 起步（跟随），同一条 outBack
-            const pi = seg(t, t0 + 2 / (DUR - 1), t0 + 2 / (DUR - 1) + 0.24, E.outBack);
-            const active = i === 0;
-            const last = i === LABELS.length - 1;
-            const lin = Math.min(1, Math.max(0, (t - t0) / 0.24)); // 线性进度：对焦模糊用
-            return (
-              <React.Fragment key={i}>
-                {/* Sign out 前一道分隔发丝线，跟着该项一起显现 */}
-                {last && (
-                  <div style={{ height: 0.5, margin: '1px 8px 1px', background: 'rgba(255,255,255,0.08)', opacity: Math.min(1, pc * 2.2) }} />
-                )}
-                <div
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 9,
-                    height: 26,
-                    padding: '0 9px 0 8px',
-                    boxSizing: 'border-box',
-                    borderRadius: 8,
-                    background: active
-                      ? 'linear-gradient(180deg, rgba(123,131,240,0.20) 0%, rgba(123,131,240,0.12) 100%), #171926'
-                      : 'linear-gradient(180deg, #191b25 0%, #14161e 100%)',
-                    boxShadow: [
-                      `inset 0 0 0 0.25px ${active ? 'rgba(150,158,255,0.42)' : 'rgba(255,255,255,0.09)'}`,
-                      'inset 0 0.5px 0 rgba(255,255,255,0.07)',
-                      '0 0.5px 1px rgba(0,0,0,0.45)',
-                      '0 6px 14px -6px rgba(0,0,0,0.6)',
-                    ].join(', '),
-                    opacity: Math.min(1, p * 2.2),
-                    filter: lin < 1 ? `blur(${((1 - EASE_OUT(lin)) * 0.4).toFixed(3)}px)` : undefined,
-                    transform: `scale(${0.78 + Math.max(0, p) * 0.22}) translateY(${lerp(Math.max(0, p), 14, 0)}px)`,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 5,
-                      flex: 'none',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: active ? 'rgba(123,131,240,0.22)' : 'rgba(255,255,255,0.05)',
-                      boxShadow: `inset 0 0 0 0.25px ${active ? 'rgba(150,158,255,0.35)' : 'rgba(255,255,255,0.07)'}`,
-                      transform: `scale(${(0.7 + Math.max(0, pi) * 0.3).toFixed(4)})`,
-                      opacity: Math.min(1, Math.max(0, pi) * 2),
-                    }}
-                  >
-                    <Icon i={i} color={active ? '#c9cdff' : last ? '#8a8fa3' : '#a7adc2'} />
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: FONT.sans,
-                      fontWeight: active ? 600 : 500,
-                      fontSize: 12,
-                      letterSpacing: '-0.01em',
-                      lineHeight: 1,
-                      color: active ? '#eef0ff' : last ? '#9095a8' : '#cfd4e4',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {s}
-                  </div>
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-                    {i === 3 ? (
-                      // 未读数 badge
-                      <div
-                        style={{
-                          minWidth: 14, height: 11, padding: '0 3.5px', boxSizing: 'border-box', borderRadius: 6,
-                          background: ACCENT, color: '#fff', fontFamily: FONT.sans, fontSize: 7.5, fontWeight: 700,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontVariantNumeric: 'tabular-nums',
-                          boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.3)',
-                        }}
-                      >
-                        3
-                      </div>
-                    ) : KEYS[i] ? (
-                      <div style={{ fontFamily: FONT.mono, fontSize: 7.5, color: active ? 'rgba(220,224,255,0.7)' : 'rgba(200,206,226,0.42)', letterSpacing: '0.02em' }}>
-                        {KEYS[i]}
-                      </div>
-                    ) : null}
-                  </div>
+    <AbsoluteFill style={{ background: L.bg[2], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.26, y: 0.02 }} fill={{ x: 0.85, y: 0.9 }} intensity={0.5} breathe={0.5} grain={0.09} vignette={0.6}>
+        <Dust look={L} count={22} seed={7} drift={0.12} opacity={0.3} />
+      </Stage>
+
+      {/* 列表：整体漂移层 */}
+      <div style={{ position: 'absolute', left: LIST_X, top: LIST_Y, width: ROW_W, transform: `translateY(${drift.toFixed(3)}px)` }}>
+        {ITEMS.map((it, i) => {
+          const t0 = START + i * STAGGER;
+          const lin = ramp(frame, t0, EACH, EASE.linear);
+          const p = softBack(lin);
+          const pIcon = softBack(ramp(frame, t0 + 2, EACH, EASE.linear));
+          const pKey = ramp(frame, t0 + 4, EACH - 4, EASE.out);
+          const active = i === 0;
+          const last = i === ITEMS.length - 1;
+          const y = i * (ROW_H + GAP) + (last ? 22 : 0);
+          const blur = (1 - EASE.out(lin)) * 8;
+          return (
+            <React.Fragment key={i}>
+              {last && (
+                <div style={{
+                  position: 'absolute', left: 24, right: 24, top: y - 18, height: 1, background: alpha('#ffffff', 0.1),
+                  transform: `scaleX(${ramp(frame, t0, EACH, EASE.snappy).toFixed(4)})`, transformOrigin: '0 50%',
+                }} />
+              )}
+              <div style={{
+                position: 'absolute', left: 0, top: y, width: ROW_W, height: ROW_H, borderRadius: 24, boxSizing: 'border-box',
+                display: 'flex', alignItems: 'center', gap: 26, padding: '0 34px 0 30px',
+                background: active ? 'linear-gradient(180deg, #f7f6f2 0%, #e9e8e3 100%)' : 'linear-gradient(180deg, #1c1d21 0%, #161719 100%)',
+                boxShadow: active
+                  ? `inset 0 1px 0 #ffffff, 0 18px 40px -14px rgba(0,0,0,0.75), 0 0 60px -10px ${alpha('#ffffff', 0.16)}`
+                  : `inset 0 0 0 1px ${alpha('#ffffff', 0.07)}, inset 0 1px 0 ${alpha('#ffffff', 0.06)}, 0 14px 30px -14px rgba(0,0,0,0.8)`,
+                opacity: Math.min(1, lin * 2.2),
+                filter: blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : undefined,
+                transform: `translateY(${((1 - p) * 44).toFixed(2)}px) scale(${(0.82 + 0.18 * p).toFixed(4)})`,
+                transformOrigin: '30% 50%', overflow: 'hidden',
+              }}>
+                {/* 当前项落位后一次扫光（Q4：只给主角一次，裁进圆角） */}
+                {active && <Sheen progress={ramp(frame, 22, 26, EASE.swift)} strength={0.6} width={0.18} />}
+                <div style={{
+                  width: 56, height: 56, borderRadius: 16, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: active ? alpha('#000000', 0.06) : alpha('#ffffff', 0.05),
+                  transform: `scale(${(0.72 + 0.28 * pIcon).toFixed(4)})`, opacity: Math.min(1, Math.max(0, pIcon) * 2),
+                }}>
+                  <Icon i={i} color={active ? '#141416' : last ? L.ink3 : L.ink2} />
                 </div>
-              </React.Fragment>
-            );
-          })}
+                <div style={{ ...type(46, active ? 680 : 560), color: active ? '#0f0f11' : last ? L.ink3 : L.ink, whiteSpace: 'nowrap' }}>{it.label}</div>
+                <div style={{ marginLeft: 'auto', opacity: pKey, transform: `translateX(${((1 - pKey) * 14).toFixed(2)}px)` }}>
+                  {i === 3 ? (
+                    <div style={{
+                      minWidth: 50, height: 40, padding: '0 14px', boxSizing: 'border-box', borderRadius: 20, background: L.accent2,
+                      color: '#1a1408', display: 'flex', alignItems: 'center', justifyContent: 'center', ...type(26, 750),
+                      boxShadow: `0 0 24px -4px ${alpha(L.accent2, 0.7)}`,
+                    }}>3</div>
+                  ) : it.key ? (
+                    <div style={{ ...type(26, 500, { mono: true }), color: active ? alpha('#000000', 0.45) : L.ink3 }}>{it.key}</div>
+                  ) : null}
+                </div>
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* 右侧标题：列表铺到一半才进 */}
+      <div style={{ position: 'absolute', left: 1010, top: 336, width: 780 }}>
+        <div style={{ ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.accent2, opacity: ramp(frame, 40, 16, EASE.out) }}>
+          NAVIGATION · v4
+        </div>
+        <div style={{ ...type(120, 760), color: L.ink, marginTop: 26 }}>
+          <TextReveal text={'Everything,\nwithin reach.'} by="line" start={46} each={22} gap={7} />
+        </div>
+        <div style={{
+          ...type(36, 450), color: L.ink2, marginTop: 34, lineHeight: 1.35, maxWidth: 760, whiteSpace: 'pre-line',
+          opacity: ramp(frame, 66, 18, EASE.out), transform: `translateY(${((1 - ramp(frame, 66, 18, EASE.snappy)) * 16).toFixed(2)}px)`,
+        }}>
+          {'Every project, report and thread,\none keystroke away.'}
         </div>
       </div>
-      <Grain opacity={0.07} scale={0.25} blend="soft-light" />
-    </DesignStage>
+    </AbsoluteFill>
   );
 };
-
-// 对焦模糊的收敛曲线（模糊在前 40% 行程内基本消掉）
-const EASE_OUT = (x: number) => 1 - Math.pow(1 - x, 3);

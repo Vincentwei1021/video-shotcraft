@@ -1,32 +1,31 @@
 {
   "stem": "AxialStretch",
   "issues": [
-    "没有导出时长常量，工作台按 default 150f 渲染，比卡片 md 的 ~4.7s 多出 9f 空尾",
-    "画面上方打着调试标题 AXIAL STRETCH，背景是纯色灰底",
-    "落位目标是三个 2px 灰色虚线框，像线框稿而不是真实页面槽位（Q9）",
-    "卡片飞行时阴影与静置时完全一样，拉伸只有形变、没有离面高度",
-    "落点只有形变回弹，槽位本身对'被撞到'没有任何反应"
+    "画面左上角打着调试标题「AXIAL STRETCH」，主体是三张 380×230 的灰条占位卡，内容读不出来",
+    "浅灰底 + 灰卡，没有光、没有层次，卡只占画面中部一条窄带，四周大面积空白",
+    "三张卡飞行距离不同，末卡拉丝明显弱于首卡；落点是软着陆，压扁回弹几乎看不见",
+    "卡片落定后整段静止，没有任何跟随动作，结尾帧不是一张完整的画面"
   ],
   "changes": [
-    "补导出 AXIAL_STRETCH_DURATION = 141（≈4.7s）：首卡 f10 起飞，末卡 f78 回弹完，真静止 62f；拉伸映射 / 错峰 / 回弹参数不变",
-    "去掉调试标题；三张卡落进一块真实的 'Pinned reports' 面板：受光白面 + 发丝线 + 两层软阴影，标题栏带图标与随落位递增的 0/3→3/3 计数",
-    "虚线框换成凹槽（浅填充 + 双层内阴影 + 发丝线），落定前槽内显示对应卡名占位",
-    "卡片阴影高度随速度从 4 抬到 22（飞得快 = 离面高），落定收回静置阴影",
-    "落点那一帧槽位外沿泛起一圈强调色描边并在 16f 内扩散淡出（每张一次，只给落点）；柔光浅底 + 颗粒"
+    "look 换成 lime（石墨底 · 荧光黄绿）：主体改为三块 540×470 的赛后数据砖 PACE 4:12 / DISTANCE 21.1 / HEART 152，168px 粗黑数字，104px 标题「Half marathon, done.」",
+    "拉伸仍由位置差分速度驱动（2→140px/f 映射到 scaleX 2.2 / scaleY 0.72，锚在后缘），每块统一飞 2000px，三块拉丝一样强；起飞间隔 10f→8f 越来越快",
+    "落点改为带余速撞停：飞行曲线末端留 ~12px/f，撞停帧切到以撞击面为锚的压扁（0.86 / 1.08），damping 14 弹簧弹回一次；砖内内容惯性前冲 18px 再被拉回",
+    "跟随与落位证据：空槽内凹 + 幽灵标签，撞停瞬间槽沿一圈荧光绿 ping、徽章计数 0→3 鼓一下；图表（配速柱 / 距离曲线 / 心电线）落定后 8f 才逐条画出",
+    "空间：舞台顶光 + 地平线光带 + 浮尘，砖下接触影随拉伸被抻长、飞得快离面高，地面 8% 倒影；hold 段极缓推镜 1→1.02，尾帧是完整的数据海报"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench used the 150f default, 9f longer than the card's ~4.7s",
-    "A debug title AXIAL STRETCH sat at the top over a flat grey background",
-    "Landing targets were three 2px dashed grey boxes, wireframe-like rather than real page slots (Q9)",
-    "Card shadows were identical in flight and at rest; the stretch was pure deformation with no sense of lift",
-    "Only the card squashed on landing; the slot showed no reaction to being hit"
+    "A debug title \"AXIAL STRETCH\" sat at the top and the subjects were three 380×230 grey placeholder cards with nothing readable",
+    "Light grey stage and grey cards with no light or depth; the cards filled only a thin band in the middle of the frame",
+    "The cards travelled different distances, so the last one stretched much less than the first; landings were soft and the squash was barely visible",
+    "After the cards landed the shot froze with no follow-through, and the final frame wasn't a finished composition"
   ],
   "changesEn": [
-    "Exported AXIAL_STRETCH_DURATION = 141 (~4.7s): first card launches at f10, last finishes its rebound at f78, then a 62f true hold; stretch mapping, stagger and rebound unchanged",
-    "Removed the debug title; cards land in a real 'Pinned reports' panel: top-lit surface, hairline, two-layer shadow, header with icon and a 0/3→3/3 count that ticks per landing",
-    "Dashed boxes became recessed wells (light fill, two inset shadows, hairline) showing the matching card name until filled",
-    "Card shadow elevation rises from 4 to 22 with speed (faster = higher off the surface) and settles back on landing",
-    "On impact the slot edge emits one accent ring that expands and fades over 16f (once per card, only at landing); soft-lit light backdrop with grain"
+    "Lime look (graphite + neon yellow-green): three 540×470 post-run data tiles, PACE 4:12 / DISTANCE 21.1 / HEART 152, with 168px heavy numerals and a 104px headline \"Half marathon, done.\"",
+    "Stretch is still driven by positional velocity (2→140px/f maps to scaleX 2.2 / scaleY 0.72, anchored at the trailing edge); every tile flies 2000px so all three stretch equally, launching 10f then 8f apart",
+    "Landings are now impacts: the flight curve keeps ~12px/f at arrival, then cuts to a squash anchored at the impact edge (0.86 / 1.08) and a damping-14 spring rebound; tile content overshoots 18px by inertia and is pulled back",
+    "Follow-through and slot evidence: recessed slots with ghost labels, a neon ping on the slot edge at impact, a 0→3 counter badge that bumps; the charts (split bars / distance curve / ECG) draw in 8f after landing",
+    "Depth: top key light, horizon glow and dust, a contact shadow that stretches with the tile, an 8% floor reflection, and a slow 1→1.02 push in the hold so the last frame is a finished data poster"
   ],
-  "mdChanged": false
+  "look": "lime",
+  "mdChanged": true
 }

@@ -1,32 +1,31 @@
 {
   "stem": "ListReveal",
   "issues": [
-    "列表高 255px 几乎顶满 270 的画面，容器上漂后首项被画框裁掉",
-    "纯黑 #0a0b10 平铺背景，条目像贴在虚空里，没有空间感",
-    "六个图标是彩虹色相渐变方块，既不是图标也没有层级",
-    "条目只有 1px 实色描边的平面，没有受光和阴影；没有当前项、快捷键等真实菜单信息",
-    "入场只有 scale + 透明度，条目和内部图标同时到位，像一张图在缩放"
+    "480×270 设计坐标放大，条目字只有 12px（成片约 48px 但菜单整体只占画面中间一小条），四周大面积空黑",
+    "画面里只有一列菜单，没有标题、没有层级，暂停任一帧都不像一张设计过的画面",
+    "六项都是同一种深灰条，当前项只靠一层淡靛蓝区分，主次不清",
+    "漂移 32px（设计坐标）放大后与逐项位移量级接近，两层运动不够分明"
   ],
   "changes": [
-    "条目收到 26px 高、6px 间距、188px 宽，整列 ~195px，漂移全程首末项都留在安全区；DesignStage 改 raster=zoom",
-    "背景换成带靛蓝余光的暗场柔光底 + 暗角 + 细颗粒",
-    "图标换成单色线性图标（网格/文件夹/柱图/气泡/齿轮/登出），只有当前项 Dashboard 用唯一强调色；Messages 加未读 badge，其余项加 ⌘ 快捷键，Sign out 前加分隔线并降一档亮度",
-    "条目面改深石墨渐变 + 发丝线 + 顶部受光沿 + 两层软阴影",
-    "保留 0.09 stagger、0.24 行程、outBack、0.78 起始 scale 与 32px 线性漂移；入场加 1.6px→0 的对焦模糊，图标比条目晚 2f 落定形成跟随"
+    "look 换成 graphite（近单色暗场，白为强调、香槟金点缀）：1920 原生排版，条目 700×92、46px 字、34px 线性图标、26px 等宽快捷键，左列表 + 右侧 120px 标题「Everything, within reach.」",
+    "当前项 Home 做成全片唯一的瓷白实心条，落位后一次扫光；未读徽章用香槟金，其余项深石墨面 + 发丝线",
+    "逐项找位：10f 错峰、24f 窗口，scale 0.82→1 + 上移 44px + 对焦模糊 8px→0，软 back ~1.5% 过冲；图标晚 2f、快捷键晚 4f 跟随",
+    "整体漂移改为全程匀速 96px（≈0.8px/f）：总量是单项位移 2 倍、速度慢一个数量级，两层运动一眼可分",
+    "标题等列表铺到一半（46f）才逐行升起（Q5 开场单主角），副句 36px 淡入；时长 120f，尾段 ~34f 只剩漂移与光呼吸"
   ],
   "issuesEn": [
-    "The 255px list nearly filled the 270 frame, so after the upward drift the first item was clipped by the frame",
-    "Flat #0a0b10 black background with the rows floating in a void",
-    "The six icons were rainbow-hued gradient squares, neither icons nor hierarchy",
-    "Rows were flat with a 1px solid border, no lighting or shadow, and no active item, shortcuts or other real menu cues",
-    "Entrance was scale plus opacity only, with row and icon arriving together like one scaled image"
+    "Built in 480×270 design space: 12px labels, and the whole menu was a thin strip in the middle of an empty black frame",
+    "Only a menu on screen, no headline and no hierarchy; no paused frame looked like a designed composition",
+    "All six items were the same dark grey bar; the current item differed only by a faint indigo tint",
+    "The 32px drift scaled up to roughly the same magnitude as each item's own motion, so the two layers didn't separate clearly"
   ],
   "changesEn": [
-    "Rows shrink to 26px tall, 6px gap, 188px wide (~195px total) so first and last items stay inside the safe area through the drift; DesignStage uses raster=zoom",
-    "Background is a dark soft-lit field with a faint indigo tint, vignette and fine grain",
-    "Monochrome line icons (grid/folder/bars/bubble/gear/sign-out), with only the active Dashboard row in the single accent; Messages gets an unread badge, others get ⌘ shortcuts, and Sign out sits below a divider one step dimmer",
-    "Row surfaces use a dark graphite gradient, hairline edge, top light edge and two-layer soft shadow",
-    "Kept the 0.09 stagger, 0.24 travel, outBack, 0.78 start scale and 32px linear drift; added a 1.6px→0 focus blur on entry and icons settle 2f after their row as follow-through"
+    "Graphite look (near-monochrome dark, white accent, champagne highlight) laid out natively at 1920: 700×92 rows, 46px labels, 34px line icons, 26px mono shortcuts, with a 120px headline \"Everything, within reach.\" on the right",
+    "The current item, Home, is the only porcelain-white solid row and gets one sheen after landing; the unread badge is champagne, the rest are dark graphite with hairlines",
+    "Item settle: 10f stagger, 24f window, scale 0.82→1 plus a 44px rise and 8px→0 focus blur with a ~1.5% soft back; icons follow 2f later, shortcuts 4f later",
+    "The container drift is now a constant 96px over the shot (≈0.8px/f): twice an item's travel but an order of magnitude slower, so the two layers read separately",
+    "The headline waits until the list is half built (46f) before rising line by line (one hero at the open, Q5), with a 36px subline; 120f total, the last ~34f only drift and breathe"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

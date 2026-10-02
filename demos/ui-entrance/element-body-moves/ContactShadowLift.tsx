@@ -1,212 +1,212 @@
 // contact-shadow-lift｜接触阴影离面抬升
-// 浅底上一排 3 张卡，逐张被"点名"抬起：卡 translateY(-28px)+scale(1.08)，
-// 其正下方独立椭圆阴影同步放大变淡——纸片离桌感；落回时阴影收紧变实，
-// 落地 2f 卡壳 scale 0.99 微压。三张依次各来一遍。收尾真静止 ≥35f。
-// 质感层（改版）：顶栏从灰条占位换成出版级产品顶栏（字标 / 导航 / 搜索 / 头像）；
-// 接触影改为"实心核 + 宽软环境影"两层带色相的径向椭圆；被点名的卡悬停时有 ±1.5px 的
-// 漂浮呼吸（两端为 0，不影响落点）与一圈强调色发丝描边，其余两张同步轻微压暗让位；
-// 柔光浅底 + 颗粒。抬升幅度 / 时间轴 / 阴影 scale 与 opacity 区间保持原参数。
+//
+// 第二轮重设计（瓷白桌面 · 2.5D 斜俯拍 · 逐张点名）：
+// - look = porcelain（冷白 + 钴蓝）。三张 440×580 竖版「本周专注」卡平躺在一张斜俯拍（rotateX ≈ 30°）的
+//   瓷白桌面上：Deep work 18h / Meetings 6h / Recharge 4h。手法本身做成真的物理：
+//   卡沿桌面法线 translateZ 抬起，阴影是另一层「躺在桌面 z=0 上」的实体——接触核（小而实、几乎贴边）
+//   随抬升变大、变虚、变淡并向背光方向（右下）偏移；环境影（大而软）同步扩散。卡本体不带 box-shadow，
+//   影子留在桌上，所以"纸片离桌"的距离是被阴影证明的，不是被缩放暗示的。
+// - 节奏「扫—扫—选」：前两张是轻快的点名（抬 10f out-cubic → 悬停 14f → 落回 8f in-cubic + 2f 微压卡壳），
+//   第三张是选定：抬得更慢更高（14f，弹簧落座、一次轻微过冲），停在空中不落回，钴蓝描边 + 对勾弹出，
+//   成为结尾海报的唯一主角。一次只有一张离桌（P4），其余两张同步轻微压暗让位。
+// - 相机：整段极缓的斜俯角回正（30°→26°）+ 跟随被点名的卡横移 ±40px（平滑，无速度突变）。
+//
+// 时间表（30fps，共 150f）：
+//   0–16    预备：桌面、三卡已在位，标题逐词升起
+//   16–50   点名 1：抬 16–26、悬停、落回 40–48、卡壳 48–50
+//   50–84   点名 2：同上
+//   86–100  选定 3：抬升 14f（spring damping 16，~3% 过冲），100f 起悬停呼吸
+//   96–118  余波：钴蓝描边、对勾弹出（对勾描线）、星期格同步染成钴蓝
+//   118–150 hold：选定卡停在空中，极缓推镜
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G, Card } from '../../_fixtures/Fixtures';
-import { Backdrop, FONT } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const CONTACT_SHADOW_LIFT_DURATION = 160; // 末次动画止于 f125，留 35f 真静止
+export const CONTACT_SHADOW_LIFT_DURATION = 150;
 
-const outCubic = Easing.out(Easing.cubic);
-const inCubic = Easing.in(Easing.cubic);
+const L = LOOKS.porcelain;
 
-// 每张卡的局部时间轴（局部帧 t）：
-// [0,10)   抬起  out-cubic
-// [10,28)  悬停 18f
-// [28,36)  落回  in-cubic
-// [36,38)  落地卡壳 scale 0.99
-// [38,43)  回弹 0.99→1.0 out-cubic
-// t<0 或 t>=43 完全静止（rest 态）
-const LIFT_Y = -28; // 原案 -8 → 加码 -20 → QA 保险再到 -28
-const LIFT_S = 1.08;
+// ───────────── 版式（桌面坐标系，px） ─────────────
+const CARD_W = 420;
+const CARD_H = 600;
+const GAP = 60;
+const DESK_W = 3 * CARD_W + 2 * GAP; // 1448
+const DESK_H = CARD_H;
+const RADIUS = 30;
 
-const cardMotion = (t: number) => {
-  const y = interpolate(t, [0, 10], [0, LIFT_Y], {
-    easing: outCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  }) + interpolate(t, [28, 36], [0, -LIFT_Y], {
-    easing: inCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
+// ───────────── 抬升 ─────────────
+const LIFT_Z = 96; // 沿桌面法线的抬升（屏幕上约 40–50px 的可见位移，远大于 28px 判例下限）
+const LIFT_S = 1.05;
+const SCANS = [16, 50]; // 前两张点名起点
+const PICK = 86; // 第三张选定起点
 
-  let s: number;
-  if (t < 28) {
-    s = interpolate(t, [0, 10], [1, LIFT_S], {
-      easing: outCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-    });
-  } else if (t < 38) {
-    s = interpolate(t, [28, 36], [LIFT_S, 0.99], {
-      easing: inCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-    });
-  } else {
-    s = interpolate(t, [38, 43], [0.99, 1], {
-      easing: outCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-    });
-  }
+const outCubic = (t: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+const inCubic = (t: number) => Math.pow(Math.min(1, Math.max(0, t)), 3);
 
-  // 抬升进度 0（贴桌）→1（悬空），驱动阴影
-  const lift = interpolate(t, [0, 10], [0, 1], {
-    easing: outCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  }) - interpolate(t, [28, 36], [0, 1], {
-    easing: inCubic, extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
-
-  // 悬停漂浮：只在 [10,28) 内，正弦包络两端为 0（不改变抬起终点与落回起点）
-  const hover = t >= 10 && t < 28 ? Math.sin(((t - 10) / 18) * Math.PI) : 0;
-  const float = -1.5 * hover;
-
-  return { y: y + float, s, lift };
+// 点名（会落回）：返回 lift 0→1→0 与缩放（含落地卡壳）
+const scanMotion = (t: number) => {
+  if (t < 0 || t >= 34) return { lift: 0, s: 1 };
+  const up = outCubic(t / 10);
+  const down = inCubic((t - 24) / 8);
+  const lift = up - down;
+  let s = 1 + (LIFT_S - 1) * lift;
+  if (t >= 32) s = 0.99 + 0.01 * outCubic((t - 32) / 2); // 2f 微压卡壳后回到 1
+  else if (t >= 31) s = 0.99;
+  const hover = t >= 10 && t < 24 ? Math.sin(((t - 10) / 14) * Math.PI) : 0;
+  return { lift: lift + 0.05 * hover, s };
 };
 
-const CARD_W = 360;
-const CARD_H = 220;
-const GAP = 120;
-const STARTS = [2, 42, 82]; // 三张卡依次点名，间隔 40f；末次动画止于 f125，留 35f 真静止
+// 选定（不落回）：弹簧抬起 + 悬停呼吸
+const pickMotion = (f: number) => {
+  if (f < PICK) return { lift: 0, s: 1 };
+  const k = springAt(f, PICK, { damping: 16, stiffness: 120 });
+  const breathe = f > PICK + 16 ? 0.04 * Math.sin(((f - PICK - 16) / 40) * Math.PI * 2) * ramp(f, PICK + 16, 20, EASE.smooth) : 0;
+  const lift = 1.15 * k + breathe;
+  return { lift, s: 1 + (LIFT_S - 1) * Math.min(1.2, k) };
+};
 
-const NAV = ['Overview', 'Reports', 'Projects', 'Team'];
+const motionOf = (i: number, f: number) => (i < 2 ? scanMotion(f - SCANS[i]) : pickMotion(f));
 
-export const ContactShadowLift: React.FC = () => {
-  const frame = useCurrentFrame();
-  const rowW = CARD_W * 3 + GAP * 2;
-  const left0 = (1920 - rowW) / 2;
-  const top = (1080 - CARD_H) / 2 - 20;
+// ───────────── 内容 ─────────────
+type Focus = { tag: string; hours: string; note: string; days: number[]; glyph: 'deep' | 'meet' | 'rest' };
+const CARDS: Focus[] = [
+  { tag: 'Meetings', hours: '6h', note: 'Batched into Tue and Thu afternoons.', days: [0, 1, 0, 1, 0, 0, 0], glyph: 'meet' },
+  { tag: 'Recharge', hours: '4h', note: 'Walks, reading, a real lunch break.', days: [1, 0, 1, 0, 1, 1, 0], glyph: 'rest' },
+  { tag: 'Deep work', hours: '18h', note: 'Maker mornings. No calls before noon.', days: [1, 1, 1, 1, 1, 0, 0], glyph: 'deep' },
+];
 
-  // 当前被点名的卡的抬升量（用于其余卡让位压暗）
-  const lifts = [0, 1, 2].map((i) => cardMotion(frame - STARTS[i]).lift);
+const Glyph: React.FC<{ kind: Focus['glyph']; color: string }> = ({ kind, color }) => (
+  <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+    {kind === 'deep' && (<><circle cx={12} cy={12} r={8.5} /><circle cx={12} cy={12} r={4.5} /><circle cx={12} cy={12} r={0.8} fill={color} /></>)}
+    {kind === 'meet' && (<><circle cx={8.5} cy={9} r={3} /><circle cx={16} cy={9.5} r={2.4} /><path d="M3 19c.6-3 2.8-4.6 5.5-4.6S13.4 16 14 19M14.5 14.6c2.6-.4 5.6.9 6.3 4.4" /></>)}
+    {kind === 'rest' && <path d="M19.5 14.2A8 8 0 0 1 9.8 4.5a8 8 0 1 0 9.7 9.7Z" />}
+  </svg>
+);
 
+const DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+const CardFace: React.FC<{ d: Focus; sel: number; check: number }> = ({ d, sel, check }) => {
+  const tint = (a: number) => alpha(sel > 0.5 ? L.accent : L.ink, a);
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', fontFamily: FONT.sans }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.38 }} accent={G.accent} grain={0.05} vignette={0.14} />
-
-      {/* 产品顶栏：毛玻璃白 + 发丝底线 + 字标 / 导航 / 搜索 / 头像 */}
-      <div
-        style={{
-          position: 'absolute', top: 0, left: 0, right: 0, height: 84,
-          background: 'rgba(250,250,249,0.86)', borderBottom: `1px solid ${G.hairline}`,
-          boxShadow: '0 1px 0 rgba(255,255,255,0.8), 0 8px 24px -16px rgba(16,18,26,0.18)',
-          display: 'flex', alignItems: 'center', padding: '0 48px', gap: 18, boxSizing: 'border-box',
-        }}
-      >
-        <div
-          style={{
-            width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(140deg, #7d84ea, #5b63d3)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 2px 6px -1px rgba(60,66,170,0.45)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          <div style={{ width: 14, height: 14, borderRadius: 4, border: '2.5px solid #fff', boxSizing: 'border-box' }} />
+    <div style={{ position: 'absolute', inset: 0, padding: '44px 46px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          width: 80, height: 80, borderRadius: 22, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: tint(0.07), border: `1px solid ${tint(0.08)}`,
+        }}>
+          <Glyph kind={d.glyph} color={sel > 0.5 ? L.accent : L.ink2} />
         </div>
-        <div style={{ fontSize: 24, fontWeight: 650, color: G.ink1, letterSpacing: '-0.015em' }}>Northwind</div>
-        <div style={{ width: 1, height: 26, background: G.hairlineStrong, margin: '0 10px' }} />
-        {NAV.map((n, k) => (
-          <div
-            key={n}
-            style={{
-              fontSize: 19, fontWeight: k === 1 ? 600 : 500, color: k === 1 ? G.ink1 : G.ink2,
-              padding: '8px 14px', borderRadius: 9, background: k === 1 ? G.fill2 : 'transparent',
-            }}
-          >
-            {n}
+        {/* 选定对勾 */}
+        <div style={{
+          width: 58, height: 58, borderRadius: 29, background: L.accent, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transform: `scale(${check.toFixed(4)})`, opacity: Math.min(1, check * 2), boxShadow: `0 8px 20px -6px ${alpha(L.accent, 0.7)}`,
+        }}>
+          <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12.5l4.5 4.5L19 7.5" strokeDasharray={22} strokeDashoffset={22 * (1 - Math.min(1, Math.max(0, check * 1.2 - 0.2)))} />
+          </svg>
+        </div>
+      </div>
+      <div style={{ ...type(26, 650, { caps: true }), letterSpacing: '0.14em', color: L.ink2, marginTop: 44 }}>{d.tag}</div>
+      <div style={{ ...type(160, 780), color: L.ink, letterSpacing: '-0.055em', marginTop: 14, lineHeight: 0.92 }}>{d.hours}</div>
+      <div style={{ ...type(32, 500), color: L.ink2, marginTop: 22, lineHeight: 1.32 }}>{d.note}</div>
+      <div style={{ display: 'flex', gap: 10, marginTop: 'auto' }}>
+        {d.days.map((on, k) => (
+          <div key={k} style={{
+            flex: 1, height: 52, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: on ? (sel > 0.5 ? L.accent : alpha(L.ink, 0.82)) : alpha(L.ink, 0.05),
+            color: on ? '#fff' : L.ink3, ...type(22, 650),
+          }}>
+            {DAYS[k]}
           </div>
         ))}
-        <div
-          style={{
-            marginLeft: 'auto', width: 300, height: 42, borderRadius: 11, background: G.fill,
-            border: `1px solid ${G.hairline}`, display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px',
-            boxSizing: 'border-box', color: G.ink3, fontSize: 17,
-          }}
-        >
-          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={G.ink3} strokeWidth={2} strokeLinecap="round">
-            <circle cx={11} cy={11} r={6.5} />
-            <path d="m20 20-4.2-4.2" />
-          </svg>
-          Search reports
-          <div style={{ marginLeft: 'auto', fontSize: 14, color: G.ink3, border: `1px solid ${G.hairlineStrong}`, borderRadius: 5, padding: '1px 6px' }}>⌘K</div>
+      </div>
+    </div>
+  );
+};
+
+// ───────────── 主体 ─────────────
+export const ContactShadowLift: React.FC = () => {
+  const frame = useCurrentFrame();
+  const motions = [0, 1, 2].map((i) => motionOf(i, frame));
+  const lifts = motions.map((m) => Math.max(0, Math.min(1, m.lift)));
+
+  // 相机：斜俯角缓慢回正 + 跟随被点名的卡横移；选定后极缓推近
+  const tilt = 24 - 4 * ramp(frame, 0, 150, EASE.smooth);
+  const follow = lifts.reduce((acc, l, i) => acc + l * (1 - i) * 40, 0);
+  const push = 1 + 0.025 * ramp(frame, PICK, 64, EASE.smooth);
+
+  const sel = ramp(frame, PICK + 10, 10, EASE.out);
+  const check = frame < PICK + 14 ? 0 : springAt(frame, PICK + 14, { damping: 13, stiffness: 220 });
+
+  return (
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.05 }} fill={null} grain={0.045} vignette={0.2} />
+
+      {/* 标题（屏幕空间，不进 3D） */}
+      <div style={{ position: 'absolute', top: 92, left: 0, right: 0, textAlign: 'center' }}>
+        <div style={{ ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.ink3, opacity: ramp(frame, 0, 14, EASE.out) }}>
+          WEEKLY FOCUS · OCT 6 – 12
         </div>
-        <div
-          style={{
-            width: 40, height: 40, borderRadius: 20, background: '#e4e1ef', color: '#4c4f7a', fontSize: 15, fontWeight: 650,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff', boxShadow: '0 1px 3px rgba(16,18,26,0.15)',
-          }}
-        >
-          JL
+        <div style={{ ...type(120, 760), color: L.ink, marginTop: 18 }}>
+          <TextReveal text="Shape your week." by="word" start={2} each={18} gap={4} />
         </div>
       </div>
 
-      {[0, 1, 2].map((i) => {
-        const t = frame - STARTS[i];
-        const { y, s, lift } = cardMotion(t);
-        const x = left0 + i * (CARD_W + GAP);
-        // 让位：别的卡在抬时本卡轻微压暗（multiply 约 4%），落回后恢复
-        const others = Math.max(...lifts.filter((_, k) => k !== i));
-        const dim = 0.07 * others;
+      {/* 桌面：斜俯拍 3D 平面 */}
+      <div style={{ position: 'absolute', inset: 0, perspective: 2600, perspectiveOrigin: '50% 34%' }}>
+        <div style={{
+          position: 'absolute', left: (1920 - DESK_W) / 2, top: 350, width: DESK_W, height: DESK_H,
+          transformStyle: 'preserve-3d',
+          transform: `translateX(${follow.toFixed(2)}px) scale(${push.toFixed(5)}) rotateX(${tilt.toFixed(3)}deg)`,
+          transformOrigin: '50% 60%',
+        }}>
+          {/* 桌面点阵：让"桌面"这个平面在斜俯拍下有实在的透视（远疏近密），四周渐隐 */}
+          <div style={{
+            position: 'absolute', left: -700, top: -520, width: DESK_W + 1400, height: DESK_H + 1000,
+            backgroundImage: `radial-gradient(circle, ${alpha(L.ink, 0.13)} 1.6px, transparent 2.2px)`, backgroundSize: '44px 44px',
+            backgroundPosition: '-6px 14px',
+            WebkitMaskImage: 'radial-gradient(ellipse 50% 50% at 50% 52%, #000 30%, transparent 78%)',
+          }} />
+          {CARDS.map((d, i) => {
+            const { lift, s } = motions[i];
+            const l = Math.max(0, lift);
+            const x = i * (CARD_W + GAP);
+            const others = Math.max(0, ...lifts.filter((_, k) => k !== i));
+            return (
+              <React.Fragment key={i}>
+                {/* 环境影：桌面上的大而软的影，随抬升扩散、偏向背光侧（右下） */}
+                <div style={{
+                  position: 'absolute', left: x, top: 0, width: CARD_W, height: CARD_H, borderRadius: RADIUS,
+                  background: alpha(L.shadow, 0.09 + 0.13 * l),
+                  filter: `blur(${(14 + 40 * l).toFixed(1)}px)`,
+                  transform: `translate3d(${(10 + 40 * l).toFixed(1)}px, ${(16 + 60 * l).toFixed(1)}px, 0.5px) scale(${(1.0 + 0.06 * l).toFixed(4)})`,
+                }} />
+                {/* 接触核：贴边小而实，抬起后变大、变虚、变淡 */}
+                <div style={{
+                  position: 'absolute', left: x, top: 0, width: CARD_W, height: CARD_H, borderRadius: RADIUS,
+                  background: alpha(L.shadow, 0.32 - 0.18 * l),
+                  filter: `blur(${(3 + 22 * l).toFixed(1)}px)`,
+                  transform: `translate3d(${(2 + 18 * l).toFixed(1)}px, ${(4 + 36 * l).toFixed(1)}px, 1px) scale(${(0.99 + 0.05 * l).toFixed(4)})`,
+                }} />
+                {/* 卡本体：沿法线抬起，不带 box-shadow（影子留在桌上） */}
+                <div style={{
+                  position: 'absolute', left: x, top: 0, width: CARD_W, height: CARD_H, borderRadius: RADIUS, overflow: 'hidden',
+                  transform: `translate3d(0, 0, ${(2 + LIFT_Z * lift).toFixed(2)}px) scale(${s.toFixed(4)})`,
+                  background: 'linear-gradient(180deg, #ffffff 0%, #f8faff 100%)',
+                  border: `1px solid ${alpha(L.ink, 0.07)}`, boxSizing: 'border-box',
+                  boxShadow: `inset 0 1px 0 #ffffff${i === 2 ? `, inset 0 0 0 ${(3 * sel).toFixed(2)}px ${L.accent}` : ''}`,
+                }}>
+                  <CardFace d={d} sel={i === 2 ? sel : 0} check={i === 2 ? check : 0} />
+                  {/* 让位压暗：别的卡离桌时本卡轻微沉下去 */}
+                  <div style={{ position: 'absolute', inset: 0, background: alpha('#dfe5ef', 1), opacity: others * 0.22, mixBlendMode: 'multiply' }} />
+                </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
 
-        // 独立接触阴影（不是 box-shadow）：卡正下方椭圆径向渐变
-        const shScale = 1 + 0.72 * lift;     // 1.0 → 1.72（对比再拉大）
-        const shOpacity = 0.55 - 0.37 * lift; // 0.55 → 0.18
-        const shW = CARD_W * 0.88;
-        const shH = 44;
-
-        return (
-          <React.Fragment key={i}>
-            {/* 环境影：宽而虚，随抬升扩散 */}
-            <div
-              style={{
-                position: 'absolute',
-                left: x + (CARD_W - shW * 1.1) / 2,
-                top: top + CARD_H - shH * 0.8,
-                width: shW * 1.1,
-                height: shH * 1.6,
-                borderRadius: '50%',
-                background: 'radial-gradient(ellipse at center, rgba(16,18,26,0.35) 0%, rgba(16,18,26,0.12) 45%, rgba(16,18,26,0) 72%)',
-                transform: `scale(${(1 + 0.9 * lift).toFixed(4)})`,
-                opacity: shOpacity * 0.8,
-              }}
-            />
-            {/* 接触核：小而实，抬起时变大变淡（scale 1→1.72 / opacity 0.55→0.18） */}
-            <div
-              style={{
-                position: 'absolute',
-                left: x + (CARD_W - shW) / 2,
-                top: top + CARD_H - shH / 2 - 4,
-                width: shW,
-                height: shH,
-                borderRadius: '50%',
-                background: 'radial-gradient(ellipse at center, rgba(16,18,26,0.6) 0%, rgba(16,18,26,0.26) 40%, rgba(16,18,26,0) 70%)',
-                transform: `scale(${shScale})`,
-                opacity: shOpacity,
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                left: x,
-                top,
-                width: CARD_W,
-                height: CARD_H,
-                transform: `translateY(${y}px) scale(${s})`,
-              }}
-            >
-              <Card w={CARD_W} h={CARD_H} seed={i + 2} style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9)' }} />
-              {/* 点名描边：强调色发丝圈，随抬升出现、落回消失 */}
-              <div
-                style={{
-                  position: 'absolute', inset: -1, borderRadius: 15, pointerEvents: 'none',
-                  boxShadow: `0 0 0 1.5px rgba(91,99,211,${(0.55 * lift).toFixed(3)}), 0 0 0 6px rgba(91,99,211,${(0.08 * lift).toFixed(3)})`,
-                }}
-              />
-              {/* 让位压暗：带色相的浅灰罩，不改几何 */}
-              {dim > 0.002 && (
-                <div style={{ position: 'absolute', inset: 0, borderRadius: 14, background: '#e9e9e6', opacity: others * 0.45, mixBlendMode: 'multiply' }} />
-              )}
-            </div>
-          </React.Fragment>
-        );
-      })}
-    </div>
+    </AbsoluteFill>
   );
 };

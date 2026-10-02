@@ -1,32 +1,33 @@
 {
   "stem": "ListStackPress",
   "issues": [
-    "相机 5 段关键帧各自缓入缓出，f12/f18/f56 处速度归零，跟随堆叠时一顿一顿",
-    "琥珀高亮条放在 72% 高度、30px 高，一半压在正文上，还以 60% 不透明度盖在字上把项目名洗淡；右侧 2px 竖线直接切过正文",
-    "glaze 扫光在 f64–78，最后一张 f76 才落地，扫光早于收尾；且扫的是整页、不裁进卡片",
-    "计数器数字没设字体，落到浏览器默认衬线体，与等宽标签不搭",
-    "飞行卡只有单层大阴影，600px 的升入没有任何速度感"
+    "整页浅色截图铺满画面，五张卡在页面里只是浅灰上的浅白，主体和背景几乎同色，没有光和层次",
+    "计数器挤在右上角（104px 数字 + 19–22px 小字），和堆叠争不出主次",
+    "压弹是整摞同帧下压 6px，屏幕上几乎看不出，读不出\"重量\"",
+    "五张卡 12f 等距、末端过冲越进上一张卡里，落地像穿插而不是撞击",
+    "高亮条 7f 长出又 5f 淡掉，结尾帧里看不到哪些项目被命中"
   ],
   "changes": [
-    "相机改为一条连续曲线（cy 270→815、zoom 1.35→0.86，82f 后静止），逐帧喂给 PageCam2D，跟随平滑无顿点，尾帧整摞完整入画",
-    "高亮条按截图实测对准项目名行（卡内 y156–176）、宽度等于项目名，multiply 叠在字下做荧光笔；落地后滞后 3f 才长出，最后一张压缩为 5f 长 + 4f 淡",
-    "glaze 移到 f74–87 最后一张落定后，soft-light 暖色斜光，按页面坐标连续扫过整摞并裁进每张卡圆角（Q4）",
-    "飞行卡按速度加纵向 SpeedBlur；阴影改为随离地高度变化的两层 softShadow，被压时更贴地；补顶部受光沿",
-    "计数器数字改系统无衬线 500 + tabular-nums，滚格时带随速度的纵向模糊，下方加一条发丝分隔线"
+    "look 换成 ember（暖黑 + 橙）：截图纸卡（纹理不动，只压一层暖色）独立成列立在暗场里，暖白纸自带亮度成为主体；截图里的赤褐项目名与强调色同色系",
+    "左侧做成为镜头设计的计数排版：PAPER RADAR 眉题、300px 滚轮数字「5」+「/ 31」、进度细线、42px 说明句逐词升起；滚轮窗口上下渐隐、末格滚定时数字泛一次橙光",
+    "节拍改为 14→12→10→9f 越攒越快，飞行曲线末端留余速真的撞上整摞；压弹改为冲击传导：新卡回弹 8px、邻卡顶起 14px，每远一张晚 1.5f、×0.7 衰减，阻尼一次回弹",
+    "跟随层级保留：卡体先停 → 整摞回弹 → 项目名荧光笔滞后 3f 长出（保留到片尾）→ 计数器滚一格（8f）",
+    "相机一条连续曲线从首卡近景 1.0× 拉到整摞全景 0.74×，90f 后静止；末张落定后一道 glaze 扫过整摞（全镜头一次，裁进每张卡），时长 120f，尾段 ~16f 干净海报"
   ],
   "issuesEn": [
-    "The camera used five keyframe segments each with its own ease, so velocity hit zero at f12/f18/f56 and the follow stuttered",
-    "The amber highlight sat at 72% height and 30px tall, half over the body copy and washing out the project name at 60% opacity, with a 2px vertical line slicing through the text",
-    "The glaze ran f64–78 while the last card only landed at f76, so the sweep came before the finish, and it swept the whole page instead of being clipped to the cards",
-    "Counter digits had no font set and fell back to the browser serif, clashing with the mono labels",
-    "Flying cards had a single big shadow and the 600px rise had no sense of speed"
+    "A full light page screenshot filled the frame, so the five cards were off-white on light grey: subject and background nearly the same tone, with no light or depth",
+    "The counter was squeezed into the top-right corner (104px digits plus 19–22px labels) and never won the hierarchy against the stack",
+    "The press moved the whole stack 6px down on one frame, barely visible on screen, so the weight didn't read",
+    "Cards came in on an even 12f beat and the end overshoot pushed each one into the card above, reading as overlap rather than impact",
+    "The highlight grew for 7f then faded over 5f, so the final frame didn't show which projects matched"
   ],
   "changesEn": [
-    "Camera is one continuous curve (cy 270→815, zoom 1.35→0.86, still after 82f) fed frame by frame into PageCam2D, giving a smooth follow and a final frame with the full stack in view",
-    "The highlight is measured from the screenshot to sit on the project-name line (card y156–176), as wide as the name, multiplied under the text like a highlighter; it grows 3f after landing, compressed to 5f grow + 4f fade for the last card",
-    "Glaze moved to f74–87 after the last card settles: a warm soft-light diagonal that sweeps the stack continuously in page space, clipped to each card's rounded corners (Q4)",
-    "Velocity-driven vertical SpeedBlur on flying cards; two-layer softShadow that scales with height and hugs the floor when pressed; added a top light edge",
-    "Counter digits use the system sans at 500 with tabular-nums and a speed-based vertical blur while rolling, plus a hairline divider below"
+    "Ember look (warm black + orange): the screenshot paper cards (textures untouched, only a warm grade) stand as their own column on the dark stage, glowing as the subject; the rust project names in the screenshots match the accent",
+    "The left side is purpose-built counter typography: PAPER RADAR kicker, a 300px rolling \"5\" with \"/ 31\", a progress hairline and a 42px line rising word by word; the roll window fades top and bottom and the digit blooms orange once on the final settle",
+    "The beat tightens 14→12→10→9f, and the flight curve keeps residual speed so each card really hits the stack; the press is now an impact wave: the new card rebounds 8px, the one above lifts 14px, each further card 1.5f later and ×0.7, one damped rebound",
+    "The follow-through order is kept: card stops, stack rebounds, the project-name highlighter grows 3f later and stays to the end, then the counter rolls one step (8f)",
+    "One continuous camera curve pulls from a 1.0× close-up of the first card to a 0.74× full stack and holds after 90f; one glaze sweeps the stack after the last card (once, clipped to each card); 120f total with a clean ~16f poster at the end"
   ],
+  "look": "ember",
   "mdChanged": true
 }

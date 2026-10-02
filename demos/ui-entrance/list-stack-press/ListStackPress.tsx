@@ -1,236 +1,201 @@
-// list-stack-press —— 列表卡从底部逐张飞上摞起，每张落地压弹整摞、计数器同步跳格
-// "堆叠有重量"：每张新卡落上来，已落定的整摞被压下再弹回——物理反馈里读出
-// "这是实打实攒下来的东西"。参考实现从 template ScenePapers 剥离：
-// 预备拍（计数器先于首卡 4–6f 亮起微缩，把视线引到堆叠区）；5 卡 12f 等距节拍
-// 从底部 600px 升入（交替 ±2° 倾斜收平 + scale 1.06→1）；后一张到场时整摞压下
-// 6px、8f 弹回（stackPress 脉冲——"有重量"的关键一笔）；落地后高亮条滞后 2–4f
-// 长出；收尾一道 glaze 扫光掠过整摞；屏幕空间 DigitRoll 计数器落一张滚一格。
-// 正视机位（堆叠/列表镜头必须正视，Q6），相机跟随堆叠向下。
-// 质感层（改版）：
-// · 相机从 5 段关键帧（每段各自缓入缓出、关键帧处速度归零）改成一条连续曲线逐帧喂给 PageCam2D
-// · 飞行卡按速度加纵向运动模糊；阴影改为随离地高度变化的两层（接触影 + 环境影）
-// · 高亮条按截图实测对准"与项目相关"项目名那一行，multiply 叠在字下（荧光笔），不再盖住正文
-// · glaze 改在最后一张落定后扫过，并裁进每张卡的圆角内（Q4）
-// · 计数器数字显式用系统无衬线 + tabular-nums（原先落到浏览器默认衬线），滚动时带纵向拖影
+// list-stack-press —— 列表卡从底部逐张飞上摞起，每张落地压弹整摞、计数器同步跳一格
+//
+// 第二轮重设计（余烬暗场 · 纸卡雷达）：
+// - look = ember（暖黑 + 橙）。五张卡仍是产品既有页面的真实截图纹理（paper1–5，Q1 不动），
+//   但舞台从"整页截图上相机巡游"换成暖黑暗场：暖白纸卡在暗场里自带亮度，截图里原有的赤褐色
+//   项目名正好与 ember 强调色同色系。左侧是为镜头设计的计数排版：PAPER RADAR 眉题、
+//   300px 机械滚轮数字「5」+「/ 31」、40px 说明句；右侧是正在长高的纸卡列。
+// - 手法本身（保留并加重）：
+//   ① 预备拍：计数器先于首卡 8f 亮起（幽灵 0，scale 0.96→1），视线先落到计数区。
+//   ② 逐张升入：从下方 700px 升起，交替 ±2.5° 倾斜收平 + scale 1.04→1，按速度纵向拖影；
+//      起飞间隔 14→12→10→9f 越来越密（"越攒越快"）。曲线末端保留余速 → 真的"撞"上整摞。
+//   ③ 压弹：撞击那一帧，新卡被弹回 8px，已落定的整摞被顶起 14px——冲击沿整摞向上传导，
+//      每远一张晚 1.5f、幅度 ×0.7，阻尼振荡一次可见回弹（不是同帧整体平移）。
+//   ④ 跟随层级：卡体先停 → 整摞回弹 → 项目名荧光笔滞后 3f 长出 → 计数器滚一格（8f）。
+// - 相机：一条连续曲线从首卡近景（1.0×，标题可读）拉远到整摞全景（0.74×），跟随堆叠向下，90f 后静止。
+// - 收尾：末格滚定那一下数字泛一次橙光；一道 glaze 扫光掠过整摞（Q4，全镜头一次，裁进每张卡）。
+//
+// 时间表（30fps，共 120f）：
+//   0–8     预备：舞台、眉题、幽灵 0 亮起微缩回位
+//   8–73    五张卡升入（起飞 8/22/34/44/53，飞 20f，落地 28/42/54/64/73）；每次落地整摞压弹
+//   28–81   计数 0→5，每格 8f 滚定（末格 81f）
+//   0–90    相机连续拉远
+//   81–104  余波：数字泛光、说明句逐词升起；78–96 glaze 扫过整摞
+//   104–120 hold：干净海报
 import React from 'react';
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
-import { PageCam2D, CamKey2D } from '../../_fixtures/PageCam2D';
-import { FONT, SpeedBlur, bezier, softShadow, velocity } from '../../_fixtures/Polish';
+import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
+import { EASE, SpeedBlur, bezier, ramp, velocity } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 import layout from '../../_textures/live-layout.json';
 
-export const LIST_STACK_PRESS_DURATION = 88; // 18–88f 落在 shot 内 offset 0
+export const LIST_STACK_PRESS_DURATION = 120;
 
-const cards = layout.papers.cards;
-const PAGE_H = layout.papers.pageH;
-const MONO = FONT.mono;
-const AMBER = 'oklch(52% 0.115 65)';
+const L = LOOKS.ember;
 const FILES = ['paper1.png', 'paper2.png', 'paper3.png', 'paper4.png', 'paper5.png'];
-// 截图实测：每张卡里"与项目相关"项目名那一行（页面 px，卡内坐标）——高亮条只盖这一行
+const CARD_W = layout.papers.cards[0].w; // 1104（截图原生尺寸，纹理 2×）
+const CARD_H = layout.papers.cards[0].h; // 224.5
+const GAP = 16;
+const slotY = (i: number) => i * (CARD_H + GAP);
+const STACK_H = slotY(4) + CARD_H;
+// 截图实测：每张卡里"与项目相关"项目名那一行（卡内坐标）——荧光笔只盖这一行
 const HL_TOP = 156, HL_H = 20, HL_LEFT = 16;
 const HL_W = [187, 244, 247, 240, 191];
 
-const CUES = [6, 18, 30, 42, 54]; // 首卡前留 6f 给计数器预备拍（anticipation）
-const DUR = 22;
-const FLY_EASE = Easing.bezier(0.45, 0.05, 0.25, 1.12);
-const TILTS = [2, -2, 2, -2, 2];
+// ───────────── 节拍 ─────────────
+const CUES = [8, 22, 34, 44, 53]; // 间隔 14→12→10→9f，越来越密
+const FLY = 20;
+const RISE = 700;
+const TILTS = [2.5, -2.5, 2.5, -2.5, 2.5];
+const FLY_EASE = bezier(0.25, 0.55, 0.6, 0.92); // 末端斜率 0.2 → 撞上时仍有 ~7px/f
+const landAt = (i: number) => CUES[i] + FLY;
 
-// 预备拍：计数器先于首卡亮起 + 微缩 (0.96→1)，把视线引到堆叠区（段落级一次）
-const ANTICIPATE_START = 0;
-const ANTICIPATE_END = 6;
+// 撞击脉冲：t=0 起，~2.5f 到峰，7f 过零后一次轻微反向，指数衰减（一次可见回弹）
+const pulse = (t: number) => (t <= 0 ? 0 : Math.exp(-t / 5.5) * Math.sin((t * Math.PI) / 7));
 
-// 相机：一条连续曲线（页头近景 1.35 → 整摞全景 0.86），纵向跟随堆叠；
-// 竖向位置先走、推拉略晚收，82f 后静止留给扫光与计数落定
-const CAM_END = 82;
-const CY_EASE = bezier(0.42, 0, 0.2, 1);
-const Z_EASE = bezier(0.3, 0, 0.18, 1);
-const camAt = (f: number) => {
-  const u = Math.min(1, Math.max(0, f / CAM_END));
-  return { cx: 960, cy: 270 + (815 - 270) * CY_EASE(u), zoom: 1.35 + (0.86 - 1.35) * Z_EASE(u) };
-};
-// 逐帧关键帧 + 线性插值 = 把连续曲线原样交给 PageCam2D（它的分段缓动会在关键帧处停顿）
-const CAM_KEYS: CamKey2D[] = Array.from({ length: LIST_STACK_PRESS_DURATION }, (_, f) => ({ frame: f, ...camAt(f) }));
-const LINEAR = (t: number) => t;
-
-// odometer digit column —— 连续里程计，不重挂：`pos` 是数字带上的连续位置
-// （0→5），每张卡落地让 pos 多滚进一格。单格滚动必须短于 12f 落卡间距、
-// 且最后一格在镜头结束前落定——key 重挂从 0 重滚 22f 的写法两条都踩
-// （前一格永远滚不完、尾帧停在 4）。
-const DIGITS = '0123456789';
-const ROLL_DUR = 8; // 单格滚动帧数，< 12f 落卡间距
-const ROLL_EASE = Easing.bezier(0.25, 0.8, 0.25, 1);
-const rollAt = (frame: number) => {
-  let pos = 0;
-  for (const c of CUES) {
-    pos += interpolate(frame, [c + DUR, c + DUR + ROLL_DUR], [0, 1], {
-      extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: ROLL_EASE,
-    });
+const flyT = (i: number, f: number) => FLY_EASE((f - CUES[i]) / FLY);
+// 卡 i 相对自身槽位的纵向偏移（native px）：飞行段 + 落地回弹 + 被后来者顶起的传导波
+const offsetY = (i: number, f: number) => {
+  let y = f < landAt(i) ? RISE * (1 - flyT(i, f)) : 8 * pulse(f - landAt(i));
+  for (let j = i + 1; j < CUES.length; j++) {
+    const d = j - i;
+    y -= 14 * Math.pow(0.7, d - 1) * pulse(f - landAt(j) - 1.5 * (d - 1));
   }
-  return pos;
+  return y;
 };
-const DigitRoll: React.FC<{ pos: number; lineH: number; color: string; blur: number }> = ({ pos, lineH, color, blur }) => (
-  <span style={{ display: 'inline-flex', overflow: 'hidden', height: lineH, verticalAlign: 'bottom' }}>
-    <span style={{ display: 'inline-block', height: lineH }}>
-      <span style={{ display: 'block', transform: `translateY(${-pos * lineH}px)`, filter: blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : undefined }}>
-        {(DIGITS + DIGITS).split('').map((d, j) => (
-          <span
-            key={j}
-            style={{
-              display: 'block', fontFamily: FONT.sans, fontWeight: 500, fontSize: 104, letterSpacing: '-0.04em',
-              lineHeight: `${lineH}px`, color, fontVariantNumeric: 'tabular-nums',
-            }}
-          >
-            {d}
-          </span>
-        ))}
-      </span>
-    </span>
-  </span>
-);
 
-// 飞行进度（含过冲）与纵向位移，作为帧的纯函数——速度模糊要在相邻帧求值
-const flyT = (i: number, f: number) =>
-  interpolate(f, [CUES[i], CUES[i] + DUR], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: FLY_EASE });
-const flyY = (i: number, f: number) => 600 * (1 - flyT(i, f));
+// ───────────── 相机 ─────────────
+const CAM_END = 90;
+const CAM_EASE = bezier(0.4, 0, 0.2, 1);
+const camAt = (f: number) => {
+  const u = CAM_EASE(f / CAM_END);
+  const s = 1.0 + (0.74 - 1.0) * u; // 首卡近景 → 整摞全景
+  const fy = CARD_H / 2 + (STACK_H / 2 - CARD_H / 2) * u; // 对准的堆叠内纵坐标
+  const sy = 450 + (540 - 450) * u; // 对准点在屏幕上的高度
+  return { s, x: 1372 - s * (CARD_W / 2), y: sy - s * fy };
+};
+
+// ───────────── 计数器（连续里程计，不重挂） ─────────────
+const ROLL = 8; // 单格 8f，短于最小落卡间距 9f，末格 81f 滚定
+const rollAt = (f: number) => CUES.reduce((acc, _, i) => acc + ramp(f, landAt(i), ROLL, bezier(0.25, 0.8, 0.25, 1)), 0);
+const DIGIT = 300;
+const LINE_H = DIGIT * 1.05;
+
+const DigitRoll: React.FC<{ pos: number; blur: number; lit: number }> = ({ pos, blur, lit }) => (
+  <div style={{
+    height: LINE_H, overflow: 'hidden', display: 'inline-block',
+    // 滚轮窗口上下渐隐：滚动中的上下两格读作圆柱，而不是被一刀切开
+    WebkitMaskImage: 'linear-gradient(180deg, transparent 0%, #000 9%, #000 94%, transparent 100%)',
+  }}>
+    <div style={{ transform: `translateY(${(-pos * LINE_H).toFixed(2)}px)`, filter: blur > 0.6 ? `blur(${(blur * 0.35).toFixed(2)}px)` : undefined }}>
+      {'0123456789'.split('').map((d, j) => (
+        <div key={j} style={{
+          ...type(DIGIT, 800), lineHeight: `${LINE_H}px`, height: LINE_H, letterSpacing: '-0.05em',
+          color: j === 0 && pos < 0.5 ? alpha(L.ink3, 0.6) : L.accent,
+        }}>{d}</div>
+      ))}
+    </div>
+  </div>
+);
 
 export const ListStackPress: React.FC = () => {
   const frame = useCurrentFrame();
-  // 计数器连续位置：每张卡落地（cue+DUR）时向前滚一格，8f 滚定。
-  // 最后一张 f76 落地、f84 滚定，早于 f88 镜头结束。
+  const cam = camAt(frame);
   const rollPos = rollAt(frame);
-  const rollV = Math.abs(velocity(rollAt, frame)); // 格/帧
-
-  // 预备拍：计数器 0→6f 从 scale 0.96 微缩回 1 并亮起，视线先引到堆叠区
-  const antT = interpolate(frame, [ANTICIPATE_START, ANTICIPATE_END], [0, 1], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
-  });
-  const counterScale = 0.96 + 0.04 * antT;
-  const counterOpacity = 0.3 + 0.7 * antT;
-
-  // when a *later* card enters, the settled stack gets pressed down 6px then
-  // springs back over ~8 frames
-  const stackPress = (settledIndex: number) => {
-    let press = 0;
-    for (let j = settledIndex + 1; j < CUES.length; j++) {
-      const cue = CUES[j];
-      const p = interpolate(frame, [cue, cue + 4, cue + 8], [0, 6, 0], {
-        extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.inOut(Easing.sin),
-      });
-      press = Math.max(press, p);
-    }
-    return press;
-  };
-
-  // glaze：最后一张 f76 落定后从左上扫过整摞（页面坐标），只在卡片圆角内可见
-  const glazeX = interpolate(frame, [74, 87], [-500, 2300], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.45, 0, 0.35, 1),
-  });
-  const glazeVis = interpolate(frame, [74, 77, 84, 87], [0, 1, 1, 0], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
+  const rollV = Math.abs(velocity(rollAt, frame));
+  const ant = ramp(frame, 0, 8, EASE.out);
+  const lit = ramp(frame, 81, 4, EASE.out) * (1 - ramp(frame, 85, 26, EASE.swift));
+  const pop = (() => { const p = (frame - 81) / 12; return p > 0 && p < 1 ? Math.sin(Math.PI * Math.pow(p, 0.6)) : 0; })();
+  // glaze：末张落定后从左上扫过整摞（堆叠坐标），裁进每张卡
+  const glazeX = -500 + 2200 * ramp(frame, 78, 18, bezier(0.45, 0, 0.35, 1));
+  const glazeOn = frame >= 78 && frame <= 96;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: '#faf7f2' }}>
-      <PageCam2D src="textures/live/papers-full.png" pageH={PAGE_H} keys={CAM_KEYS} ease={LINEAR}>
-        {/* cover the printed cards so blank slots stack in */}
-        {cards.map((c, i) => (
-          <div
-            key={`slot-${i}`}
-            style={{
-              position: 'absolute', left: c.x - 12, top: c.y - 10,
-              width: c.w + 24, height: c.h + 20, background: '#faf7f2',
-              opacity: frame >= CUES[i] + DUR - 2 ? 0 : 1,
-            }}
-          />
+    <AbsoluteFill style={{ background: L.bg[2], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.72, y: 0.0 }} fill={{ x: 0.08, y: 0.95 }} intensity={0.7} breathe={0.4} grain={0.09} vignette={0.6}>
+        {/* 堆叠背后一道暖色竖向光柱，给纸卡列一个"被照亮的位置" */}
+        <div style={{ position: 'absolute', left: 1372 - 520, top: -100, width: 1040, height: 1300, background: `radial-gradient(ellipse 50% 50% at 50% 45%, ${alpha(L.light, 0.13)} 0%, ${alpha(L.light, 0)} 70%)` }} />
+      </Stage>
+
+      {/* 纸卡列：相机层 */}
+      <div style={{ position: 'absolute', left: 0, top: 0, width: CARD_W, height: STACK_H, transformOrigin: '0 0', transform: `translate(${cam.x.toFixed(2)}px, ${cam.y.toFixed(2)}px) scale(${cam.s.toFixed(5)})` }}>
+        {/* 空槽：落位前是一圈暗色虚线位 */}
+        {FILES.map((_, i) => (
+          <div key={`slot${i}`} style={{
+            position: 'absolute', left: 0, top: slotY(i), width: CARD_W, height: CARD_H, borderRadius: 14, boxSizing: 'border-box',
+            border: `2px dashed ${alpha(L.ink, 0.1)}`, opacity: frame < landAt(i) ? ant : 0,
+          }} />
         ))}
-
-        {cards.map((c, i) => {
-          const cue = CUES[i];
-          const t = flyT(i, frame);
-          if (t <= 0) return null;
-          const settled = t >= 0.999;
-          const dy = flyY(i, frame) + (settled ? stackPress(i) : 0);
-          const rot = TILTS[i] * (1 - t);
-          const scale = 1.06 - 0.06 * t;
-          // 离地高度：飞行段按剩余行程映射 0–56px，落定 3px（被压时更贴地）
-          const elev = settled ? 3 - stackPress(i) * 0.3 : 3 + 53 * Math.min(1, Math.max(0, 1 - t));
-          const vy = settled ? 0 : velocity((f) => flyY(i, f), frame);
-
-          // 高亮条：落地后滞后 3f 长出；最后一张离切点只剩 12f，节拍压缩到 5f 长 + 4f 淡
-          const lastCard = i === CUES.length - 1;
-          const hlStart = cue + DUR + (lastCard ? 2 : 3);
-          const hlLen = lastCard ? 5 : 7;
-          const hlGrow = interpolate(frame, [hlStart, hlStart + hlLen], [0, 1], {
-            extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1),
-          });
-          const hlFade = interpolate(frame, [hlStart + hlLen, hlStart + hlLen + (lastCard ? 4 : 5)], [1, 0], {
-            extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-          });
-
+        {FILES.map((file, i) => {
+          if (frame < CUES[i]) return null;
+          const t = Math.min(1, Math.max(0, (frame - CUES[i]) / FLY));
+          const landed = frame >= landAt(i);
+          const dy = offsetY(i, frame);
+          const rot = landed ? 0 : TILTS[i] * (1 - flyT(i, frame));
+          const sc = landed ? 1 : 1.04 - 0.04 * flyT(i, frame);
+          const vy = landed ? 0 : velocity((f) => offsetY(i, f), frame);
+          const elev = landed ? 4 : 4 + 50 * (1 - t);
+          const hl = ramp(frame, landAt(i) + 3, 7, bezier(0.3, 0, 0.2, 1));
           const card = (
-            <div
-              style={{
-                position: 'absolute', left: c.x, top: c.y, width: c.w, height: c.h,
-                transform: `translateY(${dy.toFixed(3)}px) rotate(${rot.toFixed(4)}deg) scale(${scale.toFixed(5)})`,
-                transformOrigin: 'center center', borderRadius: 12,
-                boxShadow: softShadow(elev, { color: '#3c2d1e', strength: 1.15 }),
-              }}
-            >
-              <div style={{ position: 'absolute', inset: 0, borderRadius: 12, overflow: 'hidden' }}>
-                <Img src={staticFile(`textures/live/${FILES[i]}`)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />
-                {hlGrow > 0 && hlFade > 0 ? (
-                  // 荧光笔：multiply 叠在字下，字保持原深度
-                  <div
-                    style={{
-                      position: 'absolute', left: HL_LEFT, top: HL_TOP, height: HL_H,
-                      width: HL_W[i] * hlGrow, borderRadius: 3,
-                      background: 'oklch(90% 0.075 82)', mixBlendMode: 'multiply', opacity: 0.85 * hlFade,
-                      pointerEvents: 'none',
-                    }}
-                  />
-                ) : null}
-                {/* glaze：一道斜向柔光，按页面坐标连续扫过整摞，被每张卡圆角裁切 */}
-                {glazeVis > 0 && (
-                  <div
-                    style={{
-                      position: 'absolute', top: -200, height: c.h + 400, left: glazeX - c.x - (c.y - 200) * 0.25, width: 360,
-                      transform: 'rotate(14deg)', opacity: glazeVis * 0.55, mixBlendMode: 'soft-light',
-                      background: 'linear-gradient(90deg, rgba(255,236,200,0), rgba(255,226,170,0.95) 45%, rgba(255,226,170,0.95) 55%, rgba(255,236,200,0))',
-                      pointerEvents: 'none',
-                    }}
-                  />
+            <div style={{
+              position: 'absolute', left: 0, top: slotY(i), width: CARD_W, height: CARD_H, borderRadius: 14,
+              transform: `translateY(${dy.toFixed(3)}px) rotate(${rot.toFixed(4)}deg) scale(${sc.toFixed(5)})`,
+              boxShadow: `0 ${(2 + elev * 0.5).toFixed(1)}px ${(6 + elev * 1.4).toFixed(1)}px rgba(0,0,0,${(0.55 - elev * 0.004).toFixed(3)}), 0 0 0 1px ${alpha('#ffffff', 0.06)}`,
+              opacity: Math.min(1, t * 4),
+            }}>
+              <div style={{ position: 'absolute', inset: 0, borderRadius: 14, overflow: 'hidden' }}>
+                <Img src={staticFile(`textures/live/${file}`)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block' }} />
+                {/* 截图调色：暖暗场里压一点高光、加一层暖色，让纸卡不刺眼 */}
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,226,190,0.06), rgba(60,30,10,0.07))', mixBlendMode: 'multiply' }} />
+                {hl > 0 && (
+                  <div style={{
+                    position: 'absolute', left: HL_LEFT, top: HL_TOP, height: HL_H, width: HL_W[i] * hl, borderRadius: 3,
+                    background: '#ffc999', mixBlendMode: 'multiply', opacity: 0.9,
+                  }} />
+                )}
+                {glazeOn && (
+                  <div style={{
+                    position: 'absolute', top: -200, height: CARD_H + 400, left: glazeX - slotY(i) * 0.25, width: 360,
+                    transform: 'rotate(14deg)', mixBlendMode: 'soft-light', opacity: 0.8,
+                    background: 'linear-gradient(90deg, rgba(255,236,200,0), rgba(255,220,170,0.95) 50%, rgba(255,236,200,0))',
+                  }} />
                 )}
               </div>
-              {/* 顶部 1px 受光沿 + 发丝线（截图卡自带浅描边，这里只补受光） */}
-              <div style={{ position: 'absolute', inset: 0, borderRadius: 12, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9)', pointerEvents: 'none' }} />
             </div>
           );
           return Math.abs(vy) > 1 ? (
-            <SpeedBlur key={FILES[i]} vx={0} vy={vy} amount={0.22} max={14}>
-              {card}
-            </SpeedBlur>
+            <SpeedBlur key={file} vx={0} vy={vy * cam.s} amount={0.2} max={12}>{card}</SpeedBlur>
           ) : (
-            <React.Fragment key={FILES[i]}>{card}</React.Fragment>
+            <React.Fragment key={file}>{card}</React.Fragment>
           );
         })}
-      </PageCam2D>
+      </div>
 
-      {/* screen-space counter, top-right — lands one digit per card */}
-      <div
-        style={{
-          position: 'absolute', top: 70, right: 96, textAlign: 'right',
-          pointerEvents: 'none', opacity: counterOpacity,
-          transform: `scale(${counterScale})`, transformOrigin: 'top right',
-        }}
-      >
-        <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 500, letterSpacing: '0.18em', color: 'oklch(48% 0.008 82)', textTransform: 'uppercase' }}>
-          Paper Radar
+      {/* 计数排版（屏幕空间） */}
+      <div style={{ position: 'absolute', left: 124, top: 250, opacity: 0.3 + 0.7 * ant, transform: `scale(${(0.96 + 0.04 * ant).toFixed(4)})`, transformOrigin: '0 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 12, height: 12, borderRadius: 6, background: L.accent, boxShadow: `0 0 12px ${alpha(L.accent, 0.9)}` }} />
+          <div style={{ ...type(26, 600, { mono: true }), letterSpacing: '0.2em', color: L.ink2 }}>PAPER RADAR · JUL 05</div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-          <DigitRoll pos={rollPos} lineH={104 * 1.12} color={AMBER} blur={Math.min(6, rollV * 30)} />
+        {/* 数字背后的橙色泛光（放在滚轮窗口外，免得被窗口裁成方块）；末格滚定时提亮一次 */}
+        <div style={{
+          position: 'absolute', left: -120, top: 40, width: 520, height: 420, pointerEvents: 'none',
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(L.accent, 0.16 + 0.3 * lit)} 0%, ${alpha(L.accent, 0)} 70%)`,
+          opacity: Math.min(1, rollPos),
+        }} />
+        <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 18, position: 'relative', transform: `scale(${(1 + 0.05 * pop).toFixed(4)})`, transformOrigin: '0 80%' }}>
+          <DigitRoll pos={rollPos} blur={Math.min(14, rollV * 40)} lit={lit} />
+          <div style={{ ...type(110, 700), color: L.ink3, marginLeft: 18, marginBottom: 44 }}>/ 31</div>
         </div>
-        <div style={{ height: 1, background: 'oklch(80% 0.01 82)', margin: '8px 0 10px auto', width: 220 }} />
-        <div style={{ fontFamily: MONO, fontSize: 19, letterSpacing: '0.14em', color: 'oklch(52% 0.008 82)', textTransform: 'uppercase' }}>
-          Of 31 Fetched Today
+        <div style={{ height: 2, width: 560, background: alpha(L.ink, 0.12), marginTop: 6 }}>
+          <div style={{ height: '100%', width: `${((rollPos / 5) * 100).toFixed(2)}%`, background: L.accent }} />
+        </div>
+        <div style={{ ...type(42, 600), color: L.ink, marginTop: 38, width: 640, lineHeight: 1.22 }}>
+          <TextReveal text="papers matched your" by="word" start={84} each={16} gap={3} />
+          <br />
+          <TextReveal text="active projects today." by="word" start={92} each={16} gap={3} />
+        </div>
+        <div style={{ ...type(30, 500), color: L.ink3, marginTop: 20, opacity: ramp(frame, 98, 16, EASE.out) }}>
+          Fetched from 31 new papers · ranked by relevance
         </div>
       </div>
     </AbsoluteFill>
