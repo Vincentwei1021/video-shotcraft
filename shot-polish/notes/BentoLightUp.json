@@ -1,28 +1,31 @@
 {
   "stem": "BentoLightUp",
   "issues": [
-    "六张等大格子，不是 bento；点亮后是白卡压在 #2a2a28 暗底上，暗场品牌段被白块亮瞎",
-    "流光是均匀的 4px 琥珀描边 + drop-shadow，点亮辉光是卡外一圈方形外发光",
-    "标题是反色的 TitleBlock “Features”，字阶单一",
-    "纯色暗底，没有导出时长"
+    "六格是满屏 12–16px 小字的通用 dashboard 卡，点亮时读不出\"亮了什么\"，暗态与亮态只是整体透明度差",
+    "标题 56px、卡内主数字不到 30px，1080p 画面里没有一个要读的字达标",
+    "琥珀彗星只是一段细描边，没有亮头与泛光，读作边框换色而不是\"通电\"",
+    "点亮顺序按行重启，光在墙上跳格；背景从头到尾一样暗，六格亮完画面能量没有变化"
   ],
   "changes": [
-    "真 bento：两行宽窄互补 600/420/420 ↔ 420/420/600；卡面改暗色出版级 Card，点亮读作通电而非换色",
-    "流光改彗星：22% 周长的亮头（6px 高斯辉光 + 2.5px 亮芯）跑一圈，身后留 1.5px 细边，退火到 0.4 常亮；点亮暖光裁在圆角内",
-    "标题改为琥珀眉标 PLATFORM + 56px 负字距主标题；描边/弹出/缓推节拍全部保持原值",
-    "暗场柔光底（暖色余光）+ 全亮后地面暖光 + 暗角 + 颗粒；补 BENTO_LIGHT_UP_DURATION = 150"
+    "look 换成 aurora（紫黑底 · 薰衣草紫 · 玫粉点缀），虚构平台「Basalt」，100px 主标题逐词升起",
+    "每格只讲一件事、一个大字主角：38s / 212 / 99.99% / 分支 URL / SOC 2 / 84ms（112–140px 白→薰衣草渐变字），辅助字 ≥32px，配小图形（耗时柱、经纬球、状态条、盾牌勾、延迟曲线）",
+    "彗星重做：亮芯白→玫粉 + 三层递减拖尾 + 高斯辉光 + 按圆角周长定位的头部泛光点，跑完一圈拖尾追上头部自然收掉，身后细边退火常亮",
+    "点亮顺序改蛇形（上排左→右、下排右→左），下排彗星从右上角起跑接住上一格；内容 +6f 接力提亮上浮带一次过冲，主角再晚 3f",
+    "房间随通电变亮：舞台主光与浮尘按已点亮格数连续爬升；全亮后 30f 缓推 0.972→1，落点即设计版式，22f 静止收尾"
   ],
   "issuesEn": [
-    "Six equal cells, not a bento; lit cards were white slabs on a #2a2a28 background, blinding in a dark brand beat",
-    "The light trace was a uniform 4px amber stroke with drop-shadow, and the light-up glow was a square outer halo",
-    "The title was an inverted TitleBlock “Features” with a single type size",
-    "Flat dark background, and no exported duration"
+    "The six cells were generic dashboard cards full of 12–16px text, so lighting one up didn't say what had lit up; dark and lit states differed only in overall opacity",
+    "The title was 56px and the hero numbers in the cells were under 30px, so not one piece of text meant to be read was legible at 1080p",
+    "The amber comet was just a thin stroke segment with no bright head or bloom, so it read as a border colour change, not as powering on",
+    "The lighting order restarted on every row so the light jumped around the wall, and the background stayed equally dark throughout: no energy change once all six were lit"
   ],
   "changesEn": [
-    "A true bento: rows alternate 600/420/420 ↔ 420/420/600; cards use the dark publication-grade Card so lighting up reads as powering on rather than a color swap",
-    "The trace is now a comet: a 22%-perimeter bright head (6px Gaussian glow + 2.5px core) runs the loop leaving a 1.5px edge that anneals to 0.4; the warm light-up glow is clipped inside the radius",
-    "Title becomes an amber PLATFORM eyebrow plus a 56px tightly tracked headline; trace/pop/push timings are unchanged",
-    "Dark soft-lit backdrop with warm tint, a floor glow once all cells are lit, vignette and grain; added BENTO_LIGHT_UP_DURATION = 150"
+    "Aurora look (violet-black, lavender, rose accent) for a fictional platform \"Basalt\", with a 100px headline rising word by word",
+    "Each cell tells one thing with one big hero: 38s / 212 / 99.99% / branch URL / SOC 2 / 84ms (112–140px white-to-lavender gradient type), supporting text ≥32px, plus a small graphic (build-time bars, wireframe globe, status strip, shield check, latency curve)",
+    "Rebuilt comet: white-to-rose core, three tapering tail layers, Gaussian glow and a bloom dot at the head positioned along the rounded perimeter; after one lap the tail catches the head and dissolves, leaving a thin border that anneals to a steady glow",
+    "Snake lighting order (top row left to right, bottom row right to left), with the bottom-row comets starting from the top-right corner to pick up from the previous cell; content brightens and rises 6f later with one overshoot, heroes 3f after that",
+    "The room brightens as power comes on: stage key light and dust climb continuously with the number of lit cells; once all are lit, a 30f push from 0.972 to 1 lands exactly on the designed layout, then 22f of stillness"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

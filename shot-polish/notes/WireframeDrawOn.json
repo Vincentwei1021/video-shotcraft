@@ -1,28 +1,31 @@
 {
   "stem": "WireframeDrawOn",
   "issues": [
-    "线框是按旧版灰阶骨架手排的，与 Phase 0 新版 FakeDashboard 的侧栏/顶栏/卡内布局对不上，扫描线扫过时元素跳位",
-    "描线是 #8f8f8d 2.5px 灰线，读作灰色占位而不是“蓝图”",
-    "背景是平涂 #ececea，开场 20f hold 是一片空白",
-    "没有导出时长"
+    "线框和实体都是满屏小字的通用 dashboard，实体化后画面里没有一个要读的字和主角",
+    "开场 20f 只有空白浅灰底，描线阶段大半屏长时间空着",
+    "浅灰纸 + 灰线 + 白卡，蓝图读作打印预览；橙色扫描线在浅底上发脏",
+    "线框按手排坐标近似对位，文字只是一条条占位线，扫过时细节对不上实体"
   ],
   "changes": [
-    "线框按新版 FakeDashboard A 的真实几何逐件重排：侧栏 logo/导航/项目/用量卡、顶栏面包屑/分段控件/搜索/头像、六卡表头/大数字/页脚，以及每张卡各自的图表形态（面积线、页面条、14 根柱、进度条、热力格）",
-    "蓝图化：冷灰蓝 #6c7894 细线（外框 1.6px、内件 1.25px）+ 淡蓝 24px 点阵底（开场 hold 期间淡入）+ 卡角裁切标记",
-    "扫描线改竖向渐变芯，身后带 260px 渐隐暖光作为“刚显影”的余温，竖线与 clip 前沿仍由同一 scan 值驱动",
-    "补 WIREFRAME_DRAW_ON_DURATION = 150；分组描线与扫描节拍全部保持原值；整体加极轻暗角与颗粒"
+    "look 换成 graphite（近单色暗场 · 香槟金唯一强调），主体是一扇 1600×880 的虚构「Tessera」营收页窗口：128px 主数字 $4.82M、60px 页标题、三枚 52px KPI、占满下半区的金色面积图",
+    "线框与实体同源：方块、文字、图表共用一张几何表；方块描线（pathLength + dashoffset），文字是同位置的空心描边字、像笔一样从左往右写出，扫描时零跳位",
+    "蓝图语言：铅笔灰细线 + 24px 点阵 + 窗口四角裁切标记（第 1 帧就有）+ 香槟金尺寸标注 1600 / 880 / 56，标注在扫描线经过时熄灭",
+    "扫描：3px 白芯 + 香槟金辉光竖线，身后 300px 窗口内渐隐暖光，前沿正前方的线框先被预照明；84–92f 留一拍喘息再扫",
+    "时间表：分组错峰描线 8–80f（外框 → 侧栏逐项 → 页头 → 主数字/KPI → 图表）→ 92–124f 扫描 → 静止；全程 1.000→1.03 极缓推进"
   ],
   "issuesEn": [
-    "The wireframe was hand-laid for the old grey skeleton, so it no longer matched the upgraded FakeDashboard's sidebar, top bar and card internals; elements jumped as the scan passed",
-    "Strokes were #8f8f8d 2.5px grey lines, reading as grey placeholders rather than a blueprint",
-    "Flat #ececea background; the 20f opening hold was blank",
-    "No exported duration"
+    "Both the wireframe and the solid UI were generic dashboards full of tiny text, so after materialising there was no hero and nothing to read",
+    "The first 20f were an empty light-grey background, and much of the frame stayed blank for a long time during the draw-on",
+    "Light grey paper, grey lines and white cards made the blueprint read as a print preview, and the orange scan line looked dirty on the light background",
+    "The wireframe was hand-positioned to approximate the layout and text was just placeholder bars, so details didn't line up with the solid UI as the scan passed"
   ],
   "changesEn": [
-    "Wireframe rebuilt piece by piece on the new FakeDashboard A geometry: sidebar logo/nav/projects/usage card, top-bar breadcrumb/segmented control/search/avatar, each card's header/big number/footer and its own chart form (area line, page bars, 14 bars, progress rows, heatmap)",
-    "Blueprint look: cool slate-blue #6c7894 lines (1.6px outlines, 1.25px details), a faint 24px dot grid that fades in during the hold, and card crop marks",
-    "The scan line gets a vertical gradient core and a 260px fading warm trail as the 'just developed' afterglow; line and clip front still share one scan value",
-    "Added WIREFRAME_DRAW_ON_DURATION = 150; draw-on groups and scan timing are unchanged; subtle vignette and grain"
+    "Graphite look (near-monochrome dark, champagne gold as the only accent); the subject is a 1600×880 window of a fictional \"Tessera\" revenue page: a 128px $4.82M hero, a 60px page title, three 52px KPIs and a gold area chart filling the lower half",
+    "Wireframe and solid layers share one geometry table for boxes, text and chart; boxes are drawn with pathLength + dashoffset, and text is outlined type at the same position, written left to right like a pen, so nothing jumps when the scan passes",
+    "Blueprint language: pencil-grey hairlines, a 24px dot grid, crop marks at the window corners (present from frame one) and champagne dimension callouts 1600 / 880 / 56 that switch off as the scan line passes",
+    "Scan: a 3px white core with champagne glow, a 300px fading warm afterglow inside the window, and a pre-light on the wireframe just ahead of the front; an 8f breath (84–92f) before the scan starts",
+    "Timeline: grouped, staggered draw-on 8–80f (frame → sidebar items → header → hero/KPIs → chart), scan 92–124f, then stillness; a very slow 1.000→1.03 push throughout"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

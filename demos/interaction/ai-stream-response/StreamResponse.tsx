@@ -1,109 +1,107 @@
+// ai-stream-response — AI 响应面板先落一句可读结论，再让带状态图标的证据行逐条汇入，最后统一收束成完成态。
+//
+// 第二轮重设计（暖纸 · 编辑部式 AI 回答）：
+// - look = paper（暖白纸 · 墨 · 朱红，墨绿做完成态）。虚构研究助手「Wren」回答一个真实感的业务问题；
+//   面板 1440×888 正视居中（信息密集镜头正视，Q6），为镜头设计：问题 34px、结论 50px 衬线大字、证据行 32px。
+// - 结论先到：结论句按三个语义块（"Conversion fell 3.2 pts" / "after release 4.18" / "broke one-tap pay on mobile web."）
+//   依次由虚到实升起，落定后朱红记号笔在关键短语「release 4.18」下划出一道——观众先读懂答案。
+// - 证据随后：6 条证据行自下 20px + blur 6px 逐行汇入，间隔 10→6f 逐渐收紧（工作在加速，但仍可数）；
+//   行体先停，状态图标晚 3f 由 pending 虚环 → running 朱红缺口弧 → done 墨绿实心勾（过冲 + 勾线描出），
+//   正在处理的行底色微暖（状态，不是扫光）；页脚进度条与计数随每个 done 前进。
+// - 完成收束：末图标 done 后面板只做一次墨绿描边脉冲（Q4：面板级一次，不逐行发光），状态 chip 由
+//   Thinking（呼吸点）换成 Done · 38s，页脚换成「Analysis complete」。相机全程 1.04 → 1.0 微退。
+// - 亮场的层次：面板身后一抹暖光 + 一张错后 26px、缩到 0.955 的底页（纸堆厚度，晚 3f 跟随落定）。
+//
+// 时间表（30fps，共 150f）：
+//   0–16    面板上浮落定（snappy），问题与 Thinking chip 已在
+//   14–44   结论：眉题 14f → 三个语义块 18 / 25 / 32f 起各 12f；记号笔 42–54f
+//   56–108  证据行：cue = 56 + [0,10,19,27,34,40]，每行 12f；图标晚 3f、8f 完成
+//   108–122 完成：面板描边脉冲 108–120f、chip / 页脚换态 110f 起
+//   0–120   相机 1.04 → 1.0（out）；122–150 全画面静止 28f
 import React from 'react';
-import {AbsoluteFill, Easing, Img, interpolate, useCurrentFrame} from 'remotion';
-import {EASE, FONT, Grain, Vignette, ramp, tracking} from '../../_fixtures/Polish';
-import backplate from './agent-stream.jpg';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, SERIF, Stage, alpha, type } from '../../_fixtures/Look';
 
-// 整段时长：摘要 18 → 7 行证据 42–93 → 末图标 done ≈104 → 完成脉冲 110–120 → 静止 30f
 export const STREAM_RESPONSE_DURATION = 150;
 
-// 行节拍：cue[i]=42+[0,11,21,30,38,45,51]，间隔 11→6f 逐渐收紧（工作加速，但仍可数）
-const ROW_CUES = [42, 53, 63, 72, 80, 87, 93];
-const ROWS = [
-  ['Indexed the workspace', '128 files'],
-  ['Mapped the authentication flow', '12 modules'],
-  ['Checked recent error traces', 'No blockers'],
-  ['Matched API contracts to handlers', '24 routes'],
-  ['Verified permission boundaries', '6 roles'],
-  ['Cross-checked release notes', '3 changes'],
-  ['Prepared an implementation plan', 'Ready'],
-] as const;
+const L = LOOKS.paper;
+const RED = L.accent; // 朱红：助手身份 + 关键短语 + running
+const GREEN = L.accent2; // 墨绿：done / 完成态
 
-const SUMMARY_CUE = 18; // 摘要语义块揭示起点（12f 软 wipe）
-const STATUS_LAG = 3; // 状态图标比行体晚 3f（拖拽层级）
+const SUMMARY_CUE = 18;
+const CHUNK_GAP = 7;
+const ROW_CUES = [56, 66, 75, 83, 90, 96]; // 间隔 10→6f 逐渐收紧
+const STATUS_LAG = 3; // 图标比行体晚 3f（拖拽层级）
 const STATUS_DUR = 8; // pending → running → done
-const PULSE = 110; // 末图标 done 后 6f：面板级一次完成脉冲（10f）
+const PULSE = 108; // 末图标 done ≈ 107 后的面板级完成脉冲
 
-const LIME = '184,243,106'; // 唯一强调色（完成态）
-const INK1 = '#eef0f2';
-const INK2 = '#9aa1a9';
-const INK3 = '#646b73';
+const ROWS: [string, string][] = [
+  ['Compared 14 days of checkout funnels', '2.1M events'],
+  ['Isolated the drop to mobile web sessions', '−71% pay rate'],
+  ['Matched the timing to release 4.18', 'Tue 14:02'],
+  ['Found wallet-token errors in the logs', '2,418 errors'],
+  ['Confirmed the fix on staging', 'PR #3127'],
+  ['Drafted a rollback plan', 'Ready'],
+];
+const CHUNKS = ['Conversion fell 3.2 pts ', 'after release 4.18 ', 'broke one-tap pay on mobile web.'];
 
-const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
-const rowEase = Easing.bezier(0.2, 0.75, 0.25, 1); // 卡片参数表：行入场曲线
-
+const PANEL = { x: 240, y: 96, w: 1440, h: 888 };
 const ROW_H = 58;
-const ROW_GAP = 10;
+const ROW_GAP = 8;
+const rowEase = bezier(0.2, 0.75, 0.25, 1);
 
-const CheckPath: React.FC<{draw: number; size: number; stroke: number}> = ({draw, size, stroke}) => (
+const Check: React.FC<{ draw: number; size: number; color?: string; stroke?: number }> = ({ draw, size, color = '#ffffff', stroke = 2.4 }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    <path
-      d="M3.6 8.4 6.7 11.2 12.4 5.1"
-      stroke="#132008" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"
-      pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw}
-    />
+    <path d="M3.6 8.4 6.7 11.2 12.4 5.1" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"
+      pathLength={1} strokeDasharray={1} strokeDashoffset={1 - draw} />
   </svg>
 );
 
-// 状态回执：pending 虚环 → running 缺口弧（旋转）→ done 实心勾（轻过冲 + 勾线描出）
-const StatusIcon: React.FC<{t: number; frame: number}> = ({t, frame}) => {
-  const pending = interpolate(t, [0, 0.3], [1, 0], clamp);
-  const running = interpolate(t, [0, 0.25, 0.6, 0.78], [0, 1, 1, 0], clamp);
-  const done = interpolate(t, [0.55, 1], [0, 1], clamp);
-  const pop = interpolate(EASE.overshoot(interpolate(t, [0.55, 1], [0, 1], clamp)), [0, 1], [0.6, 1]);
-  const draw = EASE.out(interpolate(t, [0.7, 1], [0, 1], clamp));
-  const spin = frame * 14 + t * 220;
+// 状态回执：pending 虚环 → running 朱红缺口弧（旋转）→ done 墨绿实心勾（轻过冲 + 勾线描出）
+const StatusIcon: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
+  const pending = 1 - ramp(t, 0, 0.3, EASE.linear);
+  const running = Math.min(ramp(t, 0, 0.25, EASE.linear), 1 - ramp(t, 0.6, 0.18, EASE.linear));
+  const done = ramp(t, 0.55, 0.45, EASE.linear);
+  const pop = mix(0.55, 1, EASE.overshoot(ramp(t, 0.55, 0.45, EASE.linear)));
+  const draw = ramp(t, 0.72, 0.28, EASE.out);
+  const spin = frame * 16 + t * 240;
   return (
-    <div style={{position: 'relative', width: 28, height: 28, flex: '0 0 auto'}}>
-      <div style={{
-        position: 'absolute', inset: 3, borderRadius: 99, border: '1.5px dashed rgba(170,178,188,.38)',
-        opacity: pending * (t > 0 ? 1 : 0.9),
-      }}/>
-      <svg width={28} height={28} viewBox="0 0 28 28" style={{position: 'absolute', inset: 0, opacity: running, transform: `rotate(${spin}deg)`}}>
-        <circle cx={14} cy={14} r={10.5} fill="none" stroke="rgba(255,255,255,.10)" strokeWidth={2}/>
-        <circle cx={14} cy={14} r={10.5} fill="none" stroke={`rgb(${LIME})`} strokeWidth={2} strokeLinecap="round"
-          strokeDasharray="20 66"/>
+    <div style={{ position: 'relative', width: 36, height: 36, flex: '0 0 auto' }}>
+      <div style={{ position: 'absolute', inset: 4, borderRadius: 99, border: `2px dashed ${alpha(L.ink, 0.22)}`, opacity: pending }} />
+      <svg width={36} height={36} viewBox="0 0 36 36" style={{ position: 'absolute', inset: 0, opacity: running, transform: `rotate(${spin}deg)` }}>
+        <circle cx={18} cy={18} r={13} fill="none" stroke={alpha(L.ink, 0.1)} strokeWidth={2.5} />
+        <circle cx={18} cy={18} r={13} fill="none" stroke={RED} strokeWidth={2.5} strokeLinecap="round" strokeDasharray="22 60" />
       </svg>
       <div style={{
-        position: 'absolute', inset: 1, borderRadius: 99, opacity: done, transform: `scale(${pop})`,
-        background: `linear-gradient(180deg, #c9f78a, rgb(${LIME}) 60%, #a2df55)`,
-        boxShadow: `inset 0 1px 0 rgba(255,255,255,.45), 0 0 0 1px rgba(${LIME},.25), 0 4px 10px -2px rgba(${LIME},.25)`,
-        display: 'grid', placeItems: 'center',
+        position: 'absolute', inset: 2, borderRadius: 99, opacity: done, transform: `scale(${pop.toFixed(3)})`,
+        background: `linear-gradient(180deg, #2c7a62, ${GREEN})`, display: 'grid', placeItems: 'center',
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 4px 10px -3px ${alpha(GREEN, 0.5)}`,
       }}>
-        <CheckPath draw={draw} size={17} stroke={2.2}/>
+        <Check draw={draw} size={20} />
       </div>
     </div>
   );
 };
 
-const EvidenceRow: React.FC<{cue: number; title: string; meta: string; index: number}> = ({cue, title, meta, index}) => {
-  const frame = useCurrentFrame();
-  const body = interpolate(frame, [cue, cue + 12], [0, 1], {...clamp, easing: rowEase});
-  const status = interpolate(frame, [cue + STATUS_LAG, cue + STATUS_LAG + STATUS_DUR], [0, 1], clamp);
-  // 刚到的行底色略亮（"正在处理"），done 后 10f 收回到静置底色——是状态，不是扫光
-  const active = interpolate(frame, [cue, cue + 6, cue + STATUS_LAG + STATUS_DUR, cue + STATUS_LAG + STATUS_DUR + 10], [0, 1, 1, 0], clamp);
-  const doneMeta = interpolate(status, [0.7, 1], [0, 1], clamp);
+const EvidenceRow: React.FC<{ cue: number; title: string; meta: string; index: number; frame: number }> = ({ cue, title, meta, index, frame }) => {
+  const body = ramp(frame, cue, 12, rowEase);
+  const status = ramp(frame, cue + STATUS_LAG, STATUS_DUR, EASE.linear);
+  const doneAt = cue + STATUS_LAG + STATUS_DUR;
+  // 正在处理：行底色微暖（状态），done 后 10f 收回
+  const active = Math.min(ramp(frame, cue, 6, EASE.out), 1 - ramp(frame, doneAt, 10, EASE.out));
+  const doneMeta = ramp(status, 0.7, 0.3, EASE.linear);
   return (
     <div style={{
-      position: 'absolute', left: 0, right: 0, top: index * (ROW_H + ROW_GAP), height: ROW_H,
-      borderRadius: 14, boxSizing: 'border-box',
-      border: `1px solid rgba(255,255,255,${0.06 + 0.04 * active})`,
-      background: `linear-gradient(180deg, rgba(255,255,255,${0.035 + 0.025 * active}), rgba(255,255,255,${0.018 + 0.015 * active}))`,
-      boxShadow: 'inset 0 1px 0 rgba(255,255,255,.04)',
-      display: 'flex', alignItems: 'center', padding: '0 22px 0 18px', gap: 16,
-      opacity: body,
-      transform: `translateY(${18 * (1 - body)}px)`,
-      filter: body < 0.999 ? `blur(${(6 * (1 - body)).toFixed(2)}px)` : undefined,
+      position: 'absolute', left: 0, right: 0, top: index * (ROW_H + ROW_GAP), height: ROW_H, borderRadius: 14,
+      display: 'flex', alignItems: 'center', gap: 22, padding: '0 22px', boxSizing: 'border-box',
+      background: alpha('#f3e7d6', 0.85 * active),
+      opacity: body, transform: `translateY(${(20 * (1 - body)).toFixed(2)}px)`,
+      filter: body < 0.995 ? `blur(${(6 * (1 - body)).toFixed(2)}px)` : undefined,
     }}>
-      <StatusIcon t={status} frame={frame}/>
-      <div style={{fontSize: 24, fontWeight: 500, color: INK1, letterSpacing: tracking(24), flex: 1}}>{title}</div>
-      <div style={{
-        fontSize: 18, fontWeight: 560, fontVariantNumeric: 'tabular-nums', letterSpacing: '0.005em',
-        padding: '5px 12px', borderRadius: 99,
-        color: `rgba(${LIME},${0.5 + 0.45 * doneMeta})`,
-        background: `rgba(${LIME},${0.03 + 0.06 * doneMeta})`,
-        border: `1px solid rgba(${LIME},${0.06 + 0.12 * doneMeta})`,
-        filter: doneMeta < 1 ? `saturate(${doneMeta})` : undefined,
-      }}>{meta}</div>
+      <StatusIcon t={status} frame={frame} />
+      <div style={{ ...type(32, 520), color: L.ink, flex: 1 }}>{title}</div>
+      <div style={{ ...type(28, 500, { mono: true }), color: doneMeta > 0.5 ? L.ink2 : L.ink3, opacity: 0.55 + 0.45 * doneMeta }}>{meta}</div>
     </div>
   );
 };
@@ -111,184 +109,138 @@ const EvidenceRow: React.FC<{cue: number; title: string; meta: string; index: nu
 export const StreamResponse: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // 面板入场：上浮 + 微缩放，强 ease-out；相机 1.04→1.0 微退（背景比面板退得多 = 轻视差）
-  const panelIn = ramp(frame, 0, 18, EASE.snappy);
-  const cam = ramp(frame, 0, 110, EASE.out);
-  const plateScale = 1.075 - 0.075 * cam;
-  const panelScale = 1.04 - 0.04 * cam;
+  // 面板入场 + 相机微退
+  const panelIn = ramp(frame, 0, 16, EASE.snappy);
+  const cam = 1.04 - 0.04 * ramp(frame, 0, 120, EASE.out);
 
-  // 摘要：语义块软边 wipe（遮罩带 18% 羽化），附句晚 5f 跟随
-  const summary = ramp(frame, SUMMARY_CUE, 12, EASE.out);
-  const summarySub = ramp(frame, SUMMARY_CUE + 5, 12, EASE.out);
-  const wipe = summary * 118;
+  // 结论：眉题 → 三个语义块（由虚到实升起）→ 记号笔
+  const eyebrow = ramp(frame, 14, 10, EASE.out);
+  const marker = ramp(frame, 42, 12, EASE.swift);
 
-  // 完成：末图标 done ≈104，6f 后面板级脉冲 0.25→0.55→0.25（共 10f），然后全画面静止
-  const pulse = interpolate(frame, [PULSE - 6, PULSE, PULSE + 5, PULSE + 10], [0, 0.25, 0.55, 0.25], clamp);
-  const complete = ramp(frame, PULSE, 12, EASE.snappy);
+  // 完成：面板描边一次脉冲（墨绿），chip 与页脚换态
+  const pulse = Math.sin(ramp(frame, PULSE, 12, EASE.linear) * Math.PI);
+  const complete = ramp(frame, PULSE + 2, 12, EASE.snappy);
 
-  // 底部进度：每行 done 时计数 +1，进度条跟随（out 缓动，不跳格）
+  // 页脚进度：每行 done 时 +1，进度条 out 缓动跟随
   const doneAt = (i: number) => ROW_CUES[i] + STATUS_LAG + STATUS_DUR * 0.7;
   const doneCount = ROW_CUES.reduce((n, _, i) => n + (frame >= doneAt(i) ? 1 : 0), 0);
   const progress = ROW_CUES.reduce((s, _, i) => s + ramp(frame, doneAt(i) - 2, 8, EASE.out), 0) / ROWS.length;
+  const footIn = ramp(frame, 48, 10, EASE.out);
 
   return (
-    <AbsoluteFill style={{background: '#08090b', fontFamily: FONT.sans, overflow: 'hidden'}}>
-      {/* 后景：参考截图只做"纹理"——重虚化、压暗、去饱和，读不出字 */}
-      <AbsoluteFill style={{transform: `scale(${plateScale})`}}>
-        <Img src={backplate} style={{
-          width: '100%', height: '100%', objectFit: 'cover',
-          filter: 'brightness(.42) saturate(.5) blur(9px)', opacity: .75,
-        }}/>
-      </AbsoluteFill>
-      <AbsoluteFill style={{background: 'radial-gradient(ellipse 60% 55% at 50% 46%, rgba(8,10,12,.15) 0%, rgba(6,7,9,.78) 100%)'}}/>
-      {/* 面板身后一抹极淡的强调色余光 */}
-      <AbsoluteFill style={{
-        background: `radial-gradient(ellipse 38% 34% at 50% 52%, rgba(${LIME},${0.035 + 0.05 * pulse}) 0%, rgba(${LIME},0) 70%)`,
-      }}/>
-
-      <div style={{
-        position: 'absolute', left: 344, top: 72, width: 1232, height: 936, boxSizing: 'border-box',
-        borderRadius: 30, overflow: 'hidden',
-        background: 'linear-gradient(165deg, rgba(28,31,35,.985) 0%, rgba(17,19,22,.99) 45%, rgba(13,15,17,.995) 100%)',
-        border: `1px solid rgba(255,255,255,${0.08 * (1 - pulse * 1.4)})`,
-        boxShadow: [
-          `0 0 0 1px rgba(${LIME},${pulse})`,
-          `0 0 ${36 + 40 * pulse}px rgba(${LIME},${pulse * 0.22})`,
-          'inset 0 1px 0 rgba(255,255,255,.07)',
-          '0 2px 6px rgba(0,0,0,.4)',
-          '0 50px 120px -20px rgba(0,0,0,.75)',
-        ].join(', '),
-        opacity: panelIn,
-        transform: `translateY(${16 * (1 - panelIn)}px) scale(${(0.985 + 0.015 * panelIn) * panelScale})`,
-      }}>
-        {/* 顶栏 */}
+    <AbsoluteFill style={{ overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.02 }} fill={{ x: 0.85, y: 0.95 }} />
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: '960px 520px' }}>
+        {/* 面板身后：一抹暖光 + 一张错后的底页（纸堆的厚度，给亮场一层前后景） */}
+        <div style={{ position: 'absolute', left: PANEL.x - 200, top: PANEL.y - 100, width: PANEL.w + 400, height: PANEL.h + 260, background: `radial-gradient(ellipse 50% 50% at 50% 55%, ${alpha('#f2b48a', 0.22)}, ${alpha('#f2b48a', 0)} 70%)`, opacity: panelIn }} />
         <div style={{
-          height: 84, display: 'flex', alignItems: 'center', padding: '0 34px',
-          borderBottom: '1px solid rgba(255,255,255,.06)', background: 'rgba(255,255,255,.012)',
+          position: 'absolute', left: PANEL.x, top: PANEL.y, width: PANEL.w, height: PANEL.h, borderRadius: 32,
+          background: '#f3ebdf', boxShadow: `inset 0 0 0 1px ${alpha(L.ink, 0.06)}, 0 30px 60px -30px ${alpha(L.shadow, 0.3)}`,
+          opacity: panelIn * 0.9, transform: `translateY(${(26 + 30 * (1 - ramp(frame, 3, 18, EASE.snappy))).toFixed(2)}px) scale(0.955)`,
+        }} />
+        <div style={{
+          position: 'absolute', left: PANEL.x, top: PANEL.y, width: PANEL.w, height: PANEL.h, borderRadius: 32, overflow: 'hidden',
+          background: 'linear-gradient(180deg, #fffdf9 0%, #fdf9f2 100%)',
+          boxShadow: [
+            `0 0 0 ${(1 + 1.5 * pulse).toFixed(2)}px ${pulse > 0.01 ? alpha(GREEN, 0.15 + 0.5 * pulse) : alpha(L.ink, 0.08)}`,
+            `0 0 ${(40 * pulse).toFixed(1)}px ${alpha(GREEN, 0.18 * pulse)}`,
+            'inset 0 1px 0 rgba(255,255,255,1)',
+            `0 2px 4px ${alpha(L.shadow, 0.06)}`,
+            `0 40px 90px -30px ${alpha(L.shadow, 0.32)}`,
+          ].join(', '),
+          opacity: panelIn, transform: `translateY(${(30 * (1 - panelIn)).toFixed(2)}px) scale(${(0.985 + 0.015 * panelIn).toFixed(4)})`,
         }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 10, display: 'grid', placeItems: 'center',
-            background: 'linear-gradient(180deg, #f4f6f7, #d9dee2)', color: '#15191b', fontWeight: 760, fontSize: 18,
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,.9), 0 2px 6px rgba(0,0,0,.35)',
-          }}>A</div>
-          <div style={{marginLeft: 14, fontSize: 24, fontWeight: 620, color: INK1, letterSpacing: tracking(24)}}>Ask Atlas</div>
-          <div style={{marginLeft: 12, fontSize: 16, color: INK3, letterSpacing: '0.01em'}}>Workspace agent</div>
-          {/* 运行态 chip：Working（呼吸点）→ Complete（勾），跟随完成态切换 */}
-          <div style={{
-            marginLeft: 'auto', position: 'relative', height: 36, width: 148, borderRadius: 99,
-            border: `1px solid rgba(${complete > 0.5 ? LIME : '255,255,255'},${complete > 0.5 ? 0.22 : 0.08})`,
-            background: `rgba(${LIME},${0.02 + 0.06 * complete})`,
-          }}>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, opacity: 1 - complete, fontSize: 16, color: INK2, fontWeight: 520}}>
-              <span style={{width: 8, height: 8, borderRadius: 99, background: `rgb(${LIME})`, opacity: 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(frame / 4.5))}}/>
-              Working
-            </div>
-            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: complete, transform: `translateY(${4 * (1 - complete)}px)`, fontSize: 16, color: `rgb(${LIME})`, fontWeight: 600}}>
-              <svg width={14} height={14} viewBox="0 0 16 16" fill="none"><path d="M3.4 8.3 6.6 11l6-6" stroke={`rgb(${LIME})`} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round"/></svg>
-              Complete
-            </div>
-          </div>
-        </div>
-
-        <div style={{padding: '28px 38px 0'}}>
-          {/* 用户提问 */}
-          <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+          {/* 页头：用户问题 + 状态 chip */}
+          <div style={{ height: 112, display: 'flex', alignItems: 'center', padding: '0 44px', gap: 20, borderBottom: `1px solid ${L.line}` }}>
             <div style={{
-              width: 34, height: 34, borderRadius: 99, flex: 'none', display: 'grid', placeItems: 'center',
-              background: 'linear-gradient(180deg, #5d6470, #3c424b)', color: '#e9ecef', fontSize: 14, fontWeight: 650,
-            }}>MK</div>
-            <div style={{
-              flex: 1, height: 52, borderRadius: 14, display: 'flex', alignItems: 'center', padding: '0 20px',
-              background: 'rgba(255,255,255,.045)', border: '1px solid rgba(255,255,255,.05)',
-              color: '#c3c8cd', fontSize: 20, letterSpacing: tracking(20),
+              width: 52, height: 52, borderRadius: 99, display: 'grid', placeItems: 'center', flex: 'none',
+              background: 'linear-gradient(180deg, #e9dfd0, #d9ccb8)', color: L.ink2, ...type(22, 700),
+            }}>JL</div>
+            <div style={{ ...type(34, 500), color: L.ink2 }}>Why did checkout conversion drop last week?</div>
+            <div style={{ marginLeft: 'auto', position: 'relative', height: 48, width: 210, borderRadius: 99,
+              background: complete > 0.5 ? alpha(GREEN, 0.1) : alpha(L.ink, 0.045),
+              boxShadow: `inset 0 0 0 1px ${complete > 0.5 ? alpha(GREEN, 0.3) : alpha(L.ink, 0.08)}`,
             }}>
-              Review this codebase and identify the safest implementation path
-            </div>
-          </div>
-
-          {/* 摘要：结论先到 */}
-          <div style={{
-            marginTop: 22, padding: '18px 22px 20px', borderRadius: 16, position: 'relative',
-            background: `rgba(${LIME},${0.04 * pulse})`,
-          }}>
-            <div style={{
-              opacity: summary,
-              transform: `translateY(${10 * (1 - summary)}px)`,
-              WebkitMaskImage: `linear-gradient(90deg, #000 ${wipe - 18}%, transparent ${wipe}%)`,
-              maskImage: `linear-gradient(90deg, #000 ${wipe - 18}%, transparent ${wipe}%)`,
-            }}>
-              <div style={{display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12}}>
-                <svg width={16} height={16} viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1.5l1.6 4.2 4.4.3-3.4 2.8 1.1 4.3L8 10.7 4.3 13.1l1.1-4.3L2 6l4.4-.3z" fill={`rgba(${LIME},.85)`}/>
-                </svg>
-                <span style={{color: INK2, fontSize: 15, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.14em'}}>Result summary</span>
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, opacity: 1 - complete, ...type(28, 600), color: L.ink2 }}>
+                <span style={{ width: 10, height: 10, borderRadius: 99, background: RED, opacity: 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(frame / 4.5)) }} />
+                Thinking
               </div>
-              <div style={{color: '#f6f7f8', fontSize: 34, fontWeight: 620, lineHeight: 1.22, letterSpacing: tracking(34)}}>
-                The codebase is ready for a focused, low-risk implementation.
+              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, opacity: complete, transform: `translateY(${(5 * (1 - complete)).toFixed(2)}px)`, ...type(28, 650), color: GREEN }}>
+                <Check draw={complete} size={20} color={GREEN} stroke={2.6} />
+                Done · 38s
               </div>
             </div>
-            <div style={{
-              marginTop: 10, color: INK2, fontSize: 19, lineHeight: 1.4, letterSpacing: tracking(19),
-              opacity: summarySub, transform: `translateY(${8 * (1 - summarySub)}px)`,
-            }}>
-              Auth, API and permission layers agree; no blocking errors in the last 7 days.
-            </div>
           </div>
 
-          <div style={{height: 1, margin: '16px 0 18px', background: 'linear-gradient(90deg, rgba(255,255,255,.09), rgba(255,255,255,.04))'}}/>
-
-          {/* 证据行：真实槽位，逐条汇入 */}
-          <div style={{position: 'relative', height: ROWS.length * (ROW_H + ROW_GAP) - ROW_GAP}}>
-            {ROWS.map(([title, meta], index) => (
-              <EvidenceRow key={title} cue={ROW_CUES[index]} title={title} meta={meta} index={index}/>
-            ))}
-          </div>
-
-          {/* 底部：进度计数 → 完成态 */}
-          <div style={{marginTop: 24, position: 'relative', height: 66}}>
-            <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 3, borderRadius: 3, background: 'rgba(255,255,255,.06)', overflow: 'hidden'}}>
+          <div style={{ padding: '34px 44px 0' }}>
+            {/* 结论：眉题 + 衬线大字（语义块揭示）+ 记号笔 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, opacity: eyebrow, transform: `translateY(${(8 * (1 - eyebrow)).toFixed(2)}px)` }}>
               <div style={{
-                width: `${progress * 100}%`, height: '100%', borderRadius: 3,
-                background: `linear-gradient(90deg, rgba(${LIME},.55), rgb(${LIME}))`,
-              }}/>
-            </div>
-            <div style={{position: 'absolute', left: 0, right: 0, top: 22, display: 'flex', alignItems: 'center', height: 32}}>
-              <div style={{position: 'relative', flex: 1, height: 32}}>
-                <div style={{
-                  position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', gap: 10,
-                  opacity: frame < ROW_CUES[0] ? ramp(frame, 30, 10) : 1 - complete,
-                  color: INK2, fontSize: 19,
-                }}>
-                  Running checks
-                </div>
-                <div style={{
-                  position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', gap: 12,
-                  opacity: complete, transform: `translateY(${6 * (1 - complete)}px)`,
-                }}>
-                  <div style={{
-                    width: 26, height: 26, borderRadius: 99, display: 'grid', placeItems: 'center',
-                    background: `rgb(${LIME})`, transform: `scale(${interpolate(EASE.overshoot(complete), [0, 1], [0.6, 1])})`,
-                  }}>
-                    <CheckPath draw={EASE.out(ramp(frame, PULSE + 3, 8, EASE.linear))} size={16} stroke={2.3}/>
-                  </div>
-                  <span style={{color: '#e2ecd6', fontSize: 21, fontWeight: 620, letterSpacing: tracking(21)}}>Analysis complete</span>
-                  <span style={{color: INK3, fontSize: 18}}>ready to build</span>
-                </div>
-              </div>
-              <div style={{
-                fontSize: 19, fontWeight: 560, fontVariantNumeric: 'tabular-nums',
-                color: doneCount === ROWS.length ? `rgb(${LIME})` : INK2,
-                opacity: ramp(frame, 30, 10),
+                width: 34, height: 34, borderRadius: 10, display: 'grid', placeItems: 'center',
+                background: `linear-gradient(160deg, #f0624b, ${RED})`, boxShadow: `0 4px 10px -4px ${alpha(RED, 0.6)}`,
               }}>
-                {doneCount}/{ROWS.length} checks
+                <svg width={18} height={18} viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.2 4.4.3-3.4 2.8 1.1 4.3L8 10.7 4.3 13.1l1.1-4.3L2 6l4.4-.3z" fill="#fffaf3" /></svg>
+              </div>
+              <div style={{ ...type(22, 700, { caps: true }), letterSpacing: '0.2em', color: L.ink3 }}>Wren · Answer</div>
+            </div>
+            <div style={{ marginTop: 22, fontFamily: SERIF, fontSize: 54, fontWeight: 600, lineHeight: 1.16, letterSpacing: '-0.015em', color: L.ink, maxWidth: 1320 }}>
+              {CHUNKS.map((c, k) => {
+                const p = ramp(frame, SUMMARY_CUE + k * CHUNK_GAP, 12, EASE.out);
+                const key = k === 1;
+                return (
+                  <span key={k} style={{
+                    display: 'inline', opacity: p, filter: p < 0.995 ? `blur(${(8 * (1 - p)).toFixed(2)}px)` : undefined,
+                    position: 'relative',
+                  }}>
+                    {key ? (
+                      <span style={{ position: 'relative', display: 'inline-block', transform: `translateY(${(14 * (1 - p)).toFixed(2)}px)` }}>
+                        {/* 朱红记号笔：从左往右划在短语下沿 */}
+                        <span style={{
+                          position: 'absolute', left: -4, right: 8, bottom: 6, height: 16, borderRadius: 4,
+                          background: alpha(RED, 0.28), transformOrigin: 'left center', transform: `scaleX(${marker.toFixed(4)}) skewX(-8deg)`,
+                        }} />
+                        <span style={{ position: 'relative', color: key && marker > 0.5 ? '#b22a17' : L.ink }}>{c}</span>
+                      </span>
+                    ) : (
+                      <span style={{ display: 'inline-block', transform: `translateY(${(14 * (1 - p)).toFixed(2)}px)`, whiteSpace: 'pre-wrap' }}>{c}</span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+
+            <div style={{ height: 1, margin: '26px 0 16px', background: L.line }} />
+
+            {/* 证据行：真实槽位，逐条汇入 */}
+            <div style={{ position: 'relative', height: ROWS.length * (ROW_H + ROW_GAP) - ROW_GAP, margin: '0 -22px' }}>
+              {ROWS.map(([title, meta], i) => (
+                <EvidenceRow key={title} cue={ROW_CUES[i]} title={title} meta={meta} index={i} frame={frame} />
+              ))}
+            </div>
+
+            {/* 页脚：进度 → 完成 */}
+            <div style={{ position: 'relative', marginTop: 22, height: 64, opacity: footIn }}>
+              <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 4, borderRadius: 4, background: alpha(L.ink, 0.07), overflow: 'hidden' }}>
+                <div style={{ width: `${(progress * 100).toFixed(2)}%`, height: '100%', borderRadius: 4, background: `linear-gradient(90deg, ${alpha(GREEN, 0.6)}, ${GREEN})` }} />
+              </div>
+              <div style={{ position: 'absolute', left: 0, right: 0, top: 20, height: 40, display: 'flex', alignItems: 'center' }}>
+                <div style={{ position: 'relative', flex: 1, height: 40 }}>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', opacity: 1 - complete, ...type(30, 500), color: L.ink3 }}>
+                    Running checks…
+                  </div>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', gap: 14, opacity: complete, transform: `translateY(${(6 * (1 - complete)).toFixed(2)}px)` }}>
+                    <span style={{ ...type(30, 650), color: GREEN }}>Analysis complete</span>
+                    <span style={{ ...type(30, 450), color: L.ink3 }}>— rollback plan ready to review</span>
+                  </div>
+                </div>
+                <div style={{ ...type(30, 600, { mono: true }), color: doneCount === ROWS.length ? GREEN : L.ink2 }}>
+                  {doneCount}/{ROWS.length}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <Vignette strength={0.42} inner={0.55} color="#030405"/>
-      <Grain opacity={0.07} blend="soft-light"/>
     </AbsoluteFill>
   );
 };

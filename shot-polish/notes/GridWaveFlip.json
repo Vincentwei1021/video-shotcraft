@@ -1,28 +1,31 @@
 {
   "stem": "GridWaveFlip",
   "issues": [
-    "渲染穿帮：依赖 backface-visibility，Chromium 在首行/首列把灰背也剔掉，开场五张卡“隐身”",
-    "perspective 挂在 grid 上、隔了一层未 preserve-3d 的格子，翻转实际是正交的，没有纵深",
-    "灰背是平涂灰块 + 一个圆点；阴影挂在旋转体上跟着卡面一起转",
-    "翻面过程没有受光变化；工作台按 150f 渲染，比卡片设定的 130f 多出死帧"
+    "九张灰色背面就是灰块 + 圆点，开场 20f 画面像加载失败的占位",
+    "正面是满屏小字的通用 dashboard 卡，翻完读不出任何信息，翻面没有\"揭晓\"的回报",
+    "浅灰底 + 灰卡 + 白卡，全程没有一个颜色和视觉重心",
+    "翻转只有 ease-in-out，没有预备，九张卡像同一个机械动作复制九遍"
   ],
   "changes": [
-    "按角度显式只画朝外那面（<90° 灰背、≥90° 正面），确定性无剔除问题",
-    "每格自带 perspective 2400px、perspectiveOrigin 换算到整墙中心，整墙真正共享一个消失点",
-    "灰背改为哑光纸感卡（微渐变、斜纹、压印标记、发丝线）；阴影改为格位下方独立地面影，随翻转抬起变大变虚、落定收紧",
-    "翻面按 cos(角度) 压暗，最薄处高光线保留；补 GRID_WAVE_FLIP_DURATION = 130，波前与尾张过冲参数不变"
+    "look 换成 porcelain（冷白 · 钴蓝）：九张背面拼成一整块钴蓝海报，290px 粗黑体 Plan. / Build. / Ship. 左中右错落、被格缝切开，第 1 帧就是一张完整海报",
+    "正面是虚构产品「Oriel」的九个功能卡，按海报三行分组（PLAN / BUILD / SHIP）：64px 钴蓝图标块 + 50px 标题 + 32px 一句话；墙心一张钴蓝实底主角卡做收尾重心",
+    "12–28f 一道斜向柔光沿对角线扫过海报，预示波前方向（整墙只这一次）",
+    "翻转曲线改为 bezier(0.5,-0.22,0.3,1)：先向后微仰 ~6° 再翻过去；对角波前 (row+col)×6f、每张 16f，只有尾张冲到 192° 再弹回",
+    "保留共享消失点 / 按角度选面 / cos 压暗 / 90° 高光线 / 独立地面影，改为两层带色相软阴影；整墙全程 1.000→1.025 极缓推进"
   ],
   "issuesEn": [
-    "Render bug: relying on backface-visibility, Chromium culled the grey backs in the first row and column, so five cards were invisible at the start",
-    "Perspective sat on the grid with a non-preserve-3d cell in between, so the flips were effectively orthographic with no depth",
-    "The back was a flat grey block with a dot, and the shadow rotated along with the card",
-    "No lighting change during the flip; the workbench rendered 150f instead of the card's 130f"
+    "The nine grey backs were grey blocks with a dot, so the first 20f looked like a failed-to-load placeholder",
+    "The fronts were generic dashboard cards full of tiny text, so nothing was readable after the flip and the reveal had no payoff",
+    "Light grey stage, grey cards, white cards: no colour and no focal point anywhere in the shot",
+    "The flip used a plain ease-in-out with no anticipation, so the nine cards looked like one mechanical move copied nine times"
   ],
   "changesEn": [
-    "Each frame draws only the outward face by angle (<90° back, ≥90° front), deterministic with no culling issues",
-    "Every cell carries perspective 2400px with perspectiveOrigin mapped to the wall center, so the wall truly shares one vanishing point",
-    "The back is now a matte paper card (subtle gradient, diagonal texture, debossed mark, hairline); the shadow is a separate floor shadow under each slot that grows and softens with lift and tightens on landing",
-    "Faces darken by cos(angle) while turning; the edge-on highlight line stays; added GRID_WAVE_FLIP_DURATION = 130 with wavefront and tail overshoot unchanged"
+    "Porcelain look (cool white, cobalt): the nine backs tile one cobalt poster, with 290px heavy type Plan. / Build. / Ship. staggered left, centre and right and sliced by the gutters, so frame one is already a complete poster",
+    "The fronts are nine feature cards for a fictional product \"Oriel\", grouped by the poster's rows (PLAN / BUILD / SHIP): a 64px cobalt icon tile, a 50px title and a 32px one-liner; the centre card is a solid cobalt hero that anchors the final frame",
+    "From 12f to 28f a soft diagonal light sweeps the poster along the diagonal, previewing the wave direction (once for the whole wall)",
+    "Flip curve changed to bezier(0.5,-0.22,0.3,1): each card tips back ~6° before flipping over; diagonal wavefront (row+col)×6f, 16f per card, and only the last card overshoots to 192° before settling",
+    "Kept the shared vanishing point, angle-based face selection, cos shading, the 90° glint line and the separate floor shadows, now as two tinted soft shadow layers; the whole wall pushes very slowly from 1.000 to 1.025"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }
