@@ -1,28 +1,31 @@
 {
   "stem": "MultiplaneReal",
   "issues": [
-    "背景整页与中景卡几乎同尺寸，只隔一层 2px 模糊，读起来像两份重复的卡片叠在一起，纵深不成立",
-    "前景搜索条细得像一根穿帮的线、前景卡与中景卡同大，近景没有“贴着镜头”的体量",
-    "各层单层阴影深浅一致，没有随深度变化的落影与空气透视",
-    "中景卡的纵向错落是机械的奇偶 40px"
+    "三层都是同一种白卡截图，前景两块虚化的截图条读起来像脏斑，不像掠过镜头的物体",
+    "横移没有终点也没有主角，匀匀地滑完就结束，尾帧不成海报",
+    "画面里没有任何要读的字，只有截图小字，层次全靠模糊",
+    "浅灰底 + 灰影，没有光和色彩倾向"
   ],
   "changes": [
-    "远景整页缩小一档（2100→1820 宽）+ blur 3px + 降饱和 0.85，上面罩一层上浓下淡的同色空气薄雾（0.42–0.62）",
-    "前景放大一档（搜索条 960 宽、高清卡 560 宽）+ 景深虚化 6px + elevation 40–48 的深远落影，并按 velocity() 求速度给横向 SpeedBlur，掠过时才拖影",
-    "中景卡改两层软影（elevation 14）保持绝对清晰作为主阅读层，纵向错落改为缓和的波形 [10,46,0,38,14,50]",
-    "整体加暗角 0.14 + 颗粒 0.035，底色与页面留白同色，横移不露边"
+    "换 sand look（米色 + 赤陶）：暖白截图和暖米舞台一体，像暖光桌面上的产品静物被滑轨相机掠过",
+    "近景改成 5 枚放大的赤陶 / 墨色标签胶囊（取自卡上的真实标签），景深虚化 7px + 按速度横向拖影，落定时只剩两枚压在画框下沿做前景框边",
+    "加一层固定在画框上的字（0x）：眉题 + 120px「Ten bets. One lab.」逐词升起 + 右侧副句——字不动、世界在动，视差更好读",
+    "滑轨有终点：drive 反算到 card4 恰停在屏心，130f 不对称 in-out；落定后主角浮起（elevation 6→26、1.035x）+ 赤陶描边 + 「In focus」角标",
+    "时长 135→165f，中景改 10 张卡、440px 宽，远景加暖色空气薄雾和桌面光带"
   ],
   "issuesEn": [
-    "The background page and midground cards are nearly the same size, separated only by 2px blur, so it reads as two copies of the same cards stacked; depth doesn't hold",
-    "The foreground search bar is so thin it looks like a stray line, and the foreground card is the same size as the midground ones, with no 'right against the lens' mass",
-    "Every layer has the same single shadow, with no depth-dependent shadows or atmospheric perspective",
-    "Midground vertical offsets are a mechanical odd/even 40px"
+    "All three layers were the same white screenshot cards; the two blurred screenshot strips in front read as smudges, not objects passing the lens",
+    "The slide had no destination and no hero — it just glided evenly and stopped, so the last frame wasn't a poster",
+    "There was no readable type in frame, only tiny screenshot text, so depth relied on blur alone",
+    "Pale grey background with grey shadows; no light and no colour direction"
   ],
   "changesEn": [
-    "The far page is one size smaller (2100→1820 wide) with 3px blur and 0.85 saturation, under a same-colour atmospheric haze that is denser at the top (0.42–0.62)",
-    "The foreground is one size larger (960-wide search bar, 560-wide hi-res card) with 6px defocus and deep elevation-40–48 shadows, plus horizontal SpeedBlur driven by velocity(), so it only smears while passing",
-    "Midground cards get two-layer elevation-14 soft shadows and stay perfectly sharp as the reading layer; the vertical stagger is now a gentle wave [10,46,0,38,14,50]",
-    "Added vignette 0.14 and grain 0.035; the base colour matches the page margin so the pan never exposes an edge"
+    "Sand look (beige + terracotta): the warm-white screenshots and warm stage feel like one material, as if a slider camera were gliding past products on a sunlit table",
+    "The foreground is now five enlarged terracotta/ink tag pills (taken from the cards' real tags), defocused 7px with velocity smear; at rest only two remain along the bottom edge as framing",
+    "A frame-locked type layer (0x): kicker + a 120px “Ten bets. One lab.” rising word by word + a right-hand subline — the type stays still while the world moves, making the parallax easier to read",
+    "The slide now has a destination: drive is solved so card4 stops dead centre after a 130f asymmetric in-out; it then lifts (elevation 6→26, 1.035×) with a terracotta outline and an “In focus” tag",
+    "Duration 135→165f; the mid layer now carries 10 cards at 440px, and the far layer gets warm atmospheric haze plus a tabletop light band"
   ],
+  "look": "sand",
   "mdChanged": true
 }

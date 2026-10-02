@@ -1,28 +1,31 @@
 {
   "stem": "CrashImpactReal",
   "issues": [
-    "急推前 40f 全景死帧，无蓄力，冲击感只靠 6f 本身",
-    "CameraMotionBlur 在近静止帧压灰底色、卡片偏黄，急推前出现色闪",
-    "震屏只有单一 sin 平移，方向随机，没有“砸下去”的重量方向感",
-    "撞停后画面亮度、焦点毫无变化，重量感只靠抖动传达"
+    "截图直接平铺白底画面，全景没有舞台、光和主体，看不出要看哪张卡",
+    "撞停的\"重量\"只靠震屏和暗角一沉，到位瞬间没有冲击感",
+    "落定后周边只压暗 8%，目标卡和邻卡几乎一样亮",
+    "震屏收干后 70 帧画面完全不变，没有配套信息，尾帧不成海报"
   ],
   "changes": [
-    "全景段 1→1.02 smooth creep + 8f 预备回拉到 0.99，急推改 quart-in（EASE.exit）速度峰值砸在到位帧",
-    "自写时间采样运动模糊（快门 0.55f，子帧数按位移自适应，上限 40），只包 40–45f 急推段，震屏段保持清晰",
-    "震屏改 cos 起相：首拍沿冲击方向下沉、相邻帧近乎反号的高频硬抖，x 轴 0.55 幅度 + ≤0.35° 微旋转，包络保持 14px·e^(−t/1.8)",
-    "撞停帧暗角猛压到 0.3 再 16f 退到 0.12，周边页面 8f 内轻压暗 8%，目标卡不浮起——砸实而非弹起"
+    "换 lime look 的\"战术 HUD\"语言（与同卡回弹款的 ember 编辑风拉开）：真实页面裁成一块正视监视屏，舞台铺淡网格 + LIVE / SCANNING 等宽角标",
+    "急推前加扫描拍：荧光取景框带十字线在全景里跳格 card1 → card5 → card4（各 8f snappy），28f 收紧锁定、标签翻成实心 LOCK 04，预备回拉时外扩一呼吸",
+    "撞停加重量：到位帧卡外 1f 荧光冲击帧 → 1f 余辉 → 压成近黑（全片唯一一处整画面冲击），两道冲击波环从卡缘外扩，震屏 14px·e^(−t/1.8)；卡不浮起不发光",
+    "落定后一道荧光扫描线扫过卡面一次，左右两栏 HUD 读数错峰落位（TARGET 04/10 · OWNER · STATE，右栏 250px 等宽「P0」+ 说明）",
+    "时长 120→126f，急推 0.76→2.35 log 空间强 ease-in，子帧间距 ≤8px；尾段 42f hold 极缓推近 1.2%"
   ],
   "issuesEn": [
-    "The 40-frame wide hold before the push is dead, with no wind-up; all the impact rests on the 6 frames themselves",
-    "CameraMotionBlur greys the background and yellows the cards on near-static frames, flashing before the push",
-    "The shake is a single sine translation in an arbitrary direction, with no sense of weight slamming down",
-    "Nothing in brightness or focus changes after the hit; weight is conveyed by the shake alone"
+    "The screenshot just filled a white frame: no stage, light or subject in the wide shot, and nothing said which card mattered",
+    "The 'weight' of the stop relied only on shake and a vignette dip; the hit itself had no impact",
+    "After landing the surroundings dimmed only 8%, so the target card was barely brighter than its neighbours",
+    "After the shake settled the frame didn't change for 70 frames and had no supporting information, so the last frame wasn't a poster"
   ],
   "changesEn": [
-    "Smooth 1→1.02 creep during the hold plus an 8-frame wind-up to 0.99; the crash uses quart-in (EASE.exit) so peak speed lands on the hit frame",
-    "Custom temporal motion blur (0.55f shutter, adaptive sample count up to 40) only on the 40–45f push; the shake stays crisp",
-    "Shake is now cosine-phased: the first beat sinks along the impact direction and adjacent frames nearly flip sign for a hard high-frequency jolt, 0.55 x-amplitude plus ≤0.35° micro-rotation, envelope still 14px·e^(−t/1.8)",
-    "On the hit frame the vignette slams to 0.3 then relaxes to 0.12 over 16 frames, and the surroundings dim 8% within 8 frames; the target does not lift, so it lands rather than bounces"
+    "Lime look in a 'tactical HUD' language (distinct from the ember editorial style of the bounce variant on the same card): the real page is cropped into a face-on monitor on a faint grid stage with LIVE / SCANNING mono labels",
+    "A scan beat before the push: a neon reticle with crosshairs hops card1 → card5 → card4 (8f snappy each), tightens and flips its tag to a solid LOCK 04 at 28f, and breathes outward during the wind-up",
+    "Weight on the hit: one neon impact frame outside the card → one afterglow frame → crushed to near-black (the single full-frame hit in the shot), two shockwave rings expand from the card edge, shake 14px·e^(−t/1.8); the card neither lifts nor glows",
+    "After landing a neon scan line sweeps the card once, and two HUD columns land in stagger (TARGET 04/10 · OWNER · STATE; right column a 250px mono “P0” with copy)",
+    "Duration 120→126f; push 0.76→2.35 on a log-space strong ease-in with sub-frames ≤8px apart; 42f tail hold with a 1.2% creep"
   ],
+  "look": "lime",
   "mdChanged": true
 }

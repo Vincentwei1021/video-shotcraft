@@ -1,32 +1,33 @@
 {
   "stem": "Basic3DScene",
   "issues": [
-    "四张卡各用一种高饱和色相（蓝/紫/绿/橙）堆成彩虹，卡内只有标题 + 两根彩色骨架条",
-    "总览卡 2.2 预除后仍偏大，被前景 STEP 01 卡压住 “See everything” 的字",
-    "相机飞行在空无一物的径向渐变里进行，没有任何空间参照，旋转站读不出“世界在转”",
-    "三段飞行 inOutCubic 对称、无运动模糊，落位后卡片完全静止",
-    "DesignStage 默认 transform 放大，卡内小字按 480 宽栅格化再放大 4 倍"
+    "四张卡缩在 480×270 设计坐标里放大，卡内标题只有 19 设计 px，其余是 6–8px 的读数 chip 和骨架条，像调试面板",
+    "卡片内容是在讲手法本身（x 0 · y 0 · ry −40°），不是能放进发布片的内容",
+    "停留段完全静止，飞行后每站都是一样的灰底小卡，没有节奏起伏",
+    "总览只是把四张卡缩小同框，没有落版，尾帧不是一张海报",
+    "整体灰紫单色、卡与背景对比弱，主角不突出"
   ],
   "changes": [
-    "统一深色材质卡（上亮下暗微渐变、0.5px 发丝线、顶部内高光、两层深色软影）+ 单一靛蓝强调色；卡内改出版级内容：步号徽标、标题、一句说明、该站 pose 读数 chip（x 520 / ry −40° …）、三点进度路径",
-    "总览卡内容预除改 2.9、总览站 x 220→235，四卡同框互不压字；总览卡内放三步目录",
-    "世界里铺一张 translateZ(−1100) 的远景点阵平面（径向遮罩淡出），飞行与 90° 翻转时有视差和方位感；背景换暗场 Backdrop + 颗粒",
-    "飞行曲线改不对称 bezier(0.62,0,0.22,1)，飞行段做时间采样运动模糊（快门 0.5f，子帧数按相机位移自适应 4–12）；落位后当前卡沿法线浮起 10px、影子变大",
-    "DesignStage 改 raster=\"zoom\"，卡内文字按目标尺寸栅格化"
+    "换 graphite look（近单色暗场 + 香槟金点缀），虚构产品 Meridian 的三章节 Capture / Connect / Ship；卡片 1240×700 原生 1:1 排版，156px 标题 + 44px 说明 + 被卡边裁掉的 560px 细体章节数字",
+    "时间表重排为 225f：三段飞行 28/32/32f、每站停留 ≥30f；飞行途中相机额外拉远 30%（hop）看见空间，再 bezier(0.62,0,0.16,1) 软着陆",
+    "停留段不再死帧：落位后极缓推近 1.5%、卡底金色进度线走满，标题在落位前 8f 逐字从线下升起",
+    "世界里加 70 颗真 3D 浮尘做视差参照，非当前卡按站距退焦 0–7px + 压暗；飞行段保留时间采样运动模糊",
+    "总览站位置按海报构图反解：三卡落在右上、左下是挂在世界里的 150px 衬线落版「Think in space.」，尾帧成海报"
   ],
   "issuesEn": [
-    "Each of the four cards uses its own saturated hue (blue/purple/green/orange), forming a rainbow, and each holds only a title plus two coloured skeleton bars",
-    "Even with the 2.2 pre-divide the overview card is too big and the foreground STEP 01 card covers the 'See everything' text",
-    "The camera flies through an empty radial gradient with no spatial reference, so the rotation stops never read as 'the world turning'",
-    "The three flights use symmetric inOutCubic with no motion blur, and cards sit completely still after landing",
-    "DesignStage's default transform scaling rasterises small card text at 480 wide and then magnifies it 4x"
+    "The four cards lived in a 480×270 design space scaled up: the title was 19 design px and everything else was 6–8px chips and skeleton bars, like a debug panel",
+    "Card copy described the technique itself (x 0 · y 0 · ry −40°) rather than launch-film content",
+    "Holds were completely static and every stop was the same small grey card, with no rhythm",
+    "The overview just shrank the four cards into one frame with no end title, so the last frame wasn't a poster",
+    "Flat grey-violet palette with weak card/background contrast; no clear hero"
   ],
   "changesEn": [
-    "Unified dark material cards (subtle top-to-bottom gradient, 0.5px hairline, top inner highlight, two-layer dark soft shadow) with a single indigo accent; content is publication-grade: step badge, title, one-line note, pose readout chips for that stop (x 520 / ry −40° …) and a three-dot progress path",
-    "The overview pre-divide is now 2.9 and its stop moves from x 220 to 235, so all four cards share the frame without covering text; the overview card holds a three-step index",
-    "A distant dot-grid plane at translateZ(−1100) with a radial fade gives parallax and orientation during flights and the 90° roll; the background is a dark Backdrop with grain",
-    "Flights use an asymmetric bezier(0.62,0,0.22,1) with temporal-sampling motion blur (0.5f shutter, 4–12 samples adaptive to camera travel); after landing the active card lifts 10px along its normal with a larger shadow",
-    "DesignStage now uses raster=\"zoom\" so card text rasterises at target size"
+    "Graphite look (near-monochrome dark with a champagne-gold accent) for a fictional product, Meridian, in three chapters — Capture / Connect / Ship; 1240×700 cards laid out natively at 1:1 with a 156px title, 44px body and a 560px thin chapter numeral cropped by the card edge",
+    "Retimed to 225f: flights of 28/32/32f and holds of ≥30f; mid-flight the camera pulls back an extra 30% (hop) to reveal the space, then lands softly on bezier(0.62,0,0.16,1)",
+    "Holds now breathe: a 1.5% creep-in after landing, a gold progress line filling along the card's base, and the title rising per character 8f before landing",
+    "70 true-3D motes in world space give parallax; off-focus cards defocus 0–7px and dim by distance; time-sampled motion blur kept on flights",
+    "The overview pose is solved backwards from the poster layout: the three cards sit top-right and a 150px serif title, “Think in space.”, hangs in world space bottom-left"
   ],
+  "look": "graphite",
   "mdChanged": true
 }
