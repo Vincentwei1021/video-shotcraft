@@ -1,30 +1,31 @@
 {
   "stem": "SmashCut",
   "issues": [
-    "没有导出时长常量，工作台按默认 150f 渲染，比镜头本意多出 15f",
-    "飞卡模糊是各向同性的 filter: blur(1+4p)，整张卡均匀糊开，读作失焦而不是速度",
-    "飞卡阴影是固定的 0 12px 40px 黑影，冲脸放大到 3x 时阴影也跟着被放大成一团脏灰",
-    "轰鸣段只有推近和旋转在加速，画面本身没有逐渐憋满的压力，切点的反差不够狠"
+    "轰鸣段是灰色占位卡片飞过灰色 dashboard，没有内容也没有情绪，读不出「喧闹」",
+    "切点前后都是同一种灰色 UI，反差只剩「动 vs 不动」，猛切的力量被削弱",
+    "死寂段是一张通用列表页，没有任何信息，不像一个高潮的句号",
+    "飞卡只有 5 张，切点前画面并没有被填满"
   ],
   "changes": [
-    "补 SMASH_CUT_DURATION = 135；5 张飞卡两轮错峰、ease-in quad、scale 1.5→3、背景 1→1.55 + 1.8°、42f 一帧硬切全部保留",
-    "飞卡改为沿各自飞行方向的方向性运动模糊（旋到飞行方向只沿本地 x 轴高斯），量按瞬时速度逐帧算，>20px/f 起、按倍率折回后屏上封顶 ≈18px",
-    "飞卡阴影改两层软阴影，elevation 随冲脸进度 16→48",
-    "轰鸣段暗角 0.18→0.46 随动势收紧、背景对比 +8%，切点前画面憋到最满",
-    "死寂段是 B 全景 + 固定轻暗角的纯静态层，无颗粒、无任何随帧变化，帧函数级真静止 93f"
+    "轰鸣段讲「被通知淹没」：暗红余烬舞台中央 300px 未读计数从 212 ease-in 加速冲向 1,284，背后红色辉光与同心涟漪随动势增强",
+    "12 张虚构通知卡（构建失败 / @here / P1 告警 / 逾期账单…）两轮从中心朝镜头加速冲脸（scale 0.5→2.6，第二轮更快更密），沿各自飞行方向按瞬时速度做方向性模糊",
+    "背景 ease-in 推近 1→1.5 + 滚动 2°、暗角随动势收紧，切点前 3f 仍在最猛处",
+    "42f 一帧硬切到 sand 暖米色静止海报：420px「0 unread.」+ 一句副文案 + 已打开的 Do Not Disturb 开关——内容、色温、明暗同时翻转",
+    "死寂段是纯静态子树（无颗粒、无呼吸），停满 93f 帧级真静止"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench rendered the default 150f, 15f longer than intended",
-    "Flying cards used an isotropic filter: blur(1+4p), smearing the whole card evenly so it read as out of focus rather than fast",
-    "Flying cards had a fixed 0 12px 40px black shadow that grew into a dirty grey blob as the card scaled to 3x",
-    "Only the push and roll accelerated during the roar; the image itself never built pressure, so the cut lacked bite"
+    "The roar was grey placeholder cards flying over a grey dashboard, with no content and no emotion, so it never read as 'noise'",
+    "Both sides of the cut used the same grey UI, so the contrast was only moving vs still and the smash lost its force",
+    "The silent half was a generic list page with no information, not a climactic full stop",
+    "Only five cards flew, so the frame wasn't full before the cut"
   ],
   "changesEn": [
-    "Added SMASH_CUT_DURATION = 135; the five cards' two staggered passes, ease-in quad, scale 1.5→3, background 1→1.55 + 1.8° and the one-frame hard cut at 42f are unchanged",
-    "Flying cards now get directional motion blur along their own flight path (rotated so the Gaussian runs on the local x axis), sized from instantaneous speed per frame, starting above 20px/f and capped near 18px on screen after scale compensation",
-    "Flying-card shadows are now two-layer soft shadows whose elevation rises 16→48 as the card rushes the lens",
-    "During the roar the vignette tightens 0.18→0.46 and background contrast rises 8%, so the frame is at its fullest right before the cut",
-    "The silent section is a static layer of the B overview plus a fixed light vignette, with no grain and nothing frame-dependent, a true 93f still"
+    "The roar is about drowning in notifications: on a dark ember stage a 300px unread counter accelerates (ease-in) from 212 to 1,284 while the red glow and concentric ripples behind it intensify",
+    "Twelve fictional notifications (build failed, @here, P1 alert, overdue invoice…) fly from the centre at the camera in two waves (scale 0.5→2.6, the second faster and denser), each with directional blur along its path driven by instantaneous speed",
+    "The background pushes 1→1.5 with a 2° roll on ease-in and the vignette tightens with the energy; three frames before the cut it is still at peak speed",
+    "At 42f a single hard cut to a warm sand still poster: a 420px '0 unread.', one line of copy and a Do Not Disturb toggle switched on; content, colour temperature and brightness all flip at once",
+    "The silent half is a fully static subtree (no grain, no breathing) held for 93f, truly still frame by frame"
   ],
+  "look": "sand",
   "mdChanged": true
 }

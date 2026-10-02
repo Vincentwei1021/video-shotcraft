@@ -1,32 +1,33 @@
 {
   "stem": "CardFootageCadence",
   "issues": [
-    "没有导出时长常量，工作台靠默认 150f 猜时长",
-    "UI 裁切段用 transform scale 放大到 1.6x/2x，特写字边靠合成层放大",
-    "2x 裁切按 origin 偏移取景，落在卡片之间，读不出放大的是哪块内容",
-    "字卡是死平 #0d0d0d 底 + Helvetica 回退字体的纯白字，像占位幻灯片",
-    "UI 段平底无暗角，与字卡之间没有统一的镜头质感"
+    "UI 段是灰色通用 dashboard 占位图，三段裁切看到的都是灰条，画面不讲任何事",
+    "字卡是黑底居中的 SHIP / FASTER / TODAY，和 UI 段同一冷灰调，色彩上没有对话感",
+    "8f 字卡 + 10–12f UI 段的切换里，UI 段之间没有因果，读不出「画面做一件事、字卡说一个词」",
+    "收尾全景是同一张灰色列表，没有落点"
   ],
   "changes": [
-    "补 CARD_FOOTAGE_CADENCE_DURATION = 150；切点 14/22/34/42/52/62、字卡 5f 内 1.05→1 落定、收尾 62–105f 推 1→1.02 全部保留",
-    "UI 段 base 倍率改 CSS zoom 布局级放大 + 对焦点换算，段内推/移走 transform；1.6x 对准列表前三行，2x 对准 Active users 指标与曲线",
-    "首段推近改 ease-in（越推越快撞进第一张字卡）",
-    "字卡改冷调近黑径向底 + 暗角 + 颗粒，系统字体 184px 800 字重收紧字距、近白字；TODAY 下划线是全片唯一一笔强调色渐变",
-    "UI 段统一 0.16 暗角 + 4.5% 颗粒，收尾 105f 起颗粒冻结，尾段 45f 帧级真静止"
+    "custom look：字卡满版克莱因蓝 + 米白粗黑体，UI 段为暗场周视图日历「Plover」（虚构）——字卡与画面在色温上一冷一暖、一亮一暗地接拍",
+    "UI 三段各讲一件事：A 全景 ease-in 推近、光标驶向 Design review → B 1.7x 裁切把它从周二拖到周四（拾起 + 原位虚线残影）→ C 2.2x 裁切落位弹跳 + 「Everyone's free · invites sent」提示条弹出；全部 CSS zoom 栅格化，字边锐利",
+    "字卡改瑞士网格：左对齐 300px「Plan. / Move. / Done.」+ 页码 01—03 + 发丝线 + 一行注脚，第三张反白（米白底蓝字）做高潮变奏；只在前 5f 1.05→1 落定，其余全静",
+    "切点重排为 16/26/40/50/62/72，字卡 10f、UI 段 12–16f，全部条件挂载硬切",
+    "收尾全景是拖好的周视图 + 提示条，72–120f 极缓推近 1→1.03，之后真静止 45f",
+    "时长 150f → 165f"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench fell back to a guessed 150f",
-    "UI crop segments scaled to 1.6x/2x with transform, leaving close-up text to compositor upscaling",
-    "The 2x crop was framed by an origin offset and landed between cards, so it was unclear what was being magnified",
-    "Title cards were dead-flat #0d0d0d with pure white Helvetica-fallback text, like placeholder slides",
-    "UI segments had flat grounds and no vignette, sharing no lens character with the title cards"
+    "The UI segments were grey generic dashboard placeholders; all three crops showed grey bars and told no story",
+    "The title cards were SHIP / FASTER / TODAY centred on black, in the same cool grey as the UI, so the colours never talked to each other",
+    "With 8f cards and 10–12f UI shots there was no cause and effect between UI segments, so it never read as 'the picture does something, the card says a word'",
+    "The closing wide was the same grey list with nothing to land on"
   ],
   "changesEn": [
-    "Added CARD_FOOTAGE_CADENCE_DURATION = 150; cut points 14/22/34/42/52/62, the 5f 1.05→1 card settle and the 62–105f 1→1.02 closing push are unchanged",
-    "UI base magnification now uses CSS zoom with focus mapping while in-shot push/pan stays on transform; the 1.6x crop frames the first three list rows and the 2x crop frames the Active users metric and curve",
-    "The opening push now eases in, accelerating into the first title card",
-    "Title cards use a cool near-black radial ground with vignette and grain, 184px/800 system type with tightened tracking in off-white; the TODAY underline is the only accent gradient in the piece",
-    "UI segments share a 0.16 vignette and 4.5% grain; grain freezes at 105f so the 45f tail is frame-still"
+    "Custom look: title cards are full-bleed Klein blue with cream heavy type, and the UI is a dark week-view calendar 'Plover' (fictional), so cards and footage trade light/dark and warm/cool on every cut",
+    "Each UI segment does one thing: A is a wide ease-in push as the cursor heads for Design review, B is a 1.7x crop dragging it from Tuesday to Thursday (lift plus a dashed ghost in the old slot), C is a 2.2x crop where it lands with a bounce and an 'Everyone's free · invites sent' toast pops up; all crops use CSS zoom so text stays sharp",
+    "Title cards use a Swiss grid: left-aligned 300px 'Plan. / Move. / Done.' with a 01—03 page number, a hairline and a one-line footnote, and the third card is inverted (cream ground, blue type) as the climax; each only settles 1.05→1 in the first 5f and is otherwise still",
+    "Cuts are re-timed to 16/26/40/50/62/72: 10f cards, 12–16f UI shots, all hard cuts by conditional mounting",
+    "The closing wide shows the rearranged week with the toast, pushes 1→1.03 very slowly over 72–120f, then holds truly still for 45f",
+    "150f → 165f"
   ],
-  "mdChanged": false
+  "look": "custom",
+  "mdChanged": true
 }
