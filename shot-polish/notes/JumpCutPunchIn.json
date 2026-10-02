@@ -1,32 +1,31 @@
 {
   "stem": "JumpCutPunchIn",
   "issues": [
-    "没有导出时长常量，工作台按默认 150f 渲染，末挡后多出 15f 无意义的尾巴",
-    "画面上方压着调试标题 \"JUMP CUT PUNCH-IN\"，还和面包屑导航重叠",
-    "目标卡用 3px 灰色虚线框标记，读作调试辅助线而不是产品界面",
-    "放大走 transform scale，2.6x 末挡的文字边缘靠合成层放大",
-    "三挡之间除了跳变完全静止，平底无暗角，画面像三张截图"
+    "灰底占位 dashboard 全是灰条，三挡放大后画面里没有任何可读信息，看不出“为什么要推近”",
+    "左上角调试字「JUMP CUT PUNCH-IN」压在画面上",
+    "三挡只是同一画面越来越大，第三跳没有新信息，落点是一张空白虚线框卡片",
+    "跳切 tick 只有一次轻微压暗，观众容易读成丢帧"
   ],
   "changes": [
-    "补 JUMP_CUT_PUNCH_IN_DURATION = 135；跳变帧 35/70、挡位 1.0→1.6→2.6、2f brightness 0.92 tick 全部保留",
-    "去掉调试标题；虚线框换成 UI 真实的选中态（强调色 1.5px 细环 + 5px 柔晕），第三跳\"就是它\"时 8f ease-out 加深一档",
-    "挡位倍率改用 CSS zoom 布局级放大（left = O/s − O 保持同 origin），2.6x 下 \"1,284\" 字边锐利",
-    "前两挡挡内 in-out 极缓漂移 0.8%，末挡 16f ease-out 推完后真静止 49f；漂移走 transform，跳变仍是零补间硬切",
-    "暗角随挡位收紧（0.10→0.14→0.18）把视线压向目标卡，全片叠 4.5% 颗粒"
+    "look 换 ember：铺满画面的「结账接口 p99 延迟 · 24 小时」折线图（虚构 Pyrite Observe），全天暖灰平稳线里只有 03:10 一根橙色尖峰，强调色只给它",
+    "语义缩放：1.0× 尖峰画出时红点 ping；1.6× 展开异常时段色带 + 标签；2.6× 点亮逐个采样点、引线画出、读数卡升起并滚到 2,140 ms——每跳多给一层信息",
+    "origin 按末挡构图反推（screen = O + (base − O)·2.6），末挡尖峰、读数卡、SLO 800 ms 阈值线构成完整海报；CSS zoom 放大保证 2.6× 字和线锐利",
+    "镜头外 HUD：四角取景框、REPLAY 逐帧时间码、右上大号倍率读数 1.0×/1.6×/2.6× 每跳 pop + 2f 压暗 0.8，跳切读作有意的 tick",
+    "时间表 150f：0–26f 折线 ease-out 画出，40f / 80f 两次零补间硬切，挡内 1.2% in-out 漂移，末挡 46f hold 只留 1.5% 极缓推进"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench rendered the default 150f with a meaningless 15f tail after the last step",
-    "A debug title \"JUMP CUT PUNCH-IN\" sat on top of the frame, overlapping the breadcrumb",
-    "The target card was marked with a 3px grey dashed box that read as a debug guide, not product UI",
-    "Magnification used transform scale, so text at the 2.6x step relied on compositor upscaling",
-    "Between jumps the frame was completely frozen on a flat background with no lens character, reading as three screenshots"
+    "Grey placeholder dashboard made of grey bars: nothing readable at any of the three zoom steps, so there is no reason to punch in",
+    "Debug caption 'JUMP CUT PUNCH-IN' stamped in the top-left corner",
+    "All three steps show the same picture, just bigger; the third jump adds no information and lands on an empty dashed card",
+    "The jump tick is a faint darkening only, easily read as a dropped frame"
   ],
   "changesEn": [
-    "Added JUMP_CUT_PUNCH_IN_DURATION = 135; jump frames 35/70, steps 1.0→1.6→2.6 and the 2f brightness 0.92 tick are unchanged",
-    "Removed the debug title; replaced the dashed box with a real UI selection state (1.5px accent ring + 5px halo) that deepens over 8f on the third jump",
-    "Step magnification now uses CSS zoom (left = O/s − O keeps the same origin), so \"1,284\" stays crisp at 2.6x",
-    "The first two steps drift 0.8% on an in-out curve and the last step eases in over 16f, then holds still for 49f; drift uses transform so the jumps stay zero-tween hard cuts",
-    "Vignette tightens with each step (0.10→0.14→0.18) to pull the eye to the target; 4.5% grain across the shot"
+    "Ember look: a full-frame 'Checkout API p99 latency, last 24 h' chart (fictional Pyrite Observe); a calm warm-grey line with a single orange spike at 03:10, the only accent in the frame",
+    "Semantic zoom: at 1.0x a red dot pings as the spike draws; at 1.6x an anomaly band and label unfold; at 2.6x sample dots light up, a leader line draws and a readout card rises counting to 2,140 ms",
+    "Origin solved backwards from the final framing so the 2.6x frame is a finished poster (spike, readout card, SLO 800 ms threshold); CSS zoom keeps text and strokes crisp",
+    "Off-camera HUD: corner brackets, running REPLAY timecode and a large zoom readout 1.0x / 1.6x / 2.6x that pops on every jump with a 2-frame 0.8 darken",
+    "150f timeline: line draws ease-out over 0-26f, zero-tween hard cuts at 40f and 80f, 1.2% in-out drift inside each step, 46f final hold with only a 1.5% creep"
   ],
-  "mdChanged": false
+  "look": "ember",
+  "mdChanged": true
 }

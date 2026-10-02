@@ -1,32 +1,31 @@
 {
   "stem": "SakugaTimingShift",
   "issues": [
-    "没有导出时长常量，工作台靠默认值 150f 猜时长",
-    "画面上方压着调试标题 \"SAKUGA TIMING SHIFT\"，角标用 Courier 回退字体，像占位",
-    "\"换拍\"只靠角标文字交代，观众看不见一拍三和一拍一到底差在哪",
-    "卡片小、阴影固定，顿挫段每一步只有平移和旋转，冲刺飞起和落位贴地没有高度变化",
-    "落位槽是 3px 灰色虚线框，轨道是一条 3px 实色灰线，平灰底无层次"
+    "主体是 FakeDashboard 小卡，卡内文字 14–20px 读不清，画面在浅灰底上很空",
+    "一拍三的顿挫只有位移 + 轻微摆角，缺少“每张原画姿势不同”的手翻书味道",
+    "切换点只有角标变色，高潮瞬间没有视觉标记",
+    "帧条只是灰/靛蓝方块，看不出“摄影表”语义；冲刺段无速度表达"
   ],
   "changes": [
-    "补 SAKUGA_TIMING_SHIFT_DURATION = 150；floor(f/3) 一拍三驱动、f48 切换、out-poly(4) 冲刺、36px 过冲、3f 回弹、f108 沸腾冻结全部保留",
-    "去掉调试标题；角标改系统字体 92px 800 字重 + 手绘沸腾下划线 + 34px 副注（10 → 30 drawings / sec），切换后转强调色",
-    "新增\"摄影表\"帧条（30 格 = 1 秒）：一拍三每 3 格亮 1 格、一拍一格格亮，播放头逐帧走，换拍一眼可见",
-    "卡片放大到 560×350，顿挫段每张画交替微跳 10/2px，阴影随离地高度变化（顿挫 10–18、冲刺按速度升到 40、落位回 4）",
-    "落位槽改为内凹浅槽，轨道改发丝线 + 每步一道刻度；柔光背景 + 暗角 + 4.5% 颗粒"
+    "look 换 paper：整个画面是一张动画作画纸（定位孔、淡蓝铅笔安全框/十字），主体是 5px 墨线 + 硬边赛璐珞投影的产品卡（虚构 Sprig CI · 160px「2.4x」）",
+    "一拍三 16 张原画：q = floor(f/3)·3 驱动，每步 ≈69px，每张姿势不同——摆角 ±5°、挤压/拉伸交替、一高一低小跳，投影随跳高变化",
+    "48f 两帧冲击帧：画面反相成墨底 + 以卡片为焦点的集中线（全片唯一全画面冲击），角标切「ON 1s / 1コマ打ち」并 pop 1.25×",
+    "冲刺段 out-poly(4) 高初速折返中央，scaleX 按速度拉到 ≈1.3，身后 9 条锥形墨色速度线长度随速度伸缩，过冲 40px 回弹 + 落地挤压",
+    "底部真正的摄影表：一拍三只在每 3 格写圈号、中间格画竖线（= 沿用），一拍一格格朱红圈号；hold 70f 只留 2% 极缓推进"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench fell back to a guessed 150f",
-    "A debug title \"SAKUGA TIMING SHIFT\" sat on top, and the corner label fell back to Courier like a placeholder",
-    "The change of timing was only stated in the label text; viewers could not see how on 3s and on 1s actually differ",
-    "The card was small with a fixed shadow; each held step only translated and rotated, and the sprint and landing had no sense of height",
-    "The landing slot was a 3px grey dashed box, the track a 3px solid grey bar, all on a flat grey background"
+    "The subject is a FakeDashboard card whose 14-20px text is unreadable; the light grey frame feels empty",
+    "On-3s steps only translate and tilt slightly; no sense that every drawing has its own pose",
+    "The switch is marked only by the label changing colour; the climax has no visual beat",
+    "The frame strip is plain grey/indigo squares with no exposure-sheet meaning; the dash has no speed cue"
   ],
   "changesEn": [
-    "Added SAKUGA_TIMING_SHIFT_DURATION = 150; floor(f/3) stepping, the f48 switch, out-poly(4) sprint, 36px overshoot, 3f rebound and f108 boil freeze are unchanged",
-    "Removed the debug title; the label is now 92px/800 system sans with a hand-drawn boiling underline and a 34px caption (10 → 30 drawings / sec), switching to the accent colour on the change",
-    "Added an exposure-sheet strip (30 cells = 1 second): on 3s lights every third cell, on 1s lights every cell, with a playhead advancing per frame so the timing change is visible",
-    "Card enlarged to 560×350; each held drawing alternates a 10/2px hop, and the shadow follows height (10–18 while stepping, up to 40 with sprint speed, back to 4 on landing)",
-    "The slot is now a recessed well, the track a hairline with one tick per step; soft-light backdrop, vignette and 4.5% grain"
+    "Paper look: the whole frame is an animator's sheet (peg holes, light-blue pencil field guide), the subject a cel-style product card with 5px ink outline and hard cel shadow (fictional Sprig CI, 160px '2.4x')",
+    "16 key drawings on 3s: driven by q = floor(f/3)*3, about 69px per step, each with its own pose (tilt +-5 deg, alternating squash/stretch, high/low hop) and matching shadow",
+    "Two impact frames at 48f: the frame inverts to ink with focus lines aimed at the card (the shot's only full-frame hit); the label flips to 'ON 1s / 1コマ打ち' with a 1.25x pop",
+    "The dash uses out-poly(4) for a violent start, scaleX stretches to about 1.3 with speed, 9 tapered ink speed lines scale with velocity, 40px overshoot then a landing squash",
+    "A real exposure sheet at the bottom: on 3s only every third cell has a circled number with hold strokes between, on 1s every cell is circled in vermilion; 70f hold with a 2% creep"
   ],
+  "look": "paper",
   "mdChanged": true
 }
