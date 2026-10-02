@@ -3,28 +3,31 @@
   "issues": [
     "列表行和顶栏全是灰色骨架块，停点行没有内容，咬合锁定的是一条空白",
     "滚动模糊是各向同性 blur，封顶 24px 时整屏糊成一片灰雾",
-    "四个 L 角标是 8px 墨色粗角，从 ±620px 画外 9f 飞入却没有任何拖影，读作跳帧",
-    "停点高亮靠 3px 墨色边框，其余行不退暗，标签 scale 从 0 弹出；没有导出时长常量"
+    "角标是细细的墨色小角，咬合那一下没有分量，和急刹的“哐”撑不起共振",
+    "锁定后停点行只多一圈细描边，选中态和其余行几乎没有对比"
   ],
   "changes": [
-    "导出 BRAKE_RETICLE_LOCK_DURATION = 150；真实感 changelog 行（类型图标 / 标题 / 说明 / 版本 / 日期）+ 真实应用顶栏（Acme / Changelog / 头像）",
-    "急刹帧 f59、冲过头 30px、角标同帧起跳与 back(2.4) 咬合全部保留；滚动模糊改为纵向 SpeedBlur（v×0.15，封顶 32px）",
-    "角标换成 6px 强调色圆头 L 角，飞入段按自身速度做方向性运动模糊（停稳即清）",
-    "停点 v2.41 Realtime collaboration：强调色图标、2px 强调色描边 + 抬升阴影，其余行 12f 退暗到 0.38；标签 Just shipped 0.6→1 back 弹出、带绿点",
-    "柔光亮场 + 列表上下渐隐 + 颗粒"
+    "换 sand 暖沙亮场：一份「Wren / Release notes」奶白卡长卷，56px 粗黑版本号 + 标题 + 说明 + 日期，停点 5.0「Inbox Autopilot」",
+    "滚动保留三段（sin-in 冲刺 → cubic-out 冲过头 34px → 6f 回弹），模糊改为按速度的纵向方向性模糊，色带有方向感",
+    "角标换成 10px 粗、84px 长的赤陶圆头 L 角，back(2.4) 飞入咬合，超调越过咬合位只往里“咬”12%，读作相机对焦框“咔”地锁住",
+    "组合命门严格同帧（f58）：急刹 = 角标起跳 = 1.6% 冲击推（单次 impact，非抖动）",
+    "被锁卡 6f 内由奶白翻成墨色（反白是最强的选中），右侧「Today」原地换成 back(2.6) 弹出的 NOW SHIPPING 页签，其余卡退暗 0.38 + 轻虚化",
+    "hold 段角标 ±1.5px 极缓呼吸、整幅 1.5% 推近，结尾帧干净落定"
   ],
   "issuesEn": [
-    "Rows and the top bar were grey skeleton blocks; the stop row was empty, so the reticle locked onto nothing",
-    "Scroll blur was isotropic and at its 24px cap turned the whole screen into grey fog",
-    "The four L corners were thick 8px ink brackets flying 620px in 9f with no trail, reading as dropped frames",
-    "The stop highlight was a 3px ink border, other rows never dimmed, the tag scaled from 0, and there was no duration constant"
+    "List rows and the top bar are grey skeleton blocks; the reticle locks onto an empty row",
+    "Scroll blur is isotropic and caps at 24px, so the whole frame turns into grey fog",
+    "The corner marks are thin dark ticks with no weight, too weak to resonate with the brake impact",
+    "After the lock the stop row only gains a thin outline and barely contrasts with the rest"
   ],
   "changesEn": [
-    "Exported BRAKE_RETICLE_LOCK_DURATION = 150; realistic changelog rows (type icon, title, description, version, date) and a real app top bar (Acme / Changelog / avatar)",
-    "Brake frame f59, the 30px overshoot, same-frame corner launch and back(2.4) lock are all kept; scroll blur is now a vertical SpeedBlur (v×0.15, capped at 32px)",
-    "Corners are 6px round-capped accent L brackets with directional motion blur from their own velocity while flying, clear on lock",
-    "Stop row v2.41 Realtime collaboration gets an accent icon, 2px accent ring and lift shadow while other rows dim to 0.38 over 12f; the Just shipped tag pops 0.6→1 with back easing and a green dot",
-    "Soft-lit light backdrop, top and bottom list fades and grain"
+    "Sand warm light stage: a 'Wren / Release notes' scroll of cream cards with 56px heavy version numbers, title, description and date; the stop is 5.0 'Inbox Autopilot'",
+    "The three-phase scroll is kept (sin-in sprint, cubic-out overshoot of 34px, 6f settle) with velocity-driven vertical directional blur instead of fog",
+    "Corners become 10px-thick, 84px terracotta round-cap L brackets flying in with back(2.4); the overshoot past the lock point is scaled to 12% so it bites like an autofocus frame",
+    "The combo beat is strictly same-frame (f58): brake = bracket launch = a single 1.6% impact push (not shake)",
+    "The locked card inverts from cream to ink within 6f; its 'Today' swaps in place to a back(2.6) NOW SHIPPING tab; other cards dim to 0.38 and soften",
+    "The hold breathes the brackets by ±1.5px with a 1.5% slow push for a clean final frame"
   ],
+  "look": "sand",
   "mdChanged": true
 }

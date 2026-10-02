@@ -2,33 +2,32 @@
   "stem": "AssembleThenTypeFlyin",
   "issues": [
     "骨架件是 1px 灰描边的空框，无材质无阴影，暗底上几乎看不见层次",
-    "骨架运动残影是各向同性的 blur，像失焦而不是速度",
-    "文字溢出容器：app.example.com 冲出 url pill、04 / 08 冲出卡片右缘、GET STARTED 顶到 CTA 边",
-    "最后一字在 t≈0.95 才落，整页成形后只剩 10 帧，没有呼吸就结束",
-    "背景是平铺的暗色渐变 + 满屏格纸，无光源、无暗角、大面积色带"
+    "480×270 设计坐标里的字只有 6–7px（放大后 24–28px），大半文字小到只能当纹理",
+    "内容是“The headline for your product here / Acme Studio”这类占位模板，成形后的页面没有设计感",
+    "两段之间没有停顿，骨架刚到文字就压上来，读不出“这是第二步”"
   ],
   "changes": [
-    "骨架改成有材质的面板：纵向微渐变 + 0.5 设计 px 发丝线 + 顶部内高光 + 两层软阴影；缩略块加渐变与内描边，social 方块补 × 图标",
-    "骨架残影改为 SpeedBlur 方向性运动模糊（按中心差分速度 ×0.16，封顶 3 设计 px），静止即为 0",
-    "逐字飞入改 snappy 缓动并加景深模糊（按 dz 离焦距离、(1−a)² 衰减），远处虚近处实",
-    "时间轴前移：小标注 start 0.58→0.76 压到 0.52→0.66，字间隔上限从 0.94 改 0.82，尾段留 ≈0.9s 整页静止",
-    "排版收进容器：url pill 加宽并右移文字、页码改右对齐卡片内缘、CTA 加宽并居中；CTA 在文字落定后强调色 159,182,232 '通电'，logo 点阵一颗点亮",
-    "背景加冷色主光斑（骨架段缓慢点亮）+ 卡片后强调色余光 + 网格径向遮罩 + 暗角 + soft-light 颗粒"
+    "换 graphite 石墨暗场 + 胶片金唯一强调色，成形画面是虚构调色软件「Obscura 3」的发布页：玻璃导航、112px 衬线大标题「Grade every frame / like it was film.」、金色 CTA、三枚指标块、640×760 调色台卡",
+    "骨架段 10 件从画外 120–420px 平面飞入（overshoot 过冲 + ±7° 旋转回正 + 按速度的方向性模糊），开场即有 12 栏版式参考线",
+    "两段之间留 8f 停顿、参考线同步退淡；文字段逐字 perspective(900px) 3D 翻滚落位（dz −200→−760、三轴大角度旋转、远虚近实），先大标题后 mono 小标注",
+    "全部按 1920 原生坐标排版，要读的字 ≥28–36px、标题 112px，告别 DesignStage 的小字",
+    "落定后加一笔“定稿”：CTA 通电成金色实底，胶片画面被金色竖线从 log 灰片擦除成暖调成片，色轮控制点同步推到偏色位——呼应标题",
+    "时长 156→168f，f128 前所有字落完，留 40f 整页 hold + 1.5% 极缓推近"
   ],
   "issuesEn": [
-    "Skeleton pieces were empty 1px grey outlines with no material or shadow, barely separating from the dark ground",
-    "Skeleton motion trail was an isotropic blur that reads as out-of-focus rather than speed",
-    "Text overflowed its containers: app.example.com ran out of the URL pill, 04 / 08 out of the card edge, GET STARTED touched the CTA border",
-    "The last glyph landed at t≈0.95, leaving only 10 frames once the page was complete — no breathing room",
-    "Background was a flat dark gradient with a full-screen graph-paper grid: no light source, no vignette, visible banding"
+    "Skeleton parts are empty 1px grey outlines with no material or shadow, nearly invisible on the dark ground",
+    "In the 480x270 design space text was 6–7px (24–28px once scaled), so most of it could only read as texture",
+    "Content was a placeholder template ('The headline for your product here' / 'Acme Studio'), so the assembled page had no design",
+    "No pause between phases: text piled on as soon as the skeleton landed, so 'this is step two' never read"
   ],
   "changesEn": [
-    "Skeleton pieces became material panels: vertical micro-gradient, 0.5 design-px hairline, top inner highlight and two-layer soft shadow; thumbnails got gradients and inner strokes, the social box got an × glyph",
-    "The trail is now SpeedBlur directional motion blur driven by central-difference velocity (×0.16, capped at 3 design px), zero when still",
-    "Per-glyph fly-in switched to the snappy ease with depth-of-field blur scaled by dz and decaying as (1−a)², so far glyphs are soft and near ones crisp",
-    "Timeline pulled forward: small-label starts compressed from 0.58→0.76 to 0.52→0.66 and the stagger cap moved from 0.94 to 0.82, leaving ≈0.9s of still, finished page",
-    "Typography fits its containers: wider URL pill, right-aligned page counter inside the card, wider centred CTA; the CTA 'powers on' in accent 159,182,232 after the text lands and one logo dot lights up",
-    "Background gained a cool key-light bloom that brightens during the skeleton phase, a faint accent glow behind the card, a radially masked grid, vignette and soft-light grain"
+    "Graphite dark stage with film gold as the only accent; the result is a launch page for a fictional grading app 'Obscura 3': glass nav, 112px serif headline 'Grade every frame / like it was film.', gold CTA, three stat tiles and a 640x760 grading-panel card",
+    "Ten skeleton parts fly in planar from 120–420px off-frame (overshoot settle, ±7° rotation, velocity-driven directional blur); a 12-column layout grid is on screen from frame one",
+    "An 8f pause separates the phases while the guides fade; text then tumbles in per character in perspective(900px) 3D (dz −200 to −760, large three-axis rotation, depth blur), headline first and mono labels last",
+    "Laid out natively at 1920 with readable text at 28–36px and a 112px headline, dropping the tiny DesignStage type",
+    "A finishing beat after landing: the CTA powers on to solid gold and a gold wipe grades the film still from flat log to a warm print look while the color-wheel pucks move off neutral, echoing the headline",
+    "Duration 156 to 168f: every glyph lands by f128, leaving a 40f hold with a 1.5% slow push"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

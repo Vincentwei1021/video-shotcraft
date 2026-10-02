@@ -1,253 +1,276 @@
-// assemble-then-type-flyin — Assemble + Type Fly-in 装配后文字 3D 落位（motion-lab 定稿转原生 Remotion）
-// 空的暗底网格页面上，无文字的组件骨架（框、卡片、分隔线、色块）先从四面八方飞入贴合；
-// 随后各处文字从 3D 空间逐字飞来——每个字符带独立的大角度 rotateX/Y/Z 旋转与纵深位移，
-// 旋转着落到自己应在的位置，先大标题后小标注，全部落位后页面成形。
-// 内容为中性占位模板，强调色可按项目替换。设计坐标 480×270（DesignStage 等比放大）。
+// assemble-then-type-flyin — 先骨架后文字：页面"自己长出来"
 //
-// 质感升级：骨架件改成有材质的面板（微渐变 + 发丝线 + 顶部内高光 + 两层软阴影），运动残影
-// 改为按真实速度计算的方向性模糊（静止即为 0）；逐字飞入加"远处虚、近处实"的景深模糊；
-// 背景加冷色主光斑 + 暗角 + 颗粒；文字全部收进各自的容器（不再溢出 pill / 卡片边）；
-// 时间轴整体前移，最后一字在 ≈0.82 落定，留 ≈0.9s 的整页呼吸。
+// 第二轮重设计（石墨暗场 · 胶片金 · 调色软件发布页）：
+// - look = graphite（近单色暗场，accent2 胶片金作唯一强调色）。成形后的画面是虚构调色软件「Obscura 3」的
+//   发布页：玻璃导航条、112px 衬线大标题「Grade every frame / like it was film.」（film. 为金色斜体）、
+//   说明句、金色 CTA + 描边次按钮、三枚指标块；右侧是一张 640×760 的「调色台」卡（上半是一帧胶片画面，
+//   下半是 LIFT / GAMMA / GAIN 三只色轮）。
+// - 两段式手法不变、维度分开：
+//   ① 骨架段 6–50f：10 个无字骨架件（框、色块、分隔线、色轮圈）从画外 120–420px 平面飞入，
+//      overshoot 过冲贴合 + ±7° 旋转回正，按真实速度给方向性运动模糊；开场画面里先有 12 栏版式参考线。
+//   ② 文字段 58–128f：每个字符带确定性种子的 dx ±260 / dy ±200 / dz −200→−760 / rotateX/Y/Z ±120–190°，
+//      perspective(900px) 下翻滚着落位，远处虚近处实；先大标题、后导航与说明、最后 mono 小标注。
+//      块内字间隔按字数自适应，保证全部在 128f 前落定。
+// - 收尾一笔（落定后的"定稿"信号）：CTA 由描边通电成金色实底；胶片画面从扁平的 log 灰片被一道竖向
+//   擦除线"调色"成暖金成片 —— 呼应标题。
+//
+// 时间表（30fps，共 168f）：
+//   0–8     版式参考线就位（第 1 帧即有画面）
+//   6–50    骨架飞入（10 件，起飞间隔先密后疏）
+//   50–58   停半拍：骨架齐了、参考线退淡（两段之间的语义断点）
+//   58–128  文字 3D 逐字落位（大字 58/66 → 导航/说明 76–92 → 指标 96–102 → 小标注 104–114）
+//   118–146 CTA 通电、胶片画面调色擦除（124–146），色轮控制点同步从中性推到偏色位
+//   128–168 hold（40f）：整页 1.5% 极缓推近
 import React from 'react';
-import { useCurrentFrame, useVideoConfig } from 'remotion';
-import { DesignStage, E, lerp, rand, seg, useT } from '../../_fixtures/Motion';
-import { EASE, Grain, SpeedBlur, Vignette } from '../../_fixtures/Polish';
+import { useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, ramp } from '../../_fixtures/Polish';
+import { LOOKS, SERIF, Stage, alpha, type } from '../../_fixtures/Look';
 
-export const ASSEMBLE_THEN_TYPE_FLYIN_DURATION = 156; // 5200ms @30fps
+export const ASSEMBLE_THEN_TYPE_FLYIN_DURATION = 168;
 
-const MONO2 = "'SF Mono','JetBrains Mono',Menlo,Consolas,monospace";
-const SERIF2 = "Georgia,'Times New Roman',serif";
-const A_RGB = '159,182,232'; // 强调色槽位（冷蓝），只给 CTA 与 logo 一处小点
+const L = LOOKS.graphite;
+const GOLD = L.accent2;
 
-/* ---- 组件骨架（全部无文字）：from=飞入起点位移，rot=起始旋转，ft=起飞时刻 ---- */
-type Shell = { from: [number, number]; rot: number; ft: number };
+const rand = (seed: number) => {
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+// ───────────── 骨架件（无字）：from = 飞入起点位移，rot = 起始旋转，at = 起飞帧 ─────────────
+type Shell = { from: [number, number]; rot: number; at: number };
+const SHELL_DUR = 16;
 const SH: Record<string, Shell> = {
-  urlPill: { from: [0, -60], rot: 0, ft: 0.04 },
-  topLine: { from: [80, -40], rot: 4, ft: 0.07 },
-  mark: { from: [-140, -30], rot: -8, ft: 0.1 },
-  card: { from: [220, 30], rot: 6, ft: 0.13 },
-  cta: { from: [-70, 120], rot: -4, ft: 0.17 },
-  social: { from: [130, 60], rot: 5, ft: 0.2 },
+  nav: { from: [0, -180], rot: 0, at: 6 },
+  card: { from: [420, 40], rot: 6, at: 10 },
+  logo: { from: [-220, -80], rot: -7, at: 15 },
+  wheels: { from: [260, 220], rot: 5, at: 19 },
+  divider: { from: [-320, 0], rot: 0, at: 23 },
+  cta: { from: [-160, 200], rot: -5, at: 27 },
+  ghost: { from: [120, 220], rot: 4, at: 31 },
+  stat1: { from: [-240, 260], rot: -6, at: 35 },
+  stat2: { from: [0, 300], rot: 3, at: 39 },
+  stat3: { from: [220, 280], rot: 6, at: 44 },
 };
-const SHELL_DUR = 0.14;
 
-/* ---- 文字块（逐字 3D 飞入）：段内 i 表示斜体；start=该块首字起飞时刻 ---- */
-// align='right' 时 x 表示右缘（用于卡片右上角页码，保证不出卡片边）
-type TSeg = { s: string; i?: boolean };
-type Block = {
-  x: number; y: number; font: string; color: string; ls: number; start: number; segs: TSeg[];
-  dy?: number; align?: 'right';
-};
-// 大字先落（0.34 起），小标注后落（0.52→0.66）。dy 是基线补偿：29px Georgia 在 transform 缩放
-// 渲染下的基线取整与原 DPR=4 截图差 0.5px，用 translateY 校回（top 会被整像素吸附）。
+// ───────────── 文字块：逐字 3D 落位 ─────────────
+type Seg = { s: string; color?: string; italic?: boolean };
+type Block = { x: number; y: number; start: number; style: React.CSSProperties; segs: Seg[]; w?: number; align?: 'center' | 'right' };
+const MONO = FONT.mono;
 const BLOCKS: Block[] = [
-  { x: 22, y: 64, font: `400 29px ${SERIF2}`, color: '#f2f3f6', ls: -0.3, start: 0.34, segs: [{ s: 'The headline for' }], dy: -0.5 },
-  { x: 22, y: 100, font: `400 29px ${SERIF2}`, color: '#f2f3f6', ls: -0.3, start: 0.4, segs: [{ s: 'your product here', i: true }], dy: -0.5 },
-  { x: 41, y: 35.5, font: `400 13px ${SERIF2}`, color: '#eceef2', ls: -0.1, start: 0.46, segs: [{ s: 'Acme ' }, { s: 'Studio', i: true }] },
-  { x: 316, y: 96, font: `italic 400 36px ${SERIF2}`, color: '#f4f5f8', ls: -0.4, start: 0.48, segs: [{ s: 'sample', i: true }] },
-  { x: 33.5, y: 173.5, font: `600 7px ${MONO2}`, color: '#eef0f5', ls: 1.1, start: 0.52, segs: [{ s: 'GET STARTED' }] },
-  { x: 120, y: 173.5, font: `500 7px ${MONO2}`, color: '#7a808c', ls: 1.1, start: 0.55, segs: [{ s: 'DOCS' }] },
-  { x: 30, y: 14.5, font: `500 6.5px ${MONO2}`, color: '#8d93a0', ls: 0.5, start: 0.56, segs: [{ s: 'app.example.com' }], dy: 0.5 },
-  { x: 306, y: 61, font: `500 6.5px ${MONO2}`, color: '#8a909c', ls: 1.4, start: 0.58, segs: [{ s: 'WORK' }] },
-  { x: 448, y: 61, font: `500 6.5px ${MONO2}`, color: '#5c616c', ls: 0.8, start: 0.6, segs: [{ s: '04 / 08' }], align: 'right' },
-  { x: 306, y: 164, font: `500 6px ${MONO2}`, color: '#727884', ls: 1.4, start: 0.61, segs: [{ s: 'KINETIC TYPE · 04' }] },
-  { x: 22, y: 143, font: `500 6.5px ${MONO2}`, color: '#5c616c', ls: 1.4, start: 0.63, segs: [{ s: 'H1 · UI-SERIF / GEORGIA' }] },
-  { x: 22, y: 246, font: `500 6.5px ${MONO2}`, color: '#50555f', ls: 1.4, start: 0.645, segs: [{ s: 'A PRODUCT OF ACME · ACME LABS, INC.' }] },
-  { x: 369, y: 242.5, font: `600 7px ${MONO2}`, color: '#c9cdd6', ls: 1.1, start: 0.66, segs: [{ s: '@USERNAME' }] },
+  { x: 120, y: 298, start: 58, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1 }, segs: [{ s: 'Grade every frame' }] },
+  { x: 120, y: 424, start: 66, style: { fontFamily: SERIF, fontSize: 112, fontWeight: 400, letterSpacing: '-0.025em', color: L.ink, lineHeight: 1, fontStyle: 'italic' }, segs: [{ s: 'like it was ' }, { s: 'film.', color: GOLD }] },
+  { x: 196, y: 82, start: 76, style: { ...type(34, 700), color: L.ink }, segs: [{ s: 'Obscura' }] },
+  { x: 1060, y: 86, start: 79, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Features' }] },
+  { x: 1215, y: 86, start: 80, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Film stocks' }] },
+  { x: 1405, y: 86, start: 81, style: { ...type(28, 500), color: L.ink2 }, segs: [{ s: 'Pricing' }] },
+  { x: 1574, y: 86, w: 202, align: 'center', start: 84, style: { ...type(28, 650), color: L.ink }, segs: [{ s: 'Download' }] },
+  { x: 120, y: 246, start: 86, style: { fontFamily: MONO, fontSize: 24, fontWeight: 600, letterSpacing: '0.12em', color: GOLD }, segs: [{ s: 'OBSCURA 3 · PUBLIC BETA' }] },
+  { x: 120, y: 604, start: 88, style: { ...type(36, 400), color: L.ink2 }, segs: [{ s: 'Print-film color science for any timeline.' }] },
+  { x: 120, y: 719, w: 320, align: 'center', start: 92, style: { ...type(32, 650), color: '#16120a' }, segs: [{ s: 'Start grading' }] },
+  { x: 466, y: 719, w: 320, align: 'center', start: 95, style: { ...type(32, 550), color: L.ink }, segs: [{ s: 'Watch the film' }] },
+  { x: 150, y: 862, start: 96, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '12-bit' }] },
+  { x: 488, y: 862, start: 99, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '4K 120' }] },
+  { x: 826, y: 862, start: 102, style: { ...type(56, 750), color: L.ink }, segs: [{ s: '0.8 ms' }] },
+  { x: 150, y: 934, start: 104, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'COLOR PIPELINE' }] },
+  { x: 488, y: 934, start: 106, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'LIVE PLAYBACK' }] },
+  { x: 826, y: 934, start: 108, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.12em', color: L.ink3 }, segs: [{ s: 'PER FRAME' }] },
+  { x: 1196, y: 252, start: 110, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.1em', color: alpha('#ffffff', 0.85) }, segs: [{ s: 'FRAME 0412 · OB-50' }] },
+  { x: 1160, y: 908, w: 213, align: 'center', start: 112, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'LIFT' }] },
+  { x: 1373, y: 908, w: 214, align: 'center', start: 113, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'GAMMA' }] },
+  { x: 1587, y: 908, w: 213, align: 'center', start: 114, style: { fontFamily: MONO, fontSize: 22, letterSpacing: '0.14em', color: L.ink2 }, segs: [{ s: 'GAIN' }] },
 ];
-// 每块最后一字的落定上限：0.82 ≈ 第 127 帧，之后 ≈29f 整页静止呼吸
-const TEXT_END = 0.82;
-const CHAR_DUR = 0.13;
+const TEXT_END = 128; // 每块最后一字落定上限
+const CHAR_DUR = 16;
 
-// 逐字随机飞入参数：k 为全局字符序号（跨块累加，与 effect.js 的 charSeed 一致）
 type CharP = { dx: number; dy: number; dz: number; rx: number; ry: number; rz: number };
-let charSeed = 0;
+let seedK = 0;
 const CHAR_PARAMS: CharP[][][] = BLOCKS.map((b) =>
   b.segs.map((sg) =>
     Array.from(sg.s, () => {
-      const k = charSeed++;
+      const k = seedK++;
       return {
-        dx: (rand(k) - 0.5) * 340,
-        dy: (rand(k + 50) - 0.5) * 260,
-        dz: -120 - rand(k + 99) * 300,
-        rx: (rand(k + 7) - 0.5) * 340,
-        ry: (rand(k + 13) - 0.5) * 380,
-        rz: (rand(k + 23) - 0.5) * 240,
+        dx: (rand(k) - 0.5) * 520, dy: (rand(k + 50) - 0.5) * 400, dz: -200 - rand(k + 99) * 560,
+        rx: (rand(k + 7) - 0.5) * 340, ry: (rand(k + 13) - 0.5) * 380, rz: (rand(k + 23) - 0.5) * 240,
       };
-    })
-  )
+    }),
+  ),
 );
 
-// 面板材质（设计坐标下的 px；放大 4 倍后 0.25px≈1 物理像素的发丝线）
-const PANEL: React.CSSProperties = {
-  background: 'linear-gradient(180deg, #16171e 0%, #111218 100%)',
-  border: '0.5px solid rgba(255,255,255,0.085)',
-  boxShadow:
-    'inset 0 0.5px 0 rgba(255,255,255,0.07), 0 0.5px 1px rgba(0,0,0,0.45), 0 10px 24px -8px rgba(0,0,0,0.6)',
+const FlyBlock: React.FC<{ b: Block; bi: number; frame: number }> = ({ b, bi, frame }) => {
+  const n = CHAR_PARAMS[bi].reduce((a, s) => a + s.length, 0);
+  const step = Math.min(1.6, Math.max(0.35, (TEXT_END - b.start - CHAR_DUR) / n));
+  let ci = 0;
+  return (
+    <div style={{
+      position: 'absolute', left: b.x, top: b.y, width: b.w, textAlign: b.align, whiteSpace: 'nowrap', ...b.style,
+    }}>
+      {b.segs.map((sg, si) => (
+        <span key={si} style={{ color: sg.color, fontStyle: sg.italic ? 'italic' : undefined }}>
+          {Array.from(sg.s, (ch, k) => {
+            const c = CHAR_PARAMS[bi][si][k];
+            const ft = b.start + ci++ * step;
+            const a = ramp(frame, ft, CHAR_DUR, EASE.snappy);
+            const far = (1 - a) * (1 - a);
+            const blur = far * (1 + (-c.dz / 760) * 7);
+            const glyph = ch === ' ' ? '\u00a0' : ch; // 空格塞成不换行空格，否则 inline-block 空 span 宽度归零
+            return (
+              <span key={k} style={{
+                display: 'inline-block', opacity: a > 0 ? Math.min(1, a * 1.8) : 0,
+                filter: a > 0 && a < 1 && blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : undefined,
+                transform: a >= 1 ? 'none' :
+                  `perspective(900px) translate3d(${((1 - a) * c.dx).toFixed(1)}px,${((1 - a) * c.dy).toFixed(1)}px,${((1 - a) * c.dz).toFixed(1)}px) ` +
+                  `rotateX(${((1 - a) * c.rx).toFixed(1)}deg) rotateY(${((1 - a) * c.ry).toFixed(1)}deg) rotateZ(${((1 - a) * c.rz).toFixed(1)}deg)`,
+              }}>
+                {glyph}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+    </div>
+  );
 };
 
-export const AssembleThenTypeFlyin: React.FC = () => {
-  const t = useT();
-  const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  const tOf = (f: number) => Math.min(1, Math.max(0, f / Math.max(1, durationInFrames - 1)));
+// 面板材质：带色相的深色 + 低透明度白描边 + 顶部内高光 + 两层软阴影
+const PANEL: React.CSSProperties = {
+  background: 'linear-gradient(180deg, #1d1e22 0%, #16171a 100%)',
+  border: '1px solid rgba(255,255,255,0.09)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 4px rgba(0,0,0,0.5), 0 30px 60px -24px rgba(0,0,0,0.85)',
+};
 
-  // 阶段一：骨架四方飞入（无字）——outBack 过冲贴合；位置写成 frame 的函数，方便求速度
-  const shellPos = (s: Shell, f: number) => {
-    const a = seg(tOf(f), s.ft, s.ft + SHELL_DUR, E.outBack);
-    return { x: lerp(a, s.from[0], 0), y: lerp(a, s.from[1], 0), r: lerp(a, s.rot, 0) };
+// 胶片画面：暮色天空 + 低悬的太阳 + 三层山影 + 水面反光（纯渐变 / SVG，graded 控制 log 灰片 ↔ 成片）
+const FilmStill: React.FC<{ graded: boolean }> = ({ graded }) => (
+  <div style={{
+    position: 'absolute', inset: 0,
+    filter: graded ? 'saturate(1.15) contrast(1.08)' : 'saturate(0.12) contrast(0.62) brightness(1.18)',
+    background: 'linear-gradient(180deg, #1c2a3a 0%, #6b5a5a 38%, #e09a52 60%, #f2c27a 66%, #3a2a22 67%, #1a1410 100%)',
+  }}>
+    <div style={{ position: 'absolute', left: 300, top: 196, width: 120, height: 120, borderRadius: 60, background: 'radial-gradient(circle, #fff1cf 0%, #ffd58a 45%, rgba(255,190,110,0) 72%)' }} />
+    <svg width={640} height={500} viewBox="0 0 640 500" style={{ position: 'absolute', left: 0, top: 0 }}>
+      <path d="M0 300 L80 262 L150 284 L240 236 L330 276 L420 244 L520 280 L640 250 L640 340 L0 340 Z" fill="#7a5040" opacity={0.7} />
+      <path d="M0 322 L110 292 L210 314 L300 286 L400 318 L500 296 L640 318 L640 340 L0 340 Z" fill="#4a3028" />
+      <rect x={0} y={334} width={640} height={166} fill={`url(#water${graded ? 'g' : 'l'})`} />
+      <defs>
+        <linearGradient id={`water${graded ? 'g' : 'l'}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#c47a3c" />
+          <stop offset="0.25" stopColor="#4a3226" />
+          <stop offset="1" stopColor="#120d0a" />
+        </linearGradient>
+      </defs>
+      {Array.from({ length: 7 }, (_, i) => (
+        <rect key={i} x={338 - i * 6} y={346 + i * 18} width={44 + i * 12} height={3} rx={1.5} fill="#ffd9a0" opacity={0.55 - i * 0.07} />
+      ))}
+    </svg>
+  </div>
+);
+
+const Wheel: React.FC<{ cx: number; hue: string; dot: [number, number]; k: number }> = ({ cx, hue, dot, k }) => (
+  <div style={{ position: 'absolute', left: cx - 74, top: 0, width: 148, height: 148 }}>
+    <div style={{
+      position: 'absolute', inset: 0, borderRadius: '50%',
+      background: `conic-gradient(from 90deg, #c95a5a, #c9b25a, #5ac97a, #5ab2c9, #6a5ac9, #c95ab2, #c95a5a)`, opacity: 0.55,
+      WebkitMaskImage: 'radial-gradient(circle, transparent 54%, #000 56%, #000 70%, transparent 71%)',
+      maskImage: 'radial-gradient(circle, transparent 54%, #000 56%, #000 70%, transparent 71%)',
+    }} />
+    <div style={{ position: 'absolute', inset: 26, borderRadius: '50%', background: 'radial-gradient(circle, #2a2b30 0%, #1a1b1f 100%)', border: '1px solid rgba(255,255,255,0.08)' }} />
+    <div style={{ position: 'absolute', left: 74 + dot[0] * k - 9, top: 74 + dot[1] * k - 9, width: 18, height: 18, borderRadius: 9, background: hue, boxShadow: `0 0 0 3px rgba(0,0,0,0.5), 0 0 12px ${hue}` }} />
+  </div>
+);
+
+export const AssembleThenTypeFlyin: React.FC = () => {
+  const frame = useCurrentFrame();
+
+  const shellAt = (s: Shell, f: number) => {
+    const a = ramp(f, s.at, SHELL_DUR, EASE.overshoot);
+    return { x: (1 - a) * s.from[0], y: (1 - a) * s.from[1], r: (1 - ramp(f, s.at, SHELL_DUR + 4, EASE.snappy)) * s.rot };
   };
-  // 骨架件外层：方向性运动模糊（按 px/帧 速度，静止为 0）+ 入场淡入；children 自行绝对定位
   const shelled = (s: Shell, style: React.CSSProperties, children?: React.ReactNode) => {
-    const p = shellPos(s, frame);
-    const p0 = shellPos(s, frame - 0.5);
-    const p1 = shellPos(s, frame + 0.5);
-    const op = t >= s.ft ? Math.min(1, seg(t, s.ft, s.ft + 0.05) * 1.5) : 0;
-    if (op <= 0) return null;
+    if (frame < s.at) return null;
+    const p = shellAt(s, frame);
+    const p0 = shellAt(s, frame - 0.5);
+    const p1 = shellAt(s, frame + 0.5);
+    const op = Math.min(1, ramp(frame, s.at, 6, EASE.out) * 1.2);
     return (
-      <SpeedBlur vx={p1.x - p0.x} vy={p1.y - p0.y} amount={0.16} max={3}>
-        <div style={{ position: 'absolute', opacity: op, transform: `translate(${p.x}px,${p.y}px) rotate(${p.r}deg)`, ...style }}>
+      <SpeedBlur vx={p1.x - p0.x} vy={p1.y - p0.y} amount={0.32} max={18}>
+        <div style={{ position: 'absolute', opacity: op, transform: `translate(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px) rotate(${p.r.toFixed(2)}deg)`, ...style }}>
           {children}
         </div>
       </SpeedBlur>
     );
   };
 
-  // 背景主光：骨架段由暗到亮缓慢点亮（0→0.3），之后静止
-  const lightUp = seg(t, 0, 0.3, EASE.out);
-  // CTA 强调色：文字段之后才"通电"（填充 + 边线染色），作为页面成形的最后一笔
-  const ctaOn = seg(t, 0.62, 0.78, EASE.out);
+  const guides = 1 - 0.75 * ramp(frame, 48, 14, EASE.out);
+  const ctaOn = ramp(frame, 118, 14, EASE.out);
+  const wipe = ramp(frame, 124, 22, EASE.swift); // 胶片调色擦除 0→1（左→右）
+  const push = 1 + 0.015 * ramp(frame, 120, 48, EASE.smooth);
 
   return (
-    <DesignStage bg="#0a0b0e">
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#111219 0%,#0d0e13 60%,#0a0b0f 100%)' }}>
-        {/* 主光斑（左上偏中，冷色）+ 卡片背后一抹强调色余光 */}
-        <div
-          style={{
-            position: 'absolute', inset: 0, opacity: lightUp,
-            background:
-              `radial-gradient(ellipse 58% 64% at 30% 30%, rgba(${A_RGB},0.075) 0%, rgba(${A_RGB},0) 70%),` +
-              `radial-gradient(ellipse 34% 46% at 78% 46%, rgba(${A_RGB},0.05) 0%, rgba(${A_RGB},0) 72%)`,
-          }}
-        />
-        {/* 底层网格：中心更清楚、四周隐去（遮罩），像台面而不是满屏格纸 */}
-        <div
-          style={{
-            position: 'absolute', inset: 0, opacity: 0.55 + 0.25 * lightUp,
-            background:
-              'repeating-linear-gradient(0deg,transparent 0 23.5px,rgba(255,255,255,.03) 23.5px 24px),' +
-              'repeating-linear-gradient(90deg,transparent 0 23.5px,rgba(255,255,255,.03) 23.5px 24px)',
-            WebkitMaskImage: 'radial-gradient(ellipse 70% 75% at 45% 45%, #000 30%, transparent 100%)',
-            maskImage: 'radial-gradient(ellipse 70% 75% at 45% 45%, #000 30%, transparent 100%)',
-          }}
-        />
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', fontFamily: FONT.sans, background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.05 }} fill={{ x: 0.85, y: 0.55 }} intensity={0.75} breathe={0.3}>
+        {/* 12 栏版式参考线：第 1 帧就在，骨架齐后退淡 */}
+        <div style={{ position: 'absolute', inset: 0, opacity: guides }}>
+          {Array.from({ length: 13 }, (_, i) => (
+            <div key={i} style={{ position: 'absolute', left: 120 + i * 140, top: 0, width: 1, height: 1080, background: 'rgba(255,255,255,0.045)' }} />
+          ))}
+          {[64, 220, 600, 840, 990].map((y) => (
+            <div key={y} style={{ position: 'absolute', left: 0, top: y, width: 1920, height: 1, background: 'rgba(255,255,255,0.04)' }} />
+          ))}
+        </div>
+      </Stage>
 
-        {/* 顶栏 url pill + 右侧短线 */}
-        {shelled(SH.urlPill, { ...PANEL, left: 18, top: 11, width: 88, height: 14, borderRadius: 7 },
-          <div style={{ position: 'absolute', left: 4, top: 4.5, width: 4, height: 4, borderRadius: 2, background: '#3a3e48' }} />,
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: '50% 50%' }}>
+        {/* ── 骨架段 ── */}
+        {shelled(SH.nav, { ...PANEL, left: 120, top: 64, width: 1680, height: 80, borderRadius: 24, background: 'linear-gradient(180deg, rgba(40,41,46,0.75), rgba(26,27,30,0.75))' },
+          <div style={{
+            position: 'absolute', right: 12, top: 12, width: 202, height: 56, borderRadius: 16, boxSizing: 'border-box',
+            border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)',
+          }} />,
         )}
-        {shelled(SH.topLine, { right: 18, top: 15.5, width: 52, height: 4, borderRadius: 2, background: 'linear-gradient(90deg,#20222a,#2a2d36)' })}
-        {/* logo 点阵：右下一颗点亮强调色 */}
-        {shelled(SH.mark, { left: 24, top: 37, width: 10, height: 10 },
+        {shelled(SH.logo, { left: 140, top: 84, width: 40, height: 40 },
           [0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute', width: 4, height: 4, borderRadius: '50%',
-                background: i === 3 ? `rgb(${A_RGB})` : '#e8e9ee',
-                boxShadow: i === 3 ? `0 0 3px rgba(${A_RGB},0.6)` : 'none',
-                left: (i % 2) * 6, top: (i >> 1) * 6,
-              }}
-            />
+            <div key={i} style={{
+              position: 'absolute', width: 16, height: 16, borderRadius: 8, left: (i % 2) * 24, top: (i >> 1) * 24,
+              background: i === 3 ? GOLD : L.ink, boxShadow: i === 3 ? `0 0 10px ${alpha(GOLD, 0.6)}` : 'none',
+            }} />
           )),
         )}
-        {/* 右侧模块卡（含分隔线与缩略块，无文字） */}
-        {shelled(SH.card, { ...PANEL, left: 296, top: 52, width: 162, height: 150, borderRadius: 6, overflow: 'hidden' }, <>
-          <div style={{ position: 'absolute', left: 0, top: 24, width: '100%', height: 0.5, background: 'rgba(255,255,255,0.07)' }} />
-          <div style={{ position: 'absolute', left: 0, top: 104, width: '100%', height: 0.5, background: 'rgba(255,255,255,0.07)' }} />
-          {/* 中区微弱的强调色光：给"sample"一个舞台 */}
-          <div style={{ position: 'absolute', left: 0, top: 24.5, width: '100%', height: 79.5, background: `radial-gradient(ellipse 60% 70% at 50% 60%, rgba(${A_RGB},0.06), rgba(${A_RGB},0) 70%)` }} />
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute', left: 10 + i * 30, top: 124, width: 24, height: 16, borderRadius: 2.5,
-                background: `linear-gradient(160deg, ${['#22252e', '#1d2029', '#252832', '#1b1d25'][i]} 0%, #15161c 100%)`,
-                boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.06), inset 0 0.5px 0 rgba(255,255,255,0.05)',
-              }}
-            />
-          ))}
-        </>)}
-        {/* CTA pill 骨架：文字落定后强调色"通电" */}
-        {shelled(SH.cta, {
-          left: 22, top: 166, width: 84, height: 24, borderRadius: 12,
-          background: `linear-gradient(180deg, rgba(${A_RGB},${0.02 + 0.12 * ctaOn}) 0%, rgba(${A_RGB},${0.01 + 0.06 * ctaOn}) 100%)`,
-          border: `0.5px solid rgba(${A_RGB},${0.22 + 0.4 * ctaOn})`,
-          boxShadow: `inset 0 0.5px 0 rgba(255,255,255,${0.05 + 0.08 * ctaOn}), 0 6px 16px -6px rgba(${A_RGB},${0.25 * ctaOn})`,
-        })}
-        {/* 社交 x 方块 */}
-        {shelled(SH.social, { ...PANEL, left: 352, top: 241, width: 11, height: 11, borderRadius: 2.5 }, <>
-          <svg width={11} height={11} viewBox="0 0 11 11" style={{ position: 'absolute', left: 0, top: 0 }}>
-            <path d="M3.7 3.7l3.6 3.6M7.3 3.7L3.7 7.3" stroke="#7a808c" strokeWidth={0.7} strokeLinecap="round" />
-          </svg>
-        </>)}
-
-        {/* 阶段二：文字逐字 3D 旋转落位（间隔按块长自适应，保证 TEXT_END 前全部落位） */}
-        {BLOCKS.map((b, bi) => {
-          const n = CHAR_PARAMS[bi].reduce((acc, sgp) => acc + sgp.length, 0);
-          const step = Math.min(0.012, Math.max(0.002, (TEXT_END - b.start - CHAR_DUR) / n));
-          let ci = 0; // 块内字符序号（跨段累计，决定各字的错峰起飞）
-          return (
-            <div
-              key={bi}
-              style={{
-                position: 'absolute',
-                ...(b.align === 'right' ? { right: 480 - b.x } : { left: b.x }),
-                top: b.y,
-                font: b.font,
-                color: b.color,
-                letterSpacing: b.ls,
-                whiteSpace: 'nowrap',
-                fontKerning: 'normal',
-                transform: b.dy ? `translateY(${b.dy}px)` : undefined,
-              }}
-            >
-              {b.segs.map((sg, si) => (
-                <span key={si} style={sg.i ? { fontStyle: 'italic' } : undefined}>
-                  {Array.from(sg.s, (ch, k) => {
-                    const c = CHAR_PARAMS[bi][si][k];
-                    const ft = b.start + ci++ * step;
-                    const a = seg(t, ft, ft + CHAR_DUR, EASE.snappy);
-                    // 景深：离焦平面越远越虚（dz 大 → 更糊），落近后迅速变实
-                    const far = (1 - a) * (1 - a);
-                    const blur = far * (0.6 + (-c.dz / 420) * 1.6);
-                    return (
-                      <span
-                        key={k}
-                        style={{
-                          display: 'inline-block',
-                          opacity: a > 0 ? Math.min(1, a * 1.8) : 0,
-                          filter: a > 0 && a < 1 && blur > 0.04 ? `blur(${blur.toFixed(2)}px)` : 'none',
-                          transform:
-                            a >= 1
-                              ? 'none'
-                              : `perspective(600px) translate3d(${lerp(a, c.dx, 0)}px,${lerp(a, c.dy, 0)}px,${lerp(a, c.dz, 0)}px) ` +
-                                `rotateX(${lerp(a, c.rx, 0)}deg) rotateY(${lerp(a, c.ry, 0)}deg) rotateZ(${lerp(a, c.rz, 0)}deg)`,
-                        }}
-                      >
-                        {ch === ' ' ? ' ' : ch}
-                      </span>
-                    );
-                  })}
-                </span>
-              ))}
+        {shelled(SH.card, { ...PANEL, left: 1160, top: 220, width: 640, height: 760, borderRadius: 30, overflow: 'hidden' }, <>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 640, height: 500, overflow: 'hidden' }}>
+            <FilmStill graded={false} />
+            <div style={{ position: 'absolute', inset: 0, clipPath: `inset(0 ${((1 - wipe) * 100).toFixed(2)}% 0 0)` }}>
+              <FilmStill graded />
             </div>
-          );
+            {wipe > 0 && wipe < 1 && (
+              <div style={{ position: 'absolute', top: 0, bottom: 0, left: wipe * 640 - 1, width: 2, background: GOLD, boxShadow: `0 0 18px ${alpha(GOLD, 0.9)}` }} />
+            )}
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 120, background: 'linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0))' }} />
+          </div>
+          <div style={{ position: 'absolute', left: 0, top: 500, width: 640, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+        </>)}
+        {shelled(SH.wheels, { left: 1160, top: 744, width: 640, height: 150 }, <>
+          {/* 色轮控制点：log 灰片时居中（中性），调色擦除时同步推到各自的偏色位置 */}
+          <Wheel cx={106} hue="#7fb2ff" dot={[-16, 22]} k={wipe} />
+          <Wheel cx={320} hue="#f2d9a8" dot={[12, -10]} k={wipe} />
+          <Wheel cx={534} hue={GOLD} dot={[24, -20]} k={wipe} />
+        </>)}
+        {shelled(SH.divider, { left: 120, top: 572, width: 980, height: 1, background: `linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0))` })}
+        {shelled(SH.cta, {
+          left: 120, top: 700, width: 320, height: 80, borderRadius: 40, boxSizing: 'border-box',
+          border: `1.5px solid ${alpha(GOLD, 0.5 + 0.5 * ctaOn)}`,
+          background: `linear-gradient(180deg, ${alpha('#f0d6a2', 0.06 + 0.94 * ctaOn)}, ${alpha(GOLD, 0.04 + 0.96 * ctaOn)})`,
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,${(0.1 + 0.35 * ctaOn).toFixed(2)}), 0 16px 40px -14px ${alpha(GOLD, 0.55 * ctaOn)}`,
         })}
+        {shelled(SH.ghost, { left: 466, top: 700, width: 320, height: 80, borderRadius: 40, boxSizing: 'border-box', border: '1.5px solid rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.03)' })}
+        {(['stat1', 'stat2', 'stat3'] as const).map((k, i) =>
+          <React.Fragment key={k}>{shelled(SH[k], { ...PANEL, left: 120 + i * 338, top: 836, width: 314, height: 144, borderRadius: 22 })}</React.Fragment>,
+        )}
 
-        <Vignette strength={0.55} inner={0.42} color="#05060a" cx={0.48} cy={0.46} />
-        <Grain opacity={0.09} blend="soft-light" scale={0.25} />
+        {/* ── 文字段：逐字 3D 翻滚落位 ── */}
+        {BLOCKS.map((b, bi) => {
+          const text = bi === 9 ? { ...b, style: { ...b.style, color: ctaOn > 0.5 ? '#16120a' : '#f0d6a2' } } : b; // CTA 字随通电由金转深
+          return <FlyBlock key={bi} b={text} bi={bi} frame={frame} />;
+        })}
       </div>
-    </DesignStage>
+    </div>
   );
 };

@@ -3,30 +3,29 @@
   "issues": [
     "B 句收色排到 t≈1.08，片尾 changed 仍是紫色，定稿态从未出现",
     "极光只读成一团淡紫雾，橙核被主层盖住几乎看不见，缺少内部流动",
-    "亮场 #ececec 与暗场 #0a0a12 都是平铺死色，大面积柔焦渐变有色带",
-    "A 句前 46% 完全静止，像贴图；换句只有 blur/淡入淡出，没有位移落位",
-    "字体为 system-ui 回退、默认字距，字重层级平"
+    "文案是中性占位（For many years / everything changed），居中一行没有层级、没有落款，读不出转折的力量",
+    "反转后的暗场只剩一团压暗的余晖，画面“变黑了”而不是“到了新的一幕”"
   ],
   "changes": [
-    "时间轴前移约 0.06：升起 0.04→0.56、反转 0.57→0.64（仍 ≈0.36s）、A 句 0.40 起、B 句 0.70 起 stagger 0.05、收色 0.09，t≈0.90 定稿后静止 ≈0.5s",
-    "极光改四层：主紫 + 新增品红过渡层（与橙核不同频漂移）+ 抬高的橙核 + 白色融边，暖芯真正透出",
-    "反转瞬间 blob 组 overshoot 轻收 6%，读作'被压成余晖'",
-    "亮场顶部白色柔光、暗场冷色天光随 flip 交替；全程 soft-light 颗粒与随 flip 加深的暗角防色带",
-    "A 句静置期 swift 缓推 1→1.035，blur-out 时上浮 5px；B 句 blur-in 带 6px 上浮落位，收色前紫字带自发光；字体换系统字栈、−0.022em 字距"
+    "光色整组换成真实极光（自定义 custom）：雾白 #e9edf0 底上升起青绿 / 冷青 / 紫三层柔焦光团，各层不同频漂移，用径向渐变软边代替整屏 blur",
+    "反转命门保留并收紧到 11f（≈0.37s）压到带蓝相的极夜 #05080e，光团压成 0.4 余晖并 overshoot 轻收 6%",
+    "底色落定后显影极夜：18 条摆动明灭的极光帘幕（带亮芯）+ 80 颗星点，让反转读作“天黑了、极光出来了”",
+    "文案改成真正的转折句：A「For years, forecasts were guesses.」92px 逐词 blur-in / blur-out，B「See it coming.」140px 逐词 blur-in，落定后极光青收成白，再接品牌落款字距收拢",
+    "时长 156→172f，B 句与落款在 f156 前全部定稿，留 16f 干净 hold（帘幕仍在缓慢摆动）"
   ],
   "issuesEn": [
-    "Sentence B's colour settle was scheduled to t≈1.08, so 'changed' was still purple on the last frame — the final state never appeared",
-    "The aurora read as a pale lavender haze; the orange core was buried under the main layer and there was no internal flow",
-    "Both #ececec and #0a0a12 grounds were flat fills, and the big soft gradients banded",
-    "Sentence A sat completely still for the first 46% like a pasted image; the swap used only blur/fade with no positional landing",
-    "Font fell back to system-ui with default tracking and a flat weight hierarchy"
+    "B's color settle was scheduled at t≈1.08, so 'changed' was still purple at the end and the final state never appeared",
+    "The aurora read as one pale purple haze; the orange core was buried under the main layer and nothing moved inside it",
+    "Copy was a neutral placeholder ('For many years' / 'everything changed') in one centered line with no hierarchy or sign-off, so the turn carried no weight",
+    "After the flip only a dimmed glow remained: the frame simply 'went dark' rather than arriving at a new scene"
   ],
   "changesEn": [
-    "Timeline pulled ≈0.06 earlier: rise 0.04→0.56, flip 0.57→0.64 (still ≈0.36s), A out from 0.40, B in from 0.70 with 0.05 stagger and a 0.09 colour settle — final state lands at t≈0.90 and holds ≈0.5s",
-    "Aurora rebuilt as four layers: main violet, a new magenta bridge layer drifting at a different frequency from the raised orange core, and the white feather edge — the warm heart now shows",
-    "At the flip the blob group squashes 6% on an overshoot ease, reading as being pressed into an afterglow",
-    "A white top light on the light ground and a cool sky light on the dark ground cross-fade with the flip; soft-light grain throughout and a vignette that deepens with the flip kill banding",
-    "Sentence A pushes in 1→1.035 on a swift ease while resting and lifts 5px as it blurs out; B blurs in with a 6px rise and a faint violet glow before turning white; system font stack with −0.022em tracking"
+    "The light palette is rebuilt as a real aurora (custom): teal-green, cool cyan and violet soft blooms rise from a misty #e9edf0 ground, drifting at different rates, using soft radial gradients instead of full-frame blur",
+    "The flip stays the key beat and tightens to 11f (≈0.37s) into a blue-tinted polar night #05080e; the blooms compress to a 0.4 afterglow with a 6% overshoot squash",
+    "Once the dark lands, the night develops: 18 swaying, flickering aurora curtains with bright cores plus 80 twinkling stars, so the flip reads as 'night fell and the aurora came out'",
+    "Copy becomes a real turn: A 'For years, forecasts were guesses.' at 92px blurs in and out by word; B 'See it coming.' at 140px blurs in by word, settles from aurora green to white, then a tracked brand line resolves",
+    "Duration 156 to 172f; B and the lockup finish before f156, leaving a clean 16f hold with curtains still drifting"
   ],
+  "look": "custom",
   "mdChanged": true
 }
