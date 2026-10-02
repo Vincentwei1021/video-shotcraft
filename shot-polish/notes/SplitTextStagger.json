@@ -1,0 +1,30 @@
+{
+  "stem": "SplitTextStagger",
+  "issues": [
+    "没有导出时长常量，工作台按 56f 推断，末字刚落定画面就结束，没有收尾静止",
+    "左上角调试标题 \"SPLIT TEXT STAGGER\" 直接上屏",
+    "#ececea 纯色平铺 + Helvetica 800，标题像默认样式",
+    "字从裁切线下升起全程锐利，快速段没有速度感；基线是固定 920px 的 2px 灰线，与文字行宽度对不上"
+  ],
+  "changes": [
+    "补 SPLIT_TEXT_STAGGER_DURATION = 130f（56f 动作 + 74f 静止），原节拍（12f 起跳、i×2f、115%→-10%→0）不变",
+    "去掉调试标题，柔光 Backdrop 替代纯色底",
+    "系统 SF 栈 700、字号 120→136、-0.015em 字距、带色相近黑墨色",
+    "每字按竖向速度加 SVG y 向运动模糊（≤10px，静止为 0）",
+    "基线改 3px 强调色渐变线、宽度与文字行严格等宽，生长改 30f 强 ease-out"
+  ],
+  "issuesEn": [
+    "No exported duration: the workbench guessed 56f, so the shot ended the instant the last letter landed with no hold",
+    "Debug label \"SPLIT TEXT STAGGER\" printed top-left",
+    "Flat #ececea fill and Helvetica 800, the title looked like a default style",
+    "Letters rose from the mask line razor sharp with no sense of speed; the baseline was a fixed 920px grey rule that did not match the text width"
+  ],
+  "changesEn": [
+    "Added SPLIT_TEXT_STAGGER_DURATION = 130f (56f action + 74f hold); original beats (12f start, i×2f, 115%→-10%→0) untouched",
+    "Debug label removed; soft-light Backdrop instead of a flat fill",
+    "SF system stack at 700, size 120→136, -0.015em tracking, tinted near-black ink",
+    "Per-letter vertical SVG motion blur from rise speed (≤10px, zero at rest)",
+    "Baseline is now a 3px accent gradient rule exactly as wide as the text, grown with a 30f strong ease-out"
+  ],
+  "mdChanged": true
+}

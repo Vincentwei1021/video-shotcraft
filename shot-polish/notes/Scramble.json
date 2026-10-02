@@ -1,0 +1,32 @@
+{
+  "stem": "Scramble",
+  "issues": [
+    "调试占位文案 \"TEMPLATE MOTION DEMO\" 直接上屏",
+    "34 号字 20 个字符几乎顶满画幅两侧，没有安全边距",
+    "#07080c 纯色平铺 + transform 位图放大，暗场没有任何光感，字边偏软",
+    "乱码层整片同一灰度，看不出\"在运算\"；锁定闪光窗 0.1 实际拖了约 10f，光晕偏糊",
+    "末字 ~88f 才锁定，整句落定后几乎没有静置"
+  ],
+  "changes": [
+    "文案换成 20 字符的 \"AUTOPILOT NOW ONLINE\"（三词、两处空格呼吸点），字数节拍不变",
+    "字号 34→28（设计坐标）+ raster=\"zoom\" 按 1080p 光栅化，整行左右各留约 210px",
+    "暗场 Backdrop + 文字背后一条随已锁比例增亮的冷色柔光带 + soft-light 颗粒，\"上电\"感",
+    "乱码亮度随每次重掷在 0.55–1 间闪烁，锁定前沿 2 字提亮成冷青色；锁定闪光收到 ~3f、光晕 14px 并加字形 1.14→1 轻压",
+    "锁定窗前移到 0.22→0.76（+≤6f 抖动），末字约 80f 落定，留 ~14f 完整句静置"
+  ],
+  "issuesEn": [
+    "Debug placeholder copy \"TEMPLATE MOTION DEMO\" shown on screen",
+    "20 characters at 34px nearly touched both frame edges, no safe margin",
+    "Flat #07080c fill plus a transform-scaled bitmap: no light in the dark field and soft glyph edges",
+    "The scramble layer was one uniform grey with no sense of computation; the 0.1 lock flash actually lasted ~10f with a muddy glow",
+    "The last character locked around 88f, leaving almost no hold on the finished line"
+  ],
+  "changesEn": [
+    "Copy changed to the 20-character \"AUTOPILOT NOW ONLINE\" (three words, two breathing spaces), same beat count",
+    "Size 34→28 (design units) with raster=\"zoom\" at 1080p, leaving ~210px margin each side",
+    "Dark Backdrop, a cool soft light band behind the line that brightens with the locked fraction, and soft-light grain for a power-on feel",
+    "Scramble glyph brightness flickers 0.55–1 per re-roll, the next two characters at the lock front glow cool cyan; lock flash tightened to ~3f, 14px glow, plus a 1.14→1 glyph press",
+    "Lock window moved to 0.22→0.76 (+≤6f jitter) so the last character lands ~80f with ~14f of hold"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,28 @@
+{
+  "stem": "TextOnPath",
+  "issues": [
+    "没有导出时长常量，工作台按 56f 推断，字还挂在线上就结束，摆正环节没渲染",
+    "字符各自起跑、后面的字要追越前面的字，曲线低段挤成一团（\"GROWTHALL\" 叠字），行进中读不出句子",
+    "终位按 46px 估宽排版，字距忽宽忽窄；左上角调试标题 \"TEXT ON PATH\"",
+    "曲线是一条 3px 灰线，看不出\"增长线\"的语义"
+  ],
+  "changes": [
+    "补 TEXT_ON_PATH_DURATION = 150f（56f 推进 + 8f 停顿 + 逐字摆正至 ~101f + 静止）",
+    "整串字按实测步进沿弧长刚性推进（末字领跑、切线角旋转），行进中即可读出 \"GROWTH ALL THE WAY\"；曲线 evolve 按弧长比例与车头同步",
+    "到达后停 8f，从左到右 1.5f 错峰、12f inOut 摆正到水平基线，终位按实测字宽排版",
+    "曲线做成图表增长线：强调色 4px 圆头描边 + 线下渐变面积 + 车头光点 + 网格与刻度；柔光 Backdrop、SF 700"
+  ],
+  "issuesEn": [
+    "No exported duration: the workbench guessed 56f, so it ended with letters still on the line and the straightening never rendered",
+    "Each letter started on its own and later letters had to overtake earlier ones, so the low part of the curve became a pile-up ('GROWTHALL') and the sentence was unreadable in motion",
+    "Final layout used a 46px width guess so spacing was uneven; debug label \"TEXT ON PATH\" top-left",
+    "The curve was a 3px grey line with no 'growth chart' meaning"
+  ],
+  "changesEn": [
+    "Added TEXT_ON_PATH_DURATION = 150f (56f travel, 8f pause, staggered straightening to ~101f, then hold)",
+    "The whole string advances rigidly along arc length at measured advances (last letter leading, rotated to the tangent), readable as 'GROWTH ALL THE WAY' while moving; the curve's evolve tracks the lead letter by arc-length fraction",
+    "After an 8f pause letters straighten left to right at 1.5f stagger with a 12f inOut onto a horizontal baseline laid out from measured widths",
+    "The curve is now a growth chart: 4px accent round-cap stroke, gradient area fill, lead-point dot, gridlines and ticks; soft-light Backdrop, SF 700"
+  ],
+  "mdChanged": true
+}

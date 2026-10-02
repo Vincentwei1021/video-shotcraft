@@ -6,9 +6,16 @@
 // 全部挤向词心，位移只与字缝有关、与字宽无关，天然对中。
 // 关键帧：0–50 展开（Easing.out(poly(5)))＋去糊提亮 → 35–58 副标题淡入（≈主词展开 70% 时点）
 // → 58–130 全静止（≥72f，滤镜彻底摘除）。
+//
+// 质感升级：去掉调试标题；柔光 Backdrop（主光在词心上方）；系统 SF 栈 700、带色相近黑墨色；
+// 展开时字下方一层柔影随清晰度同步浮现（字从雾里"落"到纸面）；副标题 32px 三级灰、
+// 淡入附 8px 上浮；补导出时长 130f（原工作台按 56f 推断，副标题刚出来就切走）。
 import React from 'react';
 import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G, TitleBlock } from '../../_fixtures/Fixtures';
+import { G } from '../../_fixtures/Fixtures';
+import { Backdrop, FONT } from '../../_fixtures/Polish';
+
+export const TRACKING_EXPAND_REVEAL_DURATION = 130;
 
 const WORD = 'BREATHE';
 const FS = 150; // 主词字号
@@ -38,10 +45,8 @@ export const TrackingExpandReveal: React.FC = () => {
   const settled = frame >= 50; // 展开完成后摘掉一切滤镜/变换，保证逐帧完全相同
 
   return (
-    <div style={{ width: 1920, height: 1080, background: G.bg, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 120, top: 96 }}>
-        <TitleBlock text="TRACKING EXPAND REVEAL" size={54} />
-      </div>
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
+      <Backdrop tone="light" light={{ x: 0.5, y: 0.36 }} accent="#5b63d3" grain={0.045} vignette={0.13} />
 
       {/* 主词：容器 letterSpacing 恒为 0.14em（终态），字符仅做 translateX */}
       <div
@@ -59,11 +64,13 @@ export const TrackingExpandReveal: React.FC = () => {
       >
         <div
           style={{
-            fontFamily: 'Helvetica, Arial, sans-serif',
-            fontWeight: 800,
+            fontFamily: FONT.sans,
+            fontWeight: 700,
             fontSize: FS,
-            color: G.ink,
+            color: G.ink1,
             letterSpacing: '0.14em',
+            // 柔影随清晰度浮现：展开完成后定格为静态值（无逐帧变化）
+            textShadow: `0 ${(14 * p).toFixed(2)}px ${(36 * p).toFixed(2)}px rgba(20,22,32,${(0.12 * p).toFixed(3)})`,
             whiteSpace: 'pre',
             // letter-spacing 只加在字后，整体左移半个缝宽找回视觉对中
             marginLeft: 0.14 * FS * 0.5,
@@ -94,12 +101,15 @@ export const TrackingExpandReveal: React.FC = () => {
           left: 0,
           width: 1920,
           textAlign: 'center',
-          fontFamily: 'Helvetica, Arial, sans-serif',
+          fontFamily: FONT.sans,
           fontWeight: 500,
-          fontSize: 34,
-          color: G.mid,
+          fontSize: 32,
+          color: G.ink3,
           letterSpacing: '0.32em',
+          // letter-spacing 只加在字后，补半个字距找回视觉对中
+          paddingLeft: '0.32em',
           opacity: frame >= 58 ? 1 : subOp,
+          transform: frame >= 58 ? undefined : `translateY(${((1 - subOp) * 8).toFixed(2)}px)`,
         }}
       >
         A CINEMATIC TITLE ENTRANCE

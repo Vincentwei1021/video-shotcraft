@@ -1,0 +1,28 @@
+{
+  "stem": "PillChipSlotCycleHandled",
+  "issues": [
+    "#fbfbfd 纯色平铺底，画面没有光源与层次",
+    "DesignStage 用 transform 把 480×270 位图放大 4 倍，大字边缘偏软",
+    "胶囊内滚轮是纯 inOutCubic 平滑停住，落定没有\"卡入\"的物理感，滚动中词列清晰拖过、无速度感",
+    "胶囊是单色 #1a1c24 + 单层投影，像平贴的色块；系统 emoji 字形跨平台不一致、彩色抢戏"
+  ],
+  "changes": [
+    "背景换柔光 Backdrop（中上主光 + 极淡靛蓝余光 + 颗粒 + 轻暗角），全程极缓推近 1→1.025",
+    "DesignStage 改 raster=\"zoom\"，字形按 1080p 目标尺寸光栅化；量宽改为除以 100px 参照块，与缩放管线无关",
+    "滚轮缓动换 bezier(0.62,0,0.3,1.13)：两头仍缓、末端 ~4% 过冲回位像棘轮卡入；滚动中词列按竖速加 SVG 竖向高斯模糊（静止为 0），幽灵项同步虚化",
+    "胶囊改竖向微渐变 + 顶部 1px 内高光 + 底部暗沿 + 两层软阴影，上下 22% 柱面收光；emoji 换成 15px 单色线性图标（淡靛蓝）"
+  ],
+  "issuesEn": [
+    "Flat #fbfbfd fill with no light source or depth",
+    "DesignStage scaled a 480×270 bitmap 4× via transform, so the large type edges were soft",
+    "The wheel stopped on a plain inOutCubic with no detent feel, and the word column slid by sharp with no sense of speed",
+    "The pill was a flat #1a1c24 slab with a single shadow; system emoji render inconsistently across platforms and the colour fights the type"
+  ],
+  "changesEn": [
+    "Soft-light Backdrop (upper-centre key, faint indigo spill, grain, light vignette) and a slow 1→1.025 push-in",
+    "DesignStage switched to raster=\"zoom\" so glyphs rasterize at 1080p; width measurement normalised by a 100px reference box so it is independent of the zoom pipeline",
+    "Wheel ease is now bezier(0.62,0,0.3,1.13): slow at both ends with a ~4% overshoot that clicks back like a detent; the column gets a vertical SVG blur by speed (zero at rest) and the ghosts blur with it",
+    "Pill gets a vertical gradient, 1px top highlight, dark lower lip and two-layer soft shadow plus a 22% cylinder falloff top and bottom; emoji replaced by 15px monochrome line icons in pale indigo"
+  ],
+  "mdChanged": true
+}

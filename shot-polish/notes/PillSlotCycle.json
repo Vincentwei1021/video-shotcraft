@@ -1,0 +1,30 @@
+{
+  "stem": "PillSlotCycle",
+  "issues": [
+    "没有导出时长常量，工作台按 12f 推断，只渲染出句干入场，列举与收束整段丢失",
+    "#ececea 纯色平铺底 + Helvetica，句干与 pill 都像未调过的默认样式",
+    "pill 用 3px 实色灰边 + 单层灰阴影，图标是 ? ▲ # ☰ 等 Unicode 字符，字体回退后粗细不一",
+    "换位只有平移 + 全向 blur，没有\"滚一格\"的体积感；结论句落位后整行偏左，'to' 与 'do' 之间留着槽位宽的空洞"
+  ],
+  "changes": [
+    "补 PILL_SLOT_CYCLE_DURATION = 200f（12f 入场 + 6×21f 列举 + 14f 收束 + 48f 完整句 hold），保留原 21f 拍长与 8f 换位窗",
+    "柔光 Backdrop + 系统 SF 字体栈，句干 96/800、-0.035em 字距，入场带 6px 虚化收拢",
+    "pill 改白面竖向微渐变 + 发丝线 + 顶部内高光 + 随离槽高度变化的两层软阴影；6 个图标换成同一套线性 SVG，落在强调色浅底圆角方块里",
+    "换位加滚筒翻页：入 rotateX -38°→0 + 0.94→1（snappy），出 0→34° + 1→0.94（ease-in），竖向运动模糊按真实速度计算、静止为 0",
+    "结论句 back(1.4) 落位后整行 smooth 26f 缓缓居中（列举期间句干仍左锚死），'to do' 收回普通词距"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 12f and only the stem entrance rendered; the whole cycle and payoff were lost",
+    "Flat #ececea fill and Helvetica; both the stem and the pills looked like untuned defaults",
+    "Pills had a 3px solid grey border and a single grey shadow; icons were Unicode glyphs (? ▲ # ☰) with inconsistent fallback weights",
+    "Swaps were a translate plus isotropic blur with no sense of a drum turning; after the payoff the line sat left-heavy with a slot-sized hole between 'to' and 'do'"
+  ],
+  "changesEn": [
+    "Added PILL_SLOT_CYCLE_DURATION = 200f (12f intro + 6×21f cycle + 14f payoff + 48f full-sentence hold), keeping the original 21f beat and 8f swap window",
+    "Soft-light Backdrop and the SF system stack; stem at 96/800 with -0.035em tracking and a 6px blur-in",
+    "Pills get a white vertical gradient, hairline border, top inner highlight and a two-layer shadow that grows with lift; the six icons are one consistent line-SVG set in an accent-tinted rounded well",
+    "Drum-flip swaps: incoming rotateX -38°→0 with 0.94→1 scale (snappy), outgoing 0→34° with 1→0.94 (ease-in); vertical motion blur from actual speed, zero at rest",
+    "After the back(1.4) payoff the whole line eases to centre over 26f (the stem stays left-anchored throughout the cycle) and 'to do' closes to a normal word space"
+  ],
+  "mdChanged": true
+}

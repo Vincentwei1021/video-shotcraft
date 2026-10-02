@@ -1,0 +1,28 @@
+{
+  "stem": "LetterformDriftAssembly",
+  "issues": [
+    "没有导出时长常量，工作台按 56f 推断，渲染停在字还在半空的时候",
+    "左上角调试标题 \"LETTERFORM DRIFT ASSEMBLY\" 直接上屏",
+    "字只做平面平移 + blur，读作在纸面上滑动，缺少\"从空间里飘回来\"的纵深",
+    "#ececea 纯色平铺 + Helvetica 800 + 纯灰 #2f2f2f 字色"
+  ],
+  "changes": [
+    "补 LETTERFORM_DRIFT_ASSEMBLY_DURATION = 150f，原 i×3f 错峰、45f 行程、8f 加深脉冲、1.04 呼吸全部保留",
+    "去掉调试标题，柔光 Backdrop",
+    "漂入在位移/blur/opacity 之外再绑同一条 p 的旋转（±24°→0）与纵深缩放（1.22→1）",
+    "系统 SF 栈 700、148px、带色相近黑墨色；合体后字面下方浮出极淡的椭圆落地影，随呼吸同步缩放"
+  ],
+  "issuesEn": [
+    "No exported duration: the workbench guessed 56f and the render stopped with letters still mid-air",
+    "Debug label \"LETTERFORM DRIFT ASSEMBLY\" printed top-left",
+    "Letters only translated and blurred in 2D, reading as sliding on paper rather than drifting back out of space",
+    "Flat #ececea fill, Helvetica 800 and a flat grey #2f2f2f ink"
+  ],
+  "changesEn": [
+    "Added LETTERFORM_DRIFT_ASSEMBLY_DURATION = 150f; the i×3f stagger, 45f travel, 8f darken pulse and 1.04 breath are all kept",
+    "Debug label removed; soft-light Backdrop",
+    "Besides translate/blur/opacity, the same p now drives rotation (±24°→0) and depth scale (1.22→1)",
+    "SF system stack at 700, 148px, tinted near-black ink; a faint elliptical ground shadow appears under the word once assembled and breathes with it"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "TitleDemoteToLabel",
+  "issues": [
+    "没有导出时长常量，工作台按 92f 推断，B 式（选中高亮）整段没渲染出来",
+    "降格后长出的内容是 5 条灰色骨架条 + 一张 2px 灰边空白卡，像未完成的线框",
+    "#ececea 纯色平铺 + Helvetica 800，标题与背景都缺质感",
+    "标题 20f 飞行 810px 全程锐利，没有速度感；选中高亮是半透明蓝块，缺少\"可编辑文本\"的暗示"
+  ],
+  "changes": [
+    "补 TITLE_DEMOTE_TO_LABEL_DURATION = 196f（A 92f + B 104f），两式完整串播",
+    "内容区换成出版级假内容：发丝分隔线 + 4 行真实正文 + 列表卡（序号、进度条、元信息、状态 chip），生长保持 0.16 错峰与宽 0.35→1，改为裁切揭开不压扁字",
+    "柔光 Backdrop + 系统 SF 栈 700、-0.04em 字距，显影附 1.03→1 轻收",
+    "降格飞行按位置差分速度加方向性运动模糊（≤10px，静止为 0），单条 inOut(cubic) 曲线不变",
+    "B 式选区改系统选区蓝 + 跟随右缘的 2px 插入光标；串播白闪改暖白 #fbfaf7"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 92f and variant B (selection highlight) never rendered",
+    "The content that grew in after the demote was five grey skeleton bars and an empty 2px-bordered card, like an unfinished wireframe",
+    "Flat #ececea fill with Helvetica 800; neither the title nor the background had any finish",
+    "The 810px, 20f flight stayed razor sharp with no sense of speed; the selection was a plain translucent blue block with no 'editable text' cue"
+  ],
+  "changesEn": [
+    "Added TITLE_DEMOTE_TO_LABEL_DURATION = 196f (A 92f + B 104f) so both variants play in full",
+    "Content is now publication-grade: a hairline rule, four lines of real body copy and a list card (index, progress bar, meta, status chip); growth keeps the 0.16 stagger and 0.35→1 width, now as a clip reveal so text never squashes",
+    "Soft-light Backdrop, SF system stack at 700 with -0.04em tracking, and a 1.03→1 settle on reveal",
+    "Directional motion blur from the positional speed during the demote flight (≤10px, zero at rest); the single inOut(cubic) curve is unchanged",
+    "Variant B uses system selection blue plus a 2px caret riding the selection edge; the hand-off flash is warm white #fbfaf7"
+  ],
+  "mdChanged": true
+}

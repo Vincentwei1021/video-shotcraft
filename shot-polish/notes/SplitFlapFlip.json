@@ -1,0 +1,30 @@
+{
+  "stem": "SplitFlapFlip",
+  "issues": [
+    "翻牌格直接散放在 30% 透明的假 dashboard 上，没有显示屏外壳，读作一排贴纸",
+    "叶片是单色 #262624 平面，铰链只是一条 4px 黑线，看不出机械结构",
+    "上半叶掉落时下半静态叶亮度不变，翻转缺少遮光的立体感",
+    "Helvetica 800 字形回退、背景页面清晰抢戏、全程死机位"
+  ],
+  "changes": [
+    "整排翻牌装进石墨色显示屏外壳：竖向微渐变、1px 上沿高光、6px 内凹槽、两层落地阴影",
+    "叶片改上亮下暗微渐变 + 内高光/暗沿，铰链改 3px 暗缝 + 下沿高光，左右各加一颗转轴销钉",
+    "上半叶掉落时在下半静态叶上投随角度加深的阴影（≤0.42），叶片快速段加 ≤1.6px 竖向模糊",
+    "字体换系统 SF 栈 700、象牙白字；背景 dashboard 虚化 6px + 降饱和压暗 + 暗角，全程 smooth 推近 1→1.03 并带轻微视差",
+    "保留原节拍：22f 起 4f 级联、单次 5f Easing.in(quad)、每格 3 次、停定 6px 咔哒，末格 80f 停定后静置 60f"
+  ],
+  "issuesEn": [
+    "Flap cells sat loose on a 30%-opacity fake dashboard with no display housing, reading like a row of stickers",
+    "Flaps were flat #262624 slabs and the hinge was just a 4px black line, no sense of mechanism",
+    "The static lower leaf never darkened while the upper flap fell, so the flip lacked occlusion depth",
+    "Helvetica 800 fallback, a sharp background page competing for attention, and a locked-off camera"
+  ],
+  "changesEn": [
+    "The row now sits in a graphite display housing: vertical gradient, 1px top highlight, 6px inner recess and a two-layer drop shadow",
+    "Flaps get a top-lit gradient with inner highlight and dark lip, a 3px hinge gap with lower highlight, and axle pins on both sides",
+    "The falling upper flap casts an angle-driven shadow (≤0.42) on the static lower leaf; fast phases get ≤1.6px vertical blur",
+    "SF system stack at 700 in ivory ink; background dashboard blurred 6px, desaturated and dimmed with a vignette; a smooth 1→1.03 push-in with slight parallax",
+    "Original beats kept: cascade from 22f at 4f stagger, 5f Easing.in(quad) flips, 3 flips per cell, 6px click; last cell settles at 80f followed by a 60f hold"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,28 @@
+{
+  "stem": "TrackingExpandReveal",
+  "issues": [
+    "没有导出时长常量，工作台按 56f 推断，副标题刚淡入就切走",
+    "左上角调试标题 \"TRACKING EXPAND REVEAL\" 直接上屏",
+    "#ececea 纯色平铺 + Helvetica，主词落定后像贴在平面上",
+    "副标题 G.mid 34px 硬淡入，位置与层级都偏随意"
+  ],
+  "changes": [
+    "补 TRACKING_EXPAND_REVEAL_DURATION = 130f，原 50f 展开（translateX 插值、blur 10→0、scaleX 0.92→1）不变",
+    "去掉调试标题，柔光 Backdrop（主光在词心上方）",
+    "主词系统 SF 栈 700、近黑墨色，柔影随清晰度同步浮现，落定后为静态值",
+    "副标题 32px 三级灰、补半个字距找回对中，淡入附 8px 上浮"
+  ],
+  "issuesEn": [
+    "No exported duration: the workbench guessed 56f and cut away just as the subtitle faded in",
+    "Debug label \"TRACKING EXPAND REVEAL\" printed top-left",
+    "Flat #ececea fill and Helvetica; the settled word looked pasted flat",
+    "Subtitle was a plain 34px G.mid fade with loose placement and hierarchy"
+  ],
+  "changesEn": [
+    "Added TRACKING_EXPAND_REVEAL_DURATION = 130f; the 50f expand (translateX interpolation, blur 10→0, scaleX 0.92→1) is unchanged",
+    "Debug label removed; soft-light Backdrop with the key light above the word",
+    "Main word in SF 700 tinted ink with a soft shadow that resolves with clarity and is static once settled",
+    "Subtitle at 32px tertiary grey, half a tracking unit of padding to re-centre it, fading in with an 8px rise"
+  ],
+  "mdChanged": true
+}

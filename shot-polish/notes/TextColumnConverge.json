@@ -1,0 +1,28 @@
+{
+  "stem": "TextColumnConverge",
+  "issues": [
+    "没有导出时长常量，工作台按 16f 推断，只渲染出开头半秒，轮换与合拢揭晓全部丢失",
+    "#050506 近纯黑平铺，暗场没有任何光感与层次",
+    "NEW 与特性词同色同亮，轮换期读不出\"标签 vs 内容\"，合拢时也没有\"两半成一句\"的变化",
+    "36f 合拢滑动全程锐利，缺少速度感；词换是纯硬切，丢了原片 1 帧换行闪"
+  ],
+  "changes": [
+    "补 TEXT_COLUMN_CONVERGE_DURATION = 180f（8f 黑场 + 82f 轮换 + 10f 停稳 + 36f 合拢 + 18f 定格 + 小字后 22f 静置），钉死位置与唯一合拢节拍不动",
+    "冷色深底竖向渐变 + 中线上方极淡顶光 + 暗角 + soft-light 颗粒；合拢落定后背后柔光微亮",
+    "NEW 轮换期改次级灰 #8a8c96，合拢中随进度 smooth 提亮到主色；斜体小字降为三级色",
+    "合拢按真实速度加水平运动模糊（两词相向，≤4px，静止为 0）；词换瞬间加回 1 帧提亮 + 微光晕"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 16f and only half a second rendered; the rotation and the converge reveal were lost",
+    "Near-black #050506 flat fill with no light or depth",
+    "NEW and the feature word shared the same colour, so there was no 'label vs content' read during rotation and no 'two halves become one phrase' moment",
+    "The 36f converge slide stayed razor sharp with no sense of speed, and word swaps were bare hard cuts without the source's one-frame flash"
+  ],
+  "changesEn": [
+    "Added TEXT_COLUMN_CONVERGE_DURATION = 180f (8f black, 82f rotation, 10f rest, 36f converge, 18f hold, 22f after the sub line); pinned positions and the single converge are untouched",
+    "Cool dark vertical gradient, faint top light above centre, vignette and soft-light grain; a soft glow rises behind the line once it locks",
+    "NEW is secondary grey #8a8c96 during rotation and smoothly brightens to the main ink as it converges; the italic sub line drops to tertiary grey",
+    "Horizontal motion blur from actual slide speed (opposite directions, ≤4px, zero at rest); a one-frame brighten with faint glow restored on each word swap"
+  ],
+  "mdChanged": true
+}
