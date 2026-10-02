@@ -1,330 +1,245 @@
-// chip-lift-to-user-pill — Chip Lift 选中 chip 长成人名药丸（motion-lab 定稿转原生 Remotion）
-// 网格里的目标 chip 先 3 帧硬切反色成黑底白字，其余 chip 按到它的距离交错淡出并缩到 0.9；
-// 黑 chip 保持左缘不动向右生长成药丸，内部逐字打出人名并点亮绿点，再拉一条 1px 连接线
-// 接到圆形徽标，最后走逐词加深字幕。
-// 设计坐标 480×270（DesignStage 等比放大），440×240 定尺画布居中排版。
-// 改版：时间轴与参数表不变；加一条"跟拍"机位——选择段网格居中，药丸定型后（0.44→0.68）
-// 平滑横移到"药丸 + 连线 + 徽标 + 字幕"整组居中（生长段机位静止，左缘锚定的读法不受影响）；
-// chip 发丝线 + 内高光 + 两层软阴影，黑药丸带受光上沿与随选中抬起的投影；连接线改 0.5 设计 px
-// 并带一颗领跑小点；字幕与药丸左缘对齐；柔光底 + 颗粒在 DesignStage 之外。
+// chip-lift-to-user-pill —— Chip Lift 选中 chip 长成人名药丸
+// 网格里的目标 chip 3 帧台阶硬切反色，其余 chip 按到它的曼哈顿距离交错淡出缩小；反色 chip 左缘锚定向右生长成药丸，
+// 内部逐字打出人名并点亮在线点，再拉一条连接线接到圆形徽标，最后字幕逐词加深。
+//
+// 第二轮重设计（酸柠暗场 · 协作工具"拉一个人进来"）：
+// - look = lime（石墨暗场 · 荧光黄绿）。按 1080p 原生排版重写（不再用 480×270 设计坐标放大）：4×3 头像缩写网格，
+//   chip 168×100、40px 字，网格占画宽 ~39%，眉题「Design team · 12 online」。虚构协作产品 Wren 的新建会话。
+// - 两段质感：选中是硬的——反色走 3 档台阶（0 / 0.5 / 1，每档 2f，不缓动），暗灰 chip 一下变成近白实体；
+//   之后是软的——药丸左缘锚定 smooth 生长到 640px，缩写先撤、人名逐字升起（打字挂在生长进度 g 上），
+//   生长收尾荧光绿在线点 overshoot 弹出并带一圈泛光（全片唯一的强调色主角）。
+// - 余项按曼哈顿距离从选中点向外扩散退场（opacity→0 + scale→0.9），空间因果优先于时间顺序。
+// - 连接线：药丸定型后才起笔，荧光绿细线 + 领跑光点，抵达即徽标（Wren 标）弹入——"线到即物到"；
+//   字幕 60px「Starting a thread with Noor」与药丸左缘对齐逐词加深，下方 32px 副句交代上下文。
+// - 机位：选择与生长段静止（左缘锚定的"展开"读法不受影响）；定型后 smooth 横移 + 上移把结果组送到画面中心。
+//
+// 时间表（30fps，共 165f）：
+//   0–26    眉题 + 12 个 chip 由中心向外错峰升起（按到目标的距离排序）
+//   26–38   读：网格静置（Stage 光呼吸）
+//   38–44   反色硬切：38–39f 原色 / 40–41f 半灰 / 42f 起近白（三档台阶）
+//   44–74   余项按距离扩散退场（dist×3.3f 起步，各 11f）
+//   58–88   药丸生长 168→640（30f，outCubic）；人名逐字；84–88 在线点弹出
+//   90–126  机位 smooth 横移到结果组居中 + 推近 5%（hold 段再缓推 1.5%）
+//   96–110  连接线 0→170px（outQuad）+ 领跑光点；108–118 徽标弹入
+//   112–150 字幕显形、逐词加深；副句 122f 升起
+//   150–165 落定 hold
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, EASE } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix, ramp, softShadow } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, alpha, glow, springAt, type } from '../../_fixtures/Look';
 
-export const CHIP_LIFT_TO_USER_PILL_DURATION = 150; // 5000ms @30fps
+export const CHIP_LIFT_TO_USER_PILL_DURATION = 165;
 
-// ---- 本卡共享量（浅灰瑞士极简系配色 / 字体；BG/DIM/h2r 取自 motion-lab/fx/b09.js 同批定义） ----
-const SANS = '-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Inter,Arial,sans-serif';
-const BG = '#F1F1F3'; // 页面浅灰
-const INK = '#0B0B0C'; // 纯黑
-const TXT = '#111111'; // 正文黑
-const DIM = '#C9C9CE'; // 浅灰占位字
-const LINE = '#E6E6EA'; // 描边
+const L = LOOKS.lime;
+const LIME = L.accent;
+const PILL_BG = '#f4f6ee'; // 反色目标：近白（暗场里的"反色"）
+const PILL_INK = '#10120c';
 
-const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const h2r = (h: string) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-// 颜色插值：mix(p,'#C9C9CE','#111')
-const mix = (p: number, a: string, b: string) => {
-  const A = h2r(a), B = h2r(b), q = clamp01(p);
-  return `rgb(${Math.round(A[0] + (B[0] - A[0]) * q)},${Math.round(A[1] + (B[1] - A[1]) * q)},${Math.round(A[2] + (B[2] - A[2]) * q)})`;
+// ── 网格 ──
+const COLS = 4, ROWS = 3, CW = 168, CH = 100, GX = 24, GY = 24;
+const GRID_W = COLS * CW + (COLS - 1) * GX;
+const GRID_H = ROWS * CH + (ROWS - 1) * GY;
+const GX0 = 960 - GRID_W / 2;
+const GY0 = 556 - GRID_H / 2;
+const TC = 1, TR = 1; // 目标 chip
+const LABELS = ['JD', 'MK', 'CR', 'RL', 'AV', 'NH', 'KN', 'BW', 'CE', 'HR', 'LM', 'DQ'];
+const TX = GX0 + TC * (CW + GX);
+const TY = GY0 + TR * (CH + GY);
+const CELLS = Array.from({ length: ROWS * COLS }, (_, i) => {
+  const r = Math.floor(i / COLS), c = i % COLS;
+  return { i, x: GX0 + c * (CW + GX), y: GY0 + r * (CH + GY), label: LABELS[i], dist: Math.abs(c - TC) + Math.abs(r - TR), isT: c === TC && r === TR };
+});
+
+// ── 时间 ──
+const INVERT = 38; // 反色台阶起点（38/40/42 三档）
+const FADE0 = 44;
+const GROW0 = 58;
+const GROW_DUR = 30;
+const CAM0 = 90;
+const LINE0 = 96;
+const LINE_DUR = 14;
+const BADGE0 = 108;
+const CAP0 = 112;
+
+// ── 药丸 / 结果组几何 ──
+const PW0 = CW, PW1 = 640;
+const NAME = 'Noor Haddad';
+const LINE_W = 170;
+const BADGE = 104;
+const GROUP_L = TX, GROUP_R = TX + PW1 + LINE_W + BADGE;
+const CAM_DX = 960 - (GROUP_L + GROUP_R) / 2;
+const CAM_DY = 470 - TY; // 药丸顶落到 y≈470，字幕在其下
+
+const mixHex = (a: string, b: string, t: number) => {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  const q = Math.max(0, Math.min(1, t));
+  return `rgb(${pa.map((v, i) => Math.round(v + (pb[i] - v) * q)).join(',')})`;
 };
 
-// ---- 网格参数（与 effect.js 完全一致） ----
-const COLS = 4, ROWS = 3, CW = 40, CH = 24, GX = 10, GY = 9, GX0 = 8, GY0 = 70;
-const TC = 1, TR = 1; // 目标 chip 的列/行
-const LABELS = ['JD', 'MK', 'CD', 'RL', 'AV', 'TP', 'KN', 'BW', 'CE', 'HR', 'LM', 'DQ'];
-// 目标 chip 左上角坐标（左缘锚定，生长时不动）
-const TX = GX0 + TC * (CW + GX); // 58
-const TY = GY0 + TR * (CH + GY); // 103
-// 其余 chip：位置 + 到目标的曼哈顿距离（交错淡出用）
-const OTHERS = Array.from({ length: ROWS * COLS }, (_, i) => {
-  const r = Math.floor(i / COLS), c = i % COLS;
-  return {
-    x: GX0 + c * (CW + GX),
-    y: GY0 + r * (CH + GY),
-    label: LABELS[i],
-    dist: Math.abs(c - TC) + Math.abs(r - TR),
-    isT: c === TC && r === TR,
-  };
-}).filter((o) => !o.isT);
-
-const PW0 = CW, PW1 = 190; // 药丸生长的起止宽度
-const NAME_CHARS = 'Casey Doe'.split(''); // 药丸内逐字打出的人名
-
-// 结尾字幕（逐词加深语法，只用到 show + inn 两态）
-const CAP_WORDS = 'Starting with Casey'.split(' ');
-const CAP_ST = 0.78 / CAP_WORDS.length;
-const CAP_WIN = CAP_ST * 1.5;
-
-// 徽标尺寸（白底圆 + 四角星）
-const BADGE_SIZE = 26;
-const BADGE_SVG = Number((BADGE_SIZE * 0.52).toFixed(1)); // 13.5
-
-// 机位（设计 px）：网格中心 (103,115) → 结果组中心 (211,140，含下方字幕) 都对到画布中心 (220,120)
-const CAM0 = { x: 220 - 103, y: 120 - 115 };
-const CAM1 = { x: 220 - 211, y: 120 - 140 };
-const LINE_W = 90; // 连接线终长（徽标坐标基于它）
-
-// 设计坐标下的材质（×4 后：1px 发丝线 / 顶部内高光 / 两层软阴影）
-const HAIR = 'inset 0 0 0 0.25px rgba(20,22,28,0.10)';
-const CHIP_SHADOW = 'inset 0 0.25px 0 rgba(255,255,255,0.9), 0 0.25px 0.5px rgba(16,18,24,0.07), 0 1.5px 4px -1.2px rgba(16,18,24,0.10)';
+const WrenMark: React.FC<{ size: number; c: string }> = ({ size, c }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path d="M4 7.5c3.2 0 5.4 1.6 6.6 4.8C11.8 8.6 14.6 6 19.5 5.5c-1 5.8-4.4 9.6-9.4 11.2L6.5 19l.9-3.6C5.2 13.8 4 11.2 4 7.5z" fill={c} />
+  </svg>
+);
 
 export const ChipLiftToUserPill: React.FC = () => {
-  const t = useT();
+  const frame = useCurrentFrame();
 
-  // A 反色硬切（3 帧感）：进度台阶化到 0 / 0.5 / 1 → 硬切质感
-  const a = seg(t, 0.04, 0.085, E.linear);
-  const aq = a < 0.34 ? 0 : a < 0.67 ? 0.5 : 1;
+  // 反色台阶：只有 0 / 0.5 / 1 三个取值
+  // 反色台阶：每档 2f，只有 0 / 0.5 / 1 三个取值（38–39f 仍为 0 = 按下前最后一拍）
+  const k = frame < INVERT + 2 ? 0 : frame < INVERT + 4 ? 0.5 : 1;
 
-  // C 药丸从左缘生长 + 逐字 + 绿点
-  const g = seg(t, 0.26, 0.44, E.outCubic);
-  const w = lerp(g, PW0, PW1);
-  const dq = seg(g, 0.85, 1, E.outBack);
+  const g = ramp(frame, GROW0, GROW_DUR, EASE.out); // 生长进度（outCubic 语义）
+  const pw = mix(PW0, PW1, g);
+  const dotP = ramp(g, 0.85, 0.15, EASE.overshoot);
+  const camP = ramp(frame, CAM0, 36, EASE.smooth);
+  const camX = CAM_DX * camP, camY = CAM_DY * camP;
 
-  // D 连接线 → 徽标 → 字幕
-  const cw = seg(t, 0.47, 0.57, E.outQuad);
-  const bp = seg(t, 0.56, 0.63, E.outCubic);
-  const capShow = seg(t, 0.6, 0.66);
-  const capInn = seg(t, 0.6, 0.92);
+  const lineP = ramp(frame, LINE0, LINE_DUR, (t) => 1 - (1 - t) * (1 - t));
+  const badgeP = springAt(frame, BADGE0, { damping: 14, stiffness: 220 });
+  const badgeOp = ramp(frame, BADGE0, 6, EASE.out);
+  const capShow = ramp(frame, CAP0, 10, EASE.snappy);
+  const subIn = ramp(frame, 122, 14, EASE.snappy);
 
-  // 跟拍：药丸定型后才动（生长期机位静止），smooth in-out
-  const cam = seg(t, 0.44, 0.68, EASE.smooth);
-  const camX = lerp(cam, CAM0.x, CAM1.x);
-  const camY = lerp(cam, CAM0.y, CAM1.y);
-  // 选中"抬起"：反黑后投影加深（离地感），生长期保持
-  const lift = seg(t, 0.06, 0.2, E.outCubic);
+  // 选中前后 chip 抬起
+  const liftEl = 6 + 18 * k;
+  const eyebrowOut = ramp(frame, FADE0, 14, EASE.exit);
+
+  const CAP_WORDS = 'Starting a thread with Noor'.split(' ');
 
   return (
-    <AbsoluteFill style={{ background: BG }}>
-    <Backdrop tone="light" light={{ x: 0.5, y: 0.34 }} grain={0.035} vignette={0.12} />
-    <DesignStage bg="transparent">
-      {/* 页面 + 440×240 定尺画布（居中） */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          overflow: 'hidden',
-          fontFamily: SANS,
-          WebkitFontSmoothing: 'antialiased',
-        }}
-      >
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 440, height: 240, margin: '-120px 0 0 -220px', transform: `translate(${camX.toFixed(3)}px, ${camY.toFixed(3)}px)` }}>
-          {/* B 其余 chip：按到目标的曼哈顿距离交错淡出 + scale .9 */}
-          {OTHERS.map((o, i) => {
-            const d0 = 0.10 + o.dist * 0.022;
-            const p = seg(t, d0, d0 + 0.075, E.outQuad);
-            return (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  left: o.x,
-                  top: o.y,
-                  width: CW,
-                  height: CH,
-                  borderRadius: CH / 2,
-                  background: 'linear-gradient(180deg, #ffffff, #fbfbfb)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  boxSizing: 'border-box',
-                  overflow: 'hidden',
-                  boxShadow: `${HAIR}, ${CHIP_SHADOW}`,
-                  opacity: 1 - p,
-                  transform: `scale(${lerp(p, 1, 0.9)})`,
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0,
-                    width: CW,
-                    height: CH,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    font: `600 10.5px/1 ${SANS}`,
-                    letterSpacing: '.6px',
-                    color: TXT,
-                  }}
-                >
-                  {o.label}
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.36, y: -0.08 }} fill={null} intensity={0.55} breathe={0.6}>
+        <Dust look={L} count={18} seed={9} drift={0.16} opacity={0.3} />
+      </Stage>
+
+      <AbsoluteFill style={{ transform: `translate(${camX.toFixed(2)}px, ${camY.toFixed(2)}px)`, transformOrigin: `${(960 - camX).toFixed(1)}px ${(540 - camY).toFixed(1)}px`, scale: `${(1 + 0.05 * camP + 0.015 * ramp(frame, 126, 39, EASE.smooth)).toFixed(4)}` }}>
+        {/* 眉题 */}
+        <div style={{
+          position: 'absolute', left: GX0, top: GY0 - 76, display: 'flex', alignItems: 'center', gap: 14,
+          ...type(22, 650, { caps: true }), letterSpacing: '0.2em', color: L.ink2,
+          opacity: ramp(frame, 0, 12, EASE.out) * (1 - eyebrowOut), transform: `translateY(${(-12 * eyebrowOut).toFixed(2)}px)`,
+        }}>
+          <span style={{ width: 10, height: 10, borderRadius: 99, background: LIME, boxShadow: glow(LIME, 0.4) }} />
+          Design team · 12 online
+        </div>
+
+        {/* 其余 chip */}
+        {CELLS.filter((c) => !c.isT).map((c) => {
+          const inP = ramp(frame, 2 + c.dist * 3.5 + (c.i % 3) * 0.8, 16, EASE.snappy);
+          const d0 = FADE0 + c.dist * 3.3;
+          const out = ramp(frame, d0, 11, (t) => 1 - (1 - t) * (1 - t));
+          return (
+            <div key={c.i} style={{
+              position: 'absolute', left: c.x, top: c.y, width: CW, height: CH, boxSizing: 'border-box', borderRadius: CH / 2,
+              background: `linear-gradient(180deg, ${L.surface2}, ${L.surface})`, border: `1px solid ${alpha('#ffffff', 0.08)}`,
+              boxShadow: `inset 0 1px 0 ${alpha('#ffffff', 0.07)}, ${softShadow(8, { color: '#000000', strength: 2.2 })}`,
+              display: 'grid', placeItems: 'center', ...type(40, 600), letterSpacing: '0.04em', color: L.ink2,
+              opacity: inP * (1 - out), transform: `translateY(${((1 - inP) * 26).toFixed(2)}px) scale(${(1 - 0.1 * out).toFixed(4)})`,
+            }}>{c.label}</div>
+          );
+        })}
+
+        {/* 目标 chip → 药丸（左缘锚定，只改 width） */}
+        {(() => {
+          const c = CELLS.find((x) => x.isT)!;
+          const inP = ramp(frame, 2, 16, EASE.snappy);
+          const labelOut = Math.min(1, g * 5);
+          return (
+            <div style={{
+              position: 'absolute', left: TX, top: TY, width: pw, height: CH, opacity: inP,
+              transform: `translateY(${((1 - inP) * 26).toFixed(2)}px)`,
+            }}>
+              {/* 落地泛光：在线点亮起后药丸底下一抹荧光绿 */}
+              <div style={{
+                position: 'absolute', left: '10%', right: '-4%', top: CH * 0.55, height: CH, borderRadius: '50%',
+                background: `radial-gradient(ellipse 50% 50% at 70% 40%, ${alpha(LIME, 0.16 * dotP)} 0%, transparent 70%)`, filter: 'blur(8px)',
+              }} />
+              <div style={{
+                position: 'absolute', inset: 0, boxSizing: 'border-box', borderRadius: CH / 2, overflow: 'hidden',
+                background: k > 0
+                  ? `linear-gradient(180deg, ${k >= 1 ? '#ffffff' : '#9a9d93'}, ${k >= 1 ? PILL_BG : '#7c7f75'})`
+                  : `linear-gradient(180deg, ${L.surface2}, ${L.surface})`,
+                border: `1px solid ${k > 0 ? alpha('#ffffff', 0.6) : alpha('#ffffff', 0.08)}`,
+                boxShadow: `inset 0 1px 0 ${alpha('#ffffff', k > 0 ? 0.9 : 0.07)}, inset 0 -2px 0 ${alpha('#000000', 0.08 * k)}, ${softShadow(liftEl, { color: '#000000', strength: 2.4 })}`,
+              }}>
+                {/* 原缩写：生长开始后先撤 */}
+                <div style={{
+                  position: 'absolute', left: 0, top: 0, width: CW, height: CH, display: 'grid', placeItems: 'center',
+                  ...type(40, 650), letterSpacing: '0.04em', color: k >= 1 ? PILL_INK : k > 0 ? '#2a2c26' : L.ink2,
+                  opacity: 1 - labelOut, transform: `translateY(${(-14 * labelOut).toFixed(2)}px)`,
+                }}>{c.label}</div>
+                {/* 人名逐字（挂在 g 上） */}
+                <div style={{ position: 'absolute', left: 40, top: 0, height: CH, display: 'flex', alignItems: 'center', whiteSpace: 'pre' }}>
+                  {NAME.split('').map((ch, i) => {
+                    const p = ramp(g, 0.16 + i * 0.058, 0.06, EASE.out);
+                    return (
+                      <span key={i} style={{
+                        display: 'inline-block', ...type(48, 680), color: PILL_INK, opacity: p,
+                        transform: `translateY(${((1 - p) * 12).toFixed(2)}px)`,
+                      }}>{ch}</span>
+                    );
+                  })}
+                  <span style={{
+                    marginLeft: 20, ...type(28, 520), color: '#7a7d72', opacity: ramp(g, 0.78, 0.17, EASE.out),
+                    transform: `translateX(${((1 - ramp(g, 0.78, 0.17, EASE.out)) * -10).toFixed(2)}px)`,
+                  }}>Product design</span>
                 </div>
+                {/* 在线点：吸在药丸右端 */}
+                <div style={{
+                  position: 'absolute', left: pw - 56, top: CH / 2 - 9, width: 18, height: 18, borderRadius: 99,
+                  background: '#7fd000', transform: `scale(${dotP.toFixed(3)})`,
+                  boxShadow: `0 0 0 ${(5 * dotP).toFixed(1)}px ${alpha('#7fd000', 0.18)}, 0 0 14px ${alpha('#7fd000', 0.6 * dotP)}`,
+                }} />
               </div>
-            );
+            </div>
+          );
+        })()}
+
+        {/* 连接线 + 领跑光点 */}
+        {lineP > 0 && (
+          <>
+            <div style={{
+              position: 'absolute', left: TX + PW1 + 6, top: TY + CH / 2 - 1.5, width: (LINE_W - 6) * lineP, height: 3, borderRadius: 2,
+              background: `linear-gradient(90deg, ${alpha(LIME, 0.35)}, ${LIME})`, boxShadow: `0 0 10px ${alpha(LIME, 0.45)}`,
+            }} />
+            {lineP < 1 && (
+              <div style={{
+                position: 'absolute', left: TX + PW1 + 6 + (LINE_W - 6) * lineP - 9, top: TY + CH / 2 - 9, width: 18, height: 18, borderRadius: 99,
+                background: `radial-gradient(circle, #ffffff 0%, ${LIME} 45%, ${alpha(LIME, 0)} 72%)`,
+              }} />
+            )}
+          </>
+        )}
+
+        {/* 徽标（Wren） */}
+        <div style={{
+          position: 'absolute', left: TX + PW1 + LINE_W, top: TY + CH / 2 - BADGE / 2, width: BADGE, height: BADGE, borderRadius: 99,
+          background: `radial-gradient(circle at 35% 30%, #e4ff7a, ${LIME} 60%, #9cc41c)`,
+          boxShadow: `inset 0 2px 0 rgba(255,255,255,0.45), 0 0 40px ${alpha(LIME, 0.35)}, ${softShadow(20, { color: '#000000', strength: 2.2 })}`,
+          display: 'grid', placeItems: 'center', opacity: badgeOp, transform: `scale(${(0.8 + 0.2 * badgeP).toFixed(4)})`,
+        }}>
+          <WrenMark size={54} c={L.onAccent} />
+        </div>
+
+        {/* 字幕（与药丸左缘对齐，逐词加深） */}
+        <div style={{
+          position: 'absolute', left: TX, top: TY + CH + 54, display: 'flex', gap: '0.28em', whiteSpace: 'nowrap',
+          ...type(60, 680), opacity: capShow, transform: `translateY(${((1 - capShow) * 18).toFixed(2)}px)`,
+        }}>
+          {CAP_WORDS.map((w, i) => {
+            const deep = ramp(frame, CAP0 + 4 + i * 5, 10, EASE.out);
+            const last = i === CAP_WORDS.length - 1;
+            return <span key={i} style={{ color: last ? mixHex(L.ink3, LIME, deep) : `rgba(246,248,240,${(0.28 + 0.72 * deep).toFixed(3)})` }}>{w}</span>;
           })}
-
-          {/* 目标 chip（最上层）：反色硬切 → 左缘锚定向右生长成药丸 */}
-          <div
-            style={{
-              position: 'absolute',
-              left: TX,
-              top: TY,
-              width: w,
-              height: CH,
-              borderRadius: CH / 2,
-              background: mix(aq, '#ffffff', INK),
-              display: 'flex',
-              alignItems: 'center',
-              boxSizing: 'border-box',
-              overflow: 'hidden',
-              boxShadow: aq > 0
-                ? `inset 0 0 0 0.25px rgba(255,255,255,0.06), 0 ${(0.25 + 0.5 * lift).toFixed(2)}px ${(0.5 + 1 * lift).toFixed(2)}px rgba(10,10,14,${(0.08 + 0.08 * lift).toFixed(3)}), 0 ${(1.5 + 2.5 * lift).toFixed(2)}px ${(4 + 6 * lift).toFixed(2)}px -1.2px rgba(10,10,14,${(0.10 + 0.18 * lift).toFixed(3)})`
-                : `${HAIR}, ${CHIP_SHADOW}`,
-            }}
-          >
-            {/* 黑药丸受光上沿 */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 55%)', opacity: aq }} />
-            {/* 原缩写标签：反色后随生长淡出 */}
-            <div
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                width: CW,
-                height: CH,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                font: `600 10.5px/1 ${SANS}`,
-                letterSpacing: '.6px',
-                color: mix(aq, TXT, '#ffffff'),
-                opacity: 1 - clamp01(g * 5),
-              }}
-            >
-              CD
-            </div>
-            {/* 人名逐字打出（stagger 跑在生长进度 g 上） */}
-            <div
-              style={{
-                position: 'absolute',
-                left: 13,
-                top: 0,
-                height: CH,
-                display: 'flex',
-                alignItems: 'center',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {NAME_CHARS.map((ch, i) => {
-                const p = seg(g, 0.18 + i * 0.062, 0.18 + i * 0.062 + 0.05, E.outQuad);
-                return (
-                  <span
-                    key={i}
-                    style={{
-                      font: `600 11px/1 ${SANS}`,
-                      color: '#fff',
-                      opacity: p,
-                      whiteSpace: 'pre',
-                      letterSpacing: '.2px',
-                      transform: `translateY(${lerp(p, 2, 0)}px)`,
-                      display: 'inline-block',
-                    }}
-                  >
-                    {ch}
-                  </span>
-                );
-              })}
-            </div>
-            {/* 在线绿点：outBack 弹出，钉在药丸右缘内侧 */}
-            <div
-              style={{
-                position: 'absolute',
-                top: (CH - 7) / 2,
-                left: w - 15,
-                width: 7,
-                height: 7,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle at 40% 35%, #6ff0a8, #35D07F 60%)',
-                boxShadow: '0 0 8px rgba(53,208,127,.6), 0 0 0 1.2px rgba(53,208,127,.18)',
-                opacity: clamp01(dq * 2),
-                transform: `scale(${dq})`,
-              }}
-            />
-          </div>
-
-          {/* 连接线（0.5 设计 px = 成片 2px）：从药丸右缘拉到徽标，线头带一颗领跑小点，抵达徽标时并入 */}
-          <div
-            style={{
-              position: 'absolute',
-              left: TX + PW1,
-              top: TY + CH / 2 - 0.5,
-              height: 1, // 亚像素高度会被布局取整吃掉，用 1px + scaleY(.5) 得到成片 2px 细线
-              width: `${(cw * LINE_W).toFixed(2)}px`,
-              background: `linear-gradient(90deg, rgba(17,17,17,0.35), ${TXT})`,
-              transform: 'scaleY(0.5)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              left: TX + PW1 + cw * LINE_W - 1.5,
-              top: TY + CH / 2 - 1.5,
-              width: 3,
-              height: 3,
-              borderRadius: '50%',
-              background: TXT,
-              opacity: cw > 0 ? 1 - bp : 0,
-            }}
-          />
-
-          {/* AI 徽标（白底圆 + 四角星） */}
-          <div
-            style={{
-              position: 'absolute',
-              width: BADGE_SIZE,
-              height: BADGE_SIZE,
-              borderRadius: '50%',
-              background: 'linear-gradient(180deg, #ffffff, #f7f7f8)',
-              boxSizing: 'border-box',
-              boxShadow: `${HAIR}, inset 0 0.25px 0 #fff, 0 0.5px 1px rgba(16,18,24,0.08), 0 3px 8px -2px rgba(16,18,24,0.14)`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              left: TX + PW1 + 90 - 2,
-              top: TY + CH / 2 - 13,
-              opacity: bp,
-              transform: `scale(${lerp(bp, 0.8, 1)})`,
-            }}
-          >
-            <svg width={BADGE_SVG} height={BADGE_SVG} viewBox="0 0 24 24">
-              <path d="M12 0.8 L14.3 9.7 L23.2 12 L14.3 14.3 L12 23.2 L9.7 14.3 L0.8 12 L9.7 9.7 Z" fill={TXT} />
-            </svg>
-          </div>
-
-          {/* 结尾字幕：逐词加深（浅灰占位 → 黑），整行透明度随 show 淡入 */}
-          <div
-            style={{
-              position: 'absolute',
-              display: 'flex',
-              alignItems: 'baseline',
-              whiteSpace: 'nowrap',
-              left: TX + 1, // 与药丸左缘对齐（原 TX + PW1 − 18 悬在徽标下方）
-              top: TY + CH + 34,
-              opacity: capShow,
-            }}
-          >
-            {CAP_WORDS.map((wd, i) => {
-              const q = clamp01((capInn - i * CAP_ST) / CAP_WIN);
-              return (
-                <span
-                  key={i}
-                  style={{
-                    font: `600 13px/1.25 ${SANS}`,
-                    color: mix(q, DIM, TXT),
-                    letterSpacing: (-0.03 * (1 - q)).toFixed(4) + 'em',
-                    marginRight: i === CAP_WORDS.length - 1 ? 0 : 4.5,
-                  }}
-                >
-                  {wd}
-                </span>
-              );
-            })}
+        </div>
+        <div style={{ position: 'absolute', left: TX, top: TY + CH + 140, height: 44, overflow: 'hidden' }}>
+          <div style={{ ...type(32, 500), color: L.ink2, whiteSpace: 'nowrap', transform: `translateY(${((1 - subIn) * 110).toFixed(1)}%)` }}>
+            Design review · Checkout flow v3 · 4 files
           </div>
         </div>
-      </div>
-    </DesignStage>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };

@@ -1,32 +1,33 @@
 {
   "stem": "DiagramCascadeBuild",
   "issues": [
-    "工作台按 130f 渲染，镜头本意 160f，成树后的呼吸收尾（132–160f）整段被裁掉",
-    "孙层节点 x=810/1110 宽 300，两张卡边缘几乎相贴，布局拥挤",
-    "prompt 写的是 ER 图，节点里却只有灰色骨架条，读不出是实体表",
-    "连线 5px 灰色直角折线，粗笨；节点 spring 从 scale 0 放大，像 PPT 弹出",
-    "prompt 条 3px 灰边敲完瞬间跳成黑边，没有提交动作；背景平灰点阵"
+    "灰底小字 prompt 条 + 灰色骨架块，整屏像线框图，读不出生成了什么",
+    "前 2 秒只有画面顶上一条 prompt，下方大片空白",
+    "连线只是灰色细线跟着节点出现，\"线牵出节点\"的因果看不见",
+    "节点从中心缩放弹出，像弹窗而不是从结构里长出来",
+    "成树后没有落点，结尾画面平"
   ],
   "changes": [
-    "补导出 DIAGRAM_CASCADE_BUILD_DURATION = 160，完整演出打字→提交→级联→呼吸",
-    "孙层改为等距 420（330/750/1170/1590），子层 540/1380，兄弟之间留 120px",
-    "节点换成 ER 实体卡：表图标 + 表名 23px + 列数，两行等宽字段（PK 强调色胶囊 / FK 灰胶囊 / 类型），表头先出、字段晚 3f 依次滑入",
-    "连线改 2px 圆角折线（r=16，pathLength 归一描线 16f），父/子端口白点在线到达时 overshoot 弹出；节点 0.82→1 + 上浮 14px + 阴影随高度收紧",
-    "prompt 条加 AI 图标、强调色光标与提交键：敲完描边转强调色 + 5px 焦点环，提交键点亮并按下 10f 后根节点出现；柔光画布 + 渐隐点阵"
+    "look 换 aurora 深紫夜：prompt 条做成 36px 大字 AI 命令条，提交后描边变流动紫粉渐变（生成中），完成后右侧落「7 tables · 6 links」",
+    "相机：开场 1.3× 推近 prompt 居中读字，提交后 72f smooth 拉远到 1.0，树长在镜头退出来的空间里",
+    "每条连线带一颗发光彗星头领跑（SVG 圆弧折线，按弧长取点），线头到达子端口那一帧子节点才从顶端口被拉出（缩放原点 = 顶边中点）",
+    "prompt 底部先滴下一条虚线接到根节点，根用紫粉渐变描边 + 泛光当主角；其余为深紫玻璃 ER 表卡（34px 表名 + mono 字段 + PK/FK 签）",
+    "打字改为不均匀人手节奏、空格停半拍；成树后以树心呼吸 1→1.03→1、背后极光亮一档，时长 160→180f"
   ],
   "issuesEn": [
-    "The workbench rendered 130f while the shot needs 160f, so the breathing finish after the tree completes (132–160f) was cut",
-    "Grandchild nodes at x=810/1110 with 300px width almost touch each other",
-    "The prompt asks for an ER diagram but nodes only hold grey skeleton bars, so they never read as tables",
-    "Connectors are 5px grey square elbows; nodes spring up from scale 0 like a slide-deck pop",
-    "The prompt bar's 3px grey border snaps to black when typing ends with no submit action; flat grey dotted background"
+    "A small grey prompt bar over grey skeleton blocks; the whole frame looks like a wireframe and doesn't say what was generated",
+    "For the first 2 seconds there is only one prompt line at the top and a large empty area below",
+    "Edges are thin grey lines that appear with the nodes; the \"line pulls the node out\" causality isn't visible",
+    "Nodes scale up from their centre, reading like pop-ups rather than growing out of the structure",
+    "Once the tree is complete there is no landing beat; the end frame is flat"
   ],
   "changesEn": [
-    "Added DIAGRAM_CASCADE_BUILD_DURATION = 160 so typing → submit → cascade → breathe all play",
-    "Grandchildren evenly spaced at 420px (330/750/1170/1590), children at 540/1380, leaving 120px between siblings",
-    "Nodes are ER entity cards: table icon + 23px name + column count, two monospace field rows (accent PK pill / grey FK pill / type); header first, fields slide in 3f apart",
-    "Connectors are 2px rounded elbows (r=16, normalised pathLength drawn over 16f) with white parent/child ports popping when the line arrives; nodes rise 0.82→1 with a 14px lift and shadows tightening on landing",
-    "Prompt bar gains an AI glyph, accent caret and submit button: on completion the border turns accent with a 5px focus ring, the button lights and presses 10f before the root appears; soft-lit canvas with a fading dot grid"
+    "Aurora deep-violet look: the prompt is a 36px AI command bar whose border turns into a flowing violet-pink gradient while generating, then settles with \"7 tables · 6 links\"",
+    "Camera opens at 1.3× on the centred prompt to read it, then smoothly pulls back to 1.0 over 72f after submit, so the tree grows into the space the camera reveals",
+    "Each edge is led by a glowing comet head (SVG arc elbows, sampled by arc length); the child node is pulled out of its top port the frame the head arrives (scale origin = top edge centre)",
+    "A dashed drip line falls from the prompt into the root; the root has a violet-pink gradient rim and glow as the hero, the rest are dark violet glass ER cards (34px table name, mono fields, PK/FK tags)",
+    "Typing has an uneven human rhythm with pauses at spaces; the finished tree breathes 1→1.03→1 around its centre while the aurora behind it brightens; 160→180f"
   ],
-  "mdChanged": false
+  "look": "aurora",
+  "mdChanged": true
 }

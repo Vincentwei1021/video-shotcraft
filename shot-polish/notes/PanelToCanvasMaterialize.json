@@ -1,32 +1,31 @@
 {
   "stem": "PanelToCanvasMaterialize",
   "issues": [
-    "飞行卡的起点 y=210 与面板里真实行槽（≈238）错位约 28px，起飞瞬间可见跳变；飞出的行里复选框变成黑方块、没有勾",
-    "面板只有 3 行，下方 2/3 是空白；全部内容是灰色骨架条，读不出是什么内容被搬上画布",
-    "飞行全程阴影固定、无高度变化，快速段没有运动模糊，落位像平移贴图",
-    "光标沿直线斜穿画面；按钮 2px 灰边面板上的深灰块，按下只有缩放",
-    "背景平灰 + 均匀点阵，画布没有任何\"这是白板\"的线索"
+    "面板和卡片全是灰色骨架条，没有任何可读内容，看不出\"什么被放上了画布\"",
+    "画布左侧大片空白，没有标题和上下文，落定画面不成海报",
+    "行一起飞就开始变形，位置和尺寸同步插值，没有重量感",
+    "光标只在最后走到按钮，打勾是自己发生的，因果不清"
   ],
   "changes": [
-    "行槽改为绝对定位并与飞行起点共用 ROWS_TOP=262 常量，起飞零跳变；面板行与飞行行共用同一 RowContent 组件（含已勾选复选框）",
-    "面板做成 6 行\"Research notes\"列表，勾选不连续的 3 行（0/2/3），行含标题、标签胶囊、头像；飞出后槽位留虚线 + \"On canvas\" 提示",
-    "卡形态换成出版级研究笔记卡（标签点、计数、26px 标题、摘要、作者），按 480×240 终态排版随卡长大逐步露出，交叉淡化窗口保持 0.45",
-    "飞行段离地高度随弧线 sin 抬升（softShadow 2→48→6）+ 中段放大 3.5% + 按速度的方向性运动模糊（velocity 驱动，落定归零）",
-    "按钮改为深色渐变 + 计数徽章随打勾 1→2→3 弹跳，按下带裁进圆角的涟漪；光标走上拱弧线 + swift 缓动，停在徽章右侧不挡字；加画布工具条与柔光底"
+    "look 换 sand 米色纸面 + 赤陶强调：右侧 Fieldnote「Highlights」面板列 5 条用户研究高光（32px 行标题 + 作者头像），左侧讨论板配 84px 衬线标题「Q3 discovery」",
+    "光标按真人操作逐个点中三个复选框（赤陶勾 spring 弹出 + 勾线描出）→ 按下「Add to board」，按钮计数随勾选跳动",
+    "三行先拔起 4f（放大 2% + 阴影加深）再沿二次贝塞尔上抛弧线错峰飞出；位置先到、宽高晚 3f 收敛，飞行中按速度方向性模糊，阴影随弧线抬高",
+    "落地倾角 −2.5/1.8/−1.2° + 6f 压扁回弹；卡形态是出版级洞察卡（标签 + 衬线标题 + 引语 + 作者），行槽塌成赤陶虚线「On board」",
+    "落定后板头「3 highlights pinned」从线下升起，相机缓推 2.5%，时长 130→150f"
   ],
   "issuesEn": [
-    "Flying cards start at y=210 while the real row slots sit at about 238, so each card jumps ~28px at takeoff; the flying row also shows a black square instead of a checked box",
-    "The panel holds only 3 rows with the bottom two-thirds empty, and all content is grey skeleton bars, so you can't tell what is being moved to the canvas",
-    "Shadow stays constant during flight with no sense of height and no motion blur in the fast part, so landing reads as a sliding decal",
-    "The cursor travels in a straight diagonal; the button is a dark grey block on a 2px grey-bordered panel and only scales when pressed",
-    "Flat grey background with a uniform dot grid and no hint that the left side is a whiteboard"
+    "Panel rows and cards are all grey skeleton bars with nothing readable, so you can't tell what got placed on the canvas",
+    "The left canvas is a large empty area with no title or context; the settled frame isn't a poster",
+    "Rows start morphing the moment they lift, with position and size interpolating together, so there's no weight",
+    "The cursor only walks to the button at the end; the checkboxes tick on their own, so the causality is unclear"
   ],
   "changesEn": [
-    "Row slots are absolutely positioned from the same ROWS_TOP=262 constant as the flight origin, so takeoff has zero jump; panel rows and flying rows share one RowContent component (with the checked box)",
-    "Panel is now a 6-row \"Research notes\" list with 3 non-adjacent rows picked (0/2/3), each with title, tag pill and avatar; vacated slots become dashed outlines with an \"On canvas\" hint",
-    "Card state is a publication-grade research note (tag dot, count, 26px title, excerpt, author) laid out at the final 480×240 and revealed as the card grows; the crossfade window stays at 0.45",
-    "Flight height follows the arc (softShadow 2→48→6) with a 3.5% mid-flight scale and velocity-driven directional motion blur that goes to zero on landing",
-    "Button is a dark gradient with a count badge that pops 1→2→3 as rows are checked and a ripple clipped to its corners on press; the cursor follows an arched swift-eased path and stops right of the badge; added a board toolbar and soft-lit canvas"
+    "Sand paper look with a terracotta accent: a Fieldnote \"Highlights\" panel lists five research highlights (32px titles, author avatars) beside a discussion board with an 84px serif title \"Q3 discovery\"",
+    "The cursor clicks three checkboxes like a real user (terracotta ticks spring in and draw on), then presses \"Add to board\"; the button count bumps with each tick",
+    "Each row lifts for 4f (2% scale, deeper shadow), then flies a quadratic arc in a staggered sequence; position leads and size settles 3f later, with directional motion blur and a shadow that grows with height",
+    "Cards land at −2.5/1.8/−1.2° with a 6f squash; the card form is a publication-grade insight card (tag, serif title, quote, author) and vacated rows collapse into terracotta dashed \"On board\" slots",
+    "After landing, \"3 highlights pinned\" rises beside the board title and the camera pushes in 2.5%; 130→150f"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }
