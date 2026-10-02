@@ -1,32 +1,31 @@
 {
   "stem": "OutroGroupPhotoLaunch",
   "issues": [
-    "每个元素落地都放一团 multiply 琥珀色径向光，在奶白纸面上读作一块块脏污渍，而且 9 个元素逐个发光（Q4 群发）",
-    "飞行拖影是滞后 8% 的单层模糊副本，读作重影而不是速度",
-    "字标 148px 横跨画面，左右两张卡片的文字直接压在 \"AI\" 和 \"Lab\" 下面，信息打架",
-    "金尘是 2–3px、最高 0.35 透明度的小点，在亮场上几乎看不见；缓推在 f40 从静止直接以匀速起步",
-    "副标题 TEAM RESEARCH CONSOLE 只有 25px（<3% 帧高）；结尾淡到透明，末帧是一张半灰的脏画面"
+    "奶白纸面背景上铺奶白截图卡，元素和底糊成一片，\"合影\"读不出层次",
+    "所有元素同一景深、同等亮度，字标登场后周围白卡仍然抢眼",
+    "发布会氛围只靠一道 0.12 透明度的扫光和 20 颗金尘，能量远不是全片峰值",
+    "收尾 12f 整画面淡到暖墨色，尾帧是一张灰掉的画面"
   ],
   "changes": [
-    "去掉逐个落地光斑，改为落地压实：过冲回落 cue+9→16f 内接触影收紧、元素 1.5% 轻压，靠运动本身表达到位",
-    "飞行段改用按屏幕速度计算的方向性运动模糊（SpeedBlur，0.3×px/帧、封顶 22），落地自动归零",
-    "左右两张卡片上移到 y≈300/318，给字标留出干净的横带；字标加 letterpress 下沿纸面高光 + 极软环境影，舞台光余量 0.25→0.32",
-    "金尘 2.4–4.2px 带暖光晕、0.35–0.7 透明度并微闪，另加 6 颗前景失焦光斑做景深；缓推改为 36f 起 in-out 零速起步，接 crane 不突变",
-    "副标题提到 32px 并带 6px 上移落座；收尾显式淡到暖墨色 #0f0d0a（ease-in，末帧恰好全暗），全片叠极弱颗粒"
+    "look 换 midnight：深蓝舞台 + 三道缓摆的顶部体积光束 + 地平线光带 + 羽化压暗的 LED 墙远景，白色真实截图卡在暗舞台上发光，合影一眼可读",
+    "合影分三层景深：后排导航条/论文条小而虚暗，中排搜索框/周报/字段卡，前排三张项目卡最大最实、接触影最浓；9 个元素沿离心方向从四面八方飞入，cue 越来越密，带旋转、方向性运动模糊、过冲与落地压实",
+    "字标压轴重排：INTRODUCING 眉题 → 150px 字标逐字从线下升起 → 电光蓝 rule + 延长线射出 → 副标「One console for every experiment.」；登场时全员压暗 22% 退后排，背后舞台光只亮一次",
+    "crane 加大到 rotateX 9° + 下落 46px + scale 1.1→1，之后零速起步缓推 3%；冷白光尘上飘贯穿全段",
+    "时长 145→150f，去掉尾段淡出，落定后 hold 2s+，尾帧是一张完整的发布会海报"
   ],
   "issuesEn": [
-    "Every element landed with a multiply amber radial glow that read as dirty stains on the cream paper, and all 9 elements flashed one by one (a Q4 mass-glow violation)",
-    "The flight trail was a single blurred copy lagging 8%, reading as a double image rather than speed",
-    "The 148px wordmark spanned the frame and the side cards' text sat directly under \"AI\" and \"Lab\", so the two fought",
-    "Gold dust was 2–3px dots at most 0.35 opacity, almost invisible on the bright field; the slow push started at constant speed from rest at f40",
-    "The TEAM RESEARCH CONSOLE subtitle was only 25px (<3% of frame height); the ending faded to transparent, leaving a murky half-grey last frame"
+    "Cream screenshot cards on a cream paper backdrop blended together, so the group photo had no depth or separation",
+    "Every element sat at the same depth and brightness, and the white cards kept competing with the wordmark after it landed",
+    "The launch atmosphere was one light sweep at 0.12 opacity plus 20 gold motes, nowhere near the film's energy peak",
+    "The last 12f faded the whole frame to warm ink, leaving a greyed-out final frame"
   ],
   "changesEn": [
-    "Removed the per-element landing glow in favour of a landing settle: over cue+9→16f the contact shadow tightens and the element squashes 1.5%, so arrival is told by motion alone",
-    "Flight now uses speed-driven directional motion blur (SpeedBlur, 0.3×px/frame, capped at 22) that drops to zero on landing",
-    "The two side cards moved up to y≈300/318 to leave a clean band for the wordmark; the wordmark gets a letterpress paper highlight plus a very soft ambient shadow, and the stage-light hold rises 0.25→0.32",
-    "Gold dust is now 2.4–4.2px with a warm halo at 0.35–0.7 opacity and a gentle twinkle, plus 6 defocused foreground bokeh for depth; the push eases in from rest at 36f so it hands off from the crane without a kink",
-    "Subtitle raised to 32px with a 6px settle; the ending fades explicitly to warm ink #0f0d0a (ease-in, fully dark on the last frame), with faint grain over the whole shot"
+    "Midnight look: a deep blue stage with three slowly swaying overhead light beams, a horizon glow and a feathered, dimmed LED-wall backdrop; the real white screenshot cards glow against the dark stage, so the group photo reads instantly",
+    "Three depth layers: small, soft, dim nav and paper strips at the back, search, weekly report and field cards in the middle, and three large crisp project cards up front with the heaviest contact shadows; the nine elements fly in from every side along outward vectors, with tightening cues, spin, directional motion blur, overshoot and a landing squash",
+    "Wordmark finale rebuilt: an INTRODUCING kicker, a 150px wordmark rising letter by letter, an electric-blue rule with extension lines, then the subline 'One console for every experiment.'; everything else steps back 22% darker and the stage light behind fires once",
+    "A bigger crane (rotateX 9°, 46px drop, scale 1.1→1) followed by a zero-velocity 3% push; cool white dust drifts upward throughout",
+    "145→150f, the end fade is gone, the wordmark holds 2s+ and the final frame is a complete launch poster"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

@@ -1,32 +1,31 @@
 {
   "stem": "NeonTripleMarquee",
   "issues": [
-    "灯管只有一层彩色描边 + drop-shadow，亮行读作“彩色描边字”而不是通电的霓虹",
-    "词距按字符数估宽，BETTER 后面空出半屏、STRONGER 却挤在一起，三行节奏不齐",
-    "背景死平的 #050308，亮行的光对墙面没有任何影响，三行像贴在虚空里",
-    "开场与结尾只是整组 opacity 线性淡入淡出，没有霓虹灯牌的通电/断电性格",
-    "没有导出时长常量，工作台靠卡片 md 推断"
+    "正视平铺的彩色描边字铺满黑底，像网页背景动画，没有\"灯牌\"的空间与材质",
+    "三行余弦包络之间有全暗空拍，亮行峰值只有一瞬，大部分时间画面整体偏暗",
+    "Arial Black 宽体 + 实心圆点分隔，字形笨重；BETTER/FASTER/STRONGER 是现成歌词口号",
+    "结尾整组淡到纯黑，尾帧是一张黑屏"
   ],
   "changes": [
-    "灯管拆成两层：外层彩色玻璃管（暗态 0.35 常亮，亮态加粗并保留 30/70px 双层辉光）+ 内层同色相近白热芯，只在通电时亮",
-    "词距改为 canvas measureText 实测宽度排版：词 + 0.42 倍字号间隔 + 分隔点 + 间隔，三行处处等距、回绕仍无缝",
-    "墙面换成冷紫纵向渐变 + 暗角 + 颗粒，每行身后一条同色柔光带随亮度呼吸（0.03→0.115），亮行把光溢到墙上",
-    "开场 10f 改为确定性的通电闪烁序列，结尾 128–140f 先 ease-in 断电降亮 60%，再整组 20f ease-in 淡出",
-    "滚速、45f 轮唱周期、字号与行距全部保持原值；补导出 NEON_TRIPLE_MARQUEE_DURATION=150"
+    "look 改 custom「neon」：一面蓝黑砖墙放进 3D 平面斜拍（rotateY −17°→−9° 全程极缓摇近），墙脚加湿地面——最下一行的翻转倒影 + 三色地面光池",
+    "灯管三层：暗态同色玻璃管常亮 → 通电管体 + 三层辉光 → 近白热芯；亮行同时把同色光溢到砖墙上照出砖缝，读作\"墙上的灯\"",
+    "字体换 Avenir Next Condensed Heavy 286px，三连词改为头韵 DRAFT / DESIGN / DEPLOY，分隔换空心菱形，词距按实测宽度等距",
+    "轮唱改 42f 周期、14f 槽 + 2f 交接重叠，每次点亮先打 2 帧启辉闪烁再升满——永远一亮俩暗、没有全暗空拍",
+    "开场三行错峰 5f 依次点火上电；124f 起自上而下逐行闪两下断电，尾帧是暗态灯管仍可见的熄灯海报"
   ],
   "issuesEn": [
-    "The tubes were a single coloured stroke plus drop-shadow, so the lit row read as coloured outline text rather than a powered neon sign",
-    "Word spacing came from a character-count estimate: half a screen of gap after BETTER while STRONGER was cramped, so the rows' rhythm was uneven",
-    "The background was flat #050308 and the lit row cast no light on it; the rows floated in a void",
-    "Entry and exit were plain linear opacity fades with none of a neon sign's power-on/power-off character",
-    "No exported duration constant; the workbench inferred it from the card md"
+    "Flat, front-on coloured outline type tiled over black, reading as a web background animation with no sense of a physical sign",
+    "The cosine envelopes left fully dark gaps between rows and each peak lasted an instant, so the frame was dim most of the time",
+    "Wide Arial Black with solid dot separators felt clumsy, and BETTER/FASTER/STRONGER is a borrowed lyric",
+    "The whole group faded to pure black, so the last frame was a black screen"
   ],
   "changesEn": [
-    "Each tube is now two layers: an outer coloured glass tube (0.35 when idle, thicker when lit with the original 30/70px double glow) and an inner near-white hot core of the same hue that only lights when powered",
-    "Spacing uses canvas measureText widths: word + 0.42em gap + bullet + gap, so every gap is equal and the wrap stays seamless",
-    "Wall is now a cool violet vertical gradient with vignette and grain, and each row has a soft same-colour light band behind it breathing with brightness (0.03→0.115)",
-    "The first 10f are a deterministic power-on flicker; at 128–140f the sign browns out 60% with ease-in before the 20f ease-in group fade",
-    "Scroll speeds, the 45f round-robin cycle, font size and row spacing are unchanged; added NEON_TRIPLE_MARQUEE_DURATION=150"
+    "Custom neon look: a blue-black brick wall in a 3D plane shot at an angle (rotateY −17°→−9° slow drift throughout), with a wet floor carrying a mirrored reflection of the bottom row and coloured light pools",
+    "Three-layer tubes: a dim same-colour glass tube always on, a powered tube with three glow layers, and a near-white hot core; the lit row also spills its colour onto the bricks, so it reads as light on a wall",
+    "Avenir Next Condensed Heavy at 286px, an alliterative recap DRAFT / DESIGN / DEPLOY, hollow diamond separators and measured, even word spacing",
+    "Round-robin is now a 42f cycle with 14f slots and a 2f overlap handoff; each ignition opens with a 2f strike flicker, so there is always one lit row and never a dark gap",
+    "The rows strike on 5f apart at the start; from 124f they cut out top to bottom with two flickers each, ending on an unlit-sign poster where the dark tubes stay visible"
   ],
+  "look": "custom",
   "mdChanged": true
 }

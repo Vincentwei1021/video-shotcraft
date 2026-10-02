@@ -1,208 +1,211 @@
-// logo-shrink-wordmark-lockup — Shrink & Lockup 图标收束落位（motion-lab 定稿转原生 Remotion）
-// 霓虹切口大环 easeInOut 快速缩成中央实心小白 O（抽象几何 mark，末尾轻微过冲刹车），
-// 随后图标左移让位，五个字母从左到右逐个 opacity+8px 滑入完成 lockup，
-// 强调色标语延迟整行淡入收尾。设计坐标 480×270（DesignStage 等比放大，zoom 栅格化保字边锐利）。
-// 质感升级：背景换带色相的深场 + 随大环收束一起坍缩的紫色能量光晕；收束途中双弧边转边缩
-// （减速旋转 150°），高速段拖两层缩放残影当运动模糊；落位刹车瞬间放一圈细冲击波（只一次）；
-// 字母滑入带 2.5px→0 的对焦模糊；标语改成与霓虹同族的冷紫，不再是撞色的红。
+// logo-shrink-wordmark-lockup — 满屏切口大环收束成图标并刹车过冲，图标让位，字标逐字滑入完成 lockup，标语押尾
+//
+// 第二轮重设计（珍珠母 · 虹彩能量环 → 标准态图标）：
+// - look = aurora（紫粉极光暗场）。虚构品牌 Nacre（珍珠母）。开场第 1 帧就是一枚直径 ~1240px、
+//   粗 ~100px 的虹彩切口双弧环（紫 → 粉 → 冰蓝渐变描边 + 宽泛光），边缓转边以"先慢后猛、最后硬刹"的
+//   曲线坍缩到直径 ~150px 的图标——整个能量收进一个点。
+// - 清晰度：环不用 transform 放大，每帧直接按目标半径在 1920×1080 SVG 里画（Q2），细边不糊；
+//   描边粗细随半径次线性缩放（大时不至于变成一堵墙）。高速段画 3 圈按速度衰减的半径残影 = 径向运动模糊。
+// - 演出态 → 标准态：收束最后 1/3 缺口愈合、虹彩交叉到奶白实环；落位瞬间一次弹簧刹车（~6% 过冲），
+//   放一圈细冲击波（只一次），环心"珍珠"弹出——图标从此是标准态。
+// - lockup：图标 smooth 左移让位，字标 NACRE（190px）逐字从图标方向滑出（遮罩内 translateX + 对焦），
+//   标语 LIGHT IN EVERY LAYER（32px 宽字距，强调粉）最后整行升起——层级低一档，不逐字。
+//
+// 时间表（30fps，共 138f）：
+//   0–6     大环满屏缓转（第 1 帧即有画面），泛光呼吸
+//   6–34    收束 28f（慢起 → 猛冲 → 硬刹）；18–34 缺口愈合 + 虹彩 → 奶白
+//   34–46   弹簧刹车过冲 + 冲击波；36f 珍珠弹出
+//   46–62   图标左移让位（smooth）
+//   54–74   字标 5 字母逐个滑入（错峰 3f）
+//   82–96   标语整行升起
+//   96–138  hold 42f：极缓推镜 1.5% + 光的呼吸
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, ramp, mix } from '../../_fixtures/Polish';
+import { LOOKS, Stage, Dust, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const LOGO_SHRINK_WORDMARK_LOCKUP_DURATION = 132; // 4400ms @30fps
+export const LOGO_SHRINK_WORDMARK_LOCKUP_DURATION = 138;
 
-const ACCENT = '#9d94ff'; // 标语强调色：与霓虹晕同色相、提亮降饱和
-const WORDMARK = 'BRAND';
-const ICON = 30; // 图标基准尺寸(px)
-const SHIFT = -62; // 图标 lockup 左位偏移（与字母行 50%-32px 耦合：整组 lockup 视觉居中）
-const DT = 1 / 131; // 一帧对应的 t 增量（132f）
+const L = LOOKS.aurora;
+const CX = 960;
+const CY = 520;
+const R0 = 620; // 开场环半径（直径 1240，上下出画）
+const R1 = 62; // 图标环半径
+const WORDMARK = 'NACRE';
+const SHIFT = -318; // 图标让位后的 x 偏移（lockup 整体居中）
+const WORD_SIZE = 190;
+const COLLAPSE = bezier(0.62, 0, 0.18, 1); // 先慢后猛、最后硬刹
+const WORD_X = CX + SHIFT + R1 + 12 + 58; // 字标左缘 = 图标右缘 + 间距
+const WORD_W = 600; // 字标约宽（光带的铺展宽度，按字均分给每个字的背景偏移）
+const wordStyle: React.CSSProperties = {
+  fontFamily: FONT.sans, fontWeight: 680, fontSize: WORD_SIZE, lineHeight: 1, letterSpacing: '-0.035em',
+  color: '#f6f1ff', whiteSpace: 'nowrap',
+};
 
-// 圆弧 path（角度制，顺时针 sweep）
-const arcPath = (cx: number, cy: number, r: number, a0: number, a1: number) => {
-  const p = (a: number) => [cx + r * Math.cos((a * Math.PI) / 180), cy + r * Math.sin((a * Math.PI) / 180)];
+// 收束：半径（含弹簧刹车过冲）
+const radiusAt = (f: number) => {
+  const k = ramp(f, 6, 28, COLLAPSE);
+  // 刹车：到位瞬间胀 ~7% 再回落（一次可见过冲，像急停时的惯性）
+  const brake = 0.07 * Math.sin(Math.PI * ramp(f, 33, 12, EASE.out));
+  return mix(R0, R1, k) * (1 + brake);
+};
+const spinAt = (f: number) => -40 - 210 * ramp(f, 0, 36, EASE.out);
+// 描边粗细：随半径次线性
+const strokeAt = (r: number) => 24 * Math.pow(r / R1, 0.6);
+
+const arc = (r: number, a0: number, a1: number) => {
+  const p = (a: number) => [CX + r * Math.cos((a * Math.PI) / 180), CY + r * Math.sin((a * Math.PI) / 180)];
   const [x0, y0] = p(a0);
   const [x1, y1] = p(a1);
   const large = Math.abs(a1 - a0) > 180 ? 1 : 0;
-  return `M${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)}`;
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 };
 
-// 双弧组：a0-a1 与其对角（+180°）两段圆弧 —— 带缺口的切口环
-const Arcs: React.FC<{ a0: number; a1: number; col: string; w: number; blur: number; opacity: number; stroke?: string }> = ({
-  a0,
-  a1,
-  col,
-  w,
-  blur,
-  opacity,
-  stroke,
-}) => (
-  <g opacity={opacity}>
-    {[
-      [a0, a1],
-      [a0 + 180, a1 + 180],
-    ].map(([b0, b1], i) => (
-      <path
-        key={i}
-        d={arcPath(15, 15, 10.5, b0, b1)}
-        fill="none"
-        stroke={stroke ?? col}
-        strokeWidth={w}
-        strokeLinecap="round"
-        style={blur ? { filter: `blur(${blur}px)` } : undefined}
-      />
-    ))}
-  </g>
-);
-
-// 收束主曲线：scale 5.4→1（easeInOut），末尾轻微 1.06 过冲刹车
-const scaleAt = (t: number) => {
-  const k = seg(t, 0.02, 0.28, E.inOutCubic);
-  const brake = Math.sin(seg(t, 0.26, 0.37) * Math.PI) * 0.06;
-  return lerp(k, 5.4, 1) * (1 + brake);
+// 双弧切口环：gap = 每个缺口角度（0 = 闭合）
+const SplitRing: React.FC<{ r: number; spin: number; gap: number; stroke: string; width: number; opacity?: number; filter?: string }> = ({
+  r, spin, gap, stroke, width, opacity = 1, filter,
+}) => {
+  if (gap < 0.4) {
+    return <circle cx={CX} cy={CY} r={r} fill="none" stroke={stroke} strokeWidth={width} opacity={opacity} filter={filter} />;
+  }
+  const h = gap / 2;
+  return (
+    <g opacity={opacity} filter={filter} fill="none" stroke={stroke} strokeWidth={width} strokeLinecap="round">
+      <path d={arc(r, spin + h, spin + 180 - h)} />
+      <path d={arc(r, spin + 180 + h, spin + 360 - h)} />
+    </g>
+  );
 };
-// 收束途中的自转：减速转 150°（缺口在缩小中"拧紧"），愈合后肉眼不可见
-const spinAt = (t: number) => -150 * seg(t, 0.0, 0.3, E.outCubic);
 
 export const LogoShrinkWordmarkLockup: React.FC = () => {
-  const t = useT();
-  const s = scaleAt(t);
-  const spin = spinAt(t);
-  // 左移让位：落位后 t 0.34-0.47
-  const shift = seg(t, 0.34, 0.47, E.inOutCubic) * SHIFT;
-  // 霓虹缺口态 → 实心白 O 交叉淡化（随收束进行）
-  const heal = seg(t, 0.10, 0.28, E.inOutQuad);
-  // 缩放残影：按每帧缩放量给强度，静止时为 0
-  const ds = Math.abs(scaleAt(t) - scaleAt(t - DT));
-  const trail = Math.min(1, ds / 0.35);
-  // 冲击波：刹车回弹的那一下（t≈0.28）放一圈细环，扩散并消散
-  const wave = seg(t, 0.28, 0.46, E.outCubic);
-  // 能量光晕：开场罩住大环，随收束一起坍缩变小、落位后回落成图标背后的微光
-  const haloR = lerp(seg(t, 0.02, 0.3, E.inOutCubic), 150, 34);
-  const haloA = 0.5 - 0.32 * seg(t, 0.3, 0.5, E.outCubic);
+  const f = useCurrentFrame();
+  const id = React.useId().replace(/[^a-zA-Z0-9]/g, '');
 
-  const icon = (sc: number, rot: number, opacity: number, ghost = false) => (
-    <div
-      style={{
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        width: ICON,
-        height: ICON,
-        margin: `${-ICON / 2}px 0 0 ${-ICON / 2}px`,
-        transform: `translateX(${shift}px) scale(${sc}) rotate(${rot}deg)`,
-        opacity,
-      }}
-    >
-      <svg viewBox="0 0 30 30" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-        {/* 霓虹晕（带缺口） */}
-        <Arcs a0={-32} a1={122} col="rgba(118,96,255,.62)" w={6.5} blur={2.5} opacity={1 - heal} />
-        {/* 霓虹芯：heal 过半后转纯白 */}
-        {!ghost && (
-          <Arcs a0={-32} a1={122} col="#dfe9ff" w={3.4} blur={0} opacity={1 - heal * 0.75} stroke={heal > 0.5 ? '#fff' : '#dfe9ff'} />
-        )}
-        {/* 愈合后的实心白 O */}
-        {!ghost && <circle cx={15} cy={15} r={10.5} fill="none" stroke="#fff" strokeWidth={5.5} opacity={heal} />}
-      </svg>
-    </div>
-  );
+  const r = radiusAt(f);
+  const spin = spinAt(f);
+  const heal = ramp(f, 18, 16, EASE.smooth); // 缺口愈合 + 虹彩 → 奶白
+  const gap = mix(30, 0, heal);
+  const w = strokeAt(r);
+  const speed = Math.abs(radiusAt(f) - radiusAt(f - 1)); // px/帧
+  const trail = Math.min(1, speed / 40);
+  const shift = SHIFT * ramp(f, 46, 16, EASE.swift);
+  const pearl = f < 36 ? 0 : springAt(f, 36, { damping: 12, stiffness: 240 });
+  const wave = ramp(f, 34, 20, EASE.out);
+  const tag = ramp(f, 82, 14, EASE.snappy);
+  const push = mix(1, 1.015, ramp(f, 46, 92, EASE.smooth));
+  const sheen = ramp(f, 84, 22, EASE.swift);
+  const band = `linear-gradient(105deg, transparent ${(sheen * 140 - 40).toFixed(1)}%, rgba(214,243,255,0.95) ${(sheen * 140 - 26).toFixed(1)}%, rgba(244,114,182,0.9) ${(sheen * 140 - 16).toFixed(1)}%, transparent ${(sheen * 140 - 4).toFixed(1)}%)`;
+  // 能量光晕：开场罩住大环，随收束坍缩，落位后回落成图标背后的微光
+  const haloR = mix(900, 420, ramp(f, 6, 30, COLLAPSE));
+  const haloA = 0.6 - 0.22 * ramp(f, 34, 24, EASE.out) + 0.04 * Math.sin(f / 20);
 
-  // 底色标定：原样片 mp4（yuv420p，无色彩元数据）把 #05060a 解码回 rgb(3,5,9)；此处改用带色相的深场
   return (
-    <AbsoluteFill>
-    <DesignStage bg="#06070c" raster="zoom">
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        {/* 深场：顶部略亮的冷色纵向渐变 */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, #0d0f17 0%, #07080d 60%, #05060a 100%)' }} />
-        {/* 能量光晕（随大环坍缩） */}
-        <div
-          style={{
-            position: 'absolute',
-            left: `calc(50% + ${shift}px - ${haloR}px)`,
-            top: `calc(50% - ${haloR}px)`,
-            width: haloR * 2,
-            height: haloR * 2,
-            borderRadius: '50%',
-            opacity: haloA,
-            background: 'radial-gradient(circle, rgba(110,92,255,0.42) 0%, rgba(110,92,255,0.12) 38%, rgba(110,92,255,0) 70%)',
-          }}
-        />
-        {/* 冲击波：细亮环 + 外圈柔光，扩散时变细变淡 */}
-        {wave > 0 && wave < 1 && (
-          <div
-            style={{
-              position: 'absolute',
-              left: `calc(50% - ${lerp(wave, 16, 70)}px)`,
-              top: `calc(50% - ${lerp(wave, 16, 70)}px)`,
-              width: lerp(wave, 32, 140),
-              height: lerp(wave, 32, 140),
-              borderRadius: '50%',
-              boxSizing: 'border-box',
-              border: `${lerp(wave, 0.9, 0.25)}px solid rgba(214,220,255,${(0.55 * (1 - wave)).toFixed(3)})`,
-              boxShadow: `0 0 ${lerp(wave, 4, 10)}px rgba(130,112,255,${(0.45 * (1 - wave)).toFixed(3)})`,
-            }}
-          />
-        )}
-        {/* 缩放残影（只在高速段出现）：上 1f、上 2f 的尺度与角度 */}
-        {trail > 0.02 && icon(scaleAt(t - 2 * DT), spinAt(t - 2 * DT), 0.16 * trail, true)}
-        {trail > 0.02 && icon(scaleAt(t - DT), spinAt(t - DT), 0.3 * trail, true)}
-        {/* 图标：SVG 双弧切口环 —— 抽象几何 mark，非任何具体品牌 logo（收束时缺口愈合、霓虹转纯白） */}
-        {icon(s, spin, 1)}
-        {/* 字母行（图标右侧）：从左到右 stagger，opacity 0→1 + translateX 8px→0 + 对焦模糊 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 'calc(50% - 32px)',
-            top: '50%',
-            height: ICON,
-            marginTop: -ICON / 2,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
-          {[...WORDMARK].map((ch, i) => {
-            const lk = seg(t, 0.46 + i * 0.035, 0.46 + i * 0.035 + 0.10, E.outCubic);
+    <AbsoluteFill style={{ background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.3 }} fill={{ x: 0.82, y: 0.9 }} intensity={0.8} breathe={0.5}>
+        <Dust look={L} count={36} seed={7} drift={0.3} opacity={0.45} color={L.accent} />
+      </Stage>
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: `${CX}px ${CY}px` }}>
+        {/* 能量光晕 */}
+        <div style={{
+          position: 'absolute', left: CX + shift * 0.55 - haloR, top: CY - haloR, width: haloR * 2, height: haloR * 2, borderRadius: '50%',
+          opacity: haloA,
+          background: `radial-gradient(circle, ${alpha(L.accent, 0.42)} 0%, ${alpha(L.accent2, 0.14)} 40%, ${alpha(L.accent, 0)} 70%)`,
+        }} />
+        <svg viewBox="0 0 1920 1080" width={1920} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+          <defs>
+            <linearGradient id={`ir${id}`} gradientUnits="userSpaceOnUse" x1={CX - r} y1={CY - r} x2={CX + r} y2={CY + r}
+              gradientTransform={`rotate(${(spin * 1.6).toFixed(2)} ${CX} ${CY})`}>
+              <stop offset="0" stopColor="#7c5cff" />
+              <stop offset="0.38" stopColor="#f472b6" />
+              <stop offset="0.68" stopColor="#d6f3ff" />
+              <stop offset="1" stopColor="#a78bfa" />
+            </linearGradient>
+            <linearGradient id={`pr${id}`} x1="0" y1="0" x2="0.8" y2="1">
+              <stop offset="0" stopColor="#fffaff" />
+              <stop offset="1" stopColor="#e6dcf5" />
+            </linearGradient>
+            <radialGradient id={`pe${id}`} cx="0.35" cy="0.3" r="0.8">
+              <stop offset="0" stopColor="#fde7ff" />
+              <stop offset="0.45" stopColor="#f472b6" />
+              <stop offset="1" stopColor="#7c5cff" />
+            </radialGradient>
+            <filter id={`gl${id}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation={(10 + w * 0.35).toFixed(2)} />
+            </filter>
+          </defs>
+          <g transform={`translate(${shift.toFixed(2)} 0)`}>
+            {/* 冲击波：刹车那一下一圈细环扩散消散 */}
+            {wave > 0 && wave < 1 && (
+              <circle cx={CX} cy={CY} r={mix(R1 + 14, R1 + 260, wave)} fill="none"
+                stroke={alpha('#f2e8ff', 0.6 * (1 - wave))} strokeWidth={mix(3, 0.6, wave)} />
+            )}
+            {/* 径向残影：上 1/3、2/3、1 帧的半径（只在高速段） */}
+            {trail > 0.03 && [1, 2, 3].map((k) => {
+              const rr = radiusAt(f - k * 0.34);
+              return <SplitRing key={k} r={rr} spin={spinAt(f - k * 0.34)} gap={gap} stroke={`url(#ir${id})`} width={strokeAt(rr)} opacity={(0.3 - k * 0.07) * trail * (1 - heal)} />;
+            })}
+            {/* 演出态：虹彩泛光 + 虹彩芯 */}
+            {heal < 0.999 && (
+              <>
+                <SplitRing r={r} spin={spin} gap={gap} stroke={`url(#ir${id})`} width={w * 1.5} opacity={0.75 * (1 - heal)} filter={`url(#gl${id})`} />
+                <SplitRing r={r} spin={spin} gap={gap} stroke={`url(#ir${id})`} width={w} opacity={1 - heal * 0.6} />
+              </>
+            )}
+            {/* 标准态：奶白实环 + 珍珠 */}
+            {heal > 0.001 && <SplitRing r={r} spin={spin} gap={gap} stroke={`url(#pr${id})`} width={w} opacity={heal} />}
+            {pearl > 0.001 && (
+              <>
+                {/* 珍珠：虹彩渐变 + 左上一点高光，演出态的颜色被"收"进了图标心里 */}
+                <circle cx={CX + 8} cy={CY - 8} r={Math.max(0, 30 * pearl)} fill={`url(#ir${id})`} opacity={0.3} filter={`url(#gl${id})`} />
+                <circle cx={CX + 8} cy={CY - 8} r={Math.max(0, 19 * pearl)} fill={`url(#pe${id})`} />
+                <circle cx={CX + 2} cy={CY - 14} r={Math.max(0, 5 * pearl)} fill="#ffffff" opacity={0.85} />
+              </>
+            )}
+          </g>
+        </svg>
+
+        {/* 字标：从图标方向逐字滑出（容器 overflow 裁切 = 从图标后面"抽"出来 + 对焦），图标让位时才开始 */}
+        <div style={{
+          position: 'absolute', left: WORD_X, top: CY - WORD_SIZE * 0.55, height: WORD_SIZE * 1.1,
+          display: 'flex', alignItems: 'center', overflow: 'hidden', paddingRight: 30,
+        }}>
+          {Array.from(WORDMARK).map((ch, i) => {
+            const p = ramp(f, 54 + i * 3, 16, EASE.snappy);
             return (
-              <span
-                key={i}
-                style={{
-                  color: '#f3f5fb',
-                  font: `760 27px/1 ${FONT.sans}`,
-                  letterSpacing: 1.6,
-                  opacity: lk,
-                  transform: `translateX(${lerp(lk, 8, 0)}px)`,
-                  filter: lk < 0.999 ? `blur(${lerp(lk, 2.5, 0).toFixed(2)}px)` : undefined,
-                  textShadow: '0 0 12px rgba(150,140,255,0.18)',
-                }}
-              >
-                {ch}
-              </span>
+              <span key={i} style={{
+                display: 'inline-block', ...wordStyle,
+                opacity: Math.min(1, p * 1.8),
+                transform: `translateX(${mix(-120 - i * 18, 0, p).toFixed(2)}px)`,
+                filter: p < 0.999 ? `blur(${mix(10, 0, p).toFixed(2)}px)` : undefined,
+              }}>{ch}</span>
             );
           })}
         </div>
-        {/* 强调色标语（占位文案）：延迟整行淡入，同时上移 3px 落座 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 'calc(50% + 34px)',
-            textAlign: 'center',
-            color: ACCENT,
-            font: `600 12.5px/1 ${FONT.sans}`,
-            letterSpacing: 4.6,
-            opacity: seg(t, 0.72, 0.84, E.outQuad),
-            transform: `translateY(${lerp(seg(t, 0.72, 0.86, E.outCubic), 3, 0)}px)`,
-          }}
-        >
-          BUILD. SHIP. REPEAT.
+        {/* 珍珠光泽：字标全部落定后一道虹彩光带扫过（只给主角一次，裁进字形 = background-clip:text） */}
+        {sheen > 0 && sheen < 1 && (
+          <div style={{
+            position: 'absolute', left: WORD_X, top: CY - WORD_SIZE * 0.55, height: WORD_SIZE * 1.1,
+            display: 'flex', alignItems: 'center', paddingRight: 30, pointerEvents: 'none',
+          }}>
+            {/* 与字标同结构逐字排（逐字 span 没有字偶距，整串排会和下层错开几 px） */}
+            {Array.from(WORDMARK).map((ch, i) => (
+              <span key={i} style={{
+                display: 'inline-block', ...wordStyle, color: 'transparent', WebkitBackgroundClip: 'text', backgroundClip: 'text',
+                backgroundImage: band, backgroundSize: `${WORD_W}px 100%`, backgroundPosition: `${-i * WORD_W / WORDMARK.length}px 0`,
+              }}>{ch}</span>
+            ))}
+          </div>
+        )}
+
+        {/* 标语：整行升起（强调粉，宽字距） */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: CY + 168, textAlign: 'center',
+          ...type(32, 600, { caps: true }), letterSpacing: '0.44em', color: L.accent2,
+          opacity: tag, transform: `translateY(${mix(18, 0, tag).toFixed(2)}px)`,
+        }}>
+          Light in every layer
         </div>
       </div>
-    </DesignStage>
-    {/* 暗角与颗粒放在设计坐标外，按 1920 原生像素铺，颗粒不被 zoom 放大成色块 */}
-    <Vignette strength={0.55} inner={0.4} color="#000000" />
-    <Grain opacity={0.07} blend="soft-light" />
     </AbsoluteFill>
   );
 };

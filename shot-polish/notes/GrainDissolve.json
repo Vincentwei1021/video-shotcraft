@@ -1,32 +1,31 @@
 {
   "stem": "GrainDissolve",
   "issues": [
-    "整张 SVG 在 480 宽设计坐标里栅格化再放大 4 倍，砂化时的噪点是糊成一团的雾，看不到颗粒",
-    "辉光是一层 drop-shadow，凝聚冲高时字标外面罩着一块均匀的灰白方雾",
-    "背景是死平的 #0a0a0c，没有任何深度；字体回落到 Helvetica",
-    "\"凝聚\"只靠滤镜位移归零，画面里没有任何东西真的在向中心收拢",
-    "选区框只是淡入淡出，出场方式和砂化能量无关"
+    "整行字只有 ~99px 等效、短字标 ACME 也只占画宽 1/7，大片空黑，画面没有分量",
+    "冷白辉光 + 灰底近单色，砂化读起来像雾化模糊，没有能量感",
+    "整行字与短字标字体一样、只是变大变粗，\"一句话归结为一个名字\"的叙事不明显",
+    "60f 太短：凝固后几乎没有 hold，字标刚清楚就结束了"
   ],
   "changes": [
-    "SVG 改为按 1920×1080 原生分辨率栅格化（viewBox 不变、1 单位 = 3px），噪点细到 2–3px 的砂粒，时间轴与滤镜参数全部保持原值",
-    "辉光移进滤镜链：紧光 + 宽光两层冷白 bloom，强度仍走原三段包络，凝固后只剩贴字边的柔光余温",
-    "加 150 粒确定性游离砂粒：砂化时被吹散并随 seed 节拍闪烁，0.56 起以 inQuart 错峰加速吸回字标、0.66–0.80 熄灭；字标凝聚时 1.06→1 收缩“被压实”",
-    "凝聚冲高处给一次横向光痕（细芯 + 宽晕，0.74–0.92 消退），只给主角一次",
-    "背景换成带冷色相的 Backdrop（中心柔光 + 暗角 + 颗粒）；选区框随砂化从中线横向展开、撤场时收拢；字体换系统字体栈"
+    "look 换 ember（暖黑 · 橙 · 金）：砂化 = 加热，暖橙双层 bloom，凝聚后的字标是白热→橙的竖向渐变、留一圈余温辉光",
+    "字体做对比：整行字是等宽代码体「{ Kova 3 — now live }」，凝聚成 300px 粗黑体品牌字标「KOVA」（占画宽 42%），代码→品牌就是叙事",
+    "滤镜改按 1920 原生坐标、高频噪声 + 大位移 + 0.55px 极小模糊，颗粒是真正的 2–3px 砂粒而不是雾",
+    "180 颗余烬火星被热气吹出上飘、凝聚时 ease-in 加速吸回，按速度拉成短线；选区框琥珀斜纹 + 等宽角标，overshoot 弹开、横向挤压收拢撤场预告\"压缩\"",
+    "时长 60→84f：10f 干净常态 → 砂化沸腾 → 凝聚 + 一道光痕 → 副标「Now live, everywhere.」逐词升起 → 18f hold，全程 3.5% 极缓推镜"
   ],
   "issuesEn": [
-    "The whole SVG was rasterised at 480px design width and scaled 4x, so the dissolve noise was a soft fog with no visible grain",
-    "The glow was a single drop-shadow, putting a uniform grey-white haze box around the wordmark at the peak",
-    "The background was flat #0a0a0c with no depth, and the font fell back to Helvetica",
-    "\"Condensing\" relied only on the displacement returning to zero; nothing on screen actually gathered toward the centre",
-    "The selection box only faded in and out, unrelated to the energy of the dissolve"
+    "The sentence was only ~99px effective and the short ACME mark filled 1/7 of the width, floating in empty black with no weight",
+    "Cold white glow on a near-monochrome grey stage made the grain read as foggy blur with no energy",
+    "Sentence and short mark used the same typeface, just bigger and bolder, so 'a sentence boiled down to a name' did not come across",
+    "60f was too short: almost no hold after the lock, the mark ended as soon as it was legible"
   ],
   "changesEn": [
-    "The SVG now rasterises at native 1920×1080 (same viewBox, 1 unit = 3px), so the noise reads as 2–3px sand; all timings and filter values unchanged",
-    "Glow moved into the filter chain as a tight plus wide two-layer cool-white bloom on the original three-stage envelope, leaving only a soft rim after lock",
-    "Added 150 deterministic loose sand grains: blown outward and flickering with the seed beat during the dissolve, pulled back into the wordmark from 0.56 with staggered inQuart acceleration, fading out over 0.66–0.80; the wordmark compresses 1.06→1 as it condenses",
-    "A single horizontal light streak (thin core plus wide halo) at the condensation peak, fading over 0.74–0.92, given to the hero only once",
-    "Background is now a cool-tinted Backdrop (centre glow, vignette, grain); the selection box unfolds horizontally from the centre with the dissolve and folds in on exit; system font stack"
+    "Ember look (warm black, orange, gold): the grain is heat, with a two-layer warm bloom; the condensed mark is a white-hot-to-orange vertical gradient with a lingering warm glow",
+    "Typographic contrast: the line is monospace code '{ Kova 3 — now live }' and condenses into a 300px heavy sans wordmark KOVA (42% of frame width); code becoming brand is the story",
+    "The filter now runs at native 1920 coordinates with high-frequency noise, big displacement and only 0.55px blur, so the grains are real 2–3px sand instead of fog",
+    "180 embers blow out and drift upward on the heat, then accelerate back in with ease-in, stretched into streaks by speed; the amber hatched selection box with a mono tag springs open and squeezes shut sideways, foreshadowing the compression",
+    "60→84f: 10f clean state, grain and boil, condense with one light streak, the subline 'Now live, everywhere.' rises word by word, then an 18f hold, with a 3.5% slow push throughout"
   ],
+  "look": "ember",
   "mdChanged": true
 }

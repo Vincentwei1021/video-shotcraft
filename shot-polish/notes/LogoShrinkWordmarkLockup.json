@@ -1,32 +1,31 @@
 {
   "stem": "LogoShrinkWordmarkLockup",
   "issues": [
-    "背景是死平的近黑，霓虹大环的能量收束后画面里没有任何余韵",
-    "大环只做缩放，双弧缺口全程不动，高速缩小段没有速度感",
-    "落位刹车只有 6% 过冲，没有\"盖章\"的冲击读数",
-    "红色标语 #e0342c 和紫色霓虹撞色，字体回落到 Helvetica 800",
-    "lockup 整组偏左约 20px（图标左移量与字标宽度没对齐），标语却按全幅居中"
+    "设计坐标 480×270：大环开场只有 ~160px，远谈不上\"满屏能量\"，落定的图标和字标也只占画宽 1/6",
+    "字标 BRAND 27px×4 等效约 110px 但字重、字距都是占位感，标语是 12.5px 级小字，读不清",
+    "纯黑底 + 一圈淡紫晕，收束段几乎没有速度感，演出态与标准态区别只在颜色",
+    "标语用撞色的红，和霓虹紫不在一个色系"
   ],
   "changes": [
-    "深场改为冷色纵向渐变 + 暗角 + 原生像素颗粒，加一团随大环同步坍缩（半径 150→34）的紫色能量光晕，落位后回落成图标背后的微光",
-    "收束途中双弧减速自转 150°（outCubic），高速段按每帧缩放量叠上 1f/2f 两层缩放残影当运动模糊，静止时为 0",
-    "刹车回弹瞬间（t=0.28）放一圈细冲击波：细亮环 + 外圈柔光，扩散 32→140px 时变细变淡，只一次",
-    "字母滑入加 2.5px→0 的对焦模糊，字标换系统字体 760 重并收紧字距；标语改用与霓虹同色相的 #9d94ff，并上移 3px 落座",
-    "左移量 −68→−62px、字母行 50%−40→−32px，lockup 整组视觉居中；改用 zoom 栅格化保证字边锐利（md 同步）"
+    "look 换 aurora（紫粉极光暗场 + 浮尘）：开场第 1 帧就是直径 1240px、上下出画的虹彩切口双弧环（紫→粉→冰蓝渐变描边 + 宽泛光）",
+    "收束改「先慢后猛、最后硬刹」曲线（×10 收缩 28f）+ 7% 刹车过冲 + 一圈冲击波；环按目标半径每帧重画（不放大不糊），描边次线性变细，高速段 3 圈半径残影做径向运动模糊",
+    "演出态→标准态：缺口愈合、虹彩交叉到奶白实环，环心弹出一颗虹彩\"珍珠\"——演出态的颜色被收进图标里（虚构品牌 Nacre = 珍珠母）",
+    "lockup 按 1080p 重排：190px 字标 NACRE 从图标后面逐字抽出（错峰 3f + 对焦），落定后一道珍珠光泽裁进字形扫过一次；标语 LIGHT IN EVERY LAYER 32px 宽字距强调粉",
+    "时长 132→138f，尾段 42f hold 有 1.5% 极缓推镜与光的呼吸"
   ],
   "issuesEn": [
-    "The background was flat near-black; once the neon ring collapsed nothing lingered on screen",
-    "The ring only scaled, its gapped arcs never moved, and the fast shrink had no sense of speed",
-    "The landing brake was only a 6% overshoot with no stamp-like impact",
-    "The red tagline #e0342c clashed with the violet neon, and the font fell back to Helvetica 800",
-    "The lockup sat about 20px left of centre (icon shift not matched to wordmark width) while the tagline was centred to the frame"
+    "Built in 480×270 design space: the opening ring was only ~160px across, nowhere near full-frame energy, and the final lockup filled 1/6 of the width",
+    "The BRAND wordmark felt like a placeholder in weight and tracking, and the tagline was a 12.5px-class line that could not be read",
+    "Pure black with a faint purple halo; the collapse had almost no sense of speed, and the performance and standard states differed only in colour",
+    "The tagline used a clashing red, outside the neon-violet palette"
   ],
   "changesEn": [
-    "Dark field is now a cool vertical gradient with vignette and native-pixel grain, plus a violet energy halo that collapses with the ring (radius 150→34) and settles into a faint glow behind the icon",
-    "The arcs spin 150° with outCubic deceleration while shrinking, and the fast section gets 1f/2f scale ghosts sized by per-frame scale change as motion blur, zero at rest",
-    "At the brake rebound (t=0.28) a single thin shockwave ring (bright core plus soft halo) expands 32→140px while thinning and fading",
-    "Letters slide in with a 2.5px→0 focus blur; wordmark in the system font at 760 weight with tighter tracking; tagline now #9d94ff from the neon's hue family, settling up 3px",
-    "Icon shift −68→−62px and letter row 50%−40→−32px so the lockup is optically centred; zoom rasterisation keeps glyph edges sharp (md updated)"
+    "Aurora look (violet-pink night with dust): frame 1 is a 1240px iridescent split ring that bleeds off top and bottom, with a violet-pink-ice gradient stroke and a wide glow",
+    "The collapse is slow-then-violent with a hard brake (10x in 28f), a 7% brake overshoot and one shockwave; the ring is redrawn at its true radius each frame (no upscaling blur), the stroke thins sublinearly, and three radius ghosts give radial motion blur at peak speed",
+    "Performance to standard state: the gaps heal, the iridescence crossfades to a cream solid ring and an iridescent pearl pops into the centre, keeping the show colours inside the mark (fictional brand Nacre)",
+    "The lockup is laid out for 1080p: a 190px NACRE wordmark slides out from behind the icon letter by letter (3f stagger, focus pull), then a single pearl sheen clipped to the glyphs sweeps across; the tagline LIGHT IN EVERY LAYER is 32px, wide-tracked accent pink",
+    "132→138f, with a 42f end hold carrying a 1.5% slow push and breathing light"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

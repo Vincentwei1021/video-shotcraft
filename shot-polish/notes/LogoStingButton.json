@@ -1,32 +1,31 @@
 {
   "stem": "LogoStingButton",
   "issues": [
-    "收黑与 LOGO 段是大面积纯 #000，没有任何空气感，像黑屏而不是片尾卡",
-    "LOGO 是白方块套黑方块 + Helvetica 800 粗体 ACME，字距外放，像占位图标",
-    "LOGO 入场只有 opacity+scale 同时出现，图形与字标同帧到位，没有跟随",
-    "彩蛋是把灰骨架 dashboard 放大 2.4 倍的局部，读不出是什么按钮，tick 是一颗悬空的灰圆",
-    "上一镜尾巴是静止截图，压暗时画面完全不动"
+    "上一镜尾巴是灰骨架占位 dashboard，收黑与 LOGO 段是大面积纯 #000，像黑屏而不是片尾卡",
+    "LOGO 是白方块套黑方块 + Helvetica 粗体 ACME，像占位图标，入场 opacity+scale 同帧到位没有跟随",
+    "彩蛋是灰骨架界面的放大局部，读不出是什么按钮，和 LOGO 段色调几乎一样，「眨眼」不明显",
+    "彩蛋前后画面完全一样，彩蛋和收尾之间没有任何因果"
   ],
   "changes": [
-    "深场改为带冷色相的 #0a0b0f + 随 LOGO 亮起的中心柔光斑 + 暗角，黑场与 LOGO 段共用同一张底，硬切回来像素一致",
-    "LOGO 重做：深钢色圆角方块（顶部内高光、面光渐变、双层阴影）里白方块与靛蓝圆片错叠，字标 Acme 系统字体 650 重 112px、负字距",
-    "入场是对焦：blur 8→0px + scale 0.96→1（snappy 曲线 10f），字标晚 2f 并自左 14px 滑入落定",
-    "彩蛋换成按目标尺寸布局的微距按钮行（v2.0 / Join the beta / Not now），焦外前景虚化、12f 内前推 3.5%，光标 f2–3 按下按钮压缩 3%，tick 圆点仍只亮第 4–5f",
-    "上一镜尾巴继续缓推 1.0→1.03，f14–24 用 ease-in 压暗到深场；补导出 LOGO_STING_BUTTON_DURATION=142"
+    "look 改 custom「noir」：暖色相近黑舞台 + 奶白字 + 唯一强调色绯红，全段 2.39:1 电影遮幅——片子「在影院里结束」",
+    "上一镜尾巴重做成产品收尾画面：150px 大标题「Every frame, graded.」+ 一帧前后对比的调色画面，遮幅从画外合拢、ease-in 压暗入黑",
+    "LOGO 重做为新月 + 晚星图形标（虚构品牌 Vesper）+ 128px 宽字距字标：图形标对焦入场 12f，字标逐字以中心为原点字距收拢晚 3f，绯红短线 + 日期行最后落座",
+    "彩蛋 12f 硬切到无遮幅的整屏绯红：巨型白色胶囊按钮「Get early access」（104px）、失焦次按钮与光斑做浅景深，f3 光标按下 → f5 翻黑「You're on the list」+ 勾弹出，前推 4%",
+    "切回后 LOGO 像素一致，唯一变化是晚星被点亮成绯红——给彩蛋一个因果；时长 142→150f，尾段定格 64f 有极缓推镜与光的呼吸"
   ],
   "issuesEn": [
-    "The fade-to-black and logo sections were flat pure #000 with no atmosphere, reading as a dead screen rather than an end card",
-    "The logo was a white square inside a black square plus Helvetica 800 ACME with loose tracking, like a placeholder icon",
-    "The logo entrance was opacity+scale only, with mark and wordmark landing on the same frame and no follow-through",
-    "The easter egg was a 2.4x crop of the grey skeleton dashboard, unreadable as a button, with a floating grey tick dot",
-    "The tail of the previous shot was a frozen still while it darkened"
+    "The previous-shot tail was a grey skeleton dashboard, and the black and logo sections were flat pure #000, reading as a dead screen rather than an end card",
+    "The logo was a white square in a black square with a bold Helvetica ACME, like a placeholder; opacity and scale landed on the same frame with no follow-through",
+    "The egg was a magnified crop of the grey skeleton UI, unreadable as a button and almost the same tone as the logo card, so the blink barely registered",
+    "Frames before and after the egg were identical; nothing connected the egg to the ending"
   ],
   "changesEn": [
-    "Dark field is now a cool-tinted #0a0b0f with a soft centre glow that lights with the logo plus a vignette; black gap and logo share one background so the hard cut back is pixel-identical",
-    "Logo rebuilt: a dark steel rounded square (inner top highlight, face light gradient, two-layer shadow) with an overlapping white square and indigo disc, wordmark Acme in the system font at 650 weight, 112px, negative tracking",
-    "The entrance is a focus pull: blur 8→0px + scale 0.96→1 on a snappy 10f curve, with the wordmark 2f behind sliding in 14px from the left",
-    "The egg is now a macro button row laid out at final pixel size (v2.0 / Join the beta / Not now) with a defocused foreground, a 3.5% push over 12f, the cursor pressing the button at f2–3 (3% squash) and the tick dot still lit only on f4–5",
-    "The previous shot's tail keeps pushing 1.0→1.03 and darkens with ease-in over f14–24; added LOGO_STING_BUTTON_DURATION=142"
+    "Custom noir look: warm near-black stage, cream type and one crimson accent, with 2.39:1 letterbox bars throughout so the film ends in the cinema",
+    "The tail is now a real closing product shot: a 150px headline 'Every frame, graded.' beside a before/after graded film still; the bars close in from off-frame and it fades to black with ease-in",
+    "New logo: a crescent + evening-star mark (fictional Vesper) and a 128px wide-tracked wordmark; the mark focus-pulls in over 12f, letters track in from the centre 3f later, then the crimson rules and date line settle",
+    "The 12f egg hard-cuts to a full-bleed crimson frame with no letterbox: a giant cream pill 'Get early access' (104px), a defocused secondary pill and bokeh for shallow depth; the cursor presses at f3 and at f5 it flips to black 'You're on the list' with a springy tick, pushing in 4%",
+    "Back on the logo, pixels match except the evening star is now lit crimson, giving the egg a consequence; duration 142→150f with a 64f end hold that keeps a very slow push and breathing light"
   ],
+  "look": "custom",
   "mdChanged": true
 }
