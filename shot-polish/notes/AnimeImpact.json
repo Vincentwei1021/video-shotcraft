@@ -1,30 +1,31 @@
 {
   "stem": "AnimeImpact",
   "issues": [
-    "工作台按 30f 截断，渲染在撞停前一帧就结束，负片冲击帧和震屏恢复根本没出现",
-    "目标卡打着调试占位大字 \"IMPACT\"、3px 纯黑粗边，像线框稿",
-    "全景 24f 死帧后直接急推，没有预备动作，急推段无任何运动模糊",
-    "推到 2.4x 后卡片上下被画框切掉，撞停后画面亮度/焦点毫无变化"
+    "全景是灰白占位 dashboard，目标卡只有一个大写 IMPACT，看不出这一拳打在什么事情上",
+    "撞停后的特写是一张空白占位卡，持续近 3 秒只有一个单词可读，画面没有信息也没有设计",
+    "灰底 + 靛蓝描边，负片帧之外整条镜头没有色彩与层次",
+    "撞停后的恢复段只有震屏，没有给\"命中\"一个落定的视觉标点"
   ],
   "changes": [
-    "补 ANIME_IMPACT_DURATION = 120：建立 → 预备 → 急推 → 3f 冲击帧 → 震屏 → 约 2.3s 静止读卡",
-    "去掉占位字和黑边，目标卡在 6–20f 亮起 1.5px 靛蓝描边 + 6px 柔光晕并略微抬高，先告诉观众拳头落在哪",
-    "全景 1→1.012 极缓 creep，22–28f 回拉到 0.985 做预备；急推段（28–33f）按位移自适应 2–12 个子帧做时间采样运动模糊，并叠一层跟随卡心的径向锐利遮罩，模仿变焦模糊",
-    "冲击帧负片加 contrast(1.45) 压成墨黑；集中线改成 34 根粗楔 + 22 根细针，内端用径向渐隐柔化，每帧换形态",
-    "推近倍率改为 2.25x，卡片完整入画；撞停后暗角 0.42→0.16、卡外压暗 22%→10%，22f 内回落；震屏用 cos 起相并加 ≤0.24° 微旋转"
+    "look 换成 paper（暖白纸 · 墨 · 朱红），但走漫画分格：整幅是 5 格分镜页，7px 墨线格框 + 网点，讲一条虚构部署工具 Shiden 的流水线（Push → Tests 214/214 → Build 3.1 s → Deploy → 品牌格）",
+    "手法落到内容上：主格起初是 DEPLOYING + 92% 进度条，急推撞停同一帧翻成 140px 斜体 DEPLOYED.——负片打击帧就是部署成功的那一拳",
+    "打击帧保留 3f 负片 + 34 粗楔 22 细针集中线（每帧换形态）+ 红青 ±9px 错位；急推到 1.74x 让主格高≈画高 93%，带时间采样运动模糊与中心锐利遮罩",
+    "恢复帧加一枚朱红描墨的拟声字「ドン!」弹簧盖章砸上格角，进度条变朱红满格、14 regions · 0.8 s 随后升起",
+    "节奏：0–24 整页正视建立（进度条在走、6–20 朱红锁定框亮起）→ 6f 预备回拉 → 6f 急推 → 3f 打击 → 震屏衰减 → 2s+ 读格 hold（相机再推 2%），总长 135f"
   ],
   "issuesEn": [
-    "The workbench cut it at 30f, so the render ended one frame before the hit: the negative impact frames and shake recovery never appeared",
-    "The target card carried a debug placeholder \"IMPACT\" headline and a 3px solid black border, like a wireframe",
-    "A dead 24-frame wide hold went straight into the push, with no wind-up and no motion blur",
-    "At 2.4x the card was cropped top and bottom, and nothing changed in brightness or focus after the hit"
+    "The wide shot was a grey placeholder dashboard and the target card only said IMPACT, so the punch landed on nothing in particular",
+    "After the hit the close-up was a blank placeholder card holding for almost 3 seconds with a single readable word",
+    "Grey background with an indigo outline: outside the negative frames the shot had no colour or depth",
+    "The recovery only had a screen shake; the hit never got a visual full stop"
   ],
   "changesEn": [
-    "Added ANIME_IMPACT_DURATION = 120: setup, wind-up, crash, 3f impact frames, shake, then about 2.3s of still reading time",
-    "Removed the placeholder text and black border; at 6–20f the target card picks up a 1.5px indigo outline and a 6px soft halo and lifts slightly, so the audience knows where the punch will land",
-    "Slow 1→1.012 creep on the wide shot and a 22–28f pull-back to 0.985 as wind-up; the 28–33f push gets temporal-sampling motion blur (2–12 adaptive sub-frames) plus a sharp radial mask that tracks the card centre to mimic zoom blur",
-    "The negative frames add contrast(1.45) for ink-black; speed lines are now 34 thick wedges plus 22 thin needles with radially feathered inner ends, re-drawn every frame",
-    "Push target lowered to 2.25x so the card stays fully in frame; after the hit the vignette goes 0.42→0.16 and the surroundings dim 22%→10% over 22f; the shake is cosine-phased with ≤0.24° micro-rotation"
+    "Paper look (warm paper, ink, vermilion) done as a manga page: five panels with 7px ink borders and screentone telling a fictional deploy tool's pipeline (Push, Tests 214/214, Build 3.1 s, Deploy, brand panel)",
+    "The technique carries meaning: the hero panel reads DEPLOYING with a 92% bar and flips to a 140px italic DEPLOYED. on the exact stop frame, so the negative impact frame is the moment the deploy lands",
+    "The 3f negative, 34 thick wedges plus 22 needles of focus lines (new shape every frame) and ±9px red/cyan split are kept; the crash zoom to 1.74x makes the panel ~93% of frame height, with sub-frame motion blur and a sharp centre mask",
+    "On recovery a vermilion, ink-outlined ドン! sound effect stamps onto the panel corner on a spring, the bar fills vermilion and 14 regions · 0.8 s rises in",
+    "Rhythm: 0–24 frontal page establish (bar creeping, vermilion lock frame at 6–20), 6f wind-back, 6f crash zoom, 3f impact, decaying shake, then a 2s+ reading hold with a 2% push; 135f total"
   ],
+  "look": "paper",
   "mdChanged": true
 }

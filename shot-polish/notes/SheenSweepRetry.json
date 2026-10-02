@@ -1,30 +1,31 @@
 {
   "stem": "SheenSweepRetry",
   "issues": [
-    "主角卡是 #3a3a3a 平色块，只有 \"PRO\" 加两根灰条，读不出是什么卡",
-    "背景是平铺 G.bg 浅灰，卡只有一层泛灰投影，没有空间感",
-    "扫光是一条 0.32 的单层渐变带，扫过时卡面本身毫无反应，像贴了一张透明胶片",
-    "光带从卡外 1216px 开始走，inOut 匀速中段大多耗在卡外，真正扫过卡面只有约 4f，几乎看不清"
+    "主角是一张 190px 宽的灰色占位小卡，只有 PRO 和两根占位线，放在大片浅灰空底上",
+    "扫光几乎看不出来，卡面没有材质可以被光\"照出来\"",
+    "卡是正视的平面块，没有体积、没有投影方向，扫光缺少物理动机",
+    "整条 4.7 秒没有任何文字信息与版式"
   ],
   "changes": [
-    "卡改为深墨渐变会员卡（#2a2c35→#111216，28px 圆角，内发丝线 + 上沿内高光 + elevation 36 两层软阴影），内容是 Workspace 标识、Annual plan chip、PRO 大字、权益一句话和 $24/seat",
-    "背景改为暖灰纵向渐变 + 左上主光斑 + 轻暗角 + 静态颗粒，卡下加一块贴地接触影",
-    "高光带改成宽柔光（0.05–0.10）+ 窄亮芯（峰值 0.32）两层，screen 叠在深墨上；卡面 25° 细斜线暗纹常驻 0.03，只在光带经过处被同角度遮罩照到 0.16；卡上沿发丝线跟着光带同步亮起",
-    "光带中心改为从卡左外 300px 走到卡右外 300px，仍是 40–68f inOut cubic 只扫一次，扫过卡面约 10f；扫光层条件挂载，68f 后整层卸载",
-    "补 SHEEN_SWEEP_RETRY_DURATION = 140（40f 静止 + 28f 扫光 + 72f 真静止）"
+    "look 换成 sand（暖沙展台）：主角改为 900×567 的钛黑金属会员卡（虚构 Corvid Reserve）——拉丝钛纹、激光蚀刻字标 / 持卡人 / 非接图标、香槟金芯片、叠层金属厚边",
+    "卡 3D 斜放在右侧（rotateY 朝向文字栏、rotateX 微仰），两层软投影随入场高度收紧；左栏编辑式标题 118px「Metal, / not plastic.」+ 34px 正文 + CTA 胶囊",
+    "扫光给物理动机：卡缓缓转向光源（rotateY 21°→14°）的同一 32f 内，115° 高光带（宽柔光 0.14 + 亮芯 0.5）掠过一次；光带下拉丝纹与蚀刻字的亮版副本被同一遮罩揭开，上沿发丝线同步亮起",
+    "Q4 约束全保留：只扫主角一次、圆角裁剪、扫光层条件挂载，扫前扫后无光效层",
+    "节奏：0–36 慢弹簧入场（无回弹的重量感）→ 左栏逐行升起 → 14f hold 先看清卡面 → 58–90 转身 + 扫光 → CTA 升起 → hold 段卡再漂 1.5°，总长 150f"
   ],
   "issuesEn": [
-    "The hero card was a flat #3a3a3a block with \"PRO\" and two grey bars; there was no telling what kind of card it was",
-    "The background was a flat G.bg light grey and the card had one muddy shadow, with no sense of space",
-    "The sheen was a single 0.32 gradient band; the card surface did not respond as it passed, like a strip of clear film laid on top",
-    "The band started 1216px off the card, so most of the even-speed middle of the inOut ease ran off-card; it crossed the card for only about 4f and was barely readable"
+    "The hero was a 190px-wide grey placeholder card with just PRO and two stub lines, floating on a large empty light-grey field",
+    "The sheen was barely visible; the card had no material for the light to bring out",
+    "The card was a flat, frontal block with no volume or shadow direction, so the sweep had no physical reason",
+    "Across 4.7 seconds there was no copy or layout at all"
   ],
   "changesEn": [
-    "The card is now a deep-ink membership card (#2a2c35→#111216, 28px radius, inner hairline, top inner highlight, two-layer elevation-36 shadow) carrying a Workspace mark, an Annual plan chip, the big PRO, a one-line benefit and $24/seat",
-    "Background is a warm-grey vertical gradient with a top-left key light, light vignette and static grain, plus a contact shadow under the card",
-    "The sheen is now two layers, a wide soft wash (0.05–0.10) and a narrow hot core (peak 0.32), screened over the ink; a 25° fine-line guilloche sits at 0.03 and is lit to 0.16 only where the band passes, through a mask at the same angle; the card's top hairline brightens in step with the band",
-    "The band centre now travels from 300px left of the card to 300px right of it, still one 40–68f inOut-cubic pass, crossing the card in about 10f; the sheen layers are conditionally mounted and unmounted after 68f",
-    "Added SHEEN_SWEEP_RETRY_DURATION = 140 (40f still, 28f sweep, 72f truly still)"
+    "Sand look (warm display table); the hero is now a 900×567 titanium-black metal card (fictional Corvid Reserve) with brushed grain, laser-etched wordmark, holder name and contactless mark, a champagne-gold chip and a stacked metal edge",
+    "The card sits in 3D on the right (rotateY toward the copy, slight rotateX) with two soft shadows that tighten as it lands; the left column carries a 118px editorial headline Metal, / not plastic., 34px body and a CTA pill",
+    "The sweep is physically motivated: within the same 32f that the card turns toward the light (rotateY 21°→14°), a 115° band (0.14 soft wash plus 0.5 core) passes once; under the band, lit copies of the brushed grain and etching are revealed by the same mask and the top edge hairline catches",
+    "All Q4 limits hold: one sweep on the hero only, clipped to the radius, layers mounted only during the sweep",
+    "Rhythm: a heavy no-bounce spring entrance at 0–36, headline lines rising, a 14f hold to read the card, the turn plus sweep at 58–90, the CTA rising, then a 1.5° drift through the hold; 150f total"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }

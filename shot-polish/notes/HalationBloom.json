@@ -1,28 +1,31 @@
 {
   "stem": "HalationBloom",
   "issues": [
-    "工作台按 17f 截断，只看得到撞停瞬间，晕层回落与驻留呼吸光全被切掉",
-    "画面上方打着调试标签 \"HALATION BLOOM\"，纯平 #2a2a28 灰底，字体回退到 Helvetica",
-    "2.4x→1 的急缩是硬跳，没有运动模糊，读作缩放而非砸入",
-    "晕只有一层均匀白雾，没有高光芯和胶片暖边，也照不亮周围的暗场"
+    "300px 的 10× 和角落一行调试小字之外画面全空，暗场是死平的灰黑",
+    "晕层是一团均匀的灰白雾，读不出胶片 halation 的层次，也没有色彩",
+    "撞停后的副标题只有 40px 灰字，数字不知道在说什么",
+    "收尾 ~3 秒完全静止，画面没有空间感（无地面、无光源方向）"
   ],
   "changes": [
-    "补 HALATION_BLOOM_DURATION = 145（f56 起真静止 89f），颗粒改用静态纹理，收尾逐帧完全相同",
-    "去掉调试标签，换成撞停后 6f 错峰浮入的副标题 \"faster builds on every commit\"（40px）；底色改为 #16171c→#0b0c10 带色相的深色渐变，加冷色光斑、暗角和静态颗粒；字改用系统 SF 栈 300px/800 负字距，写作 \"10×\"",
-    "急缩段加快门 0.5f 的时间采样运动模糊（按字边位移自适应 1–14 个子帧 + 高斯抹阶梯）",
-    "晕改为三层：贴字的紧芯（blur 6，0.9→0.5）+ 参数表主晕（blur 22、brightness 1.8、scale 1→1.3、6f out-cubic 涨、线性落到 0.35 再收到 0.22）+ 外圈暖橙 halation 边（blur 48）；撞停同帧中心径向暖光照亮暗场，再退到 30% 驻留"
+    "look 换成 midnight：主角改为虚构显示器 Vesper XDR 的峰值亮度「2,000 nits」，330px 白→冰蓝自发光渐变数字 + 96px 单位，语义与\"撞停即照亮\"对上",
+    "晕分四层：贴边紧芯 + 主晕（6f out-cubic 猛涨到 1.18 再收回 1.03，避免停在大尺寸读成重影）+ 电光蓝外圈 halation + 撞停帧横向变形光条；消散 20f linear 与扩散解耦",
+    "空间：Stage 顶光与地平线光带、玻璃地台线 + 数字倒影（撞停时一起被照亮）、极淡浮尘，撞停同帧整片暗场受光再退",
+    "版式：眉题 PEAK BRIGHTNESS 字距收拢 + 两侧发丝线、52px 副标题逐词升起、30px mono 型号行，全部居中对齐数字轴线",
+    "节奏：6–14 crash-zoom 2.7→0.94（时间采样运动模糊）→ 弹簧回弹一次过冲 → 跟随元素晚 6f 起依次入场 → hold 段相机极缓推进 2.5% + 驻留晕 ±8% 呼吸，总长 150f"
   ],
   "issuesEn": [
-    "The workbench cut it at 17f, showing only the hit; the bloom falloff and the lingering glow were cut off",
-    "A debug label \"HALATION BLOOM\" sat at the top of the frame over a flat #2a2a28 grey, with the font falling back to Helvetica",
-    "The 2.4x→1 crash was a hard jump with no motion blur, reading as a scale change rather than a slam",
-    "The bloom was a single uniform white haze, with no hot core or warm film fringe, and it did not light the dark surroundings"
+    "Apart from a 300px 10× and a tiny debug label in the corner the frame was empty, on a dead flat grey-black",
+    "The bloom was an even grey-white fog with no film-halation layering and no colour",
+    "The subtitle after the hit was 40px grey text, and the number never said what it measured",
+    "The last ~3 seconds were completely static with no sense of space (no floor, no light direction)"
   ],
   "changesEn": [
-    "Added HALATION_BLOOM_DURATION = 145 (truly still for 89f from f56); grain uses a static texture so the tail is frame-identical",
-    "Debug label replaced by a 40px subtitle, \"faster builds on every commit\", that floats in 6f after the hit; the background is a hue-tinted #16171c→#0b0c10 gradient with a cool light pool, vignette and static grain; type uses the system SF stack at 300px/800 with negative tracking, set as \"10×\"",
-    "The crash gets temporal-sampling motion blur with a 0.5f shutter (1–14 sub-frames adapted to edge travel, plus a Gaussian to smooth the steps)",
-    "The bloom now has three layers: a tight core hugging the glyphs (blur 6, 0.9→0.5), the main halo from the parameter table (blur 22, brightness 1.8, scale 1→1.3, 6f out-cubic rise, linear fall to 0.35 then settling at 0.22), and a warm orange halation fringe (blur 48); on the hit frame a radial warm spill lights the dark field, then fades to 30% and stays"
+    "Midnight look; the hero is now the peak brightness of a fictional display, Vesper XDR: a 330px white-to-ice-blue self-lit 2,000 plus a 96px unit, so the number itself lights the screen when it stops",
+    "Four light layers: a tight edge core, a main bloom (6f out-cubic surge to 1.18 then back to 1.03 so it never parks as a ghost copy), an electric-blue outer halation and an anamorphic streak on the stop frame; 20f linear decay decoupled from the spread",
+    "Space: Stage top light and horizon band, a glass floor line with the number's reflection (lit up on impact), faint dust, and a one-shot light spill across the dark stage on the stop frame",
+    "Layout: a PEAK BRIGHTNESS kicker tracking in between hairlines, a 52px subtitle rising word by word and a 30px mono spec line, all centred on the number's axis",
+    "Rhythm: crash zoom 2.7→0.94 at 6–14 with sub-frame motion blur, one visible spring overshoot, followers staggered from 6f later, then a hold with a 2.5% slow push and ±8% bloom breathing; 150f total"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

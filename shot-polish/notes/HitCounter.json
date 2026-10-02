@@ -1,30 +1,33 @@
 {
   "stem": "HitCounter",
   "issues": [
-    "三张卡是灰条骨架，读不出这是三个功能点在连招",
-    "背景 dashboard 直接 opacity 0.4，深色侧栏洗成脏灰，槽位是 3px 灰色虚线框",
-    "卡片下落是平移的硬块：没有运动模糊、投影不随高度变化，触地只有 6% 压扁",
-    "伤害数字和 ×N 计数器用回退字体、纯墨色，三击视觉上一样，没有“越打越狠”"
+    "卡片和背景都是灰白占位块，伤害数字 +1.2k 之类没有意义，连招讲不出功能的价值",
+    "三张卡只占画面中段一条细带，上下大片空灰，计数器是右上角一个小黑块",
+    "灰底 + 靛蓝 + 橙的配色平淡，游戏化的打击感完全没有出来",
+    "命中冲击只有一圈描边环，第三击和第一击力度几乎一样"
   ],
   "changes": [
-    "三张功能卡改成出版级假内容（Realtime sync / Edge cache / AI summaries：图标 tile、New chip、一句话说明、采用量 sparkline），槽位重新以画面中线对称排布",
-    "背景 dashboard 改为 9px 失焦 + 暖灰 scrim + 轻暗角 + 颗粒；槽位改成凹陷内阴影 + 1.5px 发丝虚线，卡快落地时槽底的接触影逐渐收紧、加深",
-    "下落段加按速度计算的竖向 SpeedBlur 和 5% 拉伸，投影 elevation 从 56 落到 4；触地时压扁 6%、横向撑开 3%，冲击描边环外扩 34px，两侧各甩出 3 根碎屑线（都跟着顿帧一起冻住），闪白用真实帧驱动",
-    "逐击升温：伤害数字与计数器按 墨 → 靛 → 暖橙 三档变色，计数器改为深色 COMBO 面板（内高光、底部热度条），跳字时数字上蹦 0.14em；脉冲 1.3/1.45/1.6 与倾斜 −2/−4/−6° 保持原值",
-    "补 HIT_COUNTER_DURATION = 150（末击效果约 110f 收完，静止 hold 到 150f）"
+    "look 自定义「cobalt arcade」：满版高饱和钴蓝色场 + 白卡 + 街机黄，借格斗游戏 combo UI 的语言（黄色斜体 900 字重 + 漫画式硬投影）",
+    "内容改成虚构构建工具 Brickyard 3.0 的三项更新，伤害数字 = 每次推送省下的时间（−48s / −3 min / −12 min），飘走后落进卡片页脚，收尾一行 Up to 16 min back on every push.",
+    "卡片 480×330、标题 48px，槽位预先以虚线 + 大号 01/02/03 立预期；计数器 140→196px 斜体 ×N + 三格热度条逐击点亮",
+    "全局顿帧保留并更可感：背景斜纹滚动、卡片、特效都由同一 remap 时间驱动，命中时整幅一起冻 2f；只有闪白与槽底受光走真实帧",
+    "逐击加码：伤害数字字号 88/104/124、火花数 10/13/16、冲击环外扩递增，计数器脉冲 1.3/1.45/1.6 + 倾斜 −2/−4/−6°；伤害数字改为打在卡面上再上浮，不与计数器撞位",
+    "节奏：间隔 28f 的均匀连招节拍 → 末击后 14f 收尾行逐词升起 → ~2.4s 海报 hold，总长 176f"
   ],
   "issuesEn": [
-    "The three cards were grey skeleton bars, so nothing said these were three features landing as a combo",
-    "The background dashboard was just set to opacity 0.4, washing the dark sidebar into muddy grey; the slots were 3px grey dashed boxes",
-    "The cards fell as rigid blocks: no motion blur, shadows that ignored height, and only a 6% squash on landing",
-    "Damage numbers and the ×N counter used a fallback font in plain ink and looked the same on all three hits, with no sense of escalation"
+    "Cards and background were grey placeholder blocks and damage numbers like +1.2k meant nothing, so the combo said nothing about feature value",
+    "The three cards sat in a thin band mid-frame with empty grey above and below; the counter was a small black chip in the corner",
+    "Grey, indigo and orange read flat; there was no game-style punch at all",
+    "Impacts were just one outline ring, and the third hit felt about as strong as the first"
   ],
   "changesEn": [
-    "The three cards now carry publication-grade mock content (Realtime sync / Edge cache / AI summaries, each with an icon tile, New chip, one-line description and adoption sparkline); slots are re-laid out symmetrically about the centre line",
-    "Background dashboard defocused 9px under a warm-grey scrim, light vignette and grain; slots are recessed with an inner shadow and a 1.5px hairline dash, and their contact shadow tightens and darkens as each card approaches",
-    "The fall gets velocity-driven vertical SpeedBlur and 5% stretch, with shadow elevation dropping from 56 to 4; on impact the card squashes 6% and spreads 3%, an impact ring expands 34px and three debris strokes fly from each side (all frozen with the hitstop), while the white flash runs on real frames",
-    "Hits escalate in colour: damage numbers and the counter step from ink to indigo to warm orange; the counter is now a dark COMBO panel with an inner highlight and a bottom heat bar, and the digit hops 0.14em on each change; pulse 1.3/1.45/1.6 and tilt −2/−4/−6° unchanged",
-    "Added HIT_COUNTER_DURATION = 150 (last-hit effects finish around 110f, then hold to 150f)"
+    "Custom cobalt arcade look: a saturated cobalt colour field, white cards and arcade yellow, borrowing fighting-game combo UI (yellow italic 900 weight with comic hard shadows)",
+    "Content is three updates of a fictional build tool, Brickyard 3.0; each damage number is time saved per push (−48s / −3 min / −12 min) and settles into the card footer, ending on Up to 16 min back on every push.",
+    "480×330 cards with 48px titles; dashed slots with big 01/02/03 set up the expectation; the counter is a 140→196px italic ×N with a three-segment heat bar",
+    "Global hitstop is kept and easier to feel: the scrolling background stripes, cards and effects all run on one remapped clock, so the whole frame freezes 2f per hit; only the flash and slot glow use real frames",
+    "Each hit escalates: damage text 88/104/124px, 10/13/16 sparks, a wider shock ring, counter pulse 1.3/1.45/1.6 and tilt −2/−4/−6°; damage numbers now pop on the card face and rise, so they never collide with the counter",
+    "Rhythm: an even 28f combo beat, the closing line rising word by word 14f after the last hit, then a ~2.4s poster hold; 176f total"
   ],
-  "mdChanged": false
+  "look": "custom",
+  "mdChanged": true
 }

@@ -1,28 +1,31 @@
 {
   "stem": "SpotlightSweepReveal",
   "issues": [
-    "工作台按 110f 截断，正好切在全字提亮之前，标题从没被完整点亮过",
-    "光锥是 clip-path 硬边梯形，边缘像剪纸；光斑是纯灰白圆，没有灯光的色温",
-    "光斑 x 是纯正弦，f110 正以最高速穿过中心时被硬停，收尾一顿",
-    "平铺 #2a2a28 灰底、Helvetica、标题是卡名 \"SPOTLIGHT ON\" 的占位"
+    "灰黑死平底上一行 SPOTLIGHT ON 小字，标题本身像占位文案",
+    "光锥是一块硬边灰色梯形，光斑像贴上去的，场景里没有任何东西被照亮（墙、地面）",
+    "无衬线粗体 + 中性灰，没有情绪，读不出\"聚光\"的舞台感",
+    "全亮后 1 秒多完全静止、无任何附加信息"
   ],
   "changes": [
-    "补 SPOTLIGHT_SWEEP_REVEAL_DURATION = 160（f125 起真静止 35f），完整演到全亮定格",
-    "光锥改为 SVG 柔边体积光（灯头在画外正上方，近灯头 0.20、往下渐隐，16px 高斯柔边），光束里 48 粒尘埃缓慢上浮闪烁；墙上光斑改为暖白（255,244,228）横椭圆，被照到的字底下垫一层同遮罩的 14px 柔晕",
-    "摆动保留 560px·sin(2πf/55) 两来回，乘一个从 f27 起 smooth 收拢的阻尼包络，光斑在 f110 以零速度停到中心再交给提亮",
-    "底色改为 #17181d→#0b0c0f 带色相的深色渐变 + 重暗角 + 静态颗粒；标题换成 \"Your best work, / in the spotlight.\"（系统 SF 栈 150px/800 负字距），暗版 0.07、全亮 out-cubic、光效线性消散的参数不变"
+    "look 自定义「velvet」：酒红黑天鹅绒幕布 + 钨丝暖白追光 + 香槟金点缀；标题换成 220px 衬线「Opening night.」（roman + italic 混排的剧院海报感），虚构票务产品 Balcony",
+    "光是物理的：灯头在画外正上方，追光像钟摆沿下凹弧线摆两个半来回、阻尼收拢，x 与速度同时归零停在正中；开灯有钨丝预热闪两下",
+    "光到哪里哪里亮：亮版标题（+ 柔晕）与亮版天鹅绒褶皱同一遮罩随光斑揭开，光束里有浮尘，台口地板上有落地光斑",
+    "全亮改为追光 iris 张开（360→1080px，out-cubic），光锥线性收成柔和顶光；随后眉题 FRIDAY · 8 PM · ROW F、副标题与品牌行依次入场",
+    "空间三层：幕布远景 → 标题中景 → 台沿与地板近景；hold 段浮尘与顶光呼吸保持画面活着，总长 170f"
   ],
   "issuesEn": [
-    "The workbench cut it at 110f, right before the full reveal, so the title was never fully lit",
-    "The beam was a hard-edged clip-path trapezoid like cut paper, and the pool was a flat grey-white circle with no colour temperature",
-    "The pool's x was a pure sine, so at f110 it stopped dead while crossing centre at top speed, leaving a hitch at the end",
-    "Flat #2a2a28 grey, Helvetica, and the title was the card-name placeholder \"SPOTLIGHT ON\""
+    "A small SPOTLIGHT ON on a dead flat grey-black, with a title that read like placeholder copy",
+    "The cone was a hard-edged grey trapezoid; the pool looked pasted on and nothing in the scene (wall, floor) was actually lit",
+    "Bold sans in neutral grey had no mood and no sense of a stage spotlight",
+    "After the full reveal it sat completely still for over a second with no extra information"
   ],
   "changesEn": [
-    "Added SPOTLIGHT_SWEEP_REVEAL_DURATION = 160 (truly still for 35f from f125), so it now plays through to the fully lit hold",
-    "The beam is now soft SVG volumetric light (lamp off-frame directly above, 0.20 near the lamp fading downward, 16px Gaussian edge) with 48 dust motes drifting up and twinkling; the pool is a warm-white (255,244,228) horizontal ellipse, and lit glyphs get a 14px soft glow under the same mask",
-    "The swing keeps two 560px·sin(2πf/55) passes but multiplies them by a damping envelope that eases in from f27, so the pool arrives at centre at zero velocity on f110 before handing off to the reveal",
-    "Background is a hue-tinted #17181d→#0b0c0f gradient with a heavy vignette and static grain; the title is now \"Your best work, / in the spotlight.\" (system SF stack, 150px/800, negative tracking); the 0.07 dark copy, out-cubic reveal and linear light fade are unchanged"
+    "Custom velvet look: burgundy-black velvet curtain, warm tungsten follow-spot and champagne-gold accents; the title is a 220px serif Opening night. mixing roman and italic like a theatre poster, for a fictional ticketing app, Balcony",
+    "The light is physical: the lamp hangs above frame and the spot swings like a pendulum along a sagging arc for two and a half passes, damping so position and speed reach zero together at centre; the lamp flickers twice as the filament warms",
+    "Light reveals what it touches: a lit copy of the title (with soft glow) and of the velvet folds are uncovered by the same moving mask, with dust in the beam and a pool on the stage floor",
+    "The full reveal is now the follow-spot iris opening (360→1080px, out-cubic) while the cone fades linearly into a soft top light; then the FRIDAY · 8 PM · ROW F kicker, subtitle and brand line come in",
+    "Three depth layers: curtain, title, stage lip and floor; drifting dust and a breathing top light keep the hold alive; 170f total"
   ],
+  "look": "custom",
   "mdChanged": true
 }
