@@ -57,6 +57,8 @@
   .tag.r { left: auto; right: 10px; }
   .missing { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); font-size: 13px; }
   /* wipe 模式：同一画框里叠两层，拖把手看切分 */
+  .stage.trio { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .vbox.picked { outline: 3px solid var(--pick, #4ade80); outline-offset: -3px; }
   .stage.wipe { grid-template-columns: 1fr; }
   .stage.wipe .vbox.single { max-width: 1280px; width: 100%; margin: 0 auto; }
   .vbox .topv { clip-path: inset(0 0 0 var(--cut, 50%)); z-index: 2; }
@@ -74,6 +76,19 @@
   .notes ul { margin: 0; padding-left: 18px; color: #c9cdd4; font-size: 13px; line-height: 1.6; }
   .notes .none { color: var(--dim); font-size: 13px; }
   .empty { color: var(--dim); text-align: center; padding: 80px 0; }
+  .decide { display: flex; align-items: center; gap: 10px; padding: 10px 20px 2px; flex-wrap: wrap; }
+  .decide .lbl { font-size: 12.5px; color: var(--mid); }
+  .decide button { all: unset; cursor: pointer; font-size: 13px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); color: var(--ink); background: var(--panel2); }
+  .decide button:hover { background: #242830; }
+  .decide button.on { background: #4ade80; color: #08130b; border-color: transparent; font-weight: 650; }
+  .decide input.note { all: unset; flex: 1; min-width: 220px; font-size: 13px; padding: 7px 12px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink); }
+  .decide input.note::placeholder { color: var(--dim); }
+  .chead .badge { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #4ade80; color: #08130b; }
+  .chead .badge.none { background: #2a2e36; color: var(--dim); font-weight: 500; }
+  .tools { display: flex; align-items: center; gap: 8px; }
+  .tools button { all: unset; cursor: pointer; font-size: 12.5px; padding: 6px 11px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink); }
+  .savest { font-size: 12px; color: var(--dim); }
+  .savest.ok { color: #4ade80; } .savest.warn { color: #f2b544; }
   @media (max-width: 1100px) { .stage, .notes { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -84,12 +99,13 @@
       <div class="brand">ShotCraft · Shot Polish<small data-i18n="subtitle"></small></div>
       <div class="stats" id="stats"></div>
       <div class="spacer"></div>
-      <div class="seg" id="base">
+      <div class="seg" id="base" style="display:none">
         <button data-v="before" class="on" data-i18n="vsBefore"></button>
         <button data-v="v1" data-i18n="vsV1"></button>
       </div>
       <div class="seg" id="mode">
-        <button data-v="side" class="on" data-i18n="side"></button>
+        <button data-v="trio" class="on" data-i18n="trio"></button>
+        <button data-v="side" data-i18n="side"></button>
         <button data-v="wipe" data-i18n="wipe"></button>
       </div>
       <div class="seg" id="speed">
@@ -102,7 +118,11 @@
     <div class="bar2">
       <div id="cats" style="display:flex; gap:8px; flex-wrap:wrap"></div>
       <div class="spacer"></div>
-      <label class="tog"><input type="checkbox" id="onlydone" /> <span data-i18n="onlydone"></span></label>
+      <div class="seg" id="dfilter">
+        <button data-v="all" class="on" data-i18n="dAll"></button><button data-v="none" data-i18n="dNone"></button>
+        <button data-v="before" data-i18n="before"></button><button data-v="v1" data-i18n="v1"></button><button data-v="after" data-i18n="after"></button>
+      </div>
+      <div class="tools"><span class="savest" id="savest"></span><button id="export" data-i18n="export"></button></div>
       <label class="tog"><input type="checkbox" id="autoplay" checked /> <span data-i18n="autoplay"></span></label>
       <input class="search" id="q" />
     </div>
@@ -113,19 +133,28 @@
 const DATA = /*__DATA__*/null;
 const FPS = 30;
 const T = {
-  zh: { subtitle: '216 个镜头改版对照', side: '并排', wipe: '划像', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
-        all: '全部', before: '原版', v1: '第一轮', after: '第二轮', issues: '原版的问题', changes: '第二轮做了什么', nonotes: '（暂无说明）',
-        vsBefore: '对比原版', vsV1: '对比第一轮', onlydone: '只看第二轮已完成',
-        notyet: '尚未渲染', play: '播放', pause: '暂停', shots: '个镜头', polished: '第二轮已完成', empty: '没有匹配的镜头',
+  zh: { subtitle: '216 个镜头改版对照', trio: '三方', side: '并排', wipe: '划像', pick: '选用', notePh: '备注（可选，例如想改哪里）',
+        dAll: '全部', dNone: '未决定', decided: '已决定', undecided: '未决定', export: '导出决策 JSON',
+        savedFile: '已保存到 shot-polish/decisions.json', savedLocal: '仅保存在浏览器（用 serve.py 启动可写入文件）', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
+        all: '全部', before: '原版', v1: '第一版', after: '第二版', issues: '原版的问题', changes: '第二版做了什么', nonotes: '（暂无说明）',
+        vsBefore: '对比原版', vsV1: '对比第一版', onlydone: '只看第二版已完成',
+        notyet: '尚未渲染', play: '播放', pause: '暂停', shots: '个镜头', polished: '第二版已完成', empty: '没有匹配的镜头',
         cats: { opening: '开场', camera: '运镜与空间', transition: '转场', typography: '文字排版', 'ui-entrance': 'UI 入场',
                 interaction: '交互演示', data: '数据', effects: '特效', rhythm: '节奏', outro: '收尾' } },
-  en: { subtitle: 'redesign comparison for 216 shots', side: 'Side by side', wipe: 'Wipe', autoplay: 'Autoplay in view', search: 'Search card / component…',
-        all: 'All', before: 'Original', v1: 'Pass 1', after: 'Pass 2', issues: 'What was rough', changes: 'What pass 2 changed', nonotes: '(no notes yet)',
-        vsBefore: 'vs original', vsV1: 'vs pass 1', onlydone: 'Pass 2 done only',
-        notyet: 'not rendered yet', play: 'Play', pause: 'Pause', shots: 'shots', polished: 'pass 2 done', empty: 'No matching shots',
+  en: { subtitle: 'redesign comparison for 216 shots', trio: 'All three', side: 'Side by side', wipe: 'Wipe', pick: 'Use', notePh: 'Note (optional, e.g. what to change)',
+        dAll: 'All', dNone: 'Undecided', decided: 'decided', undecided: 'undecided', export: 'Export decisions JSON',
+        savedFile: 'Saved to shot-polish/decisions.json', savedLocal: 'Saved in browser only (start with serve.py to write the file)', autoplay: 'Autoplay in view', search: 'Search card / component…',
+        all: 'All', before: 'Original', v1: 'V1', after: 'V2', issues: 'What was rough', changes: 'What V2 changed', nonotes: '(no notes yet)',
+        vsBefore: 'vs original', vsV1: 'vs V1', onlydone: 'V2 done only',
+        notyet: 'not rendered yet', play: 'Play', pause: 'Pause', shots: 'shots', polished: 'V2 done', empty: 'No matching shots',
         cats: Object.fromEntries(DATA.cats.map(c => [c.key, c.en])) },
 };
-const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: '', mode: 'side', speed: 1, autoplay: true, base: 'before', onlyDone: false };
+const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: '', mode: 'trio', speed: 1, autoplay: true, base: 'before', onlyDone: false, dfilter: 'all' };
+// 决策：{ [stem]: { pick: 'before'|'v1'|'after', note, at } }。serve.py 启动时读写 shot-polish/decisions.json，否则落 localStorage
+let decisions = JSON.parse(localStorage.getItem('sp-decisions') || '{}');
+let serverOK = false;
+const PICK_COLOR = { before: '#8b93a1', v1: '#60a5fa', after: '#4ade80' };
+const framesOf = (i, k) => k === 'before' ? i.fBefore : k === 'v1' ? i.fV1 : i.fAfter;
 const baseSrc = i => i[state.base];
 const baseFrames = i => state.base === 'v1' ? i.fV1 : i.fBefore;
 const t = k => T[state.lang][k];
@@ -136,7 +165,12 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.getElementById('q').placeholder = t('search');
   const done = DATA.items.filter(i => i.after).length;
-  document.getElementById('stats').innerHTML = `<b>${DATA.items.length}</b> ${t('shots')} · <b>${done}</b> ${t('polished')}`;
+  const nd = Object.values(decisions).filter(d => d.pick).length;
+  const cnt = k => Object.values(decisions).filter(d => d.pick === k).length;
+  document.getElementById('stats').innerHTML = `<b>${DATA.items.length}</b> ${t('shots')} · <b>${nd}</b> ${t('decided')}` +
+    ` <span style="color:var(--dim)">(${t('before')} ${cnt('before')} · ${t('v1')} ${cnt('v1')} · ${t('after')} ${cnt('after')})</span>`;
+  document.getElementById('base').style.display = state.mode === 'trio' ? 'none' : '';
+  renderSaveState();
 }
 
 function renderCats() {
@@ -150,7 +184,9 @@ function renderCats() {
 
 function filtered() {
   const q = state.q.trim().toLowerCase();
+  const dp = i => decisions[i.stem]?.pick || 'none';
   return DATA.items.filter(i => (state.cat === 'all' || i.cat === state.cat) && (!state.onlyDone || i.after) &&
+    (state.dfilter === 'all' || dp(i) === state.dfilter) &&
     (!q || [i.name, i.nameEn, i.stem, i.card].some(s => String(s).toLowerCase().includes(q))));
 }
 
@@ -159,15 +195,20 @@ function list(arr) {
 }
 
 function stageHtml(i) {
-  const v = (src, cls) => src ? `<video class="${cls}" data-src="${src}" muted loop playsinline preload="none"></video>` : `<div class="missing">${t('notyet')}</div>`;
+  const v = (src, cls, f) => src ? `<video class="vid ${cls}" data-src="${src}" data-frames="${f ?? ''}" muted loop playsinline preload="none"></video>` : `<div class="missing">${t('notyet')}</div>`;
+  const pick = decisions[i.stem]?.pick;
+  if (state.mode === 'trio') {
+    const box = (k, src, cls) => `<div class="vbox ${pick === k ? 'picked' : ''}" style="--pick:${PICK_COLOR[k]}">${v(src, cls, framesOf(i, k))}<span class="tag" style="color:${PICK_COLOR[k]}">${t(k)} · ${framesOf(i, k) ?? '–'}f</span></div>`;
+    return `<div class="stage trio">${box('before', i.before, 'v-before')}${box('v1', i.v1, 'v-v1')}${box('after', i.after, 'v-after')}</div>`;
+  }
   if (state.mode === 'wipe') {
     return `<div class="stage wipe"><div class="vbox single" style="--cut:50%">
-      ${v(baseSrc(i), 'v-before')}${v(i.after, 'v-after topv')}
+      ${v(baseSrc(i), 'v-before', baseFrames(i))}${v(i.after, 'v-after topv', i.fAfter)}
       <span class="tag b">${t(state.base)}</span><span class="tag a r">${t('after')}</span><div class="handle"></div></div></div>`;
   }
   return `<div class="stage">
-    <div class="vbox">${v(baseSrc(i), 'v-before')}<span class="tag b">${t(state.base)}</span></div>
-    <div class="vbox">${v(i.after, 'v-after')}<span class="tag a">${t('after')}</span></div></div>`;
+    <div class="vbox">${v(baseSrc(i), 'v-before', baseFrames(i))}<span class="tag b">${t(state.base)}</span></div>
+    <div class="vbox">${v(i.after, 'v-after', i.fAfter)}<span class="tag a">${t('after')}</span></div></div>`;
 }
 
 let io;
@@ -190,11 +231,14 @@ function renderList() {
     const sub = zh ? i.nameEn : i.name;
     html += `<section class="card" data-stem="${i.stem}" id="${i.stem}">
       <div class="chead"><span class="idx">${String(n).padStart(3, '0')}</span><h3>${esc(name)}</h3><span class="en">${esc(sub)}</span>
-        <span class="stem"><a href="#${i.stem}">${esc(i.path)}</a> · ${baseFrames(i) ?? '–'}f → ${i.fAfter ?? '–'}f</span></div>
+        ${badgeHtml(i.stem)}<span class="stem"><a href="#${i.stem}">${esc(i.path)}</a></span></div>
       ${(zh ? i.summary : i.summaryEn) ? `<div class="summary">${esc(zh ? i.summary : i.summaryEn)}</div>` : ''}
       ${stageHtml(i)}
       <div class="ctrl"><button class="pp">${t('pause')}</button><button class="fb">◀ 1f</button><button class="ff">1f ▶</button>
         <input type="range" class="scrub" min="0" max="1000" value="0" /><span class="tc">0 / ${i.fAfter ?? baseFrames(i) ?? '–'}f</span></div>
+      <div class="decide"><span class="lbl">${t('pick')}</span>
+        ${['before', 'v1', 'after'].map(k => `<button class="dk ${decisions[i.stem]?.pick === k ? 'on' : ''}" data-k="${k}">${t(k)}</button>`).join('')}
+        <input class="note" placeholder="${esc(t('notePh'))}" value="${esc(decisions[i.stem]?.note || '')}" /></div>
       <div class="notes"><div class="iss"><h4>${t('issues')}</h4>${list(zh ? i.issues : (i.issuesEn.length ? i.issuesEn : i.issues))}</div>
         <div class="chg"><h4>${t('changes')}</h4>${list(zh ? i.changes : (i.changesEn.length ? i.changesEn : i.changes))}</div></div>
     </section>`;
@@ -210,11 +254,16 @@ function renderList() {
 
 // 每张卡：after 为主时钟，before 跟随；共享进度条与逐帧步进
 function setupCard(card) {
-  const a = card.querySelector('.v-after'), b = card.querySelector('.v-before');
-  const master = a || b, slave = a && b ? b : null;
-  // 时长相同 → before 逐帧跟随 after；时长不同（第二轮改了节奏）→ 各自循环，进度条按比例同时定位
-  const sameLen = baseFrames(DATA.items.find(x => x.stem === card.dataset.stem)) === DATA.items.find(x => x.stem === card.dataset.stem).fAfter;
-  card._vids = [a, b].filter(Boolean);
+  const vids = [...card.querySelectorAll('video.vid')];
+  const master = card.querySelector('.v-after') || vids[0];
+  // 与主时钟（第二版）帧数相同的视频逐帧跟随；不同的（改了节奏）各自循环，进度条按比例同时定位
+  const followers = vids.filter(v => v !== master && v.dataset.frames && v.dataset.frames === master?.dataset.frames);
+  const sameLen = vids.every(v => v.dataset.frames === master?.dataset.frames);
+  card._vids = vids;
+  // 决策按钮 / 备注
+  card.querySelectorAll('.dk').forEach(btn => btn.onclick = () => setDecision(card.dataset.stem, { pick: decisions[card.dataset.stem]?.pick === btn.dataset.k ? null : btn.dataset.k }, card));
+  const note = card.querySelector('.note');
+  if (note) { note.onclick = ev => ev.stopPropagation(); note.oninput = () => setDecision(card.dataset.stem, { note: note.value }, card, true); }
   card._playing = state.autoplay;
   const pp = card.querySelector('.pp'), scrub = card.querySelector('.scrub'), tc = card.querySelector('.tc');
   const setPP = () => { pp.textContent = card._playing ? t('pause') : t('play'); };
@@ -236,7 +285,7 @@ function setupCard(card) {
         scrub.value = Math.round((master.currentTime / master.duration) * 1000);
         tc.textContent = `${Math.round(master.currentTime * FPS)} / ${Math.round(master.duration * FPS)}f`;
       }
-      if (sameLen && slave && slave.readyState && Math.abs(slave.currentTime - master.currentTime) > 1.5 / FPS) slave.currentTime = master.currentTime;
+      followers.forEach(sl => { if (sl.readyState && Math.abs(sl.currentTime - master.currentTime) > 1.5 / FPS) sl.currentTime = master.currentTime; });
       requestAnimationFrame(tick);
     };
     card._tick = tick;
@@ -265,6 +314,61 @@ function deactivate(card) {
   card._vids.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
 }
 
+function badgeHtml(stem) {
+  const p = decisions[stem]?.pick;
+  return p ? `<span class="badge" style="background:${PICK_COLOR[p]}">${t(p)}</span>` : `<span class="badge none">${t('undecided')}</span>`;
+}
+let saveTimer;
+function setDecision(stem, patch, card, quiet) {
+  const cur = { ...(decisions[stem] || {}), ...patch, at: new Date().toISOString() };
+  if (!cur.pick && !cur.note) delete decisions[stem]; else decisions[stem] = cur;
+  localStorage.setItem('sp-decisions', JSON.stringify(decisions));
+  clearTimeout(saveTimer); saveTimer = setTimeout(saveToServer, 400);
+  if (!quiet && card) {
+    const p = decisions[stem]?.pick;
+    card.querySelectorAll('.dk').forEach(b => b.classList.toggle('on', b.dataset.k === p));
+    const vb = card.querySelectorAll('.stage.trio .vbox');
+    ['before', 'v1', 'after'].forEach((k, ix) => vb[ix]?.classList.toggle('picked', k === p));
+    card.querySelector('.badge').outerHTML = badgeHtml(stem);
+    applyI18n();
+  }
+}
+function exportPayload() {
+  const items = DATA.items.map(i => ({ stem: i.stem, path: i.path, name: i.name, pick: decisions[i.stem]?.pick || null, note: decisions[i.stem]?.note || '' }));
+  return { savedAt: new Date().toISOString(), summary: { before: items.filter(x => x.pick === 'before').length, v1: items.filter(x => x.pick === 'v1').length, after: items.filter(x => x.pick === 'after').length, undecided: items.filter(x => !x.pick).length }, decisions: items };
+}
+async function saveToServer() {
+  try {
+    const r = await fetch('api/decisions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(exportPayload()) });
+    serverOK = r.ok;
+  } catch { serverOK = false; }
+  renderSaveState();
+}
+function renderSaveState() {
+  const el = document.getElementById('savest');
+  el.textContent = serverOK ? t('savedFile') : t('savedLocal');
+  el.className = 'savest ' + (serverOK ? 'ok' : 'warn');
+}
+async function loadFromServer() {
+  try {
+    const r = await fetch('api/decisions', { cache: 'no-store' });
+    if (!r.ok) return;
+    serverOK = true;
+    const j = await r.json();
+    if (j && Array.isArray(j.decisions)) {
+      const fromFile = {};
+      j.decisions.forEach(d => { if (d.pick || d.note) fromFile[d.stem] = { pick: d.pick, note: d.note, at: j.savedAt }; });
+      // 文件为准；浏览器里有而文件里没有的（离线时做的）合并进来
+      decisions = { ...decisions, ...fromFile };
+      localStorage.setItem('sp-decisions', JSON.stringify(decisions));
+    }
+  } catch { serverOK = false; }
+}
+document.getElementById('export').onclick = () => {
+  const blob = new Blob([JSON.stringify(exportPayload(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'decisions.json'; a.click();
+};
+
 function seg(id, key, cb) {
   const el = document.getElementById(id);
   el.querySelectorAll('button').forEach(b => {
@@ -272,9 +376,9 @@ function seg(id, key, cb) {
     b.onclick = () => { state[key] = key === 'speed' ? Number(b.dataset.v) : b.dataset.v; el.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); cb(); };
   });
 }
-seg('mode', 'mode', renderList);
+seg('mode', 'mode', () => { applyI18n(); renderList(); });
+seg('dfilter', 'dfilter', renderList);
 seg('base', 'base', () => { applyI18n(); renderList(); });
-document.getElementById('onlydone').onchange = e => { state.onlyDone = e.target.checked; renderList(); };
 seg('speed', 'speed', () => document.querySelectorAll('video').forEach(v => { v.playbackRate = state.speed; }));
 seg('lang', 'lang', () => { localStorage.setItem('sp-lang', state.lang); applyI18n(); renderCats(); renderList(); });
 document.getElementById('q').oninput = e => { state.q = e.target.value; renderList(); };
@@ -282,8 +386,11 @@ document.getElementById('autoplay').onchange = e => {
   state.autoplay = e.target.checked;
   document.querySelectorAll('.card').forEach(c => { if (!c._active) return; state.autoplay ? c._play() : c._pause(); });
 };
-applyI18n(); renderCats(); renderList();
-if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 50);
+loadFromServer().finally(() => {
+  applyI18n(); renderCats(); renderList();
+  if (location.hash) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 50);
+});
+if (false) setTimeout(() => document.getElementById(location.hash.slice(1))?.scrollIntoView(), 50);
 </script>
 </body>
 </html>
