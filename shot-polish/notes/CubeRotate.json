@@ -1,0 +1,34 @@
+{
+  "stem": "CubeRotate",
+  "issues": [
+    "画面左上角压着调试占位标题「CUBE ROTATE」",
+    "立方体悬在死平的灰底上，没有地面、没有投影，体块没有落脚点",
+    "面内 dashboard 用 transform scale(0.82) 缩放，3D 合成层里文字边缘发虚",
+    "共享棱画成 150px 纯黑渐变「暗棱」——凸角本应受光，读作脏阴影；明暗是线性对切",
+    "翻转是对称 inOut cubic 一转到底，没有预备与落定，整屏常驻 1.5px 模糊发闷",
+    "工作台时长被推断成 30f，翻转动作完全没演出来"
+  ],
+  "changes": [
+    "去掉调试标题；补导出 CUBE_ROTATE_DURATION = 140（30f 建立 + 38f 翻转 + 72f 静止）",
+    "背景换成柔光渐变 Backdrop + 暗角，立方体下加两层地面软影（近地实、远地虚），宽度随投影宽度 ×1→1.36 变化",
+    "面内改用 CSS zoom 0.82 按目标尺寸排版，静止帧文字锐利；每面加 1px 发丝外缘立住轮廓",
+    "明暗改为按法线夹角 cos 压暗（正对 1 → 侧转 0.55）且远离镜头一侧再深一档，共享凸棱转动时亮起 1px 受光细棱",
+    "θ 曲线换成 bezier(0.6,−0.18,0.2,1.18)：先回拉 ~1.4° 预备、到位过冲 ~1.4° 回落；中段相机轻退 6%，按棱上线速度挂 ≤3.5px 横向运动模糊，静止为 0"
+  ],
+  "issuesEn": [
+    "A debug placeholder title \"CUBE ROTATE\" sat in the top-left corner",
+    "The cube floated on a flat gray field with no ground or shadow, so the volume had nothing to stand on",
+    "Dashboards were shrunk with transform scale(0.82), leaving text soft inside the 3D layer",
+    "The shared edge was a 150px black gradient 'dark seam' — a convex corner should catch light, so it read as a dirty shadow; shading was a linear swap",
+    "The turn was one symmetric inOut cubic with no anticipation or settle, and a constant 1.5px full-frame blur made it murky",
+    "The workbench inferred a 30f duration, so the rotation never played"
+  ],
+  "changesEn": [
+    "Removed the debug title; exported CUBE_ROTATE_DURATION = 140 (30f setup + 38f turn + 72f hold)",
+    "Background is now a soft-lit Backdrop with vignette; two layers of ground shadow (tight contact + wide ambient) sit under the cube, widening ×1→1.36 with the projected width",
+    "Faces lay out at CSS zoom 0.82 so text is crisp at rest; each face gets a 1px hairline rim to hold its silhouette",
+    "Shading follows the cosine of the face normal (front 1 → side 0.55) with an extra falloff on the far edge; the shared convex edge lights up as a 1px highlight during the turn",
+    "θ now uses bezier(0.6,−0.18,0.2,1.18): ~1.4° pull-back anticipation and ~1.4° overshoot settle; the camera eases back 6% mid-turn and a ≤3.5px velocity-driven horizontal blur applies only while moving"
+  ],
+  "mdChanged": true
+}

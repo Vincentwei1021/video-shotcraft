@@ -1,0 +1,32 @@
+{
+  "stem": "PaperPlaneMessenger",
+  "issues": [
+    "两扇窗是灰色骨架条 + 2px 灰边，看不出是「写信」与「收件」，发送的因果读不出来",
+    "视差道具是一团团灰色圆环和方块，像占位符；近景大环抢镜",
+    "飞机是三块平涂多边形 + 3px 粗描边，没有受光、没有离地阴影",
+    "B 接管时把 760×500 的窗放大 3.1 倍：窗边出画、只剩一块放大的空卡，飞机在门外原地淡出",
+    "镜头跟随用线性权重、纵向用 max() 硬钳，接管落定只剩 4 帧"
+  ],
+  "changes": [
+    "A 改成写信窗（收件人 chip、主题、正文、附件、强调色 Send 键），B 改成收件箱；光标滑到 Send，按下 0.93 再过冲回弹 + 扩散圈",
+    "飞机重画：渐变折面 + 折痕线 + 发丝描边，外层 drop-shadow 随飞行高度变远变虚，转弯时轻微倾侧，身后一条虚线航迹",
+    "落点改为 B 的新消息槽位：飞机滑进头像位缩小淡出，新行高度 0→72 顶开列表、未读点弹出；窗改 16:9，接管变焦 2.53 恰好满幅，圆角同步收到 0",
+    "相机重写：变焦在对数空间插值（1.55→0.62→0.66→2.53），跟随与接管全用缓动且切换帧连续；时间轴压缩出 18f 落定静止",
+    "道具换成三层：远景柔光点 / 中景消息气泡（发丝线 + 软阴影）/ 近景焦外光斑；背景换柔光渐变 Backdrop + 轻颗粒；补导出 PAPER_PLANE_MESSENGER_DURATION = 150"
+  ],
+  "issuesEn": [
+    "Both windows were gray skeleton bars with 2px gray borders — nothing said 'compose' or 'inbox', so the cause and effect of sending was lost",
+    "Parallax props were clumps of gray rings and squares that read as placeholders; the big foreground rings stole focus",
+    "The plane was three flat polygons with a heavy 3px stroke, with no lighting and no shadow to show altitude",
+    "The takeover blew a 760×500 window up 3.1×: its edges left the frame, leaving a magnified empty card, and the plane just faded out at the door",
+    "Camera follow used a linear weight and a hard max() clamp on Y, and only 4 frames of rest remained after the takeover"
+  ],
+  "changesEn": [
+    "A is now a compose window (recipient chip, subject, body, attachment, accent Send button) and B an inbox; a cursor glides to Send, presses to 0.93, and springs back with an overshoot plus a ripple",
+    "The plane was redrawn with gradient folds, crease line and hairline stroke; an unrotated drop-shadow grows softer with altitude, the plane banks slightly in turns, and a dotted flight trail follows it",
+    "It now lands in B's new-message slot: the plane slides into the avatar position and shrinks away while the new row grows 0→72px, pushing the list down and popping an unread dot; windows are 16:9 so the 2.53 takeover zoom fills the frame exactly, with the corner radius easing to 0",
+    "Camera rewritten: zoom interpolates in log space (1.55→0.62→0.66→2.53), follow and takeover are fully eased and continuous at every handoff; the timeline was tightened to leave 18f of settled hold",
+    "Props became three layers — soft far dots, mid message bubbles (hairline + soft shadow), near out-of-focus bokeh — on a soft-lit Backdrop with light grain; exported PAPER_PLANE_MESSENGER_DURATION = 150"
+  ],
+  "mdChanged": true
+}

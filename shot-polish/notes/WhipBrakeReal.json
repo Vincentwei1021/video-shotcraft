@@ -1,0 +1,28 @@
+{
+  "stem": "WhipBrakeReal",
+  "issues": [
+    "两段 interpolate 各自套 Easing.out(cubic)：起步瞬间从 0 跳到峰速，42f 处速度先掉到接近 0 又二次起跳，急刹读作一顿一顿",
+    "CameraMotionBlur 子帧叠加让整片偏黄（静止帧也是），拖影是一格格回波",
+    "导轨里已经有一张 card4，目标卡又是 card4 的高清版，同一张卡出现两次",
+    "落定后目标卡右侧是半屏空场，主角与邻卡没有主次，停稳后没有「就是它」的落点"
+  ],
+  "changes": [
+    "位移改由一条连续速度曲线积分：v = V0·e^(−6u/60)·smoothstep(0,3,u)，3f 起步加速后单调衰减（约 12f 甩完 2/3 路程，48f 长尾滑入），全程速度连续不回摆",
+    "去掉 CameraMotionBlur，改用按瞬时速度的方向性拖影（SpeedBlur，sd ≈ 0.085×速度、封顶 64px），静止帧颜色与纹理一致",
+    "导轨剔除重复的 card4，目标卡右侧补一张邻卡，落定构图左右均衡；背景换暖白柔光渐变 + 极轻暗角，卡片挂两层软阴影",
+    "落定聚焦：82–98f 目标卡抬起 10px、放大 4%、阴影从 12 抬到 30，两侧邻卡退暗 45%；98f 起真静止 32f"
+  ],
+  "issuesEn": [
+    "Two interpolate segments each used Easing.out(cubic): speed jumped from 0 to peak at the start, then dropped near zero at 42f and launched again, so the brake stuttered",
+    "CameraMotionBlur sub-frame accumulation tinted the whole shot yellow (static frames included), with stepped echo trails",
+    "card4 was already on the rail and the target was card4's hi-res version, so the same card appeared twice",
+    "After landing, the right half of the frame was empty and the hero had no hierarchy over its neighbours — no 'this is the one' moment"
+  ],
+  "changesEn": [
+    "Position is now integrated from one continuous velocity curve, v = V0·e^(−6u/60)·smoothstep(0,3,u): a 3f ramp-up then monotonic decay (about 2/3 of the distance in ~12f, then a 48f glide), with continuous velocity and no back-swing",
+    "Replaced CameraMotionBlur with velocity-driven directional smear (SpeedBlur, sd ≈ 0.085×speed, capped at 64px); static frames keep the texture's true colors",
+    "Removed the duplicate card4 from the rail and added a neighbour to the right of the target for a balanced landing; warm soft-lit gradient background with a very light vignette, cards with two-layer soft shadows",
+    "Landing focus: from 82–98f the target lifts 10px, scales 4% and its shadow rises from 12 to 30 while neighbours dim 45%; true hold from 98f for 32f"
+  ],
+  "mdChanged": true
+}

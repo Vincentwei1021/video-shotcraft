@@ -1,0 +1,32 @@
+{
+  "stem": "InkBleedReveal",
+  "issues": [
+    "旧景是灰底上一个调试字「BEFORE」，没有纸、没有墨，介质隐喻无从谈起",
+    "渗边只是遮罩的硬切口：新景直接从锯齿洞里露出来，没有墨色、没有湿晕，读作破洞而不是墨",
+    "没有落墨的起点，洇开凭空开始",
+    "新景从第一帧就是最终尺寸，缺少「显影」的过程感",
+    "工作台时长被推断成 80f，摘罩后的 30f 静止收尾被截掉"
+  ],
+  "changes": [
+    "旧景换成暖白纸面章节扉页：等宽章号 + 112px 衬线标题（斜体强调）+ 细线 + 副题，铺静态纸纹颗粒（不换帧，静止段像素恒定）",
+    "墨做成三层同源须状遮罩：+110px 重羽化湿晕（0.12）→ 墨边外沿（领先 20–42px，0.42 + 3.2px 羽化）→ 墨芯（0.86 + 1px 羽化），新景在墨后显影",
+    "14–22f 先落一个小墨点（overshoot 缓动），再被洇开的墨边吞没",
+    "新景在遮罩内 scale 1.035→1（ease-out，100f 精确归 1）做显影收束；保留原半径曲线、±8% 扰动与 100f 摘罩",
+    "补导出 INK_BLEED_REVEAL_DURATION = 130（洇开 20–98f + 摘罩后真静止 30f）"
+  ],
+  "issuesEn": [
+    "The old scene was a debug word \"BEFORE\" on gray — no paper, no ink, so the medium metaphor had nothing to stand on",
+    "The bleed was just a hard mask cut: the new scene showed through a jagged hole with no ink color or wet halo, reading as a tear rather than ink",
+    "There was no ink drop — the bleed started out of nowhere",
+    "The new scene was at final size from the first frame, with no sense of developing",
+    "The workbench inferred 80f, cutting off the 30f hold after the mask is removed"
+  ],
+  "changesEn": [
+    "The old scene is now a chapter title page on warm paper: mono chapter number, 112px serif title with italic emphasis, rule and subtitle, over static paper grain (no re-roll, so held frames stay pixel-identical)",
+    "Ink is three masks sharing the same tendril displacement: a +110px heavily feathered wet halo (0.12) → an outer ink fringe leading by 20–42px (0.42, 3.2px feather) → a dense core (0.86, 1px feather); the new scene develops behind the ink",
+    "A small ink drop lands first (14–22f, overshoot ease) before the bleed swallows it",
+    "Inside the mask the new scene settles from scale 1.035→1 (ease-out, exactly 1 at 100f) as a develop-in; the original radius curve, ±8% wobble and 100f mask removal are kept",
+    "Exported INK_BLEED_REVEAL_DURATION = 130 (bleed 20–98f + 30f true hold after unmasking)"
+  ],
+  "mdChanged": true
+}

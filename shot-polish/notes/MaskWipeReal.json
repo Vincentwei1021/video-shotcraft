@@ -1,0 +1,28 @@
+{
+  "stem": "MaskWipeReal",
+  "issues": [
+    "点开的是「Confidence-routed model cascade」卡，窗里长出来的却是同一列表页的下半截——不是这张卡的详情，语义断裂（卡片自己的已知坑）",
+    "卡片从静止直接开始放大，没有「点开」这个动作的预备（无悬浮、无按下），像自动擦除",
+    "放大过程中背后的列表页纹丝不动、亮度不变，窗与背景没有主次层级",
+    "窗的阴影是固定一档，飞行中没有高度变化；卡片脸随窗变宽被横向拉伸"
+  ],
+  "changes": [
+    "目标卡换成 nano-lab（card9），窗内换成同一项目的 detail-full 详情页——标题一致，「点开一张卡进入它的世界」语义闭环",
+    "补齐点开动作：0–26f 页面惯性滚到页底 → 光标滑上卡片 → 卡片悬浮抬起 8px、放大 2.5%、阴影变大变虚 → 按下微缩 → 40f 起放大成窗",
+    "窗几何与窗内景保持同一个 t（45f 单段 bezier，窗内 0.42→1 反向补偿，卡脸 opacity 1−t·2.2），卡脸改 object-fit: cover 不再拉伸",
+    "背景列表页随窗变大压暗 22% + 虚化 3px；窗挂随高度变化的两层软阴影（悬浮 18 → 飞行 ~56 → 铺满归零）；85f 起详情页真静止 35f"
+  ],
+  "issuesEn": [
+    "The card being opened was 'Confidence-routed model cascade', but what grew inside the window was just the lower half of the same list page — not that card's detail, breaking the meaning (the card's own known pitfall)",
+    "The card started scaling from a dead stop, with no anticipation of a click (no hover, no press), so it read as an automatic wipe",
+    "The list page behind stayed perfectly still and fully lit, so there was no hierarchy between window and background",
+    "The window shadow was a single fixed level with no change in height, and the card face stretched horizontally as the window widened"
+  ],
+  "changesEn": [
+    "The target is now the nano-lab card (card9) and the window reveals that project's detail-full page — same title, so 'open a card and enter its world' closes the loop",
+    "The click is now acted out: the page momentum-scrolls to the bottom (0–26f) → a cursor glides onto the card → the card lifts 8px, scales 2.5% and its shadow grows softer → a press dip → it expands from 40f",
+    "Window geometry and inner scene still share one t (single 45f bezier, inner 0.42→1 counter-scale, face opacity 1−t·2.2); the face uses object-fit: cover so it no longer stretches",
+    "The list page darkens 22% and blurs 3px as the window grows; the window carries a two-layer soft shadow that changes with height (hover 18 → flight ~56 → zero when full); the detail page holds truly still from 85f for 35f"
+  ],
+  "mdChanged": false
+}

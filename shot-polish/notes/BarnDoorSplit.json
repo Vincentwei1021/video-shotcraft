@@ -1,0 +1,34 @@
+{
+  "stem": "BarnDoorSplit",
+  "issues": [
+    "画面顶部打着调试占位标题「BARN DOOR SPLIT」",
+    "裂前预告是 2px 实色线硬开关闪两次，像渲染故障而不像裂纹",
+    "门板没有厚度：内缘是 3px 实黑条 + 纯黑投影，两半读作普通左右擦除",
+    "两扇门 20f 内从静止加速到 ~150px/帧却毫无运动模糊，尾段频闪",
+    "底层 B 一出现就满亮度，没有被门遮挡的空间关系",
+    "工作台时长被推断成 30f，转场动作根本没演出来"
+  ],
+  "changes": [
+    "去掉调试标题；补导出 BARN_DOOR_SPLIT_DURATION = 130（镜头本意 30f 建立 + 20f 裂开 + 72f 静止）",
+    "预告改为发丝裂纹自画面中点向上下描出（14–24f，snappy 缓动，两端渐隐），22–30f 裂缝先微张 0→8px（ease-in 预备）再接加速滑出",
+    "门内缘做成受光切面：1px 高光棱 + 7px 渐变厚度带；B 上加随门移动的 140px 大而虚落影，门开得越大越实",
+    "滑出保持 Easing.in(cubic) ∓980px/20f，用 velocity() 求速度挂 SpeedBlur 横向运动模糊（静止时为 0）",
+    "B 在门缝里先处于遮挡暗面（径向压暗 0.26→0），scale 1.06→1 用 EASE.out 迎上并受光；58f 起真静止 72f"
+  ],
+  "issuesEn": [
+    "A debug placeholder title \"BARN DOOR SPLIT\" sat on top of the frame",
+    "The pre-split cue was a 2px solid line toggled on/off twice, reading as a glitch rather than a crack",
+    "Doors had no thickness: a 3px solid black bar plus a pure-black shadow made it look like a plain left/right wipe",
+    "Doors accelerated to ~150px/frame with no motion blur, strobing at the end",
+    "Scene B appeared at full brightness, with no sense of being occluded by the doors",
+    "The workbench inferred a 30f duration, so the transition never actually played"
+  ],
+  "changesEn": [
+    "Removed the debug title; exported BARN_DOOR_SPLIT_DURATION = 130 (30f setup + 20f split + 72f hold)",
+    "The cue is now a hairline crack drawing out from the frame center (14–24f, snappy ease, faded ends), then the seam pre-opens 0→8px (22–30f, ease-in anticipation) before the accelerating slide",
+    "Door inner edges became lit cut faces: 1px highlight ridge + 7px gradient thickness band; a soft 140px cast shadow on B travels with each door and strengthens as they open",
+    "Slide kept at Easing.in(cubic) ∓980px/20f, with velocity-driven SpeedBlur horizontal motion blur (zero when still)",
+    "B starts in the doors' occlusion shade (radial darkening 0.26→0) and eases up from scale 1.06→1 with EASE.out; true stillness from 58f for 72f"
+  ],
+  "mdChanged": true
+}

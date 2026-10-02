@@ -1,0 +1,28 @@
+{
+  "stem": "FocusHandoffTransition",
+  "issues": [
+    "浅景深是转场那一刻才突然出现的，之前之后画面全清——「DoF 语言先立后用」没有立",
+    "A 向左漂、B 从左向右进，两景运动方向对撞，读作两张图硬叠",
+    "A/B 用同一条线性感的淡入淡出叠化，中段是没有方向的双重曝光",
+    "焦点交换只有 blur 一个维度，没有镜头呼吸，像 PS 高斯模糊而不像对焦"
+  ],
+  "changes": [
+    "浅景深常驻：每景叠一层 3.5px 虚化副本，用渐变遮罩只露上下缘 18% 的带，从第 0 帧起就读出「这台镜头景深很浅」",
+    "运动方向按页面真实空间：B 在 A 下方 → 两景都向上走 70px（相机沿长页下移），A 用 smooth、B 用 snappy 落位",
+    "失焦曲线 bezier(0.45,0,0.3,1) 0→10px，A 淡出用 ease-in 越走越快，B 错开 3f 起跑、10f 快速淡入，交叉段更短更有方向",
+    "加镜头呼吸：A 失焦时放大 1.5%，B 收焦时 1.02→1；极轻暗角；44f 起 B 摘掉全部 transform/filter 真静止"
+  ],
+  "issuesEn": [
+    "Shallow depth of field appeared only at the moment of the transition, with everything sharp before and after — the DoF language was never established",
+    "A drifted left while B entered left-to-right, so the two moves collided and read as two images pasted together",
+    "A and B used a flat cross-dissolve, leaving a directionless double exposure in the middle",
+    "The focus swap was blur alone with no lens breathing — more Photoshop Gaussian than a focus pull"
+  ],
+  "changesEn": [
+    "Shallow DoF is persistent: each scene carries a 3.5px defocused copy masked to the top and bottom 18%, so from frame 0 the lens reads as shallow-focus",
+    "Motion follows the real page layout: B sits below A, so both drift up 70px (camera travelling down the page), A on a smooth ease and B landing on a snappy one",
+    "Defocus follows bezier(0.45,0,0.3,1) 0→10px; A fades with an accelerating ease-in, and B starts 3f later with a quick 10f fade-in, making the overlap shorter and directional",
+    "Added lens breathing (A scales up 1.5% as it defocuses, B settles 1.02→1) and a very light vignette; from 44f B drops all transforms/filters for a true hold"
+  ],
+  "mdChanged": true
+}

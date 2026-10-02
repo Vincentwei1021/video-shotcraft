@@ -1,0 +1,28 @@
+{
+  "stem": "DarkTunnelTransition",
+  "issues": [
+    "A 推出与 B 迎入是两条各自缓动的曲线：A 减速出画、B 慢起入画，中段速度掉到零，「一条 take」断成两截",
+    "A 只是平移出画，没有「推进」的纵深；高达 ~190px/帧的位移毫无运动模糊，频闪",
+    "暗场只有 4 个 2px 尘点，肉眼几乎看不见，实际是 4–6 帧死黑",
+    "B 从右缘滑入时页面硬边直接贴在黑底上，没有空间层次"
+  ],
+  "changes": [
+    "改成「只有一台相机」：A（世界 x=0）、尘流、B（世界 x=6400）全由同一条行程 cam(f)=D·bezier(0.55,0,0.2,1) 驱动，加速推出→暗场峰值 ~660px/帧→长尾减速迎入，速度连续不回摆",
+    "A 推出时同步推近 scale 1→1.18 并压暗 55%；B 从 0.62 + 10px 失焦迎面放大收焦并从暗里亮起；两景按速度挂 SpeedBlur 横向运动模糊（≤40px，静止为 0）",
+    "暗场改为带色相深底 + 中心冷光 + 暗角 + 颗粒，54 颗三层视差尘点按速度拉成拖影，读作「仍在高速穿行」",
+    "节拍对齐卡片定义：推出 11f → 暗场滑行 5f → 迎入 14f，56f 起 B 真静止 64f；两景边缘加大而虚的投影分层"
+  ],
+  "issuesEn": [
+    "A's push-out and B's entry were two separately eased curves: A decelerated out and B started slow, so speed dropped to zero mid-way and the 'single take' broke in two",
+    "A merely slid off with no sense of pushing forward, and ~190px/frame of travel had no motion blur, so it strobed",
+    "The dark field had only four 2px dust specks — practically invisible — so it was really 4–6 dead black frames",
+    "B slid in from the right with its hard page edge pasted on black, with no spatial layering"
+  ],
+  "changesEn": [
+    "Rebuilt around a single camera: A (world x=0), the dust stream and B (world x=6400) are all driven by one travel curve cam(f)=D·bezier(0.55,0,0.2,1) — accelerate out → ~660px/frame peak in the dark → long decelerating approach, with continuous velocity and no back-swing",
+    "A also pushes in (scale 1→1.18) and darkens 55% as it exits; B grows from 0.62 with a 10px defocus, racks into focus and brightens out of the dark; both get velocity-driven SpeedBlur (≤40px, zero at rest)",
+    "The dark field now has a hue-tinted base, a cool center glow, vignette and grain; 54 dust motes on three parallax layers stretch into speed streaks so it reads as still travelling fast",
+    "Beats match the card spec: 11f push-out → 5f dark glide → 14f approach, with B truly still from 56f for 64f; soft, wide shadows separate the page edges from the void"
+  ],
+  "mdChanged": false
+}
