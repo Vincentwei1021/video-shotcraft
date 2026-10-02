@@ -1,63 +1,82 @@
-// pill-slot-cycle —— 句中词槽轮换：固定句干 + 句尾 pill 老虎机式滚一格
-// 源：notion-ai 4.5–8.5s。旧 pill 上飞淡出、新 pill 从下带运动模糊滑入，
-// 连换 6 次后 pill 消失、句子落成 "One AI tool to do it all." 收束。
+// pill-slot-cycle —— 句中词槽轮换：固定句干 + 槽位里的 pill 老虎机式绕滚筒翻一格，列举完落成结论句。
+// 源：notion-ai 4.5–8.5s 的手法（文案、品牌、版式全部重做）。
 //
-// 质感升级：
-// - pill 绕"滚筒"翻入翻出：入场 rotateX -38°→0 + 0.94→1，出场 0→34° + 1→0.94（perspective 1400），
-//   竖向运动模糊按真实速度计算（SVG 只在 y 轴模糊），静止为 0。
-// - pill 材质：白面 + 发丝线 + 顶部内高光 + 随"离槽高度"变化的两层软阴影；图标换同一套线性 SVG，
-//   落在强调色浅底小方块里（替代 Unicode 字符 ▲ ☰ 等字体回退字形）。
-// - 系统字体栈 + 负字距；柔光 Backdrop 替代 #ececea 平铺。
-// - 收束：结论句落位后，整行用 smooth 缓缓居中（句干在列举期间仍纹丝不动），再 hold ≥45f。
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, FONT as PFONT, mix, ramp, softShadow, innerHighlight } from '../../_fixtures/Polish';
+// 第二轮重设计（深蓝夜 · AI 产品发布会两行海报）：
+// - look = midnight（深蓝 · 电光蓝 · 青）。版式改成两行左对齐大字海报：第 1 行句干「One AI tool to」150px/800
+//   纹丝不动；第 2 行是"填空槽"——开场就画着一条发丝下划线（空格待填），pill 在线上方轮换。
+//   pill 是深色玻璃胶囊（140px 高，80px 字，96px 电光蓝渐变图标块），绕滚筒翻入翻出、按速度竖向模糊。
+// - 收束：最后一枚 pill 上飞，「do it all.」与句干同字号同字重从下带过冲落位（全片唯一一次过冲），
+//   字面是电光蓝→青的渐变；下划线同时由左到右点亮成强调色渐变 + 一次泛光——"空格被填上了"。
+// - 节奏改"老虎机减速前的加速"：6 拍持续 28→16f 递减（越换越快），收束拍落定后长 hold ≥48f。
+//   每拍前 9f 完成换位，剩下的时间读词；拍长 ≥16f 保证短语读得完。
+// - 文案全部虚构：Relay（AI 工作台），技能短语长度 14–16 字符（长短差 <2 倍，槽宽不甩）。
+//
+// 时间表（30fps，共 205f）：
+//   0–18     预备：眉题字距收拢；句干逐词从线下升起；空槽下划线由左向右画出
+//   16–141   列举：6 拍（28/24/21/19/17/16f），每拍前 9f 换位（入 snappy 落槽 / 出 exit 加速飞走）
+//   141–148  末 pill 上飞离场（7f ease-in）
+//   141–157  「do it all.」从下 110px 落位（back 过冲）；147–167 下划线点亮；154–190 背后泛光一次
+//   157–205  hold：全程极缓推近 1→1.03
+import React from 'react';
+import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
+import { EASE, mix, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 
-const FONT = PFONT.sans;
+const L = LOOKS.midnight;
 
-type IconKey = 'ask' | 'drive' | 'slack' | 'sum' | 'pen' | 'agenda';
+type IconKey = 'ask' | 'search' | 'sum' | 'pen' | 'lang' | 'agenda';
 const PILLS: { label: string; icon: IconKey }[] = [
   { label: 'Ask a question', icon: 'ask' },
-  { label: 'Find in Drive', icon: 'drive' },
-  { label: 'Find in Slack', icon: 'slack' },
-  { label: 'Summarize', icon: 'sum' },
+  { label: 'Search your docs', icon: 'search' },
+  { label: 'Summarize a call', icon: 'sum' },
   { label: 'Improve writing', icon: 'pen' },
+  { label: 'Translate a page', icon: 'lang' },
   { label: 'Draft an agenda', icon: 'agenda' },
 ];
+const BEATS = [28, 24, 21, 19, 17, 16]; // 越换越快
+const INTRO = 16; // 第一枚 pill 入槽帧
+const SWAP = 9; // 每拍前 9f 完成换位
+const FIN = 16; // 结论句落位
+const BEAT_START = BEATS.map((_, i) => INTRO + BEATS.slice(0, i).reduce((a, b) => a + b, 0));
+const CYCLE_END = INTRO + BEATS.reduce((a, b) => a + b, 0); // 141
+export const PILL_SLOT_CYCLE_DURATION = CYCLE_END + FIN + 48; // 205f ≈ 6.8s
 
-const BEAT = 21; // ~0.7s @30fps
-const INTRO = 12; // 句干入场
-const CYCLES = PILLS.length;
-const SWAP = 8; // 每拍前 8f 完成换位
-const FIN = 14; // 收束句落位
-const CENTER = 26; // 落位后整行缓缓居中
-// 12f 入场 + 6×21f 列举 + 14f 收束 + 48f 完整句 hold
-export const PILL_SLOT_CYCLE_DURATION = INTRO + CYCLES * BEAT + FIN + 48; // 200f ≈ 6.7s
+const LEFT = 200; // 句干与槽位共同左缘（列举期间纹丝不动）
+const LINE1_TOP = 336;
+const SLOT_TOP = 566; // 第 2 行顶
+const PILL_H = 156;
+const STEM_FS = 176;
+const UNDER_Y = SLOT_TOP + 200; // 填空下划线
+const UNDER_W = 1920 - LEFT * 2; // 填空线横贯画面（左右安全边距相等）
 
-const STEM_LEFT = 300; // 句干左端锚点（列举期间纹丝不动）
-const STEM_GAP = 36;
-const WORD_GAP = 18; // 结论句里 "to" 与 "do" 之间是普通词距，不是槽位间距
-
-// 线性图标（24 视框，stroke 继承 currentColor）
+// 线性图标（24 视框）
 const Icon: React.FC<{ k: IconKey }> = ({ k }) => {
-  const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   return (
-    <svg width={34} height={34} viewBox="0 0 24 24" style={{ display: 'block' }}>
+    <svg width={54} height={54} viewBox="0 0 24 24" style={{ display: 'block' }}>
       {k === 'ask' && (
         <>
-          <circle cx="12" cy="12" r="9" {...p} />
-          <path d="M9.6 9.3a2.5 2.5 0 0 1 4.8 1c0 1.7-2.4 2.2-2.4 3.7" {...p} />
-          <circle cx="12" cy="17.2" r="0.6" fill="currentColor" />
+          <path d="M4 5.5h16v10H11l-4.5 3.5v-3.5H4z" {...p} />
+          <path d="M10 9.2a2 2 0 0 1 3.9.6c0 1.3-1.9 1.5-1.9 2.7" {...p} />
         </>
       )}
-      {k === 'drive' && <path d="M8.6 3.5h6.8l6.1 10.6-3.4 5.9H5.9l-3.4-5.9zM8.6 3.5l6.1 10.6h6.8M5.9 20l6.1-10.6" {...p} />}
-      {k === 'slack' && <path d="M9.5 3.5 7.8 20.5M16.2 3.5l-1.7 17M4 9h16.5M3.5 15H20" {...p} />}
+      {k === 'search' && (
+        <>
+          <circle cx="10.5" cy="10.5" r="6" {...p} />
+          <path d="m15 15 5 5" {...p} />
+        </>
+      )}
       {k === 'sum' && <path d="M4 6h16M4 10.5h16M4 15h10M4 19.5h6" {...p} />}
       {k === 'pen' && (
         <>
           <path d="M14.5 4.8 19.2 9.5 9 19.7l-5.2.5.5-5.2z" {...p} />
-          <path d="M12.6 6.7l4.7 4.7" {...p} />
+          <path d="M18 2.5v3M16.5 4h3" {...p} />
+        </>
+      )}
+      {k === 'lang' && (
+        <>
+          <circle cx="12" cy="12" r="8.5" {...p} />
+          <path d="M3.5 12h17M12 3.5c2.6 2.6 2.6 14.4 0 17M12 3.5c-2.6 2.6-2.6 14.4 0 17" {...p} />
         </>
       )}
       {k === 'agenda' && (
@@ -70,53 +89,31 @@ const Icon: React.FC<{ k: IconKey }> = ({ k }) => {
   );
 };
 
-// pill 本体；lift = 离槽高度（0 落槽 → 1 飞行中），驱动阴影大小与虚实
-const Pill: React.FC<{ label: string; icon: IconKey; lift?: number; style?: React.CSSProperties }> = ({
-  label,
-  icon,
-  lift = 0,
-  style,
-}) => (
-  <div
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 18,
-      padding: '14px 38px 14px 18px',
-      borderRadius: 999,
-      background: 'linear-gradient(180deg, #ffffff 0%, #fafafb 100%)',
-      border: '1px solid rgba(20,22,28,0.10)',
-      boxShadow: `${innerHighlight(0.95)}, ${softShadow(6 + lift * 30)}`,
-      fontFamily: FONT,
-      fontWeight: 700,
-      fontSize: 64,
-      letterSpacing: '-0.025em',
-      color: G.ink1,
-      whiteSpace: 'nowrap',
-      ...style,
-    }}
-  >
-    <span
-      style={{
-        width: 62,
-        height: 62,
-        borderRadius: 18,
-        background: G.accentSoft,
-        boxShadow: 'inset 0 0 0 1px rgba(91,99,211,0.14)',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: G.accent,
-        flexShrink: 0,
-      }}
-    >
+// 深色玻璃 pill；lift = 离槽高度（0 落槽 → 1 飞行中）
+const Pill: React.FC<{ label: string; icon: IconKey; lift?: number }> = ({ label, icon, lift = 0 }) => (
+  <div style={{
+    display: 'inline-flex', alignItems: 'center', gap: 30, height: PILL_H, padding: '0 60px 0 24px', borderRadius: 999,
+    background: 'linear-gradient(180deg, rgba(48,66,118,0.92) 0%, rgba(24,33,62,0.94) 55%, rgba(17,24,45,0.96) 100%)',
+    border: `1px solid ${alpha('#a6bfff', 0.22)}`,
+    boxShadow:
+      `inset 0 1.5px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(0,0,0,0.4), ` +
+      `0 ${(24 + lift * 30).toFixed(1)}px ${(50 + lift * 30).toFixed(1)}px -18px rgba(0,2,10,0.85), ` +
+      `0 0 ${(40 + lift * 20).toFixed(1)}px ${alpha(L.light, 0.16 * (1 - lift))}`,
+    whiteSpace: 'nowrap',
+  }}>
+    <span style={{
+      width: 108, height: 108, borderRadius: 34, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: `linear-gradient(145deg, #7ea2ff 0%, ${L.accent} 45%, #3557e8 100%)`,
+      boxShadow: `inset 0 1.5px 0 rgba(255,255,255,0.35), 0 8px 22px -6px ${alpha(L.light, 0.7)}`,
+      color: '#ffffff',
+    }}>
       <Icon k={icon} />
     </span>
-    {label}
+    <span style={{ ...type(90, 650), letterSpacing: '-0.035em', lineHeight: 1, color: L.ink }}>{label}</span>
   </div>
 );
 
-// 竖向运动模糊滤镜（只在 y 轴模糊；std<0.3 时不挂滤镜）
+// 竖向运动模糊（只在 y 轴；std<0.3 不挂）
 const VBlur: React.FC<{ id: string; std: number }> = ({ id, std }) => (
   <svg width={0} height={0} style={{ position: 'absolute' }} aria-hidden>
     <filter id={id} x="-10%" y="-60%" width="120%" height="220%">
@@ -125,174 +122,152 @@ const VBlur: React.FC<{ id: string; std: number }> = ({ id, std }) => (
   </svg>
 );
 
-// 入场位移曲线（像素）：从下 +120 强 ease-out 落槽
-const inYAt = (bf: number) => mix(120, 0, ramp(bf, 0, SWAP, EASE.snappy));
-// 出场位移曲线：向上 -130 ease-in 加速飞出
-const outYAt = (bf: number) => mix(0, -130, ramp(bf, 0, SWAP - 1, EASE.exit));
+const inYAt = (bf: number) => mix(150, 0, ramp(bf, 0, SWAP, EASE.snappy)); // 从下落槽
+const outYAt = (bf: number) => mix(0, -170, ramp(bf, 0, SWAP - 1, EASE.exit)); // 加速上飞
+const finEase = Easing.out(Easing.back(1.5));
+const finYAt = (f: number) =>
+  interpolate(f, [CYCLE_END, CYCLE_END + FIN], [110, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: finEase });
+const speed = (fn: (x: number) => number, x: number) => Math.abs(fn(x + 0.5) - fn(x - 0.5));
 
 export const PillSlotCycle: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // 量最终句宽（"One AI tool to" + gap + "do it all."），用于收束后居中
-  const finalRef = useRef<HTMLDivElement>(null);
-  const [finalW, setFinalW] = useState(1240);
-  useLayoutEffect(() => {
-    if (finalRef.current) setFinalW(finalRef.current.offsetWidth || 1240);
-  }, []);
+  // 当前拍
+  let idx = 0;
+  for (let i = 0; i < BEATS.length; i++) if (frame >= BEAT_START[i]) idx = i;
+  const beatFrame = frame - BEAT_START[idx];
+  const isFinale = frame >= CYCLE_END;
 
-  // 句干入场：ease-out 上浮淡入 + 轻虚化收拢
-  const stemT = ramp(frame, 0, INTRO, EASE.out);
+  // 下划线：开场画出（发丝灰）→ 收束点亮（强调色渐变从左到右）
+  const underDraw = ramp(frame, 4, 22, EASE.snappy);
+  const underLit = ramp(frame, CYCLE_END + 6, 20, EASE.swift);
+  const bloom = ramp(frame, CYCLE_END + 13, 8, EASE.out) * (1 - ramp(frame, CYCLE_END + 21, 34, EASE.out));
+  const push = mix(1, 1.03, ramp(frame, 0, PILL_SLOT_CYCLE_DURATION, EASE.smooth));
 
-  const cycleStart = INTRO;
-  const cycleEnd = cycleStart + CYCLES * BEAT;
-
-  // 当前处于第几个 pill 拍
-  const rel = frame - cycleStart;
-  const idx = Math.max(0, Math.min(Math.floor(rel / BEAT), CYCLES - 1));
-  const beatFrame = rel - idx * BEAT;
-
-  // 收束段：pill 上飞消失，"do it all." 从下滑入落位（全片唯一一次过冲）
-  const isFinale = frame >= cycleEnd;
-  const finT = interpolate(frame, [cycleEnd, cycleEnd + FIN], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.out(Easing.back(1.4)),
-  });
-  // 落位后整行缓缓居中
-  const centerT = ramp(frame, cycleEnd + FIN - 2, CENTER, EASE.smooth);
-  const shiftX = centerT * ((1920 - finalW) / 2 - STEM_LEFT);
-
-  const stemStyle: React.CSSProperties = {
-    fontFamily: FONT,
-    fontWeight: 800,
-    fontSize: 96,
-    color: G.ink1,
-    letterSpacing: '-0.035em',
-    whiteSpace: 'nowrap',
-  };
-
-  // 槽内容渲染
   let slot: React.ReactNode = null;
-  if (!isFinale && rel >= 0) {
-    const incoming = PILLS[idx];
-    const outgoing = idx > 0 ? PILLS[idx - 1] : null;
-
-    // 新 pill：从下 +120px 绕滚筒翻入，blur 按速度
+  if (!isFinale && frame >= INTRO) {
+    const inc = PILLS[idx];
+    const out = idx > 0 ? PILLS[idx - 1] : null;
     const inT = ramp(beatFrame, 0, SWAP, EASE.snappy);
-    const inY = inYAt(beatFrame);
-    const inV = Math.abs(inYAt(beatFrame + 0.5) - inYAt(beatFrame - 0.5));
-    const inBlur = Math.min(14, inV * 0.55);
-
-    // 旧 pill：向上 -130px 加速翻出淡掉
     const outT = ramp(beatFrame, 0, SWAP - 1, EASE.exit);
-    const outY = outYAt(beatFrame);
-    const outV = Math.abs(outYAt(beatFrame + 0.5) - outYAt(beatFrame - 0.5));
-    const outBlur = Math.min(12, outV * 0.45);
-
+    const inBlur = Math.min(16, speed(inYAt, beatFrame) * 0.5);
+    const outBlur = Math.min(14, speed(outYAt, beatFrame) * 0.4);
     slot = (
-      <div style={{ position: 'relative', display: 'inline-block', perspective: 1400 }}>
+      <>
         <VBlur id="psc-in" std={inBlur} />
         <VBlur id="psc-out" std={outBlur} />
-        {/* 撑起槽宽度的隐形占位（当前 pill） */}
-        <Pill label={incoming.label} icon={incoming.icon} style={{ visibility: 'hidden' }} />
-        {outgoing && outT < 1 && (
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              transformOrigin: '50% 100%',
-              transform: `translateY(${outY.toFixed(2)}px) rotateX(${(34 * outT).toFixed(2)}deg) scale(${mix(1, 0.94, outT).toFixed(4)})`,
-              opacity: 1 - outT,
-              filter: outBlur > 0.3 ? 'url(#psc-out)' : undefined,
-            }}
-          >
-            <Pill label={outgoing.label} icon={outgoing.icon} lift={outT} />
+        {out && outT < 1 && (
+          <div style={{
+            position: 'absolute', left: 0, top: 0, transformOrigin: '50% 100%',
+            transform: `translateY(${outYAt(beatFrame).toFixed(2)}px) rotateX(${(42 * outT).toFixed(2)}deg) scale(${mix(1, 0.93, outT).toFixed(4)})`,
+            opacity: 1 - outT, filter: outBlur > 0.3 ? 'url(#psc-out)' : undefined,
+          }}>
+            <Pill label={out.label} icon={out.icon} lift={outT} />
           </div>
         )}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            transformOrigin: '50% 0%',
-            transform: `translateY(${inY.toFixed(2)}px) rotateX(${(-38 * (1 - inT)).toFixed(2)}deg) scale(${mix(0.94, 1, inT).toFixed(4)})`,
-            opacity: idx === 0 ? inT : Math.min(1, inT * 1.6),
-            filter: inBlur > 0.3 ? 'url(#psc-in)' : undefined,
-          }}
-        >
-          <Pill label={incoming.label} icon={incoming.icon} lift={1 - inT} />
+        <div style={{
+          position: 'absolute', left: 0, top: 0, transformOrigin: '50% 0%',
+          transform: `translateY(${inYAt(beatFrame).toFixed(2)}px) rotateX(${(-48 * (1 - inT)).toFixed(2)}deg) scale(${mix(0.93, 1, inT).toFixed(4)})`,
+          opacity: Math.min(1, inT * 1.6), filter: inBlur > 0.3 ? 'url(#psc-in)' : undefined,
+        }}>
+          <Pill label={inc.label} icon={inc.icon} lift={1 - inT} />
         </div>
-      </div>
+      </>
     );
   } else if (isFinale) {
-    // 最后一个 pill 上飞离场（前 7f），然后 "do it all." 落位
-    const lastOutT = ramp(frame, cycleEnd, 7, EASE.exit);
-    const fv = Math.abs(
-      interpolate(frame + 0.5, [cycleEnd, cycleEnd + FIN], [90, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.4)) }) -
-        interpolate(frame - 0.5, [cycleEnd, cycleEnd + FIN], [90, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.back(1.4)) }),
-    );
-    const finBlur = Math.min(10, fv * 0.5);
+    const lastT = ramp(frame, CYCLE_END, 7, EASE.exit);
+    const finT = ramp(frame, CYCLE_END + 2, FIN - 2, EASE.linear);
+    const finBlur = Math.min(12, speed(finYAt, frame) * 0.5);
+    const last = PILLS[PILLS.length - 1];
     slot = (
-      <div style={{ position: 'relative', display: 'inline-block', perspective: 1400 }}>
+      <>
         <VBlur id="psc-fin" std={finBlur} />
-        <VBlur id="psc-last" std={Math.min(12, lastOutT * 12)} />
-        <span
-          style={{
-            ...stemStyle,
-            display: 'inline-block',
-            marginLeft: WORD_GAP - STEM_GAP,
-            opacity: Math.min(1, finT * 1.4),
-            transform: `translateY(${((1 - finT) * 90).toFixed(2)}px)`,
-            filter: finBlur > 0.3 ? 'url(#psc-fin)' : undefined,
-          }}
-        >
+        <VBlur id="psc-last" std={Math.min(14, lastT * 14)} />
+        <div style={{
+          position: 'absolute', left: -4, top: (PILL_H - STEM_FS) / 2,
+          ...type(STEM_FS, 800), letterSpacing: '-0.05em', lineHeight: 1, whiteSpace: 'nowrap',
+          backgroundImage: `linear-gradient(100deg, #9fb8ff 0%, ${L.accent} 38%, ${L.accent2} 100%)`,
+          WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+          opacity: Math.min(1, finT * 2.2), transform: `translateY(${finYAt(frame).toFixed(2)}px)`,
+          filter: finBlur > 0.3 ? 'url(#psc-fin)' : `drop-shadow(0 0 ${(30 * bloom).toFixed(1)}px ${alpha(L.light, 0.55 * bloom)})`,
+        }}>
           do it all.
-        </span>
-        {lastOutT < 1 && (
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: -8,
-              transformOrigin: '50% 100%',
-              transform: `translateY(${(-130 * lastOutT).toFixed(2)}px) rotateX(${(34 * lastOutT).toFixed(2)}deg) scale(${mix(1, 0.94, lastOutT).toFixed(4)})`,
-              opacity: 1 - lastOutT,
-              filter: lastOutT > 0.03 ? 'url(#psc-last)' : undefined,
-            }}
-          >
-            <Pill label={PILLS[CYCLES - 1].label} icon={PILLS[CYCLES - 1].icon} lift={lastOutT} />
+        </div>
+        {/* 末 pill 画在结论句之上：先飞走，结论句从它身后升起 */}
+        {lastT < 1 && (
+          <div style={{
+            position: 'absolute', left: 0, top: 0, transformOrigin: '50% 100%',
+            transform: `translateY(${(-170 * lastT).toFixed(2)}px) rotateX(${(42 * lastT).toFixed(2)}deg) scale(${mix(1, 0.93, lastT).toFixed(4)})`,
+            opacity: 1 - lastT, filter: lastT > 0.03 ? 'url(#psc-last)' : undefined,
+          }}>
+            <Pill label={last.label} icon={last.icon} lift={lastT} />
           </div>
         )}
-      </div>
+      </>
     );
   }
 
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
-      <Backdrop tone="light" light={{ x: 0.4, y: 0.3 }} accent="#5b63d3" grain={0.045} vignette={0.14} />
-      {/* 隐藏量宽：完整结论句 */}
-      <div ref={finalRef} style={{ position: 'absolute', visibility: 'hidden', display: 'flex', gap: WORD_GAP }}>
-        <span style={stemStyle}>One AI tool to</span>
-        <span style={stemStyle}>do it all.</span>
-      </div>
-      {/* 句干固定不动：整行左端锚死，不随 pill 宽度居中重排（收束落位后才整体居中） */}
-      <div
-        style={{
-          position: 'absolute',
-          left: STEM_LEFT,
-          top: 540,
-          transform: `translate(${shiftX.toFixed(2)}px, calc(-50% + ${((1 - stemT) * 50).toFixed(2)}px))`,
-          display: 'flex',
-          alignItems: 'center',
-          gap: STEM_GAP,
-          opacity: stemT,
-          filter: stemT < 0.98 ? `blur(${((1 - stemT) * 6).toFixed(2)}px)` : undefined,
-        }}
-      >
-        <span style={stemStyle}>One AI tool to</span>
-        {slot}
-      </div>
+      <Stage look={L} keyLight={{ x: 0.74, y: 0.06 }} fill={{ x: 0.9, y: 1.05 }} breathe={0.5}>
+        <Dust look={L} count={26} seed={7} drift={0.22} opacity={0.45} />
+        {/* 结论泛光：落在槽位后方，只亮一次 */}
+        <div style={{
+          position: 'absolute', left: LEFT - 200, top: SLOT_TOP - 160, width: 1400, height: 480,
+          background: `radial-gradient(ellipse 50% 50% at 40% 50%, ${alpha(L.light, 0.32)} 0%, ${alpha(L.light, 0)} 70%)`,
+          opacity: bloom,
+        }} />
+      </Stage>
+
+      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})`, transformOrigin: '30% 50%' }}>
+        {/* 眉题 */}
+        <div style={{
+          position: 'absolute', left: LEFT, top: LINE1_TOP - 86, display: 'flex', alignItems: 'center', gap: 16,
+          opacity: ramp(frame, 0, 16, EASE.out),
+        }}>
+          <span style={{ width: 12, height: 12, borderRadius: 99, background: L.accent2, boxShadow: `0 0 14px ${alpha(L.accent2, 0.8)}` }} />
+          <span style={{ ...type(28, 650, { caps: true }), color: L.ink2, letterSpacing: `${mix(0.42, 0.22, ramp(frame, 0, 26, EASE.snappy)).toFixed(3)}em` }}>
+            Relay · Your AI workspace
+          </span>
+        </div>
+
+        {/* 第 1 行：句干，左缘锚死 */}
+        <div style={{ position: 'absolute', left: LEFT - 6, top: LINE1_TOP, ...type(STEM_FS, 800), letterSpacing: '-0.05em', lineHeight: 1, color: L.ink, whiteSpace: 'nowrap' }}>
+          <TextReveal text="One AI tool to" by="word" start={0} each={18} gap={3} variant="rise" />
+        </div>
+
+        {/* 第 2 行：槽位（perspective 给滚筒翻转） */}
+        <div style={{ position: 'absolute', left: LEFT, top: SLOT_TOP, width: 1500, height: PILL_H, perspective: 1600 }}>
+          {slot}
+        </div>
+
+        {/* 填空下划线：发丝底线 + 收束时点亮的强调色渐变 */}
+        <div style={{ position: 'absolute', left: LEFT, top: UNDER_Y, width: UNDER_W * underDraw, height: 3, borderRadius: 2, background: alpha(L.ink, 0.16) }} />
+        <div style={{
+          position: 'absolute', left: LEFT, top: UNDER_Y - 0.5, width: UNDER_W * underLit, height: 4, borderRadius: 2,
+          background: `linear-gradient(90deg, ${L.accent} 0%, ${L.accent2} 100%)`,
+          boxShadow: `0 0 18px ${alpha(L.accent, 0.6)}`,
+        }} />
+        {/* 填空线右端：⌘K 键帽（命令面板的唤起入口），收束时随下划线点亮 */}
+        <div style={{
+          position: 'absolute', right: LEFT, top: UNDER_Y - 92, display: 'flex', gap: 12, alignItems: 'center',
+          opacity: ramp(frame, 14, 16, EASE.out),
+        }}>
+          <span style={{ ...type(30, 500), color: L.ink3, marginRight: 10 }}>Ask Relay</span>
+          {['⌘', 'K'].map((k) => (
+            <span key={k} style={{
+              width: 64, height: 64, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              ...type(32, 600), color: mixLit(underLit),
+              background: 'linear-gradient(180deg, rgba(40,52,88,0.9) 0%, rgba(20,27,48,0.95) 100%)',
+              border: `1px solid ${alpha('#a6bfff', 0.18 + 0.25 * underLit)}`,
+              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 0 rgba(4,7,16,0.9), 0 10px 20px -8px rgba(0,0,0,0.8)`,
+            }}>{k}</span>
+          ))}
+        </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
+
+// 键帽字色：平时次级色，收束点亮后提到主色
+const mixLit = (t: number) => (t > 0.6 ? L.ink : L.ink2);

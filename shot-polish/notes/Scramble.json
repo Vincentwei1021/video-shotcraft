@@ -1,32 +1,31 @@
 {
   "stem": "Scramble",
   "issues": [
-    "调试占位文案 \"TEMPLATE MOTION DEMO\" 直接上屏",
-    "34 号字 20 个字符几乎顶满画幅两侧，没有安全边距",
-    "#07080c 纯色平铺 + transform 位图放大，暗场没有任何光感，字边偏软",
-    "乱码层整片同一灰度，看不出\"在运算\"；锁定闪光窗 0.1 实际拖了约 10f，光晕偏糊",
-    "末字 ~88f 才锁定，整句落定后几乎没有静置"
+    "一行 28px 设计坐标的等宽小字横在黑场正中，标题不到画高 5%，周围全是空的",
+    "锁定点等差铺开，读起来像进度条匀速推进，没有\"算\"的起伏",
+    "锁定闪光只是 3f 的蓝白光晕，缩略图里几乎看不出哪个字刚被咬定",
+    "冷蓝灰配色 + 平铺暗底，没有任何终端 / 系统的语境元素，像一行占位文字"
   ],
   "changes": [
-    "文案换成 20 字符的 \"AUTOPILOT NOW ONLINE\"（三词、两处空格呼吸点），字数节拍不变",
-    "字号 34→28（设计坐标）+ raster=\"zoom\" 按 1080p 光栅化，整行左右各留约 210px",
-    "暗场 Backdrop + 文字背后一条随已锁比例增亮的冷色柔光带 + soft-light 颗粒，\"上电\"感",
-    "乱码亮度随每次重掷在 0.55–1 间闪烁，锁定前沿 2 字提亮成冷青色；锁定闪光收到 ~3f、光晕 14px 并加字形 1.14→1 轻压",
-    "锁定窗前移到 0.22→0.76（+≤6f 抖动），末字约 80f 落定，留 ~14f 完整句静置"
+    "look 换成 lime（石墨黑 · 荧光黄绿）终端技术海报：两行 168px 等宽粗体大标题占画宽 ~55%，上方 HUD 抬头（系统 / 构建号 / T+ 计时）、下方解算进度条与状态行、右侧虚化十六进制流纹理、全屏极淡扫描线",
+    "锁定\"咬定\"改成荧光反色块：字底亮起整格强调色块、字变深色，满格 2f 后 4f 线性退去，前沿字带光标条与泛光——每个字被点名都看得见",
+    "节奏重排：0.5f/字依次启动乱码 → 全员噪声 hold 到 26f → in-out 曲线铺开锁定（起步慢、中段快、收尾慢）+ ≤3f 抖动；时长 96→130f，末字后 hold ~44f",
+    "结论词 ONLINE 锁定后保持荧光色；全部锁完时进度条满格、状态灯一次泛光、状态行换成 Link established，十六进制流减速停住",
+    "第 1 帧就有画面：HUD、空进度条与暗色占位点，取代原版的 6f 空屏"
   ],
   "issuesEn": [
-    "Debug placeholder copy \"TEMPLATE MOTION DEMO\" shown on screen",
-    "20 characters at 34px nearly touched both frame edges, no safe margin",
-    "Flat #07080c fill plus a transform-scaled bitmap: no light in the dark field and soft glyph edges",
-    "The scramble layer was one uniform grey with no sense of computation; the 0.1 lock flash actually lasted ~10f with a muddy glow",
-    "The last character locked around 88f, leaving almost no hold on the finished line"
+    "A single line of 28px design-space monospace sat in the middle of black, under 5% of frame height, with nothing around it",
+    "Lock times were spaced evenly, so it read as a progress bar ticking at constant speed with no sense of computation",
+    "The lock flash was a 3f blue-white glow; in thumbnails you could barely tell which character had just locked",
+    "Cold blue-grey on a flat dark stage, with no terminal or system context: it looked like placeholder text"
   ],
   "changesEn": [
-    "Copy changed to the 20-character \"AUTOPILOT NOW ONLINE\" (three words, two breathing spaces), same beat count",
-    "Size 34→28 (design units) with raster=\"zoom\" at 1080p, leaving ~210px margin each side",
-    "Dark Backdrop, a cool soft light band behind the line that brightens with the locked fraction, and soft-light grain for a power-on feel",
-    "Scramble glyph brightness flickers 0.55–1 per re-roll, the next two characters at the lock front glow cool cyan; lock flash tightened to ~3f, 14px glow, plus a 1.14→1 glyph press",
-    "Lock window moved to 0.22→0.76 (+≤6f jitter) so the last character lands ~80f with ~14f of hold"
+    "Lime look (graphite black, fluorescent yellow-green) as a terminal poster: a two-line 168px bold monospace headline spanning ~55% of the frame, HUD header (system, build, T+ timer), decrypt progress bar and status line below, a blurred hex stream as texture on the right, and faint scanlines",
+    "Each lock now fires a fluorescent inverse block: a full-cell accent block behind the glyph with the glyph turning dark, held 2f then fading linearly over 4f; the lock front carries a cursor bar and glow, so every lock is visible",
+    "New rhythm: noise boots left to right at 0.5f per character, holds until 26f, then locks spread on an in-out curve (slow start, fast middle, slow finish) with up to 3f jitter; duration 96 to 130f with ~44f hold after the last lock",
+    "The payoff word ONLINE stays fluorescent after locking; when everything locks the bar fills, the status light blooms once, the status line changes to Link established and the hex stream slows to a stop",
+    "Frame 1 already has content (HUD, empty bar, dim placeholder dots) instead of the original 6f blank"
   ],
+  "look": "lime",
   "mdChanged": true
 }

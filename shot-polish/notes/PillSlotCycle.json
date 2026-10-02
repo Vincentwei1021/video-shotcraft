@@ -1,30 +1,31 @@
 {
   "stem": "PillSlotCycle",
   "issues": [
-    "没有导出时长常量，工作台按 12f 推断，只渲染出句干入场，列举与收束整段丢失",
-    "#ececea 纯色平铺底 + Helvetica，句干与 pill 都像未调过的默认样式",
-    "pill 用 3px 实色灰边 + 单层灰阴影，图标是 ? ▲ # ☰ 等 Unicode 字符，字体回退后粗细不一",
-    "换位只有平移 + 全向 blur，没有\"滚一格\"的体积感；结论句落位后整行偏左，'to' 与 'do' 之间留着槽位宽的空洞"
+    "灰底 + 96px 句干 + 白色小 pill，句子只占画面上方一条，下面 2/3 空着，没有主视觉",
+    "六拍一律 21f 等长，从头到尾同一个节拍，观众感觉不到\"要停了\"，结论拍和列举拍没有档次差",
+    "pill 白底灰字靛蓝图标，和底色几乎同一明度，强调色无处落脚",
+    "pill 里直接写了真实产品名（Drive / Slack），收束只是一句同色的 do it all."
   ],
   "changes": [
-    "补 PILL_SLOT_CYCLE_DURATION = 200f（12f 入场 + 6×21f 列举 + 14f 收束 + 48f 完整句 hold），保留原 21f 拍长与 8f 换位窗",
-    "柔光 Backdrop + 系统 SF 字体栈，句干 96/800、-0.035em 字距，入场带 6px 虚化收拢",
-    "pill 改白面竖向微渐变 + 发丝线 + 顶部内高光 + 随离槽高度变化的两层软阴影；6 个图标换成同一套线性 SVG，落在强调色浅底圆角方块里",
-    "换位加滚筒翻页：入 rotateX -38°→0 + 0.94→1（snappy），出 0→34° + 1→0.94（ease-in），竖向运动模糊按真实速度计算、静止为 0",
-    "结论句 back(1.4) 落位后整行 smooth 26f 缓缓居中（列举期间句干仍左锚死），'to do' 收回普通词距"
+    "look 换成 midnight（深蓝 · 电光蓝 · 青）：两行左对齐大字海报，句干 176px/800 钉死在第 1 行，第 2 行是横贯画面的\"填空线\"槽位，右端 ⌘K 键帽交代这是 AI 命令面板",
+    "pill 重做成深色玻璃胶囊（156px 高、90px 字、108px 电光蓝渐变图标块），按离槽高度变化落地影，绕滚筒翻入翻出 + 按速度竖向运动模糊",
+    "节奏改渐快：6 拍持续 28→16f 递减，像老虎机停下前越转越快；时长 200→205f，完整句 hold 48f",
+    "收束：末 pill 先飞走，\"do it all.\" 同字号同字重从它身后带 back 过冲升起，字面电光蓝→青渐变；填空线随即由左到右点亮、槽位后一次泛光——\"空格被填上了\"",
+    "文案改虚构品牌 Relay 与通用动作短语（14–16 字符，槽宽不甩），删掉真实产品名"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench guessed 12f and only the stem entrance rendered; the whole cycle and payoff were lost",
-    "Flat #ececea fill and Helvetica; both the stem and the pills looked like untuned defaults",
-    "Pills had a 3px solid grey border and a single grey shadow; icons were Unicode glyphs (? ▲ # ☰) with inconsistent fallback weights",
-    "Swaps were a translate plus isotropic blur with no sense of a drum turning; after the payoff the line sat left-heavy with a slot-sized hole between 'to' and 'do'"
+    "Grey stage, a 96px stem and small white pills: the sentence was a strip across the top with two thirds of the frame empty and no key visual",
+    "All six beats were an even 21f, one flat metronome; there was no sense of slowing to a stop and the conclusion had no step-up over the list",
+    "White pills with grey text and indigo icons sat at almost the same value as the background, leaving the accent colour nowhere to land",
+    "Real product names (Drive, Slack) were written into the pills, and the payoff was a same-colour 'do it all.'"
   ],
   "changesEn": [
-    "Added PILL_SLOT_CYCLE_DURATION = 200f (12f intro + 6×21f cycle + 14f payoff + 48f full-sentence hold), keeping the original 21f beat and 8f swap window",
-    "Soft-light Backdrop and the SF system stack; stem at 96/800 with -0.035em tracking and a 6px blur-in",
-    "Pills get a white vertical gradient, hairline border, top inner highlight and a two-layer shadow that grows with lift; the six icons are one consistent line-SVG set in an accent-tinted rounded well",
-    "Drum-flip swaps: incoming rotateX -38°→0 with 0.94→1 scale (snappy), outgoing 0→34° with 1→0.94 (ease-in); vertical motion blur from actual speed, zero at rest",
-    "After the back(1.4) payoff the whole line eases to centre over 26f (the stem stays left-anchored throughout the cycle) and 'to do' closes to a normal word space"
+    "Midnight look (navy, electric blue, cyan): a two-line left-aligned poster with a 176px/800 stem pinned on line one and a full-width 'fill in the blank' rule as the slot on line two, a ⌘K keycap at its end marking it as an AI command bar",
+    "Pills rebuilt as dark glass capsules (156px tall, 90px text, 108px electric-blue gradient icon tile) with lift-dependent shadows, drum flips and speed-based vertical motion blur",
+    "Accelerating rhythm: six beats shrinking from 28 to 16f, like a slot machine speeding up before it stops; duration 200 to 205f with a 48f hold on the full sentence",
+    "Payoff: the last pill flies off first and 'do it all.' rises from behind it at the stem's exact size and weight with a back overshoot, in a blue-to-cyan gradient; the blank rule then lights left to right with one bloom behind the slot",
+    "Copy uses a fictional brand, Relay, and generic action phrases of 14 to 16 characters so the slot width stays steady; real product names removed"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

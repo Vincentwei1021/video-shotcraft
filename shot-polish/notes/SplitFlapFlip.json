@@ -1,30 +1,31 @@
 {
   "stem": "SplitFlapFlip",
   "issues": [
-    "翻牌格直接散放在 30% 透明的假 dashboard 上，没有显示屏外壳，读作一排贴纸",
-    "叶片是单色 #262624 平面，铰链只是一条 4px 黑线，看不出机械结构",
-    "上半叶掉落时下半静态叶亮度不变，翻转缺少遮光的立体感",
-    "Helvetica 800 字形回退、背景页面清晰抢戏、全程死机位"
+    "黑色翻牌格摆在灰白虚化的假 dashboard 上，背景的方块和小字与翻牌格争抢，画面脏且没有主光",
+    "翻牌格偏小（整行约占画宽 55%），四周大片无意义的灰，读不出\"车站大屏\"的语境",
+    "每格都翻同样 3 次、同一节奏，级联像一段整齐的电子动画，缺少机械感",
+    "只有一行标题，全部停定后画面就死了，没有收尾的落点"
   ],
   "changes": [
-    "整排翻牌装进石墨色显示屏外壳：竖向微渐变、1px 上沿高光、6px 内凹槽、两层落地阴影",
-    "叶片改上亮下暗微渐变 + 内高光/暗沿，铰链改 3px 暗缝 + 下沿高光，左右各加一颗转轴销钉",
-    "上半叶掉落时在下半静态叶上投随角度加深的阴影（≤0.42），叶片快速段加 ≤1.6px 竖向模糊",
-    "字体换系统 SF 栈 700、象牙白字；背景 dashboard 虚化 6px + 降饱和压暗 + 暗角，全程 smooth 推近 1→1.03 并带轻微视差",
-    "保留原节拍：22f 起 4f 级联、单次 5f Easing.in(quad)、每格 3 次、停定 6px 咔哒，末格 80f 停定后静置 60f"
+    "look 换成 ember（暖黑 · 橙）：整块夜间出发大屏做主体——暖黑外壳、上沿高光、内凹槽、落地暖光，顶光打在屏上，去掉背景假页面",
+    "版式重做：抬头 ◆ DEPARTURES + 本地时间，第 1 行 128×176 大翻牌格的 SHIP FASTER（字 132px，占画宽 ~75%），第 2 行小翻牌格的航班号 RELEASE 4.0 与强调橙状态 BOARDING",
+    "翻牌更机械：开场是空白叶片，每格翻牌次数按种子 3–6 次不等，单次 4f 重力掉落 + 明暗变化，落定 6px 咔哒",
+    "两层节奏：大行 3f/格级联、小行 44f 起 2f/格接力，状态组最后翻完；时长 140→150f",
+    "收尾：状态格背光一次强调色泛光、状态灯亮起后缓慢呼吸；全程推近 1→1.045 + 俯角 4°→1.2° 缓收"
   ],
   "issuesEn": [
-    "Flap cells sat loose on a 30%-opacity fake dashboard with no display housing, reading like a row of stickers",
-    "Flaps were flat #262624 slabs and the hinge was just a 4px black line, no sense of mechanism",
-    "The static lower leaf never darkened while the upper flap fell, so the flip lacked occlusion depth",
-    "Helvetica 800 fallback, a sharp background page competing for attention, and a locked-off camera"
+    "Black flap cells sat on a blurred grey fake dashboard whose blocks and small text competed with them; the frame was muddy with no key light",
+    "The cells were small (the row spanned ~55% of the frame) inside a lot of meaningless grey, so there was no sense of a station board",
+    "Every cell flipped exactly three times on the same beat, so the cascade read as a tidy digital animation rather than machinery",
+    "There was only one title row; once it settled the frame went dead with no closing beat"
   ],
   "changesEn": [
-    "The row now sits in a graphite display housing: vertical gradient, 1px top highlight, 6px inner recess and a two-layer drop shadow",
-    "Flaps get a top-lit gradient with inner highlight and dark lip, a 3px hinge gap with lower highlight, and axle pins on both sides",
-    "The falling upper flap casts an angle-driven shadow (≤0.42) on the static lower leaf; fast phases get ≤1.6px vertical blur",
-    "SF system stack at 700 in ivory ink; background dashboard blurred 6px, desaturated and dimmed with a vignette; a smooth 1→1.03 push-in with slight parallax",
-    "Original beats kept: cascade from 22f at 4f stagger, 5f Easing.in(quad) flips, 3 flips per cell, 6px click; last cell settles at 80f followed by a 60f hold"
+    "Ember look (warm black, orange): a full night departure board is the subject, with warm black housing, top-edge highlight, inset recess, warm floor spill and a top light; the fake page background is gone",
+    "New layout: a DEPARTURES header with local time, a hero row of 128×176 flaps reading SHIP FASTER (132px glyphs, ~75% of frame width), and a second row of small flaps for flight RELEASE 4.0 and an orange BOARDING status",
+    "More mechanical flips: the board starts on blank leaves, each cell flips a seeded 3 to 6 times, every flip is a 4f gravity drop with shading, and each lands with a 6px clunk",
+    "Two-layer rhythm: the hero row cascades at 3f per cell, the small row relays in from 44f at 2f per cell with the status finishing last; duration 140 to 150f",
+    "Closing beat: the status cells bloom once in the accent and the status lamp lights and slowly breathes; a slow 1 to 1.045 push with a 4° to 1.2° tilt settling across the shot"
   ],
+  "look": "ember",
   "mdChanged": true
 }
