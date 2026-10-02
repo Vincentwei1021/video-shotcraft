@@ -29,4 +29,8 @@ PRODUCT.md
 /shot-polish/bundle-*/
 /shot-polish/*.log
 /shot-polish/index.html
+/shot-polish/final.html
+/shot-polish/final-review.json
 /shot-polish/after-v1/
+/shot-polish/final/
+/shot-polish/_work/

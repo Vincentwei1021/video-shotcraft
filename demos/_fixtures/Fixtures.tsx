@@ -5,8 +5,9 @@
 // 两层软阴影 + 顶部内高光、真实感假内容（指标数字 / sparkline / 首字母头像 / 状态 chip /
 // 内联 SVG 图标）、系统字体栈与字重层级。中性暖灰 + 1 个安静的强调色，永远不抢运动的戏。
 // 全部内容由 seed 确定性生成（无随机源）。可选 tone="dark" 出同布局深色版（换肤类 demo 用）。
-// 依赖仅 react；copy demo 时一并带上本文件并改 import 路径。
+// 依赖 react + ./Brand（侧栏/顶栏的 video-shotcraft 标志与名字）；copy demo 时一并带上这两个文件并改 import 路径。
 import React from 'react';
+import { ShotcraftMark } from './Brand';
 
 const SANS = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Inter, Arial, sans-serif';
 const MONO = '"SF Mono", "JetBrains Mono", Menlo, monospace';
@@ -538,15 +539,14 @@ export const FakeDashboard: React.FC<{ variant?: 'A' | 'B'; tone?: Tone }> = ({ 
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 22 }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 10, flex: 'none', position: 'relative', overflow: 'hidden',
-            background: 'linear-gradient(145deg, #3b3d46 0%, #24252b 100%)',
+            width: 40, height: 40, borderRadius: 10, flex: 'none', display: 'grid', placeItems: 'center',
+            background: 'linear-gradient(145deg, #2a2a26 0%, #171714 100%)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 0 0 1px rgba(0,0,0,0.25)',
           }}>
-            <div style={{ position: 'absolute', left: 11, top: 11, width: 12, height: 12, borderRadius: 4, background: 'rgba(255,255,255,0.92)' }} />
-            <div style={{ position: 'absolute', left: 17, top: 17, width: 12, height: 12, borderRadius: 6, background: p.accent, opacity: 0.95 }} />
+            <ShotcraftMark size={26} tone="dark" />
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: p.sideInk, letterSpacing: '-0.01em' }}>Workspace</div>
+            <div style={{ fontSize: 15, fontWeight: 650, color: p.sideInk, letterSpacing: '0.01em' }}>video-shotcraft</div>
             <div style={{ fontSize: 12, color: p.sideInk3, marginTop: 2 }}>Pro plan</div>
           </div>
         </div>
@@ -561,7 +561,7 @@ export const FakeDashboard: React.FC<{ variant?: 'A' | 'B'; tone?: Tone }> = ({ 
           </div>
         ))}
         <div style={{ marginTop: 26, padding: '0 10px', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', color: p.sideInk3 }}>PROJECTS</div>
-        {['Atlas', 'Beacon', 'Cobalt'].map((n, i) => (
+        {['Launch film', 'Feature tour', 'Release reel'].map((n, i) => (
           <div key={n} style={{ height: 32, display: 'flex', alignItems: 'center', gap: 11, padding: '0 10px', fontSize: 14, color: p.sideInk2 }}>
             <div style={{ width: 8, height: 8, borderRadius: 3, margin: '0 4px', background: i === 0 ? p.accent : `rgba(255,255,255,${0.42 - i * 0.12})` }} />
             {n}
@@ -584,7 +584,7 @@ export const FakeDashboard: React.FC<{ variant?: 'A' | 'B'; tone?: Tone }> = ({ 
           padding: '0 32px', gap: 20, boxSizing: 'border-box', flex: 'none',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, whiteSpace: 'nowrap' }}>
-            <span style={{ color: p.ink3 }}>Workspace</span>
+            <span style={{ color: p.ink3 }}>video-shotcraft</span>
             <Ic name="chevron" size={14} color={p.ink3} />
             <span style={{ color: p.ink, fontWeight: 600, letterSpacing: '-0.01em' }}>{variant === 'A' ? 'Overview' : 'Projects'}</span>
           </div>
