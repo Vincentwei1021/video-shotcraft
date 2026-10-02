@@ -1,0 +1,28 @@
+{
+  "stem": "PullBackIsolation",
+  "issues": [
+    "工作台按 inline 猜成 16f，渲染只有开头半秒，后拉/熄灭/孤悬全没出现",
+    "主卡是在占位卡上压一层 72% 白罩再写 99.9%，发灰发脏",
+    "2.2 倍开场特写靠 transform 放大，文字糊",
+    "兄弟卡熄灭时在亮底上停成一块块灰板；背景沉入中性 #141414"
+  ],
+  "changes": [
+    "补导出 PULL_BACK_ISOLATION_DURATION=150（110f 后拉 + 40f 孤悬静止）",
+    "主卡改为出版级指标卡：API uptime 标签 + 状态点、99.9% 大数字（% 降一档）、45 段可用率条带（含一天降级）、时间轴页脚",
+    "相机按 2.2 倍 CSS zoom 布局后只做缩小，开场特写锐利（Q2）",
+    "兄弟卡熄灭：透明度 ease-out 先走、压暗按 k² 后走，叠 5px 失焦与 0.97 下沉；背景由柔光亮底交叉沉入带色相深场 + 靛色余光，主卡冷白双层光晕 + 受光上沿"
+  ],
+  "issuesEn": [
+    "The workbench guessed 16f from inline code, so only the first half-second rendered; the pull-back, fade-out and isolation never showed",
+    "The hero card was a 72% white wash over a placeholder card with 99.9% on top, which looked grey and dirty",
+    "The 2.2x opening close-up was transform-scaled, so text was blurry",
+    "Sibling cards turned into grey slabs on the light background as they faded; the background sank into neutral #141414"
+  ],
+  "changesEn": [
+    "Exported PULL_BACK_ISOLATION_DURATION=150 (110f pull-back + 40f isolated hold)",
+    "The hero is now a publication-grade metric card: API uptime label with status dot, a big 99.9% with a smaller %, a 45-segment uptime strip including one degraded day, and a timeline footer",
+    "The camera lays out at 2.2x CSS zoom and only scales down, so the opening close-up stays sharp (Q2)",
+    "Sibling fade-out: opacity leads on ease-out while darkening trails on k², plus 5px defocus and a 0.97 sink; the background crossfades from a soft light backdrop into a tinted dark field with an indigo hint; the hero gets a cool-white double glow and a lit rim"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "GradientWordSweep",
+  "issues": [
+    "没有导出时长常量，工作台按卡片猜成 20f，扫充只演到一半，闪电和稳态呼吸全没渲出来",
+    "辉光层的 mask/clipPath 裁在文字盒上，模糊溢出部分被切成矩形，扫充时词周围出现明显的\"方框光\"",
+    "闪电是 36 次随机事件挤在 70f 里，远密于卡片要求的稀疏零星，尾帧仍在闪",
+    "整段入场是一整块淡入上移，之后完全死机位；#050505 纯平黑底"
+  ],
+  "changes": [
+    "补 GRADIENT_WORD_SWEEP_DURATION = 105（3.5s，卡片 2.5–3.5s 区间上沿）",
+    "所有带模糊的辉光层（大柔光/中晕/近核/尾迹/波前亮核）改放进四周外扩 90px 的 Halo 盒，mask 色标用 calc 换算回文字坐标，方框光彻底消失；亮核由 clipPath 硬裁改软边 mask",
+    "闪电改为 7 次排期（同屏 1 道、末次约 92f 熄灭），尾段留出干净呼吸；三层紫红细描边规格不变",
+    "入场改两行错峰 blur-slide（snappy，第二行晚 4f，blur 10→0）；整段极缓推近 1→1.025（smooth）",
+    "底换带紫色相的近黑径向 + 暗角 + soft-light 颗粒；18f 快扫、波前梯度、4 层泛光强度全部保留"
+  ],
+  "issuesEn": [
+    "No exported duration constant, so the workbench guessed 20f from the card — the sweep only got halfway and the lightning and steady glow never rendered",
+    "Glow layers were masked/clipped to the text box, so the blur spill was cut into a rectangle — a visible \"box of light\" around the word during the sweep",
+    "Lightning was 36 random events packed into 70f, far denser than the card's sparse-and-occasional spec, and still flickering on the last frame",
+    "The entrance was one block fading up, then a locked-off frame on a flat #050505 black"
+  ],
+  "changesEn": [
+    "Added GRADIENT_WORD_SWEEP_DURATION = 105 (3.5s, top of the card's 2.5–3.5s range)",
+    "Every blurred glow layer (ambient, mid, near core, trail, wavefront core) now sits in a Halo box padded 90px on all sides, with mask stops mapped back to text coordinates via calc — the boxed glow is gone; the core uses a soft mask instead of a hard clipPath",
+    "Lightning is now 7 scheduled flashes (one at a time, last one dies around 92f), leaving a clean tail; the three-layer thin magenta stroke spec is unchanged",
+    "Entrance is a two-line staggered blur-slide (snappy, second line 4f later, blur 10→0); the whole shot slowly pushes in 1→1.025 (smooth)",
+    "Ground is a purple-tinted near-black radial with vignette and soft-light grain; the 18f sweep, wavefront gradient and four-layer glow levels are all kept"
+  ],
+  "mdChanged": true
+}

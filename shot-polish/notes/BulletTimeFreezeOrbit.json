@@ -1,0 +1,28 @@
+{
+  "stem": "BulletTimeFreezeOrbit",
+  "issues": [
+    "画面上方打着调试标题 BULLET TIME，冻结靠一枚 FREEZE 大徽标提示",
+    "面板是灰条骨架 + 灰柱，2px 实色边，无轴标签",
+    "背景死平，相机环绕时背景不动，读不出是相机在绕",
+    "数字标签同时线性淡入，无错峰"
+  ],
+  "changes": [
+    "去掉调试标题与徽标，换画面内的时间证词：右上时间码与面板总数计数器都走 effFrame，冻结时一起停住，时码点由红变靛并展开 FROZEN",
+    "面板换出版级图表：标题/副标/计数器、刻度与周标签、唯一强调色柱、发丝边 + 两层软阴影",
+    "背景点阵随 rotateY 反向视差（5.5px/度）、地面接触影随投影宽度收窄；面板转离主光时整体压暗 9%，一道随角度横扫的镜面反光（裁进圆角）",
+    "冻结期整体冷调 + 暗角收拢，进出各 8f 过渡；恢复后数字标签 2f 错峰 ease-out 浮现；补导出 BULLET_TIME_FREEZE_ORBIT_DURATION=150"
+  ],
+  "issuesEn": [
+    "A debug title 'BULLET TIME' sat on screen and the freeze was signalled by a big FREEZE badge",
+    "The panel was grey skeleton bars and grey columns with a 2px solid border and no axis labels",
+    "Flat background that didn't move during the orbit, so it didn't read as the camera circling",
+    "Value labels all faded in linearly at once with no stagger"
+  ],
+  "changesEn": [
+    "Removed the debug title and badge. On-screen evidence now carries the freeze: a timecode HUD and a total counter both run on effFrame and stop together; the dot turns from red to indigo and FROZEN slides out",
+    "Publication-grade chart: title, subtitle, counter, ticks and week labels, one accent column, hairline and two-layer soft shadow",
+    "The background dot grid counter-parallaxes with rotateY (5.5px/deg) and the contact shadow narrows with the projected width; the panel darkens 9% as it turns from the key light, and one angle-driven specular sweep stays clipped to the radius",
+    "Cool grade and tightening vignette while frozen, 8f in and out; after resume, labels stagger in 2f apart with ease-out; exported BULLET_TIME_FREEZE_ORBIT_DURATION=150"
+  ],
+  "mdChanged": false
+}

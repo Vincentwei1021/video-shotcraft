@@ -1,0 +1,32 @@
+{
+  "stem": "BlurSlide",
+  "issues": [
+    "纯色 #0a0b10 平铺底，画面没有任何光源与层次",
+    "占位文案 \"Your headline goes here\" 直接上屏，像未完成的模板",
+    "字体栈只有 -apple-system,sans-serif，标题平涂纯白、字距只按 -0.5px 硬写",
+    "副标题 103f 才收完，尾段只留 11f 静置，关键信息没有呼吸时间",
+    "整段除逐词入场外完全死机位，落定后画面僵住"
+  ],
+  "changes": [
+    "背景换成暗场柔光 Backdrop（主光居中偏上 + 极淡靛蓝余光 + 暗角）并覆盖 soft-light 颗粒防色带",
+    "文案换成产品级占位：主 4 词 \"Make every launch count\" / 副 5 词 \"Plan, review and ship together\"，词数与原 stagger 节奏一致",
+    "标题改系统 SF 字体栈 700 字重、-0.035em 字距，加上亮下暗的竖向微渐变；副标题改带冷调的 #8b91a8",
+    "时间窗前移：主 0.05–0.56、副 0.29–0.78，三通道同 p 的 outCubic 不变，副标题 88f 落定后留满约 25f 呼吸",
+    "整组全程极缓推近 1→1.018（smooth，起止速度为 0），blur 收敛到 0 时直接去掉 filter 保证落定后字形锐利"
+  ],
+  "issuesEn": [
+    "Flat #0a0b10 fill with no light source or depth",
+    "Placeholder copy \"Your headline goes here\" shown on screen, reads as an unfinished template",
+    "Font stack was just -apple-system,sans-serif; flat pure-white headline with a hard-coded -0.5px tracking",
+    "Subtitle only settled at 103f, leaving an 11f tail — no breathing room for the key message",
+    "Locked-off frame: once the words land the picture just freezes"
+  ],
+  "changesEn": [
+    "Dark soft-light Backdrop (centered key light, faint indigo spill, vignette) with soft-light grain against banding",
+    "Product-grade copy: 4-word headline \"Make every launch count\" / 5-word subtitle \"Plan, review and ship together\", word counts kept so the stagger rhythm is unchanged",
+    "SF system stack, 700 weight, -0.035em tracking and a subtle top-lit vertical gradient on the headline; cool-gray #8b91a8 subtitle",
+    "Windows moved earlier (title 0.05–0.56, subtitle 0.29–0.78) with the shared-p outCubic kept; subtitle lands at 88f leaving ~25f of hold",
+    "Whole group slowly pushes in 1→1.018 (smooth, zero velocity at both ends); blur filter removed once p reaches 1 so settled glyphs stay crisp"
+  ],
+  "mdChanged": true
+}

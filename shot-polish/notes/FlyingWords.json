@@ -1,0 +1,30 @@
+{
+  "stem": "FlyingWords",
+  "issues": [
+    "22 个词各取随机 hsl（蓝→粉紫），整屏高饱和彩虹堆砌",
+    "每个词都挂 16px 彩色辉光，远近一样亮，读不出空气与纵深",
+    "近镜头只有各向同性 blur，没有沿飞行方向的速度线，\"擦身而过\"不成立",
+    "背景是单一径向渐变，没有颗粒和暗角，隧道里空空荡荡"
+  ],
+  "changes": [
+    "透视改为手算投影（scale = 1100/(1100−z)，与 CSS perspective 逐点等价），按每个词屏幕空间速度套径向方向性 SpeedBlur，近镜头拉出速度线；原近端模糊系数 26→18 分担",
+    "配色收成冷白三阶 + 4 个靛蓝强调词，辉光只留给强调词，其余只有 6px 极弱冷光",
+    "远端前 22% 行程加 ≤0.9px 大气雾失焦；新增 40 颗沿同一隧道运动的细尘埃做纵深参照",
+    "底改带色相的深蓝黑三段径向 + 暗角 + soft-light 颗粒；字体换系统字栈 700、-0.015em",
+    "z 线性推进、黄金角铺位、[0,1,0.5,0.2,0] 生命曲线、CYCLES=2 首尾无缝全部保留"
+  ],
+  "issuesEn": [
+    "Each of the 22 words took a random hsl (blue to pink-purple) — a saturated rainbow pile",
+    "Every word carried a 16px colored glow at equal strength near and far, so there was no air or depth",
+    "Near the camera there was only isotropic blur, no streaks along the flight path — the fly-by never sold",
+    "The background was a single radial gradient with no grain or vignette; the tunnel felt empty"
+  ],
+  "changesEn": [
+    "Perspective is projected by hand (scale = 1100/(1100−z), point-for-point identical to CSS perspective) so each word gets a radial directional SpeedBlur from its screen-space velocity; near-end blur coefficient 26→18 to share the load",
+    "Palette reduced to three cool whites plus four indigo accent words; only accents glow, the rest get a faint 6px cool halo",
+    "Atmospheric defocus (≤0.9px) over the first 22% of travel; added 40 fine dust motes riding the same tunnel as a depth reference",
+    "Ground is a hue-tinted three-stop navy radial with vignette and soft-light grain; type switched to the system stack at 700, -0.015em",
+    "Linear z travel, golden-angle layout, the [0,1,0.5,0.2,0] life curve and the seamless CYCLES=2 loop are all kept"
+  ],
+  "mdChanged": true
+}

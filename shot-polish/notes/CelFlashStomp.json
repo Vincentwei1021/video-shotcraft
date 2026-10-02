@@ -1,0 +1,32 @@
+{
+  "stem": "CelFlashStomp",
+  "issues": [
+    "没有导出时长常量，工作台按卡片猜成 30f，只渲出第一个词，后两拍和收尾全丢",
+    "左上角打着调试标题 \"CEL FLASH STOMP\"",
+    "大词只有 210px Helvetica，远没\"砸满屏\"；砸落 4f 只是平面缩放，没有高度与冲击感",
+    "底部标签条是三根灰色骨架条",
+    "底闪两色纯平铺，画面没有任何空气感"
+  ],
+  "changes": [
+    "补 CEL_FLASH_STOMP_DURATION = 144（3 词 × 30f + 末词 64f 静止），三拍节奏与 2f 底闪参数原样保留",
+    "去掉调试标题；词放大到 340px、系统 Display 字栈 900 字重、-0.045em 字距",
+    "砸落 0–4f 加\"高度\"：随离地高度变化的投影（远而虚→贴实）+ 两层 1.1×/1.22× 淡残影收拢做冲击模糊 + 歪角从 1.6× 砸正，落地后完全锐利静止",
+    "标签条换成出版级内容：靛蓝品牌标 + \"Release 4.2 / Available now for every team\" + 等宽域名，32px 达标字高，14f 淡入并上移 24px",
+    "底闪两色各加极弱中心亮径向（仍是无物的空气），整段一张静态颗粒压色带，不引入逐帧噪声"
+  ],
+  "issuesEn": [
+    "No exported duration constant, so the workbench guessed 30f from the card and only the first word rendered — the other two beats and the tail were missing",
+    "A debug title \"CEL FLASH STOMP\" sat in the top-left corner",
+    "Words were only 210px Helvetica, nowhere near filling the frame; the 4f stomp was a flat scale with no height or impact",
+    "The bottom label bar was three gray skeleton bars",
+    "Both flash colors were flat fills with no sense of air"
+  ],
+  "changesEn": [
+    "Added CEL_FLASH_STOMP_DURATION = 144 (3 words × 30f + 64f final hold); beat timing and the 2f background flash kept exactly",
+    "Removed the debug title; words enlarged to 340px, system Display stack at 900 weight, -0.045em tracking",
+    "Gave the 0–4f stomp height: a height-dependent shadow (far and soft → tight contact), two 1.1×/1.22× faint echoes collapsing as impact blur, and the tilt slamming from 1.6× to 1×; fully sharp and still after landing",
+    "Label bar now carries publication-grade content — indigo brand mark, \"Release 4.2 / Available now for every team\" and a monospace domain — at 32px, fading in over 14f with a 24px rise",
+    "Each flash color gets a very faint center-bright radial (still empty air), plus one static grain texture for the whole shot to kill banding without adding per-frame noise"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "GlitchCycle",
+  "issues": [
+    "短短语在 17 个槽位里靠左摆，文字行和居中的进度条错位，四条短语都不居中",
+    "切换峰值只有换字 + 整行抖动 + text-shadow 色散，读作\"字在闪\"而不是信号故障",
+    "进度条 120×2px 孤零零一根线，看不出四拍，也没有任何状态信息",
+    "纯色 #0a0b10 平铺底，没有光源、暗角与颗粒"
+  ],
+  "changes": [
+    "短语在固定槽位里左右对称补空格（槽位数不变、不重排），行与进度条同中线",
+    "同一个 glitch 浓度 g 再驱动水平撕裂带：g>0.25 时行切三段、中段横移 ±g·11px，带位每 2 帧重掷，和换字/位移/色散同源不打架",
+    "进度条加宽到 150、渐变填充带微光，加三根四拍刻度（走过即点亮）和 \"STEP n/4 / 百分比\" 状态行（32px 字高、tabular-nums），末条落定后状态点转实心发光",
+    "暗场柔光 Backdrop + 暗角 + soft-light 颗粒，文字加极淡靛蓝辉光；强调色统一为批次靛蓝 #8f97ff",
+    "概率关键帧 [1,0,0,0.1,0,0,1] / KF_LAST、每 2 帧重掷、抖动与色散幅度全部保留"
+  ],
+  "issuesEn": [
+    "Short phrases sat left-aligned in the 17 fixed slots, so the text never lined up with the centered progress bar",
+    "The switch peak was only character swaps, row jitter and a text-shadow split — it read as flickering text, not a signal fault",
+    "The progress bar was a lone 120×2px line with no sense of the four beats and no status information",
+    "Flat #0a0b10 fill with no light, vignette or grain"
+  ],
+  "changesEn": [
+    "Phrases are padded symmetrically inside the fixed slots (same slot count, no reflow), so the row shares the bar's center line",
+    "The same glitch density g now also drives a horizontal tear: above 0.25 the row splits into three bands and the middle one shifts ±g·11px, re-rolled every 2 frames — same source as swaps/jitter/split so they never fight",
+    "Bar widened to 150 with a glowing gradient fill, three beat ticks that light up as they're passed, and a \"STEP n/4 / percent\" status row (32px, tabular-nums); the status dot fills and glows once the last phrase settles",
+    "Dark soft-light Backdrop with vignette and soft-light grain, faint indigo glow on the type; accent unified to the batch indigo #8f97ff",
+    "Probability keyframes [1,0,0,0.1,0,0,1] / KF_LAST, the 2-frame re-roll and jitter/split amplitudes all kept"
+  ],
+  "mdChanged": true
+}

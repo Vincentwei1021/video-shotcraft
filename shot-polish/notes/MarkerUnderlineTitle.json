@@ -1,0 +1,30 @@
+{
+  "stem": "MarkerUnderlineTitle",
+  "issues": [
+    "没有导出时长常量，工作台按卡片猜成 12f，标题刚升起一半就结束，下划线根本没画出来",
+    "画面直接打出真实产品名 \"Notion AI\"",
+    "马克笔是一块平涂纯黑多边形，起笔平头，没有任何笔刷肌理，读作矢量色块",
+    "标题两行整块同时上移淡入，#f4f4f2 平铺底"
+  ],
+  "changes": [
+    "补 MARKER_UNDERLINE_TITLE_DURATION = 75：标题 22f 落定、f32–42 10f 划线（原节拍不变）、之后静止 33f",
+    "品牌名换成中性占位 \"Lumen AI\"",
+    "笔画加确定性干笔滤镜：低频 feTurbulence 位移 1.8px 做毛糙边 + 沿笔向拉长的高频噪声阈值做细碎飞白；起笔收细不再平头；墨色改暖调近黑 #1b1916 并 multiply 进纸面",
+    "标题两行错峰 blur-slide（snappy，第二行晚 4f，blur 8→0），整段极缓推近 1→1.015",
+    "纸面换暖白 Backdrop（主光 + 轻暗角 + 颗粒），字体系统 Display 字栈、-0.028em 字距"
+  ],
+  "issuesEn": [
+    "No exported duration constant, so the workbench guessed 12f from the card — the title was half-risen when the clip ended and the underline never drew",
+    "A real product name, \"Notion AI\", was printed on screen",
+    "The marker was a flat pure-black polygon with a blunt start and no brush texture — it read as a vector shape",
+    "Both title lines rose and faded as one block on a flat #f4f4f2 fill"
+  ],
+  "changesEn": [
+    "Added MARKER_UNDERLINE_TITLE_DURATION = 75: title settles in 22f, the 10f stroke draws at f32–42 (original beat kept), then a 33f hold",
+    "Brand name replaced with the neutral placeholder \"Lumen AI\"",
+    "Deterministic dry-brush filter on the stroke: a low-frequency feTurbulence displacement (1.8px) roughens the edge and a stroke-aligned high-frequency noise threshold adds fine dry-brush gaps; tapered start instead of a blunt end; warm near-black #1b1916 ink multiplied into the paper",
+    "Two-line staggered blur-slide (snappy, second line 4f later, blur 8→0) and a slow 1→1.015 push across the shot",
+    "Paper is a warm-white Backdrop (key light, light vignette, grain); type on the system Display stack at -0.028em"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "ExplodedView",
+  "issues": [
+    "侧栏/顶栏是手绘灰条骨架，和卡片质感不一致",
+    "远层用 brightness 压暗，把白卡压成脏灰色",
+    "底板 2px 灰边、背景死平灰，炸开后底板空无一物",
+    "悬停 30 帧机位完全静止，层间深度只能靠大小猜",
+    "顶栏炸开后出画，构图偏右"
+  ],
+  "changes": [
+    "八层都改为同一张 FakeDashboard 的真实切块（按原网格坐标裁切），合体时严丝合缝拼回原页",
+    "底板露出各构件的虚线插槽，整页加 14px 厚度板 + 56 级软阴影；每层浮起后带厚度边、顶沿受光与发丝线",
+    "深度压暗改为冷色相遮罩（≤28%，不再脏灰），底板压暗同样带色相",
+    "机位：开场 34f 缓带入倾角，悬停期慢摇 rotateY 再 -6°、俯角收 2.5° 读出层间视差，合体前摇回；悬停时略拉远并下移，近层不出画",
+    "背景换 Backdrop 柔光底 + 一抹靛色余光 + 颗粒；补导出 EXPLODED_VIEW_DURATION=150"
+  ],
+  "issuesEn": [
+    "Sidebar and topbar were hand-drawn grey skeleton bars that didn't match the cards",
+    "Far layers were darkened with brightness(), turning white cards a dirty grey",
+    "2px grey border on the base, a flat grey background, and an empty base once exploded",
+    "The camera sat dead still through the 30f hover, so depth could only be guessed from size",
+    "The topbar left the frame when exploded, and the composition leaned right"
+  ],
+  "changesEn": [
+    "All eight layers are real slices of one FakeDashboard cut at the original grid coordinates, so they reassemble seamlessly",
+    "The base shows dashed sockets for each part; the page gets a 14px thickness slab with an elevation-56 soft shadow; lifted layers get an edge, a lit top rim and a hairline",
+    "Depth darkening is now a cool-tinted overlay (≤28%, no muddy grey); the base dim is tinted too",
+    "Camera eases into the tilt over 34f, then drifts rotateY another -6° and pitch -2.5° during the hover for parallax, returning before assembly; it pulls back and drops slightly so near layers stay in frame",
+    "Backdrop soft light with a faint indigo tint and grain; exported EXPLODED_VIEW_DURATION=150"
+  ],
+  "mdChanged": true
+}

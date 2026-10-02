@@ -1,0 +1,26 @@
+{
+  "stem": "SlowPushIn",
+  "issues": [
+    "景 A 是平灰 #3a3a3a 底，没有光、没有层次",
+    "Helvetica 回退字体，10x 与副标同一层整体缩放，推近读不出深度",
+    "暗角是纯黑径向，颗粒/色带无处理"
+  ],
+  "changes": [
+    "深场改为带色相的纵向渐变 + 顶光 + 底部一抹靛色余光 + 颗粒，顶光随推近收窄变暗（光圈收拢）",
+    "三层视差推近：数字 1.00→1.14（本体 Easing.in(quad) 不变）、副标层 1.11、背景只推 1.03",
+    "数字换系统字体、-0.055em 负字距、竖向金属渐变 + 投影，x 降为 0.72em 细体半透明；副标 0.22em 字距两侧加渐隐细线",
+    "暗角改带色相深色；硬切后亮景保持真静止；补导出 SLOW_PUSH_IN_DURATION=150"
+  ],
+  "issuesEn": [
+    "Scene A sat on flat grey #3a3a3a with no light and no layering",
+    "Helvetica fallback, and '10x' scaled in one layer with its subtitle, so the push-in had no depth",
+    "The vignette was pure black, with no grain or banding control"
+  ],
+  "changesEn": [
+    "A tinted dark vertical gradient with a top light, a faint indigo glow below and grain; the top light narrows and dims as the push builds, like an iris closing",
+    "Three-layer parallax push: the number goes 1.00→1.14 (the card's Easing.in(quad) is unchanged), the subtitle layer 1.11, the background only 1.03",
+    "System font, -0.055em tracking, a vertical metallic gradient with drop shadow; the x drops to a thin 0.72em at partial opacity; the subtitle gets 0.22em tracking with fading rules on both sides",
+    "Tinted vignette color; the bright scene after the hard cut stays truly still; exported SLOW_PUSH_IN_DURATION=150"
+  ],
+  "mdChanged": false
+}

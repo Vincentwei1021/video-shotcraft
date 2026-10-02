@@ -1,0 +1,28 @@
+{
+  "stem": "Terminal3D",
+  "issues": [
+    "光标穿帮：未打出的字符用透明度占位，光标悬在行尾空处离文字很远",
+    "Courier 回退等宽字体，输出全是单一灰色",
+    "第三窗末行到最后一帧还没淡入完，尾段没有落定",
+    "窗体扁平、背景只有一层渐变，飞行段没有速度感"
+  ],
+  "changes": [
+    "只排已打出的字符，块状光标紧贴字尾；提示符 $ 常驻",
+    "等宽换系统栈（SF Mono/JetBrains Mono），输出按 git/vite/日志语义着色（分支绿/修改黄/未跟踪红/状态码绿/URL 青）",
+    "时序收紧：STEP 第二段 0.63–0.77、TYPE 0.455/0.79、输出 0.016/行 · 0.03 时长，第三窗 0.963 吐完留落定",
+    "窗体玻璃质感：发丝边与顶沿受光置顶层、渐变机身、聚焦窗靛色环境光；背景加点阵远景（随相机反向视差）+ 暗角 + 颗粒，飞行段按相机屏幕速度加方向性运动模糊"
+  ],
+  "issuesEn": [
+    "Caret bug: untyped characters held their space at opacity 0, so the caret floated far from the text at the line end",
+    "Courier fallback mono and single-grey output",
+    "The third window's last line was still fading in on the final frame, so the shot never settled",
+    "Flat window chrome, a single-gradient background, and no sense of speed during flights"
+  ],
+  "changesEn": [
+    "Only typed characters are laid out, so the block caret hugs the text; the $ prompt is always shown",
+    "System mono stack (SF Mono/JetBrains Mono); output is colored by meaning (branch green, modified amber, untracked red, status codes green, URLs cyan)",
+    "Tightened timing: second flight 0.63–0.77, TYPE 0.455/0.79, output 0.016 per line with 0.03 duration; the third window finishes at 0.963 and holds",
+    "Glass chrome: hairline and lit top rim on the top layer, gradient body, an indigo ambient glow on the focused window; a dot-grid far layer with counter-parallax, vignette and grain; directional motion blur during flights from the camera's screen velocity"
+  ],
+  "mdChanged": true
+}

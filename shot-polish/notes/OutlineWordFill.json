@@ -1,0 +1,30 @@
+{
+  "stem": "OutlineWordFill",
+  "issues": [
+    "1px（设计坐标）描边放大后成片约 4px，空心字读作粗笨的气球边而不是制图细线",
+    "3.2× → 1 的收缩只用 10f，速度极大却全程锐利，冲击感打折",
+    "瞄准环只是一圈虚线，点亮那一下除了字本身没有任何\"锁定\"反馈",
+    "#030303 纯黑平铺，微尘是方形像素点"
+  ],
+  "changes": [
+    "描边收到 0.6px（成片约 2.4px），预热 86→145 的灰度节拍不变；空心字固定用静态字体 Helvetica Neue，避开 SF 可变字体内部重叠轮廓被描出来的问题",
+    "急缩段按 scale 中心差分速度给瞬时失焦（≤0.8 设计 px，停稳归零）",
+    "虚线圆加四个随圆自转的套准刻度；点亮帧圆与左右水平线同步增亮\"锁定\"，与字辉光共用同一条 flash 曲线回落",
+    "底换带冷色相的近黑径向 + 暗角 + soft-light 颗粒，微尘改圆形柔点、尺寸缩小",
+    "10f 收缩、45f 圆收缩、0.6 帧瞬时填充等所有时间窗保持不变"
+  ],
+  "issuesEn": [
+    "A 1px (design-unit) stroke became ~4px on screen, so the outline word read as a chunky balloon edge rather than a drafting line",
+    "The 3.2× → 1 shrink takes only 10f — a huge velocity rendered perfectly sharp, which blunted the impact",
+    "The targeting ring was just a dashed circle; at the fill moment nothing but the word itself acknowledged the lock-on",
+    "Flat #030303 black, and the dust motes were square pixels"
+  ],
+  "changesEn": [
+    "Stroke reduced to 0.6px (~2.4px on screen) with the 86→145 pre-brighten beat kept; the outline word is pinned to the static Helvetica Neue because SF's variable outlines expose overlapping inner contours under text-stroke",
+    "Transient defocus during the shrink from the central-difference scale velocity (≤0.8 design px, zero at rest)",
+    "Four registration ticks rotate with the dashed ring; on the fill frame the ring and both horizontal dashes brighten as a lock-on and fall back on the same flash curve as the word's glow",
+    "Ground is a cool-tinted near-black radial with vignette and soft-light grain; dust motes are now small soft round points",
+    "Every timing window — 10f shrink, 45f ring shrink, 0.6-frame instant fill — is unchanged"
+  ],
+  "mdChanged": true
+}

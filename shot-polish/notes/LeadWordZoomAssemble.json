@@ -1,0 +1,30 @@
+{
+  "stem": "LeadWordZoomAssemble",
+  "issues": [
+    "字体栈 -apple-system 在渲染环境解析不到，整句落到 PingFang SC，西文字形发软",
+    "背景四角各一团紫/粉/蓝/橙光斑，彩虹 mesh 抢走大字的注意力",
+    "首词 2.44× 在 12f 内缩回终字号，缩放速度极大却完全锐利，像\"硬缩\"",
+    "首词入场只有淡入，第一帧是一块灰字；品牌行落定后只静止 22f"
+  ],
+  "changes": [
+    "字体栈改为 SF Pro Display 优先（PingFang 只做中文回退），-0.03em 字距下标题收紧利落",
+    "背景收成靛蓝主光 + 一抹暖色余光 + 中心白光的低对比底，叠 Vignette 与颗粒",
+    "缩回段按 scale 中心差分速度给瞬时失焦（≤3.5px，停稳归零）；首词入场 6f 内 8px→0 失焦与淡入同步",
+    "整行上移 + 副行提前到 f32–46（与左滑尾巴重叠 4f），品牌行静止增到 26f 再 crash；副行 34px、#6e6f76",
+    "支点实测、两段 scale 相加、ZOOM_EASE 共用、后续词 0.5em 推入等核心机制全部不变；强调色统一为批次靛蓝 #5b63d3"
+  ],
+  "issuesEn": [
+    "-apple-system did not resolve in the render environment, so the line fell back to PingFang SC and the Latin glyphs looked soft",
+    "Four purple/pink/blue/orange blobs in the corners — a rainbow mesh pulling focus from the big type",
+    "The lead word shrinks from 2.44× to final size in 12f, a huge scale velocity rendered perfectly sharp — it read as a hard snap",
+    "The lead word only faded in (first frame is a gray block), and the finished brand line held for only 22f"
+  ],
+  "changesEn": [
+    "Font stack now prefers SF Pro Display (PingFang only as CJK fallback); with -0.03em tracking the title is tight and crisp",
+    "Background reduced to an indigo key, a touch of warm spill and a white center on a low-contrast ground, with vignette and grain",
+    "Transient defocus during the recede driven by the central-difference scale velocity (≤3.5px, zero at rest); the lead word also defocuses 8px→0 alongside its 6f fade-in",
+    "Line lift + subline moved to f32–46 (overlapping the slide tail by 4f), so the brand line now holds 26f before the crash; subline 34px, #6e6f76",
+    "Measured pivot, additive two-stage scale, shared ZOOM_EASE and the 0.5em word push are all unchanged; accent unified to the batch indigo #5b63d3"
+  ],
+  "mdChanged": true
+}

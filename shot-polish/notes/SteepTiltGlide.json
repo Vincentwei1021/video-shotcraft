@@ -1,0 +1,32 @@
+{
+  "stem": "SteepTiltGlide",
+  "issues": [
+    "Helvetica/Arial 回退字体，大标题字距松散",
+    "悬空元素的同形软影太实，读作一份重叠的字（ClickUp 下方出现第二个 ClickUp）",
+    "速度重影只有两层离散拷贝，快速段看起来像双影故障",
+    "主区三块白色圆角砖是空白块",
+    "右段白页与主区之间是一条生硬色块分界；远端没有景深层次"
+  ],
+  "changes": [
+    "字体换系统栈，大字负字距（-0.035em）、全大写小字正字距",
+    "同形软影 blur 9+h·0.13、不透明度 ≤0.26、压成无字形冷灰——读作影子",
+    "重影改三层 f-1.6/-3.2/-4.8、权重递减，叠出连续拖影（镜头常数、滑移曲线、贴落节拍不动）",
+    "三块白砖填入克制小组件（Sprint 进度 / 本周待办 / 走势线），带发丝边与两层阴影",
+    "右段白页加发丝边 + 左投影分层；屏幕空间左侧景深雾 + 颗粒；补导出 STEEP_TILT_GLIDE_DURATION=120"
+  ],
+  "issuesEn": [
+    "Helvetica/Arial fallback fonts with loose tracking on the big titles",
+    "Floating elements' shadows were too solid and read as duplicate text (a second 'ClickUp' under the first)",
+    "The speed ghost was only two discrete copies, which looked like a double-image glitch in fast stretches",
+    "Three white rounded tiles in the main area were empty blocks",
+    "A hard color seam between the right white page and the main area, and no depth falloff at the far end"
+  ],
+  "changesEn": [
+    "System font stack, tight tracking on big type (-0.035em), opened tracking on small caps",
+    "Shadows use blur 9+h·0.13, opacity ≤0.26 and are desaturated so glyphs don't read; they now look like shadows",
+    "Ghosting is three layers at f-1.6/-3.2/-4.8 with falling weights, giving a continuous smear (camera constants, glide curve and drop timing unchanged)",
+    "The white tiles now hold restrained mini widgets (sprint progress, due-this-week list, velocity line) with hairlines and two-layer shadows",
+    "The right page gets a hairline edge and a left drop shadow; screen-space depth fog on the left plus grain; exported STEEP_TILT_GLIDE_DURATION=120"
+  ],
+  "mdChanged": true
+}

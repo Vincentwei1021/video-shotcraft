@@ -1,0 +1,30 @@
+{
+  "stem": "CountdownArcScatter",
+  "issues": [
+    "pivot 在 58%，弧顶数字贴着画框上沿、开头几帧 \"22\" 被裁掉一半",
+    "落定的标题 \"5 min to install\" 偏左约 130px、偏下，尾帧构图不居中",
+    "盘面只有数字和一根指针，看不出\"仪表盘\"，17f 内扫过 96° 却没有任何运动模糊，像逐帧跳格",
+    "纯 #fff 平底，强调色是与批次不协调的高饱和 #3b82f6"
+  ],
+  "changes": [
+    "pivot 下移到 70%，整条弧完整入画；\"5\" 落位的同一条 inOutCubic 曲线带整组上抬 24px、右移 32px，标题落定时正居画面中心",
+    "盘面加一圈随盘同速转的细刻度（每 6° 一根、数字位加长加深，可视角窗与数字一致），指针改渐变细线，盘/指针差速层次更清楚",
+    "每个数字按位置函数中心差分求切向速度，套方向性 SpeedBlur（只在扫动快速段，停稳归零）",
+    "底改近白径向（中心纯白→四角 #f1f1ef）+ 极弱颗粒，数字改 tabular-nums 系统字栈，末词强调色统一为批次靛蓝 #5b63d3",
+    "33f 时长与全部时间窗（扫动 0–0.52、落位 0.52–0.7、逐词窗、染色 0.84–0.98）保持不变"
+  ],
+  "issuesEn": [
+    "Pivot at 58% pushed the top of the arc against the frame edge — \"22\" was half cropped in the opening frames",
+    "The settled title \"5 min to install\" sat ~130px left of center and low, so the end frame was off-balance",
+    "The dial was just numbers and one pointer — no gauge vocabulary — and a 96° sweep in 17f had no motion blur, reading as frame skipping",
+    "Flat #fff fill and a saturated #3b82f6 accent that clashed with the rest of the batch"
+  ],
+  "changesEn": [
+    "Pivot moved to 70% so the whole arc is in frame; the same inOutCubic curve that lands the \"5\" lifts the group 24px and shifts it 32px right, so the title settles dead center",
+    "Added a ring of fine ticks rotating with the dial (every 6°, longer/darker at number positions, same angular visibility window); pointer is now a gradient hairline, sharpening the dial-vs-pointer layering",
+    "Each number gets a directional SpeedBlur from the central-difference tangential velocity of its position function — active only in the fast sweep, zero at rest",
+    "Near-white radial ground (pure white center to #f1f1ef corners) with faint grain, tabular-nums system type, final-word accent unified to the batch indigo #5b63d3",
+    "33f duration and every timing window (sweep 0–0.52, landing 0.52–0.7, word windows, tint 0.84–0.98) unchanged"
+  ],
+  "mdChanged": true
+}

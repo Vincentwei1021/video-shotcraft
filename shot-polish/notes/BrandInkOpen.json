@@ -1,0 +1,34 @@
+{
+  "stem": "BrandInkOpen",
+  "issues": [
+    "号称纸墨质感，实际是 #faf7f2 纯色平铺，没有纸纹、光源与暗角",
+    "准星在字标上方占 98px 版面，淡出后留下空洞，整个 lockup 视觉上偏低不居中",
+    "每个字落定都闪一道琥珀下划线，17 次逐字 glint 群发（违反 Q4）",
+    "压印只是匀减速缩小，落点没有\"压进纸里\"的冲击与回弹；末字 70f 才落定，hold 不足 1 秒",
+    "kicker 26px（2.4% 帧高）低于辅助文字下限，且居中打字时整行左右漂移",
+    "退场用对称缓动，离场发软"
+  ],
+  "changes": [
+    "纸面：暖色低对比竖向渐变 + 左上主光 + 暖色暗角 + 两层确定性颗粒（细颗粒 + 粗纤维斑 multiply）",
+    "准星改为绝对定位在字标中心的套准标（竖横线 + 一圈细环描画，swift/out 缓动），不再占版面，lockup 真正居中",
+    "压印改为 ease-in 加速砸下（bezier .55,0,.8,.35）+ 落地 0.975 微压 5f 回弹 + 8f 墨晕，节拍 10+i·2.8、10f，末字 65f 落定，65→97 满 1 秒 hold",
+    "17 道逐字 glint 收成一道跟随压印前沿的琥珀彗尾短划，压完即熄",
+    "kicker 提到 32px / 0.2em 字距，按完整字符串宽度左对齐打字不再漂移；退场改 ease-in 并带 3px 模糊"
+  ],
+  "issuesEn": [
+    "Claimed paper-and-ink look but was a flat #faf7f2 fill — no paper texture, light or vignette",
+    "Crosshair took 98px of layout above the wordmark; after fading it left a hole and the lockup sat visibly low",
+    "Every glyph flashed its own amber underline on landing — 17 glints in a row (violates Q4)",
+    "The press was a plain decelerating shrink with no impact or rebound; the last glyph landed at 70f, so the hold was under 1s",
+    "Kicker at 26px (2.4% of frame height) was below the auxiliary-text floor, and the centered typing made the line drift sideways",
+    "Exit used a symmetric ease and felt soft"
+  ],
+  "changesEn": [
+    "Paper: warm low-contrast vertical gradient, top-left key light, warm vignette and two deterministic grain layers (fine grain + coarse fiber mottling, multiply)",
+    "Crosshair is now a registration mark absolutely centered on the wordmark (lines plus a thin ring, swift/out easing) — no layout space, the lockup is truly centered",
+    "Press is an accelerating ease-in stamp (bezier .55,0,.8,.35) with a 0.975 squash rebound over 5f and an 8f ink bloom; timing 10+i·2.8 / 10f, last glyph lands at 65f giving a full 1s hold 65→97",
+    "The 17 per-glyph glints are replaced by one amber comet dash that rides the pressing front and dies when the press ends",
+    "Kicker raised to 32px / 0.2em tracking and typed left-anchored inside the full-string width so it no longer drifts; exit uses ease-in with a 3px blur"
+  ],
+  "mdChanged": true
+}
