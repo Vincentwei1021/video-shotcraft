@@ -1,0 +1,32 @@
+{
+  "stem": "TrailerBumper",
+  "issues": [
+    "没有导出时长常量，工作台按默认 150f 渲染",
+    "镜头 3 的 2.2x 特写走 transform scale，对准的是两张卡之间的位置，字边靠合成层放大",
+    "三个速剪镜头是平底无暗角的 UI 截图，没有\"同一台摄影机\"的统一镜头质感",
+    "黑场后硬跳到大面积平灰底，开场字卡只有一行 Helvetica 回退字体的 \"THE LAUNCH\"，像占位",
+    "标题淡入微升 16f 后整整 91f 毫无变化，像一张静态海报"
+  ],
+  "changes": [
+    "补 TRAILER_BUMPER_DURATION = 140；0/9/18 三连 9f 速剪、1→1.04 镜内推近、27–33f 纯黑空帧、33f 起 16f 淡入 + 44px out-cubic 微升全部保留",
+    "镜头 3 改为对焦中列 Top pages 卡、CSS zoom 2.2x 布局级放大，/changelog 等行字边锐利",
+    "三镜统一叠 0.18 镜头暗角 + 5% 颗粒",
+    "开场字卡改成品级：底色从黑场 12f 亮起到柔光底，34px 强调色眉题 + 176px 800 字重主标题 + 40px 副题，错峰 2f/6f 跟进",
+    "主标题字距 30f 内由 0.05em 缓收到 −0.012em（预告片标题的呼吸），63f 后整帧冻结真静止 77f"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench rendered the default 150f",
+    "Shot 3's 2.2x close-up used transform scale and was aimed between two cards, leaving text sharpness to compositor upscaling",
+    "The three quick cuts were flat UI screenshots with no vignette, nothing tying them to one camera",
+    "After the black beat it hard-jumped to a flat grey field with a single Helvetica-fallback line \"THE LAUNCH\" that looked like a placeholder",
+    "After the 16f fade-and-rise the title sat unchanged for 91f like a static poster"
+  ],
+  "changesEn": [
+    "Added TRAILER_BUMPER_DURATION = 140; the 0/9/18 trio of 9f cuts, 1→1.04 in-shot push, the pure black 27–33f gap and the 16f fade with 44px out-cubic rise from 33f are unchanged",
+    "Shot 3 now focuses on the centre-column Top pages card with a 2.2x CSS zoom, so the /changelog rows stay crisp",
+    "All three cuts share a 0.18 lens vignette and 5% grain",
+    "The opening card is now a finished title: the ground lights up from black over 12f into a soft backdrop, with a 34px accent eyebrow, 176px/800 main title and 40px subtitle staggered 2f/6f",
+    "The main title's tracking eases from 0.05em to −0.012em over 30f (the trailer title 'breath'), then from 63f the frame freezes for a true 77f hold"
+  ],
+  "mdChanged": true
+}

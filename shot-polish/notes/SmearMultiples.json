@@ -1,0 +1,32 @@
+{
+  "stem": "SmearMultiples",
+  "issues": [
+    "没有导出时长常量，工作台按卡片 md 的\"移动 12f\"猜成 12f，只渲染出原地静止的开头，横移和分身全被截掉",
+    "画面上方压着调试标题 \"SMEAR MULTIPLES\"，两个槽位是 3px 灰色虚线框",
+    "灰卡放在同色系灰底上，卡片 md 自己都写了这种底上 0.09 那档分身会消失",
+    "起步段几个分身挤在原地叠在一起，文字叠成乱码，\"可数\"失效",
+    "横移从静止直接起跑，没有预备；卡片阴影固定，起飞与落位没有高度变化"
+  ],
+  "changes": [
+    "补 SMEAR_MULTIPLES_DURATION = 90；4 分身各差 2f、opacity 0.45/0.30/0.18/0.09、[25,60] 速度门限、35–38f 合拢、3% 过冲回弹全部保留",
+    "按 md 建议改\"深底浅卡\"：冷调深色柔光底 + 暗角 + 颗粒，最弱一档分身也读得开；分身去阴影，叠影干净",
+    "新增分身间距门限：与前一副本相距 <36px 不画（[36,90]px 渐入），起步段不再叠成乱码",
+    "虚线框改内凹浅槽 + 32px 列名（In review → Shipped），落位时目标列名与圆点 10f 亮起、计数 5→6",
+    "发射前 8f 预备回拉 14px；本体起飞抬高 6px、阴影 elevation 4→28，落位后 8f 贴回，之后真静止 47f"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench took \"12f move\" from the card and rendered only the static opening; the move and ghosts were cut off",
+    "A debug title \"SMEAR MULTIPLES\" sat on top, and both slots were 3px grey dashed boxes",
+    "Grey cards on a same-toned grey background; the card's own notes say the 0.09 ghost disappears on such a ground",
+    "At launch several ghosts piled up on the spot and their text overlapped into noise, so they were no longer countable",
+    "The move started from a dead stop with no anticipation, and the fixed shadow gave no sense of lift-off or landing"
+  ],
+  "changesEn": [
+    "Added SMEAR_MULTIPLES_DURATION = 90; four ghosts 2f apart, opacity 0.45/0.30/0.18/0.09, the [25,60] speed gate, 35–38f convergence and 3% overshoot are unchanged",
+    "Switched to a dark ground with a light card as the card's notes recommend (cool dark backdrop, vignette, grain), so even the faintest ghost reads; ghosts drop their shadows to stay clean",
+    "Added a spacing gate: a ghost closer than 36px to the previous copy is not drawn (fading in over 36–90px), so the launch no longer smears into noise",
+    "Dashed boxes became recessed wells with 32px column labels (In review → Shipped); on landing the target label and dot light up over 10f and the count goes 5→6",
+    "8f, 14px anticipation pull-back before launch; the card lifts 6px with shadow elevation 4→28, settles back over 8f, then holds still for 47f"
+  ],
+  "mdChanged": true
+}

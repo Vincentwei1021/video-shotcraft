@@ -1,0 +1,30 @@
+{
+  "stem": "SmashCut",
+  "issues": [
+    "没有导出时长常量，工作台按默认 150f 渲染，比镜头本意多出 15f",
+    "飞卡模糊是各向同性的 filter: blur(1+4p)，整张卡均匀糊开，读作失焦而不是速度",
+    "飞卡阴影是固定的 0 12px 40px 黑影，冲脸放大到 3x 时阴影也跟着被放大成一团脏灰",
+    "轰鸣段只有推近和旋转在加速，画面本身没有逐渐憋满的压力，切点的反差不够狠"
+  ],
+  "changes": [
+    "补 SMASH_CUT_DURATION = 135；5 张飞卡两轮错峰、ease-in quad、scale 1.5→3、背景 1→1.55 + 1.8°、42f 一帧硬切全部保留",
+    "飞卡改为沿各自飞行方向的方向性运动模糊（旋到飞行方向只沿本地 x 轴高斯），量按瞬时速度逐帧算，>20px/f 起、按倍率折回后屏上封顶 ≈18px",
+    "飞卡阴影改两层软阴影，elevation 随冲脸进度 16→48",
+    "轰鸣段暗角 0.18→0.46 随动势收紧、背景对比 +8%，切点前画面憋到最满",
+    "死寂段是 B 全景 + 固定轻暗角的纯静态层，无颗粒、无任何随帧变化，帧函数级真静止 93f"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench rendered the default 150f, 15f longer than intended",
+    "Flying cards used an isotropic filter: blur(1+4p), smearing the whole card evenly so it read as out of focus rather than fast",
+    "Flying cards had a fixed 0 12px 40px black shadow that grew into a dirty grey blob as the card scaled to 3x",
+    "Only the push and roll accelerated during the roar; the image itself never built pressure, so the cut lacked bite"
+  ],
+  "changesEn": [
+    "Added SMASH_CUT_DURATION = 135; the five cards' two staggered passes, ease-in quad, scale 1.5→3, background 1→1.55 + 1.8° and the one-frame hard cut at 42f are unchanged",
+    "Flying cards now get directional motion blur along their own flight path (rotated so the Gaussian runs on the local x axis), sized from instantaneous speed per frame, starting above 20px/f and capped near 18px on screen after scale compensation",
+    "Flying-card shadows are now two-layer soft shadows whose elevation rises 16→48 as the card rushes the lens",
+    "During the roar the vignette tightens 0.18→0.46 and background contrast rises 8%, so the frame is at its fullest right before the cut",
+    "The silent section is a static layer of the B overview plus a fixed light vignette, with no grain and nothing frame-dependent, a true 93f still"
+  ],
+  "mdChanged": true
+}

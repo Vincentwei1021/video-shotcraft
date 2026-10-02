@@ -1,0 +1,32 @@
+{
+  "stem": "SakugaTimingShift",
+  "issues": [
+    "没有导出时长常量，工作台靠默认值 150f 猜时长",
+    "画面上方压着调试标题 \"SAKUGA TIMING SHIFT\"，角标用 Courier 回退字体，像占位",
+    "\"换拍\"只靠角标文字交代，观众看不见一拍三和一拍一到底差在哪",
+    "卡片小、阴影固定，顿挫段每一步只有平移和旋转，冲刺飞起和落位贴地没有高度变化",
+    "落位槽是 3px 灰色虚线框，轨道是一条 3px 实色灰线，平灰底无层次"
+  ],
+  "changes": [
+    "补 SAKUGA_TIMING_SHIFT_DURATION = 150；floor(f/3) 一拍三驱动、f48 切换、out-poly(4) 冲刺、36px 过冲、3f 回弹、f108 沸腾冻结全部保留",
+    "去掉调试标题；角标改系统字体 92px 800 字重 + 手绘沸腾下划线 + 34px 副注（10 → 30 drawings / sec），切换后转强调色",
+    "新增\"摄影表\"帧条（30 格 = 1 秒）：一拍三每 3 格亮 1 格、一拍一格格亮，播放头逐帧走，换拍一眼可见",
+    "卡片放大到 560×350，顿挫段每张画交替微跳 10/2px，阴影随离地高度变化（顿挫 10–18、冲刺按速度升到 40、落位回 4）",
+    "落位槽改为内凹浅槽，轨道改发丝线 + 每步一道刻度；柔光背景 + 暗角 + 4.5% 颗粒"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench fell back to a guessed 150f",
+    "A debug title \"SAKUGA TIMING SHIFT\" sat on top, and the corner label fell back to Courier like a placeholder",
+    "The change of timing was only stated in the label text; viewers could not see how on 3s and on 1s actually differ",
+    "The card was small with a fixed shadow; each held step only translated and rotated, and the sprint and landing had no sense of height",
+    "The landing slot was a 3px grey dashed box, the track a 3px solid grey bar, all on a flat grey background"
+  ],
+  "changesEn": [
+    "Added SAKUGA_TIMING_SHIFT_DURATION = 150; floor(f/3) stepping, the f48 switch, out-poly(4) sprint, 36px overshoot, 3f rebound and f108 boil freeze are unchanged",
+    "Removed the debug title; the label is now 92px/800 system sans with a hand-drawn boiling underline and a 34px caption (10 → 30 drawings / sec), switching to the accent colour on the change",
+    "Added an exposure-sheet strip (30 cells = 1 second): on 3s lights every third cell, on 1s lights every cell, with a playhead advancing per frame so the timing change is visible",
+    "Card enlarged to 560×350; each held drawing alternates a 10/2px hop, and the shadow follows height (10–18 while stepping, up to 40 with sprint speed, back to 4 on landing)",
+    "The slot is now a recessed well, the track a hairline with one tick per step; soft-light backdrop, vignette and 4.5% grain"
+  ],
+  "mdChanged": true
+}

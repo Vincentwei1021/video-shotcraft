@@ -1,0 +1,32 @@
+{
+  "stem": "StrobeBlackFrames",
+  "issues": [
+    "没有导出时长常量，工作台按默认 150f 渲染，静止尾段被无意义拉长",
+    "画面上方压着调试标题 \"STROBE BLACK FRAMES\"，与面包屑重叠",
+    "落点卡用 3px 灰色虚线框标记，读作调试线；落锤后画面没有\"就是它\"的落点",
+    "频闪窗内除了黑帧画面毫无变化，九次闪烁之间没有逐步憋紧的压强",
+    "黑帧是死平 #0c0c0c 色块，1.35x 落点靠 transform 放大位图"
+  ],
+  "changes": [
+    "补 STROBE_BLACK_FRAMES_DURATION = 135；黑闪帧号表 [40…79]、每闪 2f、81f 硬切 1.35、2f brightness 0.88 落锤全部保留",
+    "去掉调试标题与虚线框；落锤后目标卡亮起 UI 选中态（强调色细环 8f ease-out 由 1.04 收紧到位）",
+    "加\"压强曲线\"：每闪一次憋紧一档，暗角 0.12→0.50 收拢、亮度 −8%、对比 +10%、颗粒加重，落锤一帧全部松开",
+    "黑帧改为冷调近黑 #07080b 叠颗粒；落点倍率走 CSS zoom 布局级放大，蓄压推近走 transform 亚像素平滑",
+    "落锤后 82f 起整帧真静止 52f"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench rendered the default 150f and stretched the still tail",
+    "A debug title \"STROBE BLACK FRAMES\" sat on top of the frame, overlapping the breadcrumb",
+    "The landing card was marked with a 3px grey dashed box, and after the slam nothing said \"this is it\"",
+    "Between the black frames nothing changed, so the nine flashes never built up pressure",
+    "Black frames were a dead-flat #0c0c0c block, and the 1.35x landing relied on transform-scaling the bitmap"
+  ],
+  "changesEn": [
+    "Added STROBE_BLACK_FRAMES_DURATION = 135; the flash table [40…79], 2f per flash, 81f hard cut to 1.35 and the 2f brightness 0.88 hit are unchanged",
+    "Removed the debug title and dashed box; after the slam the target card lights up a UI selection ring that tightens from 1.04 over 8f",
+    "Added a pressure curve: each flash tightens the frame one notch (vignette 0.12→0.50, brightness −8%, contrast +10%, heavier grain), all released on the slam frame",
+    "Black frames are now a cool near-black #07080b with grain; the landing uses CSS zoom while the build-up push uses sub-pixel transform",
+    "From 82f the whole frame holds perfectly still for 52f"
+  ],
+  "mdChanged": false
+}

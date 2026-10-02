@@ -1,0 +1,30 @@
+{
+  "stem": "SpectrumMorphUi",
+  "issues": [
+    "没有导出时长常量，工作台按 md 里第一个帧数猜成 64f，收拢还原和\"归还\"后的静止段全被截掉",
+    "标题用 Helvetica 回退字体，画面只有一行字和一条线，读不出是章节页",
+    "标题只做 10f 线性淡入，下划线开场就在，观众没有\"先认出这是下划线\"的一拍",
+    "频谱条是死平的灰黑色块，没有任何均衡器的细节，平灰底无层次"
+  ],
+  "changes": [
+    "补 SPECTRUM_MORPH_UI_DURATION = 140；28 根条、gap 0↔6、AMP 92、裂开 8f / 跳动 64f / 收拢 12f、条件挂载整线全部保留",
+    "改深色章节页：冷调深底 + 柔光 + 暗角；标题系统字体 132px 800 字重收紧字距，加 34px 日期眉题与 38px 副题",
+    "入场错峰：眉题 → 标题 → 副题 3f 间隔 snappy 上浮，下划线晚 6f 由中心向两侧画出，先立住\"这是下划线\"",
+    "条改强调色竖向渐变（顶亮底实），每根条带经典均衡器峰值帽（过去 12 帧最大值减重力衰减，纯函数）；条组背后柔光随平均响度呼吸",
+    "颗粒在收线帧用 Freeze 冻结，收尾 39f 保持像素级真静止"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench took the first frame count in the card (64f) and cut off the collapse and the still 'return' beat",
+    "The title fell back to Helvetica, and a single line of text plus a bar did not read as a chapter title card",
+    "The title only faded in linearly over 10f and the underline was there from frame 0, so viewers never get the beat of recognising it as an underline",
+    "Spectrum bars were dead-flat dark blocks with no equaliser detail, on a flat grey background"
+  ],
+  "changesEn": [
+    "Added SPECTRUM_MORPH_UI_DURATION = 140; 28 bars, gap 0↔6, AMP 92, 8f split / 64f dance / 12f collapse and the conditionally mounted solid line are unchanged",
+    "Recast as a dark chapter card: cool dark backdrop with soft light and vignette; the title is 132px/800 system sans with tightened tracking, plus a 34px date eyebrow and a 38px subtitle",
+    "Staggered entrance: eyebrow, title and subtitle rise 3f apart on a snappy ease, and the underline draws out from the centre 6f later so it first reads as an underline",
+    "Bars now use a vertical accent gradient (bright top, solid base) with classic peak-hold caps (max of the last 12 frames minus gravity decay, a pure function); a soft glow behind the bars breathes with average loudness",
+    "Grain is frozen with Freeze at the collapse frame so the 39f tail stays pixel-still"
+  ],
+  "mdChanged": false
+}

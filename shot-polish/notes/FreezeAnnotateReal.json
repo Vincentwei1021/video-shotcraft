@@ -1,0 +1,30 @@
+{
+  "stem": "FreezeAnnotateReal",
+  "issues": [
+    "圈注椭圆比卡片小，笔画直接压过卡内的日期和标签文字",
+    "\"箭头\"只是一条弧线，没有箭头头部，也没有点题的文字",
+    "定格前后画面毫无区别，只是停了，没有\"按下暂停\"的瞬间感，也没有把视线聚到目标卡上",
+    "卡片导轨悬在大片空底上，看不出是产品页面；解冻是线性起步，从静止直接匀速 1.4x"
+  ],
+  "changes": [
+    "圈注改为超椭圆（n=3）一笔 1.08 圈、收笔半径内收 4% 不闭合，半轴取卡尺寸 ×1.3，笔画完全绕开卡内文字",
+    "箭头改为杆 6f + 双翼 3f 两笔画出，箭尾加 46px 琥珀色\"本周重点\"标签点题；马克笔层 multiply 叠色",
+    "定格瞬间 2f 快门曝光 +6%，流动段的方向性模糊一帧摘除；目标卡 10f 被拾起（−12px、×1.03、阴影加深），其余卡退到 50%",
+    "与 SpeedRampReal 共用页面：540px 卡片、真实导航条、原生分组标题、柔光 + 暗角 + 颗粒",
+    "解冻改 ease-in 起步（t^1.7）补回时长；45f 定格瞬切、FREEZEANNOTATE_DUR = 135 不变"
+  ],
+  "issuesEn": [
+    "The annotation ellipse was smaller than the card, so the stroke ran straight over the card's date and tag text",
+    "The 'arrow' was just a curve with no head and no words to make the point",
+    "Frames before and after the freeze looked the same apart from stopping; there was no 'pause pressed' moment and nothing pulled focus to the target",
+    "The card rail floated in empty space with no sign of a product page, and the thaw jumped from still straight to a linear 1.4x"
+  ],
+  "changesEn": [
+    "The circle is now a single superellipse (n=3) stroke of 1.08 turns whose radius tightens 4% so it doesn't close, sized at 1.3× the card so it clears all the card text",
+    "The arrow is drawn as a 6f shaft plus a 3f two-stroke head, with a 46px amber 'this week's focus' label at its tail; the marker layer multiplies into the page",
+    "On the freeze frame a 2f shutter exposure (+6%) fires and the flow blur drops in one frame; the target card is picked up over 10f (−12px, ×1.03, deeper shadow) while the others recede to 50%",
+    "Shares the page with SpeedRampReal: 540px cards, real navigation bar, native section header, soft light, vignette and grain",
+    "The thaw now eases in (t^1.7) to make up the time; the hard freeze at 45f and FREEZEANNOTATE_DUR = 135 are unchanged"
+  ],
+  "mdChanged": true
+}

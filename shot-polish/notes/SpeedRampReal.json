@@ -1,0 +1,30 @@
+{
+  "stem": "SpeedRampReal",
+  "issues": [
+    "CameraMotionBlur 多重采样把米白页面和卡片染成偏黄偏灰，快段每一帧都有色偏",
+    "remap 是三段折线，40f/85f 两处速度瞬间从 2.2 跳到 0.2 再跳回，读作卡顿而不是变速",
+    "模糊按帧号硬开关（42f/83f），慢窗边界一帧从糊变清，有明显跳变",
+    "画面只有一条 460px 宽的卡片导轨悬在大片空底上，看不出是产品页面；慢窗里目标卡只是固定上移 16px，没有\"凝视\"动作"
+  ],
+  "changes": [
+    "速率曲线改为 2.4→0.2→2.4、两处 smoothstep 过渡（30–46f / 80–94f），源帧号取闭式积分，变速像踩刹车/油门",
+    "CameraMotionBlur 换成方向性 SpeedBlur，模糊量按 remap 后的实际速度逐帧计算，|v|<8px/f 不挂滤镜，色偏消失、快糊慢清连续过渡",
+    "慢窗里目标卡随靠近屏中被\"拾起\"：抬高 18px、放大 4.5%、阴影 elevation 5→32，其余卡淡出 30%",
+    "卡片放大到 540px，顶部挂真实页面导航条，导轨上方加页面原生分组标题（32px），底部柔光 + 暗角 + 颗粒",
+    "SPEEDRAMP_DUR = 135 保持不变"
+  ],
+  "issuesEn": [
+    "CameraMotionBlur's multi-sampling tinted the off-white page and cards yellow-grey on every fast frame",
+    "The remap was a three-segment polyline, so speed jumped instantly from 2.2 to 0.2 and back at 40f/85f, reading as a stutter rather than a ramp",
+    "Blur was switched on and off by frame number (42f/83f), so the slow window snapped from blurry to sharp in one frame",
+    "The frame was just a 460px card rail floating in empty space with no sign of a product page; in the slow window the target card was merely offset 16px with no 'look closer' beat"
+  ],
+  "changesEn": [
+    "Rate curve is now 2.4→0.2→2.4 with two smoothstep transitions (30–46f / 80–94f), and source frames come from its closed-form integral, so the ramp feels like braking and accelerating",
+    "Replaced CameraMotionBlur with directional SpeedBlur driven by the real post-remap speed each frame (no filter below 8px/f), which removes the tint and makes fast-blur to slow-sharp continuous",
+    "In the slow window the target card is picked up as it nears centre: lifts 18px, scales 4.5%, shadow elevation 5→32, while the other cards fade 30%",
+    "Cards enlarged to 540px, the real page navigation bar sits on top, a native section header (32px) sits above the rail, plus soft light, vignette and grain",
+    "SPEEDRAMP_DUR = 135 unchanged"
+  ],
+  "mdChanged": true
+}
