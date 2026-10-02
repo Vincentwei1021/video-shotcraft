@@ -1,32 +1,31 @@
 {
   "stem": "WordRelayFilmstrip",
   "issues": [
-    "没有导出时长常量，工作台从源码抓成 16f，改版前视频只有半秒，第一个动词都没落完",
-    "左列页面卡全是彩色灰条骨架，作为\"证据\"读不出任何内容；卡与动词也对不上（researches 停在奖牌榜、codes 停在出货表）",
-    "胶片步进滚动 635px 只靠 ease-in-out 平移，最快的几帧没有运动模糊",
-    "动词原位纯淡入淡出，新词没有\"落位\"的动作，旧词也不带方向",
-    "#faf8f3 平底，卡片阴影是一层 0 12px 40px 的粗影"
+    "暖纸底 + 白卡片，焦点卡和邻卡一样亮，看不出当前是哪一张证据",
+    "右侧 116px 衬线词和左列之间没有视觉连接，\"词块对齐卡片中点\"这件事画面上看不见",
+    "新词整词去虚落位，接力的\"咔哒\"感弱；名词和动词同色同字形，层级平",
+    "画面只有卡和词两样东西，缺少能读的辅助信息"
   ],
   "changes": [
-    "导出 WORD_RELAY_FILMSTRIP_DURATION = 170（末词 f124 落定后 hold 46f）；切词 14/62/108、16f 步进滚动、词块中心对齐 y=540 全部不变",
-    "六张卡重做成出版级假页面并保持黑白相间：基准报告 / 研究长文 / 构建流水线 / 代码评审 / 影像查看器 / 出货表，researches、builds、codes 各停在对应的证据卡上",
-    "滚动时按速度给整列叠纵向运动模糊（amount 0.2，封顶 9px，静止为 0）；卡片换成发丝边 + 两层暖色软阴影",
-    "旧词先灰化，切点起 8f ease-in 上移 14px 淡出（顺着胶片滚动方向）；新词后半窗口从下方 16px 去虚（5px→0）snappy 落位，先出后进不叠影",
-    "词块上方加一枚 01/03 序号与动词同步翻页；底景换成暖纸色渐变 + 左上柔光 + 轻暗角 + 颗粒"
+    "look 换成 graphite（近单色暗场 + 金色点缀），胶片卡黑白强制相间在暗场上对比更强，两层深阴影 + 发丝边",
+    "加景深：邻卡按离焦距离压暗 0.68·dist、缩到 0.94、虚化 ≤3px，胶片 18f 步进时新证据\"对焦\"进来；步进制与快段纵向运动模糊保留",
+    "右侧 Didot 140px：名词「Atlas」正体次级墨恒定，动词斜体白字——旧词灰化后 8f ease-in 升出遮罩，新词逐字母从遮罩下沿升起（1.2f 错峰，金色句点最后到）",
+    "一条金色引线从焦点卡右缘指向词块中线 y=540，切词时收回、新证据落定后重画，把\"图文对位\"画出来",
+    "词块上方 mono 序号 01/03、下方 32px 证据注脚随动词接力；相机 1→1.02 极缓推，时长 170→180f"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench pulled 16f from the source, so the before video lasts half a second and never finishes landing the first verb",
-    "The page cards were colored skeleton bars that showed nothing as evidence, and they did not match the verbs (researches stopped on a medal table, codes on a shipments table)",
-    "Each 635px filmstrip step was a plain ease-in-out translation with no motion blur on its fastest frames",
-    "The verbs simply crossfaded in place: new words had no landing move and old words left with no direction",
-    "The ground was flat #faf8f3, and the cards carried a single heavy 0 12px 40px shadow"
+    "Warm paper stage with white cards, and the focus card was as bright as its neighbours, so it was unclear which piece of evidence was current",
+    "Nothing visually linked the 116px serif words to the strip; the word block aligning to the card centre was invisible",
+    "New words faded in whole, so the relay lacked a click; noun and verb shared colour and style, flattening the hierarchy",
+    "The frame held only cards and words, with no readable supporting information"
   ],
   "changesEn": [
-    "Exported WORD_RELAY_FILMSTRIP_DURATION = 170 (46f hold after the last verb lands at f124); the 14/62/108 switches, 16f step scroll and the word block centered on y=540 are unchanged",
-    "Rebuilt all six cards as publication-grade mock pages, still alternating dark and light: benchmark report, research article, build pipeline, code review, scan viewer and shipments table, so researches, builds and codes each stop on matching evidence",
-    "While scrolling, the whole column gets velocity-driven vertical motion blur (amount 0.2, capped at 9px, zero at rest); cards now use hairline borders and a two-layer warm soft shadow",
-    "The outgoing verb grays first, then rises 14px and fades over 8f with ease-in from the switch point, following the filmstrip's scroll direction; the incoming verb lands in the second half of the window, rising 16px into place and sharpening from a 5px blur with snappy easing; the old word always clears before the new one arrives, so they never overlap",
-    "Added a small 01/03 counter above the word block that turns with each verb; the background is now a warm paper gradient with a soft top-left glow, light vignette and grain"
+    "Graphite look (near-monochrome dark with gold accents); the forced black/white card alternation reads stronger on the dark stage, with deep two-layer shadows and hairline edges",
+    "Depth of field: neighbour cards dim by 0.68·dist, scale to 0.94 and blur up to 3px, so each 18f step pulls new evidence into focus; stepping and fast-phase vertical motion blur are kept",
+    "Didot 140px on the right: the noun 'Atlas' stays upright in secondary ink, the verb is white italic; the old verb greys out and rises out of its mask in 8f ease-in, and the new verb rises letter by letter (1.2f stagger, gold period last)",
+    "A gold leader runs from the focus card's right edge to the word block's centre line at y=540, retracting on each switch and redrawing once the new evidence lands, making the text-to-image alignment visible",
+    "A mono 01/03 index above and a 32px evidence caption below relay with each verb; slow 1→1.02 push; 170→180f"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

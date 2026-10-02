@@ -1,28 +1,31 @@
 {
   "stem": "VerticalWordRollBlurCycle",
   "issues": [
-    "相邻行用 CSS blur() 各向同性地糊，横向笔画也糊成一团，读不出机械滚筒那种只在滚动方向失焦的景深",
-    "滚轮换词时整列只是平移，速度最快的那几帧没有任何运动模糊，和落定时一样锐",
-    "三行视窗上下沿是 overflow 硬裁切，远行的字在边上被一刀切掉",
-    "#F7F7FA 平底，整个画面只有一行字，没有光也没有颗粒"
+    "30px 设计坐标的一句小字漂在浅灰底中间，画面几乎是空的",
+    "滚轮只是平面词条平移 + 压扁，没有机械转筒的体积感",
+    "三次换词等距等长，节奏平均，结论词没有比例子更重",
+    "结尾整组淡出到空白，尾帧什么都没有"
   ],
   "changes": [
-    "相邻行 blur 改为 SVG feGaussianBlur stdDeviation=\"0 b\"，只在纵向失焦，距离曲线（邻行 3px、最远 5px）不变",
-    "按滚轮速度叠一层 ≤4px 的纵向运动模糊，换词前快后慢的那 0.55s 有速度感，落定后归 0",
-    "离中心越远的行按滚筒曲面压扁（最多 14%），视窗上下沿 26% 柔边渐隐，不再硬切",
-    "背景换成柔光渐变 + 极淡强调色余光 + 轻暗角，颗粒放在设计坐标容器外按成片像素取样；强调色统一为 #5b63d3，拍点、缓动、染色系数都不动"
+    "look 换成 lime（石墨 · 荧光黄绿）：176px / 850 字重一句大字横贯画面，横贯全幅的选取带钉住中心行，左上眉题、右上 mono 计数 01→04",
+    "滚轮做成真 3D 转筒：词贴在半径 ≈343px 的圆柱面上（相邻 32°），按 (i-p)·θ 算 y/z/rotateX 前缩，邻行再按距离叠纵向高斯模糊与转速运动模糊",
+    "保留 0.7·outQuint + 0.3·outBack 换词曲线和 d<0.42 才染色的规则；落定瞬间加一次泛光衰减，结论词留余温",
+    "节奏改成越换越密：开场滚入首词，hold 16f→10f→10f，结论词「everyone.」那段 24f 最长最重",
+    "收尾不再淡出：邻行滚走、选取带收起，只留「Built for everyone.」+ 44px 副标题的海报；句干与转筒共用行盒，基线严格对齐；时长 150→165f"
   ],
   "issuesEn": [
-    "Neighboring rows used an isotropic CSS blur(), smearing horizontal strokes too, so it never read as a mechanical drum that defocuses only along the roll direction",
-    "During each word change the column simply translated, with no motion blur on the fastest frames, so it looked as sharp in motion as at rest",
-    "The top and bottom of the three-row window were hard overflow cuts that sliced through the outer words",
-    "A flat #F7F7FA ground held a single line of text, with no light and no grain"
+    "A 30px design-space line floated in the middle of a light-grey frame that was almost empty",
+    "The reel was a flat strip of words sliding and squashing, with no sense of a mechanical drum",
+    "The three changes were evenly spaced and equal length, so the conclusion carried no more weight than the examples",
+    "The ending faded everything out to an empty last frame"
   ],
   "changesEn": [
-    "Neighbor blur now uses an SVG feGaussianBlur with stdDeviation=\"0 b\", so rows defocus only vertically; the distance curve (3px for neighbors, 5px max) is unchanged",
-    "A vertical motion blur of up to 4px is layered on in proportion to roll speed, giving each 0.55s fast-then-slow change a sense of speed, and drops to 0 once the word lands",
-    "Rows flatten with distance from center to suggest the drum's curvature (up to 14%), and the window's top and bottom fade out over a 26% soft edge instead of cutting hard",
-    "The background is now a soft-lit gradient with a faint accent tint and a light vignette; grain sits outside the design-coordinate stage so it samples at output resolution; the accent is unified to #5b63d3, with beats, easing and the tint coefficient unchanged"
+    "Lime look (graphite, neon yellow-green): one 176px / 850-weight sentence across the frame, a full-width selection band locking the centre row, a kicker top-left and a mono 01→04 counter top-right",
+    "A true 3D drum: words sit on a cylinder of radius ≈343px (32° apart) with y/z/rotateX from (i-p)·θ for foreshortening, plus distance-based vertical Gaussian blur and speed-based motion blur",
+    "The 0.7·outQuint + 0.3·outBack step curve and the tint-only-below-d 0.42 rule are kept; each landing gets one decaying glow, and the final word keeps a little warmth",
+    "The rhythm tightens: the first word rolls in, holds go 16f→10f→10f, and the conclusion 'everyone.' gets the longest, heaviest 24f step",
+    "No fade-out: neighbours roll away and the band retracts, leaving a 'Built for everyone.' poster with a 44px subline; stem and reel share one line box so baselines match exactly; 150→165f"
   ],
+  "look": "lime",
   "mdChanged": true
 }

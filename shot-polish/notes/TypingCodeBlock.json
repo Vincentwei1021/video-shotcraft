@@ -1,28 +1,31 @@
 {
   "stem": "TypingCodeBlock",
   "issues": [
-    "两块面板是 #10121a 平底 + #1c2030 实色边框，压在 #0a0b10 死黑底上，没有层次也没有光",
-    "顶部 8px 的 LINE FADE-IN / CHAR TYPING 是调试式小标签，面板读起来不像编辑器",
-    "没有行号、当前行、状态栏，右侧打字时看不出光标在哪一行，打完也没有完成的信号",
-    "DesignStage 用 transform 放大 4 倍，小字号代码走合成期放大，字边不够利"
+    "两块面板里代码只有 12px 设计坐标（放大后仍小），面板一半是空的，手法标签是 8px 小字",
+    "深蓝黑底没有光，面板之间和背景都是死平的暗色",
+    "两种揭示的节奏差只能靠观众自己比，画面上没有任何对照信息",
+    "光标块颜色暗、几乎看不见，打完也没有收尾的一拍"
   ],
   "changes": [
-    "两块面板做成同规格的编辑器窗口：纵向渐变机身、白色 8% 发丝边、顶部内高光、两层阴影；标题栏有窗控、main.ts 页签和右侧强调色手法标签",
-    "加行号槽（右侧该行开打才亮起）、当前行淡高亮、底部状态栏；右侧打完状态由 ● Typing… 变成绿色 ● Saved",
-    "左侧逐行淡入上浮保持 stagger 0.14 / 窗 0.3 / 8px，上浮同时 1.2px→0 去虚；右侧线性打字、setup 期着色、#3a4468 方块光标不变",
-    "背景换成顶部冷色柔光 + 纵向渐变 + 暗角 + 颗粒；DesignStage 改 raster='zoom'，代码按目标尺寸栅格化"
+    "look 换成 aurora（紫黑舞台 + 顶部紫光 + 粉色余光 + 稀疏浮尘）：两块 820×500 编辑器玻璃面板合占画宽 88%，代码 40px 等宽、行高 70，语法色重配到极光色系",
+    "面板上方 44px 标签「01 Line by line / 02 Keystroke」，下方各一条揭示时间线：左 4 段刻度随行点亮、右连续进度条 + 计数 + 秒表（1.6s vs 3.6s），把节奏差直接画出来",
+    "左侧 4 行 9f 错峰、各 20f snappy 上浮 14px + 6px 去虚；右侧确定性 1/2f 真人间隔、换行顿 4f，token 色仍在 setup 期写死",
+    "光标改成强调色发光方块（字反白），当前行整行淡高亮 + 左缘强调色条；打完 Typing→Saved 并给右面板一次扫光",
+    "面板 snappy 上浮入场、相机 1→1.025 极缓推；时长 138→165f，尾帧留 30f 读全文"
   ],
   "issuesEn": [
-    "Both panels were flat #10121a with solid #1c2030 borders on a dead-black #0a0b10 ground, with no depth and no light",
-    "The 8px LINE FADE-IN / CHAR TYPING labels at the top looked like debug tags, so the panels did not read as code editors",
-    "There were no line numbers, no current-line highlight and no status bar, so on the right it was hard to tell which line the cursor was on, and nothing signaled completion",
-    "DesignStage upscaled 4× with a transform, so the small code text was enlarged at composite time and its edges were not crisp"
+    "Code was 12px in design space and still small after scaling, half of each panel was empty, and the method labels were 8px",
+    "The navy-black backdrop had no light; panels and background were flat dark fills",
+    "The rhythm difference between the two reveals was left for the viewer to judge; nothing on screen compared them",
+    "The cursor block was dark and nearly invisible, and finishing the code had no closing beat"
   ],
   "changesEn": [
-    "Both panels are now identically specced editor windows: vertical-gradient body, 8% white hairline border, top inner highlight and a two-layer shadow; the title bar carries window controls, a main.ts tab and an accent technique label on the right",
-    "Added a line-number gutter (on the right, each number lights up when its line starts), a faint current-line highlight and a bottom status bar; when typing finishes the right status changes from ● Typing… to a green ● Saved",
-    "The left line-by-line fade-and-rise keeps its 0.14 stagger, 0.3 window and 8px travel, and now also sharpens from a 1.2px blur to 0 as each line rises; the right side's linear typing, setup-time coloring and #3a4468 block cursor are unchanged",
-    "The background is now a cool top glow over a vertical gradient with vignette and grain; DesignStage switched to raster='zoom' so the code rasterizes at its final size"
+    "Aurora look (violet-black stage, violet top light, pink fill, sparse dust): two 820×500 glass editor panels spanning 88% of the frame, 40px mono code at 70px line height, syntax colours re-tuned to the aurora palette",
+    "44px labels '01 Line by line / 02 Keystroke' above, and a reveal timeline under each panel: four ticks lighting per line on the left, a continuous bar with key count and stopwatch on the right (1.6s vs 3.6s), so the rhythm gap is drawn on screen",
+    "Left: 4 lines staggered 9f, each a 20f snappy rise of 14px with 6px de-blur. Right: deterministic 1/2f human gaps with a 4f pause per line; token colours are still baked in at setup",
+    "The cursor is now a glowing accent block with inverted glyph, the current line gets a soft band and accent edge; on completion Typing→Saved and a single sheen crosses the right panel",
+    "Panels rise in with a snappy ease and the camera creeps 1→1.025; 138→165f with 30f left to read the result"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

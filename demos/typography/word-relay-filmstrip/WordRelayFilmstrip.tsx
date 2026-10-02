@@ -1,18 +1,32 @@
-// word-relay-filmstrip v4 —— 质感升级（结构沿用 v3）：
-// ① 左列页面卡黑白相间、每张等高（940x530，间距 105），内容从灰条骨架升级为出版级假页面
-//    （基准报告 / 研究长文 / 构建流水线 / 代码评审 / 影像查看器 / 出货表，真实排版与假文案），
-//    且每个动词落位时停在与之对应的那张证据上（文字与画面互为注脚）；
-// ② 左列平时静止，只在右侧切词的窗口内滚动一格（滚动与切词同步，easeInOutCubic 16f），
-//    滚动最快的几帧叠纵向运动模糊（静止为 0）；
-// ③ 右侧 Didot 系衬线 116px，"Computer" 固定第一行，动词第二行原位接力：旧词先灰化，
-//    切点起 8f 上移淡出（ease-in，顺着胶片滚动方向），新词后半窗口从下方 16px 去虚落位；
-//    词块垂直中心与当前页面卡中点 y=540 对齐（top=402）；词块上方一枚小序号 01/03 同步翻页。
-// 底景：暖纸色纵向渐变 + 左上柔光 + 轻暗角 + 颗粒。
+// word-relay-filmstrip —— 左列证据胶片步进、右侧大词原位接力（名词恒定 + 动词轮换）
+//
+// 第二轮重设计（石墨 · 电影感编辑部）：
+// - look = graphite（近单色暗场 + 金色点缀）。左列 940×530 页面卡黑白强制相间（出版级假页面：
+//   基准报告 / 研究长文 / 构建流水线 / 代码评审 / 影像查看器 / 出货表），每个动词停在对应证据上。
+// - 景深：焦点卡（中心在 y=540）全亮全尺寸，邻卡按离焦距离压暗 + 缩到 0.94 + 轻虚化，
+//   胶片步进时邻卡"对焦"进来——证据的主次一眼可见。
+// - 步进制保留：左列平时零位移，只在切词窗口内 18f 不对称 in-out 滚一格，快段叠纵向运动模糊。
+// - 右侧 Didot 140px：第一行名词「Atlas」（正体、次级墨）恒定，第二行动词斜体白字原位接力——
+//   旧词先灰化、8f ease-in 从遮罩上沿升出（先出），新词逐字母从遮罩下沿升起（后进，1.2f 错峰）。
+//   词块垂直中心 = 焦点卡中点 y=540（像素级）；一条金色引线从焦点卡右缘指向词块中线，
+//   换词时收回、新证据落定后重新画出；词块下方一行证据注脚随动词同步接力。
+//
+// 时间表（30fps，共 180f）：
+//   0–16    预备：胶片静止、Atlas 与引线已在，序号 00
+//   16–34   第 1 格：胶片滚到「研究长文」，researches 逐字升起（23–49）
+//   34–66   hold（胶片零位移；相机 1→1.02 极缓推）
+//   66–84   第 2 格：researches 灰化升出（66–74）→ builds 升起（73–95），胶片滚到「构建流水线」
+//   84–114  hold
+//   114–132 第 3 格：codes（121–141），胶片停在「代码评审」
+//   141–180 hold：尾帧是一张完整的图文对位海报
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { EASE, FONT, Grain, SpeedBlur, Vignette, hairline, ramp, softShadow, velocity } from '../../_fixtures/Polish';
+import { useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, mix, ramp, velocity } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha } from '../../_fixtures/Look';
 
-export const WORD_RELAY_FILMSTRIP_DURATION = 170; // 末词 f124 落定后 hold 46f（≈1.5s）
+export const WORD_RELAY_FILMSTRIP_DURATION = 180;
+
+const L = LOOKS.graphite;
 
 const CARD_W = 940;
 const CARD_H = 530;
@@ -265,118 +279,131 @@ const LightCode: React.FC = () => (
 );
 
 // 黑白相间的固定顺序（奇偶交替）
-// 第 k 个词配第 k+1 张卡（首个词随第一格滚动出现）：researches→研究长文、builds→构建流水线、codes→代码评审；
+// 第 k 个词配第 k+1 张卡：researches→研究长文、builds→构建流水线、codes→代码评审；
 // 第 0 张是开场的基准报告，第 4、5 张是上下露边的邻卡
 const CARDS: React.FC[] = [DarkStats, LightArticle, DarkBuild, LightCode, DarkMri, LightTable];
 
 const WORDS = ['researches', 'builds', 'codes'];
-// 切词窗口：第一个词入场 f14–30；换词 f62–78、f108–124
-const SWITCHES = [14, 62, 108];
-const SW_DUR = 16;
+const NOTES = ['Research note · 1,240 papers traced', 'Build #1284 · 3 regions · 1m 42s', 'PR #482 · approved · +24 −9'];
+const SWITCHES = [16, 66, 114];
+const SW_DUR = 18;
 const SERIF = '"Didot", "Bodoni 72", "Playfair Display", Georgia, serif';
+const FS = 140;
+const LINE = Math.round(FS * 1.1); // 154：每行行盒
+const WX = 1196; // 词块左缘
+const BLOCK_TOP = 540 - LINE; // 两行词块中心 = 540
+const CARD_L = 100;
+const FOCUS_TOP = 540 - CARD_H / 2; // 275
 
-// 滚动步进：平时静止，仅在切词窗口内滚一格（ease-in-out）
-const stepAt = (frame: number) => {
-  let stepF = 0;
-  SWITCHES.forEach((s) => {
-    const p = interpolate(frame, [s, s + SW_DUR], [0, 1], {
-      extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-    });
-    // easeInOutCubic
-    stepF += p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-  });
-  return stepF;
+// 胶片步进：平时静止，只在切词窗口内滚一格（不对称 in-out：起步稍快、落点很软）
+const stepAt = (frame: number) => SWITCHES.reduce((acc, s) => acc + ramp(frame, s, SW_DUR, EASE.swift), 0);
+
+// 动词：逐字母从遮罩下沿升起；出场整词升出上沿
+const Verb: React.FC<{ word: string; frame: number; inAt: number; outAt: number | null }> = ({ word, frame, inAt, outAt }) => {
+  const grey = outAt !== null ? ramp(frame, outAt - 10, 10, EASE.smooth) : 0;
+  const pOut = outAt !== null ? ramp(frame, outAt, 8, EASE.exit) : 0;
+  if (frame < inAt || pOut >= 1) return null;
+  const c = Math.round(mix(0xf4, 0x6a, grey));
+  return (
+    <div style={{
+      position: 'absolute', left: 0, top: 0, height: LINE, whiteSpace: 'pre', color: `rgb(${c},${c},${Math.round(c * 0.98)})`,
+      transform: `translateY(${(-pOut * LINE * 0.9).toFixed(2)}px)`, opacity: 1 - pOut * 0.6,
+    }}>
+      {Array.from(word + '.').map((ch, i) => {
+        const k = ramp(frame, inAt + i * 1.2, 16, EASE.snappy);
+        const dot = i === word.length; // 句点（金）最后一个升起
+        return (
+          <span key={i} style={{ display: 'inline-block', color: dot && grey < 0.5 ? L.accent2 : undefined, transform: `translateY(${((1 - k) * LINE * 0.95).toFixed(2)}px)` }}>{ch}</span>
+        );
+      })}
+    </div>
+  );
 };
 
 export const WordRelayFilmstrip: React.FC = () => {
   const frame = useCurrentFrame();
-
   const stepF = stepAt(frame);
   const scroll = stepF * STEP;
-  const vy = -velocity((f) => stepAt(f) * STEP, frame); // 胶片向上滚（px/帧）
+  const vy = -velocity((f) => stepAt(f) * STEP, frame);
+  const cam = mix(1, 1.02, ramp(frame, 0, WORD_RELAY_FILMSTRIP_DURATION, EASE.swift));
 
-  // 卡片布局：焦点卡顶 y=275，向两侧铺开；黑白相间
+  // 卡片：焦点卡顶 y=275；离焦距离 → 压暗 / 缩小 / 虚化
   const total = CARDS.length * STEP;
   const cards: React.ReactNode[] = [];
   for (let rep = -1; rep < 2; rep++) {
     CARDS.forEach((C, i) => {
-      const y = 275 + i * STEP + rep * total - scroll;
+      const y = FOCUS_TOP + i * STEP + rep * total - scroll;
       if (y > 1200 || y < -CARD_H - 120) return;
+      const dist = Math.min(1.4, Math.abs(y - FOCUS_TOP) / STEP);
+      const dim = Math.min(0.68, dist * 0.68);
+      const sc = 1 - 0.06 * Math.min(1, dist);
+      const blur = Math.min(3, dist * 3);
+      const dark = i % 2 === 0;
       cards.push(
         <div key={`${rep}-${i}`} style={{
-          position: 'absolute', top: y, left: 106, width: CARD_W, height: CARD_H,
-          borderRadius: 14, overflow: 'hidden', background: '#fff',
-          border: hairline(0.07), boxShadow: softShadow(18, { color: '#1e1a14' }),
+          position: 'absolute', top: y, left: CARD_L, width: CARD_W, height: CARD_H, borderRadius: 18, overflow: 'hidden',
+          background: dark ? '#0d0e10' : '#ffffff', transform: `scale(${sc.toFixed(4)})`,
+          border: `1px solid ${dark ? alpha('#ffffff', 0.1) : alpha('#000000', 0.2)}`,
+          boxShadow: `inset 0 1px 0 ${alpha('#ffffff', dark ? 0.08 : 0.6)}, 0 2px 6px ${alpha('#000000', 0.5)}, 0 40px 90px -30px ${alpha('#000000', 0.95)}`,
+          filter: blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : undefined,
         }}>
           <C />
+          <div style={{ position: 'absolute', inset: 0, background: alpha(L.bg[1], dark ? dim : 0.04 + dim * 0.96) }} />
         </div>,
       );
     });
   }
 
-  // —— 右侧词接力：旧词灰化 → 上移淡出（先出），新词从下方去虚落位（后进）——
-  const wordStyle: React.CSSProperties = {
-    fontFamily: SERIF, fontWeight: 400, fontSize: 116, lineHeight: 1.18,
-    letterSpacing: '0.002em', textAlign: 'right', whiteSpace: 'nowrap',
-  };
-  const wordNodes = WORDS.map((w, i) => {
-    const sIn = SWITCHES[i];
-    const sOut = i + 1 < SWITCHES.length ? SWITCHES[i + 1] : null;
-    // 新词后半窗口落位（避免与旧词叠影）；第一个词随第一格滚动 12f 入场
-    const pIn = i === 0 ? ramp(frame, sIn, 12, EASE.snappy) : ramp(frame, sIn + 7, SW_DUR - 7, EASE.snappy);
-    if (pIn <= 0) return null;
-    // 灰化：切点前 14 帧开始，切点时已全灰
-    const grey = sOut ? ramp(frame, sOut - 14, 12, EASE.smooth) : 0;
-    // 淡出：切点起 8f 内上移出完（ease-in，决绝）
-    const pOut = sOut ? ramp(frame, sOut, 8, EASE.exit) : 0;
-    const op = Math.min(1, pIn * 1.25) * (1 - pOut);
-    if (op <= 0.001) return null;
-    const ch = Math.round(0x19 + (0x9d - 0x19) * grey);
-    const y = (1 - pIn) * 16 - pOut * 14;
-    const blur = (1 - pIn) * 5 + pOut * 3;
-    return (
-      <div key={w} style={{
-        ...wordStyle, position: 'absolute', right: 0, top: 0,
-        color: `rgb(${ch},${Math.round(0x19 + (0x98 - 0x19) * grey)},${Math.round(0x19 + (0x8e - 0x19) * grey)})`,
-        opacity: op, transform: `translateY(${y.toFixed(2)}px)`,
-        filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
-      }}>
-        {w}
-      </div>
-    );
-  });
-
-  // 小序号：跟着当前词翻页（与词同节奏的淡入淡出）
-  const IDX_AT = SWITCHES.map((s, i) => (i === 0 ? s : s + 7)); // 与新词落位同起点
-  const idx = IDX_AT.filter((s) => frame >= s).length; // 0..3
-  const idxIn = idx === 0 ? 0 : ramp(frame, IDX_AT[idx - 1], 9, EASE.out);
-  const idxOut = idx > 0 && idx < SWITCHES.length ? ramp(frame, SWITCHES[idx], 6, EASE.exit) : 0; // 与旧词同步先出
+  // 当前词序号
+  const IN_AT = SWITCHES.map((s) => s + 7); // 新词在切点后 7f 起升（旧词先出）
+  const idx = IN_AT.filter((s) => frame >= s).length; // 0..3
+  // 引线：切词起 6f 收回，新证据落定（切点 +10f）后 16f 重画
+  const lastS = [...SWITCHES].reverse().find((s) => frame >= s);
+  const lineP = lastS === undefined
+    ? ramp(frame, 0, 16, EASE.snappy)
+    : frame < lastS + 10 ? 1 - ramp(frame, lastS, 6, EASE.exit) : ramp(frame, lastS + 10, 16, EASE.snappy);
+  const LX0 = CARD_L + CARD_W + 14;
+  const LX1 = WX - 40;
 
   return (
-    <AbsoluteFill style={{ background: '#f6f3ec' }}>
-      {/* 暖纸色底：纵向渐变 + 左上柔光 */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'radial-gradient(ellipse 60% 70% at 28% 22%, rgba(255,253,248,0.95) 0%, rgba(255,253,248,0) 70%), linear-gradient(180deg, #f8f6f0 0%, #f1ede5 100%)',
-      }} />
-      <SpeedBlur vx={0} vy={vy} amount={0.2} max={9}>{cards}</SpeedBlur>
-      {/* 右侧词组：Computer 固定第一行，动词第二行原位换词。
-          块总高≈137(Computer 行)+140(词行容器)=277，垂直中心须对齐
-          当前页面卡中点 y=540（卡顶 275 + 卡高 530/2）→ top=540-277/2≈402 */}
-      <div style={{ position: 'absolute', right: 210, top: 402 }}>
-        <div style={{ ...wordStyle, color: '#191919' }}>Computer</div>
-        <div style={{ position: 'relative', height: 140 }}>{wordNodes}</div>
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.72, y: 0.12 }} fill={{ x: 0.15, y: 1.0 }} intensity={0.85} breathe={0.4} />
+      <div style={{ position: 'absolute', inset: 0, transformOrigin: '960px 540px', transform: `scale(${cam.toFixed(4)})` }}>
+        <SpeedBlur vx={0} vy={vy} amount={0.22} max={10}>{cards}</SpeedBlur>
+
+        {/* 引线：焦点卡右缘 → 词块中线（y=540） */}
+        <div style={{ position: 'absolute', left: LX0, top: 539, width: (LX1 - LX0) * lineP, height: 2, background: `linear-gradient(90deg, ${L.accent2}, ${alpha(L.accent2, 0.35)})` }} />
+        <div style={{ position: 'absolute', left: LX0 - 7, top: 533, width: 14, height: 14, borderRadius: 7, background: L.accent2, opacity: Math.min(1, lineP * 2), boxShadow: `0 0 16px ${alpha(L.accent2, 0.6)}` }} />
+
+        {/* 序号 */}
+        <div style={{ position: 'absolute', left: WX + 6, top: BLOCK_TOP - 58, fontFamily: FONT.mono, fontSize: 28, color: L.ink3, letterSpacing: '0.04em' }}>
+          <span style={{ color: L.accent2 }}>{String(idx).padStart(2, '0')}</span> / 03
+        </div>
+        {/* 词块：Atlas 恒定 + 动词接力；两行行盒各 154，整块中心 = 540 */}
+        <div style={{ position: 'absolute', left: WX, top: BLOCK_TOP, fontFamily: SERIF, fontSize: FS, lineHeight: `${LINE}px`, letterSpacing: '-0.01em' }}>
+          <div style={{ height: LINE, color: L.ink2, whiteSpace: 'pre' }}>Atlas</div>
+          <div style={{ position: 'relative', height: LINE, width: 760, overflow: 'hidden', fontStyle: 'italic', padding: '0 0.2em 0 0', margin: '0 -0.2em 0 0' }}>
+            {WORDS.map((w, i) => (
+              <Verb key={w} word={w} frame={frame} inAt={IN_AT[i]} outAt={i + 1 < SWITCHES.length ? SWITCHES[i + 1] : null} />
+            ))}
+          </div>
+        </div>
+        {/* 证据注脚：随动词接力 */}
+        {NOTES.map((n, i) => {
+          const pIn = ramp(frame, IN_AT[i] + 6, 14, EASE.snappy);
+          const pOut = i + 1 < SWITCHES.length ? ramp(frame, SWITCHES[i + 1], 7, EASE.exit) : 0;
+          const op = pIn * (1 - pOut);
+          if (op <= 0.002) return null;
+          return (
+            <div key={n} style={{
+              position: 'absolute', left: WX + 6, top: BLOCK_TOP + LINE * 2 + 40, fontFamily: FONT.sans, fontSize: 32, fontWeight: 450,
+              color: L.ink2, letterSpacing: '-0.01em', opacity: op, transform: `translateY(${((1 - pIn) * 14 - pOut * 10).toFixed(2)}px)`, whiteSpace: 'nowrap',
+            }}>
+              {n}
+            </div>
+          );
+        })}
       </div>
-      {/* 序号：词块右缘对齐，悬在 Computer 上方 */}
-      <div style={{
-        position: 'absolute', right: 216, top: 352, fontFamily: SANS, fontSize: 30, fontWeight: 500,
-        letterSpacing: '0.06em', color: '#9b968c', fontVariantNumeric: 'tabular-nums', opacity: idxIn * (1 - idxOut),
-      }}>
-        <span style={{ color: '#3a3833' }}>{String(Math.max(1, idx)).padStart(2, '0')}</span>
-        {' / 03'}
-      </div>
-      <Vignette strength={0.16} color="#3a3020" />
-      <Grain opacity={0.05} />
-    </AbsoluteFill>
+    </div>
   );
 };

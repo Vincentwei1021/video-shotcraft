@@ -1,32 +1,31 @@
 {
   "stem": "TypewriterErrorRetype",
   "issues": [
-    "没有导出时长常量，工作台按 default 渲 150f，比镜头本意 160f 少 10f，收尾静止被截掉",
-    "Courier New 粗体压在灰平底上，像打字机字体的截图，没有产品字卡的质感",
-    "光标是 7px 纯墨色竖条，和字同色，犹豫段的两闪不够醒目",
-    "改口打完就结束，宣言词 \"command center\" 和平庸的 \"just\" 没有任何主次，结尾一帧没有落点",
-    "整行孤零零悬在画面中央，没有上下文"
+    "灰底上一行 100px 等宽小字偏左上，画面 2/3 空着，没有版式也没有层级",
+    "改口只靠删字，\"否定\"这一拍没有画面，三幕剧读不出转折",
+    "文案「just your command center」语法别扭，句干和宣言没有分层",
+    "靛蓝光标与马克笔底色和整体灰调不搭，结尾只是一行字"
   ],
   "changes": [
-    "导出 TYPEWRITER_ERROR_RETYPE_DURATION = 160；三档速度（打 2f / 删 1.5f / 重打 1.5f）与光标三态时间表一帧不动，f110 后静止 50f",
-    "改用等宽字体 100px / 600 字重、60px 固定槽，最终句整体居中、左缘锚定不横移；柔光底配颗粒",
-    "光标改成 6px 强调色圆角竖条带淡辉光，犹豫与完稿的闪烁一眼可见",
-    "打完的同时（f96–110，与完稿两闪并行）一道强调色马克笔底色从左到右铺到 \"command center\" 下半身，给宣言一个落定",
-    "行上方加一行与左缘对齐的 34px 灰色眉题 \"Introducing Acme Console\"，开场 10f 淡入"
+    "look 换成 paper（暖白纸 · 墨 · 朱红色带）：124px 等宽两行海报，句干「Kestrel is」400 字重次级墨，改口行 700 字重主墨，左对齐 x=216 版心 + 朱红页边线",
+    "打字机字模质感：每个字按序号确定性 ±2px 落点、±0.6° 微倾、0.86–1 墨色浓淡，落下 3f 由 1.06 压回 1（字锤一击）",
+    "三幕加\"否定\"一拍：2f/字敲出 a dashboard → 停 20f 光标闪两下 → 朱红删除线 6f 划过 → 1.5f/字退格（删除线随字缩短）→ 1.5f/字零犹豫重打",
+    "宣言落定：句号是朱红，「command center」下 snappy 划出 12px 朱红底线，40px 副标题从下方升起",
+    "全程相机 1→1.04 极缓推，时长 160→185f，尾帧是完整的标语海报"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench rendered the 150f default, 10f short of the intended 160f, which cut off the closing hold",
-    "Bold Courier New on a flat gray ground looked like a screenshot of a typewriter font, not a product title card",
-    "The cursor was a 7px solid ink bar in the same color as the text, so the two hesitation blinks barely registered",
-    "Once the retype finished, nothing set the payoff words \"command center\" apart from the plain \"just\", so the final frame had no focal point",
-    "The single line floated alone in the middle of the frame with no context"
+    "One line of 100px mono text sat high-left on grey, two thirds of the frame empty, with no layout or hierarchy",
+    "The rewrite was only deletion; the 'no' beat had no image, so the three-act turn did not read",
+    "The copy 'just your command center' was awkward, and stem and claim were not separated",
+    "The indigo cursor and marker highlight clashed with the grey, and the ending was just a line of text"
   ],
   "changesEn": [
-    "Exported TYPEWRITER_ERROR_RETYPE_DURATION = 160; the three speeds (type 2f / delete 1.5f / retype 1.5f) and the three-state cursor timeline are unchanged frame for frame, with 50f of stillness after f110",
-    "Switched to a 100px monospace at weight 600 in fixed 60px slots; the final sentence is centered and left-anchored so it never shifts sideways, on a soft-lit background with grain",
-    "The cursor is now a 6px rounded accent bar with a faint glow, so the hesitation and completion blinks read at a glance",
-    "As typing completes (f96–110, alongside the two completion blinks), an accent marker band sweeps left to right under the lower half of \"command center\" to land the payoff",
-    "Added a 34px gray kicker, \"Introducing Acme Console\", aligned to the line's left edge and fading in over the first 10f"
+    "Paper look (warm paper, ink, vermilion ribbon): a two-line 124px mono poster with the stem 'Kestrel is' in 400 secondary ink and the rewrite line in 700 primary ink, left-aligned at x=216 with a vermilion margin rule",
+    "Typewriter-impression type: each glyph gets a fixed per-index ±2px offset, ±0.6° tilt and 0.86–1 ink density, and lands with a 3f 1.06→1 strike",
+    "A visible 'no' beat: type 'a dashboard' at 2f/char, hold 20f while the cursor blinks twice, a vermilion strike-through draws in 6f, backspace at 1.5f/char (the strike shrinks with it), then retype at 1.5f/char without hesitation",
+    "The claim lands with a vermilion period, a 12px vermilion underline snapping under 'command center', and a 40px subline rising in",
+    "A slow 1→1.04 camera push throughout; 160→185f, and the last frame is a finished tagline poster"
   ],
+  "look": "paper",
   "mdChanged": true
 }
