@@ -1,0 +1,28 @@
+{
+  "stem": "BlindsSlice",
+  "issues": [
+    "没有导出时长常量，工作台按卡片 md 抓到 20f——百叶窗波（20–52f）一帧都没进画，看到的只是一张静止页面",
+    "条内 A/B 只是横向 scaleX 挤压，叶片没有任何受光变化，读作两张图在横向压扁，不像叶片翻面",
+    "翻换中的相邻叶片之间没有缝，十二条切片在运动中糊成一整块",
+    "缝亮线的暗描边用纯黑 rgba(0,0,0,0.55)，与 Phase 0 页面的带色相深色不协调"
+  ],
+  "changes": [
+    "补 BLINDS_SLICE_DURATION = 150（前态 20 + 波 32 + 真静止 98）；12×160 竖条、列号×2f 错峰、每条 10f Easing.in(cubic)、交接缝 x+160(1-p)、52f 摘罩全部保持",
+    "叶片受光：翻走的 A 面随 √p 转暗、翻来的 B 面从暗处转亮，阴影沿叶宽横向渐变（A 远端右缘最深 0.34、B 远端左缘最深 0.32，#10121a），切片读作绕铰边侧过去的叶片",
+    "翻换中的叶片两缘各补 1px 发丝分隔线（rgba(16,18,26,0.22)），与缝亮线同步 2f 淡入淡出，只在该条翻换时出现",
+    "缝亮线三层参数（16px 白 0.45 / 6px 暗 0.55 / 3px 白核）照旧，暗描边改带色相的 rgba(10,11,18,0.55)"
+  ],
+  "issuesEn": [
+    "No duration constant; the workbench picked 20f from the card md, so the blinds wave (20–52f) never appeared — viewers saw a static page",
+    "Inside each strip A and B were just squashed with scaleX and had no lighting change, reading as two images being compressed rather than slats turning",
+    "Adjacent turning slats had no gap between them, so the twelve strips merged into one block in motion",
+    "The seam's dark outline was pure black rgba(0,0,0,0.55), clashing with the tinted darks of the Phase 0 page"
+  ],
+  "changesEn": [
+    "Added BLINDS_SLICE_DURATION = 150 (20 lead-in + 32 wave + 98 true hold); the 12×160 strips, column×2f stagger, 10f Easing.in(cubic) per strip, x+160(1-p) seam and 52f unmount are unchanged",
+    "Slat lighting: the departing A face darkens with √p and the arriving B face brightens out of shadow, with shading graded across the slat width (A's far right edge up to 0.34, B's far left edge up to 0.32, #10121a), so strips read as slats turning on a hinge",
+    "Turning slats get a 1px hairline divider on both edges (rgba(16,18,26,0.22)), fading in/out over 2f with the seam light and present only while that strip turns",
+    "The three seam-light layers (16px white 0.45 / 6px dark 0.55 / 3px white core) keep their values; the dark outline is now the tinted rgba(10,11,18,0.55)"
+  ],
+  "mdChanged": false
+}

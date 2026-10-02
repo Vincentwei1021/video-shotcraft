@@ -1,0 +1,32 @@
+{
+  "stem": "InvisibleCut",
+  "issues": [
+    "没有导出时长常量，工作台按源码第一个数字猜成 54f——卡片刚扫到出画就结束，切后的 B 页没有任何停留",
+    "遮挡卡和背景页同为浅色，失焦糊满时整屏是一片发灰的白，读不出“有东西贴着镜头掠过”",
+    "±40px 带风推挤把页面整体平移，切后左缘露出一条米灰底色缝（侧栏外侧），魔术当场穿帮",
+    "推挤是切点前后各自孤立的两小段运动，镜头其余时间完全死机位，“一条 take”的错觉不牢",
+    "前景卡扫过时对背景没有任何光影影响，近物与远景之间没有距离感"
+  ],
+  "changes": [
+    "补 INVISIBLE_CUT_DURATION = 100（前态 40 + 横扫 14 + 回稳/静止 46）；1600×1000·scale 1.6、-2200→2600 共 14f bezier(0.3,0,0.7,1)、f47 切点、CameraMotionBlur 300°/12、4 层残影、±40 推挤全部保持",
+    "遮挡卡改用 Card tone=\"dark\" 深色版：离镜头最近、不受光的前景读作暗剪影，糊满帧是一拍“被挡住”的暗，切点更隐形；主卡加 0 40px 120px 深色投影",
+    "前景卡前缘挂一条 900px 宽的软投影带（0.9→0 线性渐隐，整体 0.32）随卡扫过背景，近物遮光卖出贴脸距离感",
+    "背景页左右各接 64px 延展边（左接侧栏深色渐变、右接顶栏 #fafaf9 + 内容区底色），推挤与横移不再露底",
+    "加一条贯穿切点的慢速相机横移（0–85f 共 -18px，EASE.smooth），切前切后是同一个运动；85f 后完全停稳留 15f 静止收尾"
+  ],
+  "issuesEn": [
+    "No duration constant; the workbench guessed 54f from the first number in the source, so the shot ended the instant the card left frame and scene B never held",
+    "The occluding card and the page were both light, so the defocused full-cover frames were a flat greyish white — nothing read as an object brushing past the lens",
+    "The ±40px wind shove translated the whole page and exposed a beige strip at the left edge after the cut, breaking the trick",
+    "The shove was two isolated moves around the cut with a dead-locked camera otherwise, so the one-take illusion was weak",
+    "The passing foreground card had no light/shadow effect on the background, so there was no sense of depth between near and far"
+  ],
+  "changesEn": [
+    "Added INVISIBLE_CUT_DURATION = 100 (40 lead-in + 14 sweep + 46 settle/hold); the 1600×1000 ·1.6 card, -2200→2600 over 14f with bezier(0.3,0,0.7,1), f47 cut, CameraMotionBlur 300°/12, four trails and ±40 shove are unchanged",
+    "The occluder now uses Card tone=\"dark\": the nearest, unlit foreground reads as a dark silhouette, so the full-cover frames are a beat of being blocked and the cut hides better; the main card gets a 0 40px 120px dark shadow",
+    "A 900px soft shadow band (0.9→0 gradient at 0.32) rides the card's leading edge across the background, selling how close it passes",
+    "The page now has 64px bleed extensions on both sides (sidebar gradient on the left, #fafaf9 top bar plus canvas on the right), so the shove and drift never reveal the backdrop",
+    "A slow camera drift runs through the cut (-18px over 0–85f, EASE.smooth), so before and after are one continuous move; everything is still after 85f, leaving a 15f hold"
+  ],
+  "mdChanged": false
+}

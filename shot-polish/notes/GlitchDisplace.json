@@ -1,0 +1,32 @@
+{
+  "stem": "GlitchDisplace",
+  "issues": [
+    "没有导出时长常量，工作台只渲 40f——撕裂（45–62f）根本没进画，看到的只是一张静止页面",
+    "明暗重影两层压在 16 条整页条带底下，被完全盖住，峰值帧只有抖、没有 glitch 的双重影",
+    "16 条等高横条全员同幅乱抖，错位没有主次，读作百叶窗/水波而不是信号撕裂",
+    "条带切口没有任何边缘处理，错位条和相邻条之间看不出“撕口”",
+    "硬切与开撕都没有掩护或预备，58f 切页只靠抖动本身"
+  ],
+  "changes": [
+    "补 GLITCH_DISPLACE_DURATION = 135（前态 45 + 撕裂 17 + 真静止 73）；45f 起撕、58f 硬切、62f 摘罩、±70px 峰幅、h(i*31+f*7) 驱动与 out-cubic 冲起/线性消散包络全部保持",
+    "16 条改为确定性不等高（权重 0.45–1.35），并给每条固定“能量”：约 2 成静止、3 成满幅重撕、其余轻颤；错位值再过 0.6 次幂推向两端，撕裂有主次",
+    "明暗重影挪进条带内部随条一起错位：+12px 原页 multiply 拖出暗边、−12px 原页 lighten 吃出亮边，只给错位 >~10px 的条，白底不发灰",
+    "错位条上沿 1px 亮线、下沿 1px 暗线做撕口切边；撕裂期叠随包络起落的信号颗粒（峰值 0.14），摘罩后全部卸载",
+    "38–39f 加 2 帧前兆（两条重撕条 ±10px）做预备；58f/59f 叠 1.10/1.05 轻曝光抬升掩护硬切"
+  ],
+  "issuesEn": [
+    "No duration constant, so the workbench rendered only 40f — the tear (45–62f) never appeared; viewers saw a static page",
+    "Both light/dark ghost layers sat beneath 16 full-page strips and were completely covered, so the peak frames jittered with no glitch double image",
+    "Sixteen equal-height strips all jittered with the same amplitude — no hierarchy, reading as blinds or ripples rather than a signal tear",
+    "Strip edges had no treatment, so nothing read as a torn edge between displaced neighbours",
+    "Neither the tear onset nor the hard cut had any setup or cover; the 58f page swap relied on jitter alone"
+  ],
+  "changesEn": [
+    "Added GLITCH_DISPLACE_DURATION = 135 (45 lead-in + 17 tear + 73 true hold); the 45f onset, 58f hard cut, 62f unmount, ±70px peak, h(i*31+f*7) driver and out-cubic rise / linear decay envelope are unchanged",
+    "The 16 strips now have deterministic uneven heights (weights 0.45–1.35) and a fixed per-strip energy: ~20% still, ~30% full-amplitude tears, the rest light tremor; offsets pass through a 0.6 power so they sit at the extremes",
+    "The ghosts moved inside each strip and travel with it: a +12px multiply copy drags a dark fringe, a −12px lighten copy eats a light fringe, only on strips displaced more than ~10px, so the white page never greys out",
+    "Displaced strips get a 1px bright top edge and 1px dark bottom edge as the tear seam; signal grain (peak 0.14) rides the envelope during the tear and is unmounted afterwards",
+    "Two precursor frames at 38–39f (two heavy strips at ±10px) act as anticipation; 58f/59f get a 1.10/1.05 exposure lift to cover the hard cut"
+  ],
+  "mdChanged": false
+}

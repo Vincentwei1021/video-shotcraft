@@ -1,0 +1,32 @@
+{
+  "stem": "VersusSlam",
+  "issues": [
+    "白闪插值左侧钳位，撞击前 0–29f 整段被 0.9 白层盖住——建立段是一整屏空白，两半屏冲进来的过程完全看不见",
+    "左右两半是同一张浅灰页面的两种裁切，读不出“两方对峙”，VS 盖章失去语义",
+    "撞合实缝是 12px 实心黑条、VS 是白底 6px 黑框方块，像线框稿",
+    "两半屏 10f 从 ±1200px 冲到位，末速约 360px/帧却没有任何运动模糊，像两张贴图在滑",
+    "撞后 120f 全是同一张静帧，时长默认 150f 远超镜头需要"
+  ],
+  "changes": [
+    "修正白闪：撞前为 0、撞击帧 0.9→0 共 3f；补 VERSUS_SLAM_DURATION = 100（建立 20 + 对冲 10 + 撞后呼吸 70）；78° 斜缝、ease-in(cubic) 10f ±1200 对冲、12px 指数衰减震屏、VS 1.6→1 back(2.6) 6f 全部保持",
+    "左半换成深色版 dashboard（旧方案）、右半浅色版（新方案），一明一暗对撞；撞后 8f/12f 错峰滑入 “Legacy v1.8” / “Next v2.0” 方名标签（48/32px，玻璃面板）",
+    "建立段改为暗场柔光背景上一根冷白细光沿斜缝从中点长出、随两半逼近变亮做预备；撞合后换成 2px 冷白光芯 + 外发光的撞击光缝（撞击帧最亮、14f 收敛），两侧压窄暗影分开明暗两半",
+    "对冲段按 velocity() 给两半屏横向 SpeedBlur（0.1×速度，封顶 36px），撞前一帧糊成一道",
+    "VS 改为深色圆章：强调色渐变描边 + 顶部内高光 + 深投影、108px 白色斜体重字；撞击帧同发一圈单次冲击波环（14f 外扩、线宽 6→1 淡出）"
+  ],
+  "issuesEn": [
+    "The flash interpolation clamped on the left, so frames 0–29 were covered by a 0.9 white layer — the setup was a blank white screen and the two halves' charge was invisible",
+    "Both halves were crops of the same light-grey page, so nothing read as two sides facing off and the VS stamp lost its meaning",
+    "The seam was a solid 12px black bar and the VS a white box with a 6px black border — wireframe-grade",
+    "The halves crossed ±1200px in 10f, ending near 360px/frame, with no motion blur, like two stickers sliding",
+    "120 frames of the same still after impact; the default 150f was far longer than the shot needs"
+  ],
+  "changesEn": [
+    "Fixed the flash: 0 before impact, 0.9→0 over 3f from the impact frame; added VERSUS_SLAM_DURATION = 100 (20 setup + 10 charge + 70 hold); the 78° seam, 10f ease-in(cubic) ±1200 charge, 12px exponential shake and 6f VS 1.6→1 back(2.6) are unchanged",
+    "The left half is now the dark dashboard (old plan) and the right the light one (new plan), so light and dark collide; \"Legacy v1.8\" / \"Next v2.0\" side tags (48/32px glass panels) slide in 8f/12f after impact",
+    "The setup is a dark soft-lit backdrop where a thin cool-white light grows along the seam from its midpoint and brightens as the halves close in; after impact it becomes a 2px cool-white core with glow (brightest on impact, settling over 14f), flanked by narrow shadows separating the halves",
+    "During the charge both halves get horizontal SpeedBlur from velocity() (0.1× speed, 36px cap), smearing into a streak just before impact",
+    "VS is now a dark round seal: accent-gradient rim, top inner highlight, deep shadow, 108px white heavy italic; one single shockwave ring fires with the impact (expands over 14f, stroke 6→1 fading out)"
+  ],
+  "mdChanged": false
+}

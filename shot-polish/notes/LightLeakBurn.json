@@ -1,0 +1,32 @@
+{
+  "stem": "LightLeakBurn",
+  "issues": [
+    "漏光只有 screen 叠加的光团，压在白底页面上几乎不显色——暖光只在深色侧栏上读成一块脏棕，主体区域看起来只是“变白了”",
+    "三团光是正圆斑，平移过画面像手电筒照过，没有“光从镜头边缘斜漏进来”的方向感",
+    "新页上压着一行 64px 的 “Next Page” 调试标题，正好叠在列表第一行上",
+    "切页后新页直接静止出现，光退散时没有“在光下就位”的那一拍",
+    "没有导出时长常量，工作台默认 150f，尾段多出 20f 无意义静帧"
+  ],
+  "changes": [
+    "补 LIGHT_LEAK_BURN_DURATION = 130（源码节拍 0–25 hold / 25–52 爬升 / 52 峰值切 / 52–95 收敛 / 95–130 静止）；三团光色与尺寸、blur 90、ease-in 27f / ease-out 43f 包络、contrast −45% / brightness +35% 冲淡全部保持",
+    "新增一层 multiply 染色晕（2500×1850、转 −34°、浅桃心 → 琥珀 → 赭红外缘，峰值 0.62），白底上也读出暖色，再由 screen 光团与热核把中心推回近白，形成白热核 / 琥珀中环 / 赭红外缘的真实漏光色阶",
+    "三团光改为沿扫掠对角线拉长的椭圆（1.35:1、转 −34°），读作斜漏进镜头的光而非圆斑",
+    "删掉 “Next Page” 调试标题（B 页顶栏已有 Projects 页名）；新页在余温里 53–95f 由 1.02 轻落定到 1（EASE.out）",
+    "漏光期叠随光强起落的胶片颗粒（0.03→0.09），光退尽即卸载，95f 后真静止"
+  ],
+  "issuesEn": [
+    "The leak was only screen-blended glows, which barely show on a white page — warmth appeared only on the dark sidebar as a muddy brown, and the main area just went whiter",
+    "The three glows were perfect circles sliding across frame like a flashlight, with no sense of light leaking in from the lens edge",
+    "A 64px \"Next Page\" debug title sat on top of the new page, right over the first list row",
+    "After the cut the new page simply appeared static; there was no beat of it settling under the fading light",
+    "No duration constant, so the workbench defaulted to 150f with 20 pointless hold frames at the end"
+  ],
+  "changesEn": [
+    "Added LIGHT_LEAK_BURN_DURATION = 130 (source beats: 0–25 hold / 25–52 build / 52 peak cut / 52–95 fade / 95–130 hold); the three glow colours and sizes, blur 90, ease-in 27f / ease-out 43f envelope and −45% contrast / +35% brightness wash-out are unchanged",
+    "Added a multiply tint halo (2500×1850, −34°, pale peach centre → amber → rust edge, 0.62 at peak) so warmth reads on white; the screen glows and hot core push the centre back toward white, giving a real leak's white core / amber mid / rust edge",
+    "The three glows are now ellipses stretched along the sweep diagonal (1.35:1, −34°), reading as light leaking into the lens rather than round spots",
+    "Removed the \"Next Page\" debug title (page B's top bar already names it Projects); the new page settles from 1.02 to 1 over 53–95f (EASE.out) in the afterglow",
+    "Film grain rides the light intensity (0.03→0.09) during the leak and unmounts once it is gone, leaving a true hold after 95f"
+  ],
+  "mdChanged": false
+}
