@@ -2,7 +2,7 @@
 name: element-body-moves
 一句话: 元素身体感两式——axial-stretch 轴向拉伸糖稀拉丝、contact-shadow-lift 接触阴影离面抬升
 适用: 给"位置在变"之外补"身体在变"：高速飞入给速度肉身（A）、卡片点名给悬浮证据（B）；A 配横冲入场，B 配 2.5D 运镜与逐张点名
-时长: A ~4.7s / B ~5.3s
+时长: A 130f ~4.3s / B 150f 5s
 能量: A 中高 / B 低中
 ---
 
@@ -18,20 +18,20 @@ staging 法则给 2.5D 运镜垫的物理台词。与 smear-multiples 的区别�
 ## 两式选型
 | 式 | 做法 | 适用 |
 |----|------|------|
-| A axial-stretch | 速度差分驱动轴向 scale：v=\|p(f)−p(f−1)\|，v<2px/f 不拉伸、≥140px/f 满拉伸（scaleX 2.2 / scaleY 0.72）；落点 8f 压扁回弹 | 高速飞入/横冲入场；多卡错峰填坑 |
-| B contact-shadow-lift | 抬起 10f out-cubic：卡 translateY(−28px)+scale(1.08)，独立椭圆阴影 scale 1→1.72 / opacity 0.55→0.18 同进度反向；落回 8f in-cubic + 2f 微压卡壳 | 逐张点名强调；2.5D 段落的离面铺垫 |
+| A axial-stretch | 速度差分驱动轴向 scale：v=\|p(f)−p(f−1)\|，v<2px/f 不拉伸、≥140px/f 满拉伸（scaleX 2.2 / scaleY 0.72）；带余速撞停 → 压扁（scaleX 0.86 / scaleY 1.08）→ 弹簧弹回 | 高速飞入/横冲入场；多卡错峰填坑 |
+| B contact-shadow-lift | 斜俯拍桌面（rotateX 24°→20°）上卡沿法线 translateZ 96px + scale 1.05；阴影是躺在桌面 z=0 的两层独立实体（接触核 + 环境影），随抬升变大、变虚、变淡、向背光侧偏移；点名卡落回 8f in-cubic + 2f 微压卡壳，末张选定卡弹簧抬起后停在空中 | 逐张点名强调；2.5D 段落的离面铺垫 |
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
 | A 拉伸映射 | v∈[2,140]px/f → 拉伸 0→满（scaleX 2.2/scaleY 0.72） | 峰值 <1.6 不可感；>2.6 读作故障拉丝 |
-| A origin/顺序 | transformOrigin 设运动后缘（右飞 100% 50%）；translate 再 scale | origin 居中读作缩放不是拉伸；顺序反了位移跟着放大 |
-| A 落点回弹 | 8f out-cubic：scaleX 过冲 0.85、scaleY 1.1 再回 1 | 无回弹的拉伸像刹不住车 |
-| A 错峰 | 三卡起飞间隔 12f，飞行 36f | 同帧齐飞读不出各自的拉丝 |
-| B 抬升幅度 | −28px + scale 1.08 | 判例锁死：<12px 禁用（见已知坑） |
-| B 阴影 | 独立 radial-gradient 椭圆 div；卡本体 boxShadow: none | box-shadow 跟卡走，给不出"影子留在桌上" |
+| A origin/顺序 | 拉伸锚在运动后缘（左飞 → 右缘固定，前缘被抻出去）、压扁锚在撞击面；demo 用 left 偏移 + transformOrigin 0 50% 同时实现两种锚点 | origin 居中读作缩放不是拉伸；顺序反了位移跟着放大 |
+| A 撞停 | 飞行曲线 bezier(0.55,0,0.6,0.94)，末端留 ~12px/f 余速；撞停帧切到压扁 scaleX 0.86 / scaleY 1.08（锚点 = 撞击面左缘），spring damping 14 / stiffness 300 弹回（一次可见过冲）；内容层惯性前冲 18px 再拉回 | 无回弹的拉伸像刹不住车；完全软着陆则读不出"撞" |
+| A 错峰 | 三砖起飞 12 / 22 / 30f（间隔 10→8f，越来越快），飞行 24f，每块飞行距离统一 2000px（拉丝强度一致） | 同帧齐飞读不出各自的拉丝 |
+| B 抬升幅度 | 2D：−28px + scale 1.08；2.5D 斜俯拍：translateZ 96px + scale 1.05（屏幕可见位移 40–50px） | 判例锁死：屏幕可见位移 <12px 禁用（见已知坑） |
+| B 阴影 | 独立 div（2D 用椭圆径向渐变；2.5D 用与卡同形的圆角矩形 + blur）：接触核 α 0.32→0.14、blur 3→25px；环境影 α 0.09→0.22、blur 14→54px、向右下偏移；卡本体不带外阴影 | box-shadow 跟卡走，给不出"影子留在桌上" |
 | B 落地 | scale 0.99 卡壳 2f 再 5f 回弹到 1 | 无微压读作飘落，没有重量 |
-| 收尾 | A 末卡回弹后 62f / B 全落回后 35f 真静止 | 收尾帧须与 rest 态逐像素一致 |
+| 收尾 | A 末砖收正后 ~64f（极缓推镜 1→1.02）/ B 末张选定后悬停 ~50f | A 尾帧与 rest 态一致；B 若要循环，把末张改成同样落回 |
 
 ## 已知坑
 - demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
@@ -46,4 +46,4 @@ staging 法则给 2.5D 运镜垫的物理台词。与 smear-multiples 的区别�
 
 ## 参考实现
 demos/ui-entrance/element-body-moves/
-（AxialStretch.tsx / ContactShadowLift.tsx）
+（AxialStretch.tsx：lime 石墨夜跑数据三砖 / ContactShadowLift.tsx：porcelain 斜俯拍桌面「本周专注」三卡，扫—扫—选）

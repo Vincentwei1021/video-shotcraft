@@ -5,55 +5,8 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
 **用卡先读准确源码**（SKILL.md 理念 5）。
 
 使用方式：copy 需要的 .tsx 进你的 Remotion 项目（30fps / 1920×1080），
-注册成 Composition 即可跑。两类共享依赖：
-
-- `_fixtures/Fixtures.tsx` — 假 UI 场景件（FakeDashboard/Card/TitleBlock/G 调色板）。
-  渲染为克制的出版级产品 UI（发丝线细边、两层软阴影、seed 确定性的指标/sparkline/头像假内容，
-  可选 `tone="dark"`），外形几何与旧灰阶版一致，demo 按其坐标叠加的光标/高亮/推镜目标不受影响。
-  多数 demo import 它；copy demo 时把 import 路径改成你项目里的位置。
-- `_fixtures/Polish.tsx` — 可选的质感工具件（贝塞尔缓动 EASE/ramp、胶片颗粒 Grain、暗角 Vignette、
-  softShadow/hairline/surface 材质 helper、按速度的方向性模糊 SpeedBlur、柔光背景 Backdrop），
-  仅依赖 remotion + react。用到它的 demo copy 时一并带上并改 import 路径。
-- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，
-  self-contained，仅依赖 remotion）。给"真实纹理"类 demo（spotlight-hero-card /
-  type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
-  document-typewriter-reveal / outro-group-photo-launch）复用。copy 这些 demo 时
-  一并带上并改 import 路径。
-- `_textures/` — 少数"真实素材版" demo（crash-zoom-punch / depth-layer-moves /
-  speed-ramp-freeze / shot-transitions / page-waterfall-wall 以及本批补全的
-  spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed /
-  list-stack-press / document-typewriter-reveal / outro-group-photo-launch）用到的
-  整页截图与 `live-layout.json`。这些 demo 里的 `staticFile('textures/live/xxx.png')`
-  要求把 `_textures/` 下的同名文件复制到你项目的 `public/textures/live/`
-  （page-waterfall-wall 也已统一读 `textures/live/`，不再有例外）。
-
-个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
-`npm i @remotion/motion-blur`。名单（6 个文件 / 6 张卡）：
-
-- `camera/space-camera-moves/DroneDiveLanding.tsx`
-- `ui-entrance/deck-deal-flyin/DeckDealFlyin.tsx`
-- `opening/crane-rise-reveal/CraneRiseReveal.tsx`
-- `opening/fracture/Fracture.tsx`
-- `opening/magician-card-flourish/MagicianCardFlourish.tsx`
-- `transition/transition-hidden-cut/InvisibleCut.tsx`
-
-（crash-zoom-punch / speed-ramp-freeze / whip 两卡已改为按速度量自算的方向模糊——
-CameraMotionBlur 在近静止帧会把画面整体染灰/染黄。）
-
-## Motion 系 demo（2026-08 并入的 48 张卡）
-
-这批卡的参考实现与其他 demo 同为原生 Remotion .tsx 组件，用法一致：
-copy 进项目注册 Composition 即可。差异只有两点：
-
-- 共享依赖是 `_fixtures/Motion.tsx`（不是 Fixtures.tsx）：E 缓动表 / seg /
-  lerp / 确定性 rand / useT / DesignStage。copy demo 时一并带上并改 import 路径。
-- 画面用 `<DesignStage>` 的 480×270 设计坐标作画、等比放大到合成分辨率；
-  卡片参数表数值都在此坐标系下标定，改合成分辨率不需要动参数。
-  个别文字密集的 demo 用 `raster="zoom"`（布局期放大，小字号字形按目标尺寸
-  光栅化，更清晰）；默认 transform scale 是合成期放大，两者 API 相同。
-
-每个组件同时 `export const <卡名大写蛇形>_DURATION`（30fps 帧数），注册
-Composition 时直接用：
+注册成 Composition 即可跑。每个组件都 `export const <Stem>: React.FC` 并同时导出
+`<大写蛇形>_DURATION`（30fps 帧数），注册时直接用：
 
 ```tsx
 import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
@@ -61,14 +14,46 @@ import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
   durationInFrames={BLUR_SLIDE_DURATION} fps={30} width={1920} height={1080} />
 ```
 
-动画全部由归一化 t（useT()）驱动计算，无真随机，逐帧确定性渲染。
-三个文字密集组件例外（glass-pill-dictation-typing / chip-grid-single-select-blackout /
-pill-chip-slot-cycle-handled）：挂载时用 useLayoutEffect 实测一次文字宽度
-（之后恒定，单次渲染内仍逐帧确定），因此其布局随渲染环境的字体而变——
-跨平台若字体回退不同，宽度会整体漂移；组件内已备兜底估算值，介意的话
-可把实测值写死。这批组件入库时经过与原样片 mp4 的全帧 SSIM 比对验收
-（mean≥0.97 / min≥0.93）；2026-10 质感升级后已在保留节拍与参数的前提下重绘画面，
-不再与原样片逐帧一致。
+动画全部是帧的纯函数（无真随机 / 无 Date），逐帧确定性渲染。2026-10 全库按「只保留镜头手法、
+画面成片级重做」做过第二轮重设计：每个 demo 顶部注释写了 look、构图、时间表与关键曲线，
+画面里的品牌 / 产品 / 数据全部虚构（用真实页面截图的 demo 除外，见下）。
+
+共享依赖（copy demo 时把用到的一并带上并改 import 路径）：
+
+- `_fixtures/Look.tsx` — 视觉系统：8 套调色板 `LOOKS`（暗场 midnight / aurora / ember / graphite / lime，
+  亮场 paper / porcelain / sand）、字号阶梯 `TYPE` 与 `type()`、带主光/余光/地平线光带/暗角/颗粒的
+  舞台 `<Stage>`、透视网格地面 `<GridFloor>`、确定性浮尘 `<Dust>`、单次扫光 `<Sheen>`、
+  逐字/词/行揭示 `<TextReveal>`、`stagger` / `springAt` / `glow`。绝大多数 demo import 它；依赖 `./Polish`。
+- `_fixtures/Polish.tsx` — 质感工具件：贝塞尔缓动 `EASE` / `ramp` / `mix` / `velocity`、按速度的方向性模糊
+  `SpeedBlur`、`softShadow` / `hairline` / `surface` 材质 helper、`Grain` / `Vignette` / `Backdrop`。仅依赖 remotion + react。
+- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，self-contained）。
+  spotlight-hero-card / deck-deal-flyin 在用。
+- `_fixtures/Motion.tsx` — 480×270 设计坐标的 `DesignStage` + E 缓动表 / seg / lerp / rand / useT。
+  第二轮后只剩 bezier-source-converge-merge 在用，其余 Motion 系 demo 已改为原生 1920 坐标布局。
+- `_fixtures/Fixtures.tsx` — 旧版假 UI 场景件（FakeDashboard / Card / TitleBlock / G 调色板）。
+  第二轮后已没有 demo import 它，保留给自己工程里还在用的场景。
+- `_textures/` — 真实页面截图与 `live-layout.json`。用到 `staticFile('textures/live/xxx.png')` 的 demo
+  （crash-zoom-punch 两式 / depth-layer-moves 两式 / shot-transitions 六式 / speed-ramp-freeze 两式 /
+  spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
+  document-typewriter-reveal / page-waterfall-wall / outro-group-photo-launch）要求把 `_textures/` 下的同名文件
+  复制到你项目的 `public/textures/live/`。截图代表"产品既有页面"（审美准则 Q1），这些 demo 只重做了
+  运镜、舞台、光与配套文字，纹理本身未改。
+
+个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
+`npm i @remotion/motion-blur`。名单（4 个文件 / 4 张卡）：
+
+- `camera/space-camera-moves/DroneDiveLanding.tsx`
+- `opening/crane-rise-reveal/CraneRiseReveal.tsx`
+- `opening/fracture/Fracture.tsx`
+- `opening/magician-card-flourish/MagicianCardFlourish.tsx`
+
+其余快速运动一律用按速度量自算的方向模糊（`SpeedBlur` 或局部实现）——CameraMotionBlur 多重采样
+代价高，且在近静止帧会把画面整体染灰/染黄。
+
+字体：只用系统字体栈（SF / Helvetica Neue / Iowan Old Style / Avenir Next Condensed / Futura 等 macOS 自带字），
+不依赖 `@remotion/google-fonts`。少数 demo 按本机 SF Pro 实测写死了字宽 / 字心坐标（如 letter-drop-physics、
+letterform-zoom、beat-step-list-theme-cycle、pill-chip-slot-cycle-handled），换字体或字号要按注释重测；
+可变字重动画（font-weight-pump）依赖系统可变字体，没有时退化为阶梯字重。
 
 ## 真实视频素材（ClipCard，assets/lib/ClipCard.tsx）
 

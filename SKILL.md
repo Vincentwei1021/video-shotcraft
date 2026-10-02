@@ -239,9 +239,9 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
   画面真有点击/开关就该配拟音，但 `ui/` 里一半是合成反馈音（tone/bleep/
   notification）需逐个试听、不可整目录放行（名单见 sound-design 3.3）；
   长样本与轻音素材各有名单需特殊处理（sound-design 4.1）。
-- `demos/` 各卡实现源码：自包含的出版级 demo（部分 import
-  `demos/_fixtures/Fixtures.tsx` 的假 UI 场景件 / `Polish.tsx` 质感件，个别 import
-  `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑；
+- `demos/` 各卡实现源码：自包含的成片级 demo（多数 import `demos/_fixtures/Look.tsx`
+  视觉系统 + `Polish.tsx` 质感件，个别 import `demos/_textures/` 的真实页面纹理），
+  copy 进 Remotion 项目即可跑；
   个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
   `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
