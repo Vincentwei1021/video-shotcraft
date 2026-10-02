@@ -1,32 +1,33 @@
 {
   "stem": "CrashZoomReal",
   "issues": [
-    "急推前 40f 全景完全死帧，机位没有任何生命感，急推缺少蓄力",
-    "CameraMotionBlur 在急推前后的近静止帧把底色压灰、卡片偏黄，出现一拍色闪",
-    "回弹段沿用 ease-in 曲线，回收到 2.45 时速度骤停，读作硬刹而不是弹性",
-    "到位后周边卡与目标卡同等亮度，没有“点名”焦点，视线不集中",
-    "快速段固定采样，最快帧回波间距大于字高，出现台阶状重影"
+    "截图直接铺满白底画面，全景就是一张平铺网页，没有舞台、光和主体感",
+    "急推前没有任何预告，观众不知道要看哪张卡，“点名”只靠推进本身",
+    "落定后只是周边轻压暗 7%，目标卡和邻卡几乎一样亮，特写缺乏焦点",
+    "运动模糊回波间距大，小字在急推中段能数出一层层重影",
+    "特写之后 60 多帧画面完全不变，没有配套信息，尾帧不成海报"
   ],
   "changes": [
-    "全景段加 1→1.02 的 smooth 极缓 creep，急推前 8f 预备回拉到 0.99（先退后冲）",
-    "急推改 quart-in 级 EASE.exit，速度峰值落在到位帧；回弹改阻尼余弦（τ=2.2f、半周期 5.2f），一次可见回弹、下冲 <1%",
-    "自写时间采样运动模糊替代 CameraMotionBlur：快门 0.55f，逐层 opacity 1/(i+1) 等权平均，子帧数按画面位移/14px 自适应（上限 40），只在 40–47f 生效",
-    "到位后 14f 内目标卡外一圈周边压暗 7%，目标卡生出 elevation 8 的两层软影，视线按在目标卡上",
-    "暗角随急推从 0.08 加深到 0.24，落定后退到 0.12 收边"
+    "换 ember look：暖黑舞台 + 顶部主光 + 窗口身后橙色背光 + 地面反光与浮尘；截图装进带标题栏的浏览器窗口，全景后仰 11° 像产品摆在舞台上，急推同曲线拉正到正视特写",
+    "急推前一拍四只橙色角标从外扩 150px 收拢锁定 card4（snappy 16f），预备回拉时同步外扩呼吸；角标挂在页面坐标里，急推后自然变成特写取景框",
+    "急推改 log 空间强 ease-in 0.69→2.48，按目标卡屏幕位置插值保证单调收向画面中心；阻尼余弦回弹到 2.34（6%）；到位帧暖色曝光闪 8f 衰减",
+    "点名加重：周边压成 86% 暖黑、目标卡浮起 + 橙色轮廓光；运动模糊子帧间距压到 ≤6px，高速帧每层补微模糊把回波抹成连续拖影",
+    "新增跟随拍：回弹收干后相机平滑左移 320px，右栏落一组读数（眉题 → 232px “−41%” 逐字升起 → 发丝线 → 两行说明），压暗起点跟着卡右缘走；时长 120→132f，尾段 24f hold 极缓推近"
   ],
   "issuesEn": [
-    "The 40-frame wide hold before the push is completely dead, with no life in the camera and no wind-up",
-    "CameraMotionBlur greys the background and yellows the cards on near-static frames around the push, causing a colour flash",
-    "The rebound reuses the ease-in curve, so it slams to a stop at 2.45 and reads as a hard brake rather than elasticity",
-    "After landing, neighbour cards are as bright as the target, so there is no 'call-out' focus",
-    "A fixed sample count leaves echo spacing larger than the text height on the fastest frames, causing stepped ghosting"
+    "The screenshot simply filled a white frame — the wide shot was a flat web page with no stage, light or sense of subject",
+    "Nothing telegraphed the target before the push, so the viewer had no idea which card mattered",
+    "After landing the surroundings dimmed only 7%, so the target card was barely brighter than its neighbours",
+    "Motion-blur echoes were spaced so widely that small text showed countable ghost copies mid-push",
+    "After the close-up nothing changed for 60+ frames and there was no supporting information, so the last frame was not a poster"
   ],
   "changesEn": [
-    "Added a smooth 1→1.02 creep during the wide hold and an 8-frame wind-up pull-back to 0.99 before the crash",
-    "The crash now uses a quart-in EASE.exit with peak speed at the hit frame; the rebound is a damped cosine (τ=2.2f, half-period 5.2f) with one visible bounce and <1% undershoot",
-    "Replaced CameraMotionBlur with custom temporal sampling: 0.55f shutter, layers at opacity 1/(i+1) for an exact average, sample count adaptive to on-screen travel/14px (max 40), only on frames 40–47",
-    "Within 14 frames of landing the surroundings dim by 7% and the target card gains a two-layer elevation-8 soft shadow, pinning the eye on it",
-    "Vignette deepens from 0.08 to 0.24 during the push and relaxes to 0.12 after landing"
+    "Ember look: warm-black stage with a top key light, orange backlight behind the window, floor glow and dust; the screenshot sits in a browser window tilted back 11° like a product on stage, and the push straightens it to a face-on close-up on the same curve",
+    "One beat before the push, four orange corner brackets contract from 150px out to lock onto card4 (snappy 16f) and breathe outward during the wind-up; they live in page space and become the close-up's framing brackets",
+    "The push is now a log-space strong ease-in 0.69→2.48, interpolated by the target's screen position so it converges monotonically to centre; damped-cosine bounce to 2.34 (6%); a warm exposure flash decays over 8f on the hit frame",
+    "Stronger call-out: surroundings drop to 86% warm black, the card lifts with an orange rim light; blur sub-frames are spaced ≤6px with a small per-layer blur on fast frames so echoes smear into a continuous streak",
+    "New follow-through beat: after the bounce the camera glides 320px left and a right-column readout lands (kicker → 232px “−41%” rising per character → hairline → two lines), with the scrim edge tracking the card; duration 120→132f with a 24f slow-push hold"
   ],
-  "mdChanged": true
+  "mdChanged": true,
+  "look": "ember"
 }

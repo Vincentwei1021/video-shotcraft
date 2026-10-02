@@ -1,32 +1,35 @@
 {
   "stem": "BlurSlide",
   "issues": [
-    "纯色 #0a0b10 平铺底，画面没有任何光源与层次",
-    "占位文案 \"Your headline goes here\" 直接上屏，像未完成的模板",
-    "字体栈只有 -apple-system,sans-serif，标题平涂纯白、字距只按 -0.5px 硬写",
-    "副标题 103f 才收完，尾段只留 11f 静置，关键信息没有呼吸时间",
-    "整段除逐词入场外完全死机位，落定后画面僵住"
+    "标题是 34px 设计坐标放大的普通无衬线白字，文案是 “Your headline goes here” 占位，画面像模板截图",
+    "构图只有居中两行字，上下大片死黑，暂停任一帧都不像设计过的版面",
+    "主副标题只差字号，没有字体家族、颜色或强调词带来的层级",
+    "背景是纯平深灰，没有光、空间和材质",
+    "副标题落定后画面完全静止，尾段是死帧"
   ],
   "changes": [
-    "背景换成暗场柔光 Backdrop（主光居中偏上 + 极淡靛蓝余光 + 暗角）并覆盖 soft-light 颗粒防色带",
-    "文案换成产品级占位：主 4 词 \"Make every launch count\" / 副 5 词 \"Plan, review and ship together\"，词数与原 stagger 节奏一致",
-    "标题改系统 SF 字体栈 700 字重、-0.035em 字距，加上亮下暗的竖向微渐变；副标题改带冷调的 #8b91a8",
-    "时间窗前移：主 0.05–0.56、副 0.29–0.78，三通道同 p 的 outCubic 不变，副标题 88f 落定后留满约 25f 呼吸",
-    "整组全程极缓推近 1→1.018（smooth，起止速度为 0），blur 收敛到 0 时直接去掉 filter 保证落定后字形锐利"
+    "换 paper look（暖白纸 · 墨 · 朱红）做编辑排版海报：刊头/刊脚发丝线框成一页，左对齐 168px 网格",
+    "层级重做：朱红全大写眉题 → 170px 衬线两行主标题 “Make every launch / feel inevitable.”（主角词斜体朱红）→ 46px 无衬线副标题",
+    "保留三通道共用同一个 p 的核心手法，改成 EASE.out 曲线、dy 0.38em、blur 18px；第二行先停 6f 换气，主角词入场窗加长到 30f 并在同一个 p 上收紧字距，最后落定",
+    "副标题 9 词 2.4f 错峰、位移/模糊减半，与主标题重叠 26f 读作一句话",
+    "后景加 760px 刊号数字（5% 墨色）从虚焦显影并反向慢漂，与文字层极缓推近 1→1.03 形成视差",
+    "hold 段不死：72f 起刊脚发丝线从右向左画出 + 页码淡入，纸面主光极缓呼吸"
   ],
   "issuesEn": [
-    "Flat #0a0b10 fill with no light source or depth",
-    "Placeholder copy \"Your headline goes here\" shown on screen, reads as an unfinished template",
-    "Font stack was just -apple-system,sans-serif; flat pure-white headline with a hard-coded -0.5px tracking",
-    "Subtitle only settled at 103f, leaving an 11f tail — no breathing room for the key message",
-    "Locked-off frame: once the words land the picture just freezes"
+    "The headline was plain white sans scaled up from 34px design units, with placeholder copy “Your headline goes here” — it read like a template screenshot",
+    "The composition was just two centered lines with large dead black areas; no paused frame looked like a designed layout",
+    "Title and subtitle differed only in size — no type-family, colour or emphasis-word hierarchy",
+    "The background was flat dark grey with no light, depth or material",
+    "Once the subtitle landed the frame went completely still, leaving a dead tail"
   ],
   "changesEn": [
-    "Dark soft-light Backdrop (centered key light, faint indigo spill, vignette) with soft-light grain against banding",
-    "Product-grade copy: 4-word headline \"Make every launch count\" / 5-word subtitle \"Plan, review and ship together\", word counts kept so the stagger rhythm is unchanged",
-    "SF system stack, 700 weight, -0.035em tracking and a subtle top-lit vertical gradient on the headline; cool-gray #8b91a8 subtitle",
-    "Windows moved earlier (title 0.05–0.56, subtitle 0.29–0.78) with the shared-p outCubic kept; subtitle lands at 88f leaving ~25f of hold",
-    "Whole group slowly pushes in 1→1.018 (smooth, zero velocity at both ends); blur filter removed once p reaches 1 so settled glyphs stay crisp"
+    "Switched to the paper look (warm paper, ink, vermilion) as an editorial poster: masthead and footer hairlines frame a page on a left-aligned 168px grid",
+    "New hierarchy: vermilion all-caps kicker → 170px two-line serif headline “Make every launch / feel inevitable.” (italic vermilion hero word) → 46px sans subtitle",
+    "Kept the core move — all three channels on one shared p — now on EASE.out with 0.38em travel and 18px blur; line two breathes 6f first, and the hero word gets a 30f window with tracking tightening on the same p, landing last",
+    "Nine-word subtitle staggered at 2.4f with half the travel/blur, overlapping the headline by 26f so it reads as one sentence",
+    "A 760px issue numeral (5% ink) resolves from defocus in the background and drifts the opposite way while the text layer pushes 1→1.03, giving parallax",
+    "The hold stays alive: from 72f a footer hairline draws right-to-left with a page number, and the paper key light breathes slowly"
   ],
-  "mdChanged": true
+  "mdChanged": true,
+  "look": "paper"
 }

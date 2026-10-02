@@ -1,30 +1,33 @@
 {
   "stem": "SplitTextStagger",
   "issues": [
-    "没有导出时长常量，工作台按 56f 推断，末字刚落定画面就结束，没有收尾静止",
+    "没有导出时长常量，工作台按 56f 推断，末字刚落定画面就结束，没有收尾",
     "左上角调试标题 \"SPLIT TEXT STAGGER\" 直接上屏",
-    "#ececea 纯色平铺 + Helvetica 800，标题像默认样式",
-    "字从裁切线下升起全程锐利，快速段没有速度感；基线是固定 920px 的 2px 灰线，与文字行宽度对不上"
+    "#ececea 纯色平铺 + 120px Helvetica 单行，标题只占画宽 1/4，构图空、没有层级",
+    "字符走两段插值、等间隔 2f 错峰，全程锐利无速度感；基线是固定 920px 的灰线，与文字行宽对不上"
   ],
   "changes": [
-    "补 SPLIT_TEXT_STAGGER_DURATION = 130f（56f 动作 + 74f 静止），原节拍（12f 起跳、i×2f、115%→-10%→0）不变",
-    "去掉调试标题，柔光 Backdrop 替代纯色底",
-    "系统 SF 栈 700、字号 120→136、-0.015em 字距、带色相近黑墨色",
-    "每字按竖向速度加 SVG y 向运动模糊（≤10px，静止为 0）",
-    "基线改 3px 强调色渐变线、宽度与文字行严格等宽，生长改 30f 强 ease-out"
+    "look 换成 paper（暖白纸 · 墨 · 朱红），整屏做成杂志扉页：上下发丝线版心、眉题、页脚元信息",
+    "标题改两行 300px 巨字「Motion / System.」：第一行无衬线 900、第二行衬线斜体 400，朱红圆形句号是全画面唯一强调色",
+    "每行遮罩底边画成可见的墨色裁切线，比字符早 4f 生长（预备），字从线下升起，手法识别度更强",
+    "字符改物理弹簧（damping 15，~11% 一次过冲）+ 旋转晚 3f 收敛 + 按竖向速度的 y 向模糊；错峰间隔 3.8f→1.8f 收紧（越扫越快）",
+    "右栏补一张随第一行同步绘出的弹簧曲线规格图与 40px 正文，逐行同手法升起，填满右侧留白",
+    "时长 135f：70f 动作 + 65f hold，hold 段整版极缓推进 2.5% + 主光呼吸"
   ],
   "issuesEn": [
-    "No exported duration: the workbench guessed 56f, so the shot ended the instant the last letter landed with no hold",
+    "No exported duration: the workbench guessed 56f, so the shot ended the instant the last letter landed",
     "Debug label \"SPLIT TEXT STAGGER\" printed top-left",
-    "Flat #ececea fill and Helvetica 800, the title looked like a default style",
-    "Letters rose from the mask line razor sharp with no sense of speed; the baseline was a fixed 920px grey rule that did not match the text width"
+    "Flat #ececea fill with a single 120px Helvetica line covering a quarter of the frame: empty composition, no hierarchy",
+    "Letters used two-step interpolation on an even 2f stagger, razor sharp with no sense of speed; the baseline was a fixed 920px grey rule that did not match the text width"
   ],
   "changesEn": [
-    "Added SPLIT_TEXT_STAGGER_DURATION = 130f (56f action + 74f hold); original beats (12f start, i×2f, 115%→-10%→0) untouched",
-    "Debug label removed; soft-light Backdrop instead of a flat fill",
-    "SF system stack at 700, size 120→136, -0.015em tracking, tinted near-black ink",
-    "Per-letter vertical SVG motion blur from rise speed (≤10px, zero at rest)",
-    "Baseline is now a 3px accent gradient rule exactly as wide as the text, grown with a 30f strong ease-out"
+    "New paper look (warm paper, ink, vermilion) staged as a magazine opener: hairline margins, kicker labels, footer meta",
+    "Two-line 300px headline \"Motion / System.\": heavy 900 sans over a 400 serif italic, with a round vermilion full stop as the only accent",
+    "Each line's mask edge is drawn as a visible ink cut line that grows 4f ahead of the letters, so the letters clearly rise out from under it",
+    "Letters ride a physical spring (damping 15, ~11% single overshoot) with rotation settling 3f later and speed-based vertical blur; the stagger tightens from 3.8f to 1.8f",
+    "Right column adds a spec plot of the same spring curve drawn in sync with line one, plus 40px body copy revealed line by line with the same technique",
+    "135f total: 70f of action and a 65f hold with a slow 2.5% push and breathing key light"
   ],
-  "mdChanged": true
+  "mdChanged": true,
+  "look": "paper"
 }

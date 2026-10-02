@@ -2,7 +2,7 @@
 name: type-assembly-moves
 一句话: 文字集结四式——split-text-stagger 逐字裂升、letterform-drift-assembly 漂移合拢、tracking-expand-reveal 字距呼吸、text-on-path 沿线流入
 适用: 大标题/标语的入场；与 type-entrance-moves 两式、split-flap-title、document-typewriter-reveal 同属标题入场大品类，全片 ≤2 种
-时长: 单式 4–5s（动作段 A ~56f / B ~104f / C ~58f / D ~101f；demo 全长含 hold：A 130f / B 150f / C 130f / D 150f，各自导出 `*_DURATION`）
+时长: 单式 4–5s（动作段 A ~70f / B ~104f / C ~58f / D ~101f；demo 全长含 hold：A 135f / B 150f / C 130f / D 150f，各自导出 `*_DURATION`）
 能量: A 中 / B 中高 / C 低中 / D 中
 ---
 
@@ -18,7 +18,7 @@ name: type-assembly-moves
 ## 四式选型
 | 式 | 做法 | 适用 |
 |----|------|------|
-| A split-text-stagger 裂升 | 每字 overflow 盒内 translateY(115%→0) 带 10% 过冲，delay i×2f，基线同步生长 | 通用默认；利落理性 |
+| A split-text-stagger 裂升 | 每行一个 overflow 遮罩盒，字符 translateY(1.12em→0) 走物理弹簧（~11% 过冲）、旋转晚 3f 收敛，错峰间隔 3.8f→1.8f 收紧；遮罩底边画成可见裁切线、比字早 4f 生长 | 通用默认；利落理性 |
 | B drift-assembly 漂移合拢 | 字符 seed 方向 ±300px + blur 8px 漂入错峰归位，锁定帧加深脉冲，合体后整词呼吸 1.04 | 品牌名/片头级亮相 |
 | C tracking-expand 字距呼吸 | 字母从 −0.42em 叠压展开到 0.14em，blur 10→0 同曲线 | 安静抒情段；副标题跟进 |
 | D text-on-path 沿线流入 | 整串字按真实步进沿弧长刚性推进（末字领跑、切线角旋转，行进中可读），到达后逐字 12f 摆正水平 | 曲线有语义时（增长线/流程线） |
@@ -26,7 +26,7 @@ name: type-assembly-moves
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
-| A 过冲 | 10%（原案 6% 可测不可感，实渲加码） | 正常速度要看得见回落那一下 |
+| A 过冲 | ~11%（弹簧 damping 15 / stiffness 150；原案 6% 可测不可感） | 正常速度要看得见回落那一下；升起快段按竖向速度加 y 向模糊 |
 | B 锁定脉冲 | 字色深到 #000 + 描边 0→3px→0 / 8f | 白底上加深+描边，不用发光（判例） |
 | B 漂移三绑定 | 位移 (1−p)、blur 8(1−p)、opacity 0.35→1 共用一条 p | 三者分曲线走，字会"到了还糊着" |
 | C 实现命门 | letter-spacing 恒为终态，逐字符 span 只做 translateX=(1−p)(i−词心)(−0.56em) | 直接动 letter-spacing 逐帧重排必抖 |

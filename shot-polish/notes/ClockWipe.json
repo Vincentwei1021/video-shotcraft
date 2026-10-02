@@ -1,28 +1,31 @@
 {
   "stem": "ClockWipe",
   "issues": [
-    "没有导出时长常量，工作台按卡片 md 抓到 20f——雷达扫描（30–90f）一帧都没进画，看到的只是一张静止页面",
-    "指针只是一根从屏心顶到画外的硬线，没有枢轴，像是从虚空里长出来，外端硬生生截在画外",
-    "扫过的区域瞬间就是新页，没有任何余辉，“扫描刷新”缺少时间感",
-    "亮线暗描边用纯黑 rgba(0,0,0,0.55)，与 Phase 0 页面的带色相深色不协调；SVG 无实例化 ID"
+    "前后两页是灰色占位线框 dashboard，没有内容也没有字，看不出\"换了什么\"",
+    "浅灰底上的指针是一根细灰线，四层亮线在白底上仍然很弱，扫描沿读不出光",
+    "指针从屏心直接以全速出现、扫满在 12 点硬停，雷达没有起转和惯性",
+    "构图与擦除圆心无关：屏心落在卡片缝里，扇形扫过只是在切图"
   ],
   "changes": [
-    "补 CLOCK_WIPE_DURATION = 150（前态 30 + 扫描 60 + 淡出 6 + 真静止 54）；屏心 (960,540)、R1400、73 顶点扇形、30–90f 纯 linear 0→360°、四层亮线宽度/透明度、90–96f 淡出与 96f 摘罩全部保持",
-    "指针身后拖一道 36° 雷达余辉扇（强调色 0→0.13 conic 渐变，只铺在已扫过的 B 侧，扫满前长度随角度增长、不越过 12 点），与亮线同步淡出卸载",
-    "屏心补指针枢轴：深色芯 + 3px 白环 + 强调色圆点 + 软投影，22–30f 以 overshoot 弹出做预备，90–96f 随亮线淡出、96f 卸载",
-    "指针用 SVG 遮罩做外端渐隐（70% 后渐隐到 0），暗描边改带色相的 rgba(10,11,18,0.55)；渐变/遮罩 ID 用 useId 实例化"
+    "look 换成 midnight 暗场，前后两页做成同一块网络运维大屏的「过期态」（去饱和、Synced 6 days ago）与「实时态」（电光蓝、绿色利好、Live），擦除读作数据刷新",
+    "构图围绕擦除圆心设计：屏心一只 500px 吞吐量表盘 + 60 格刻度（就是钟面），左右各两块 88px 大字指标卡",
+    "指针从表盘外沿伸出：白核 + 电光蓝多层光晕 + 身后 55° 余辉扇；表盘弧长随指针扫过充能到 78%，端点亮起",
+    "指针运动：前 6f 匀加速起转、恒速 8°/帧扫满 48f，摘罩后惯性再滑 40° 淡出",
+    "两页共用同一舞台底消除起始边接缝，B 页泛光扫满后才通电亮起；余波 Live 信号脉冲、增长标签升起，hold 段实时时钟跳秒"
   ],
   "issuesEn": [
-    "No duration constant; the workbench picked 20f from the card md, so the radar sweep (30–90f) never appeared — viewers saw a static page",
-    "The hand was a hard line from screen centre to beyond the frame with no pivot, as if growing out of nothing, and was abruptly cut off at the edge",
-    "Swept areas became the new page instantly with no afterglow, so the scan-and-refresh idea had no sense of time",
-    "The dark outline was pure black rgba(0,0,0,0.55), clashing with the Phase 0 tinted darks; SVG ids were not instance-unique"
+    "Both pages were grey wireframe placeholder dashboards with no content or text, so nothing told you what changed",
+    "On the light grey page the hand was a thin grey line; even four stroke layers barely read as light",
+    "The hand appeared at full speed from the centre and stopped dead at 12 o'clock: no spin-up, no inertia",
+    "The layout ignored the wipe's pivot: the centre fell into a gap between cards, so the sweep just sliced the image"
   ],
   "changesEn": [
-    "Added CLOCK_WIPE_DURATION = 150 (30 lead-in + 60 sweep + 6 fade + 54 true hold); the (960,540) centre, R1400, 73-vertex fan, linear 0→360° over 30–90f, four-layer line widths/opacities, 90–96f fade and 96f unmount are unchanged",
-    "A 36° radar afterglow trails the hand (accent conic gradient 0→0.13, only on the already-swept B side; its length grows with the angle before the first full turn so it never crosses 12 o'clock), fading and unmounting with the line",
-    "A pivot hub at screen centre: dark core, 3px white ring, accent dot and soft shadow; it pops in with overshoot at 22–30f as anticipation, fades with the line at 90–96f and unmounts at 96f",
-    "The hand fades out toward its outer end through an SVG mask (from 70% to 0); the dark outline is the tinted rgba(10,11,18,0.55); gradient/mask ids are made unique with useId"
+    "Dark midnight look; the two pages are the same network-ops screen in a stale state (desaturated, \"Synced 6 days ago\") and a live state (electric blue, green deltas, \"Live\"), so the wipe reads as a data refresh",
+    "Composition built around the pivot: a 500px throughput dial with a 60-tick bezel (the clock face) at centre, two big 88px metric cards on each side",
+    "The hand grows out of the dial rim: white core, layered electric-blue glow and a 55° afterglow fan; the dial arc charges to 78% as the hand passes and its end cap lights up",
+    "Hand motion: 6f spin-up, then a constant 8°/frame for a 48f sweep, and after the clip is removed it coasts another 40° while fading",
+    "Both pages share one stage background so there is no seam at 12 o'clock; the live bloom powers on after the sweep, followed by a Live ping, a rising delta tag and a ticking clock during the hold"
   ],
-  "mdChanged": false
+  "mdChanged": true,
+  "look": "midnight"
 }
