@@ -1,30 +1,31 @@
 {
   "stem": "GradientTransition",
   "issues": [
-    "radial 段写成 `circle 45%`（circle 半径不接受百分比），整条渐变失效，2–4.2s 整段是纯黑屏",
-    "linear 段只有两个色标，整屏死平，没有受光",
-    "conic 段 85% 饱和的七色彩虹，色环中心有尖点、相邻色标之间有硬带，h264 下还出色带",
-    "中央 pill 文字按 480 设计稿栅格化后 4 倍放大，发虚；段切换时 LINEAR/RADIAL/CONIC 硬跳字"
+    "画面上只有渐变和一枚写着 LINEAR / RADIAL / CONIC 的调试小 pill，没有任何内容，像参数演示而不是镜头",
+    "radial 段外圈近黑、光斑偏小，整段读作黑屏；conic 段是七色彩虹，饱和到刺眼且和前两段不是一个色系",
+    "linear 段两色标明度接近，角度从 40° 扫到 230° 几乎看不出来，只是一块在缓慢变色的平底",
+    "180f 里没有节奏变化，三段等速推进，结尾没有落定的画面"
   ],
   "changes": [
-    "radial 半径按 400px=100% 换算成 px，修复黑屏；圆心对角游走 + 半径 45→85% 的参数不变，光斑中段加一档暗色标让外圈更快沉下去",
-    "linear 段叠一处沿渐变反向缓慢游走的柔光斑（白 0.22）",
-    "conic 段饱和度压到 66–76%，外扩 12px 后 blur(5px) 抹掉中心尖点与色标硬带，中心加一圈 0.16 柔光",
-    "DesignStage 改 raster=\"zoom\"；pill 换成发丝线 + 顶部内高光 + 投影的玻璃胶囊，右侧实时读出正在插值的参数（角度 / r% / 起始角，tabular-nums），换字跟随层权重过半交接、不叠影",
-    "全片加暗角 + soft-light 颗粒防色带；md 已知坑补一条 circle 半径不能用百分比"
+    "look 换成 aurora（紫粉暗场），三段都从同一组紫 / 品红 / 冰蓝取色，conic 改成 A→B→C→A 三色环、圆心放在主体右后方并压暗外圈",
+    "前景加一组发布会片头大字：「Bend light.」→「Focus it.」→ 260px 字标「Prism」+ 副标题，动词正好描述该段渐变的参数运动，换句与换类型同拍",
+    "linear 色标拉开三档明度（64 / 40 / 7），角度扫过时亮带走向清楚；radial 光斑半径 48%→80%、对角游走，不再黑屏",
+    "节奏重排为 200f：两次 12–14f 窄交叉淡化，文字虚化入场 / 上飘退场，conic 用慢起长尾旋转落定，尾段 40f hold",
+    "渐变改在 480×270 小画布作画再放大 4×，conic 的模糊在小画布上做，叠颗粒防色带；底部 mono 注记实时读出正在插值的参数与段号"
   ],
   "issuesEn": [
-    "The radial phase used `circle 45%` (circle radius can't be a percentage), so the whole gradient was invalid and 2–4.2s rendered pure black",
-    "The linear phase had just two stops — a dead-flat, unlit field",
-    "The conic phase was an 85%-saturated seven-colour rainbow with a sharp pinch at the centre, hard bands between stops, and h264 banding",
-    "The centre pill was rasterised at 480px design size and upscaled 4×, so it was soft; labels hard-switched LINEAR/RADIAL/CONIC between phases"
+    "The frame held nothing but a gradient and a small debug pill reading LINEAR / RADIAL / CONIC: a parameter demo rather than a shot",
+    "The radial pass had a near-black rim and a small glow, so it read as a black screen; the conic pass was a seven-colour rainbow, oversaturated and off-palette",
+    "The linear stops were close in value, so the 40° to 230° sweep was barely visible, just a flat field slowly changing hue",
+    "180f with no change of pace: three passes at the same speed and no settled ending"
   ],
   "changesEn": [
-    "Radial radius is converted to px (400px = 100%), fixing the black screen; the diagonal centre drift and 45→85% radius are unchanged, with an extra dark mid-stop so the rim falls off faster",
-    "The linear phase gets a soft light spot (white 0.22) drifting slowly against the gradient direction",
-    "Conic saturation lowered to 66–76%; the layer is over-scanned 12px and blurred 5px to erase the centre pinch and stop banding, with a 0.16 soft glow at the centre",
-    "DesignStage uses raster=\"zoom\"; the pill is now a glass capsule with hairline, top highlight and drop shadow, reading out the live interpolated parameter (angle / r% / start angle, tabular-nums), and labels hand off at the layer-weight midpoint without overlapping",
-    "Added vignette and soft-light grain against banding; added a pitfall line to the md about circle radii not accepting percentages"
+    "Aurora look (violet-pink dark stage): all three passes draw from one violet, magenta and ice-blue set, and the conic is now an A-B-C-A three-colour ring centred behind the subject with a darkened rim",
+    "Launch-title typography in front: 'Bend light.' then 'Focus it.' then a 260px 'Prism' wordmark with subtitle; each verb describes what that gradient's parameters are doing, and the line changes on the same beat as the gradient type",
+    "Linear stops now span three values (64 / 40 / 7) so the bright band visibly sweeps; the radial glow grows from 48% to 80% while travelling diagonally instead of reading as black",
+    "Re-timed to 200f: two narrow 12–14f crossfades, lines blur in and float out, the conic spin starts slow and settles with a long tail, and there is a 40f end hold",
+    "Gradients are painted on a 480x270 canvas and scaled 4x, with the conic blur done at small size and grain on top against banding; a mono caption reads out the live parameters and the pass number"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

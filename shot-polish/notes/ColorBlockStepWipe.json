@@ -1,32 +1,33 @@
 {
   "stem": "ColorBlockStepWipe",
   "issues": [
-    "没有导出时长常量，工作台只渲 44f：A 式还没铺满就结束，徽章和整个 B 式（红块斜吃 + 携带卡）都没出现",
-    "A 式蓝块在一片空灰底上长，没有被「吞」的东西，接管感弱",
-    "B 式背景是灰色骨架条拼的假页面，色块是死平纯色",
-    "AI 徽章是平涂奶油圆 + 单层黑影，五官线宽不一",
-    "携带卡的阴影是统一黑色 0.3，压在红底上发脏"
+    "被吞的文档页是 18–26px 的通用小字排版，在 1080p 画面里读不清，像占位稿",
+    "色块尺寸是随手写的像素值，跳变没有参照物，容易被读成播放器掉帧",
+    "接管后的蓝场只有一枚 170px 的笑脸徽章，B 式红块吃完后只剩一张小卡，两段都没有落定的海报画面",
+    "A/B 是两段硬切的独立场景，蓝 + 红两种饱和色撞色，没有叙事上的接力"
   ],
   "changes": [
-    "补 COLOR_BLOCK_STEP_WIPE_DURATION = 150（md demo 合计 150f）；全部阶跃阈值、尺寸、徽章 0.55→1.12→1 三跳和 -4° 定角原样保留，零补间语法不动",
-    "两式被吞的都换成出版级文档页：面包屑、64px 图标 + 60px 标题、Owner/Status 元信息、两段 26px 正文、提示框、两张 Card",
-    "色块改为同色相 165° 微渐变 + 颗粒的有材质纯色，硬边不羽化；每一跳的落地帧整块提亮一档（1 帧打击帧，仍是离散的），给「咔、咔、咔」一个视觉落点",
-    "徽章改奶油径向渐变 + 发丝线 + 顶部内高光 + 蓝调两层软阴影，五官统一笔画并加眼神高光",
-    "携带卡改红调 elevation 56 的飞行软阴影，卡面只留内高光"
+    "look 换成 porcelain（冷白 + 钴蓝），B 式色块改用 look 的墨色海军蓝：中性色 + 一个强调色，不再蓝红撞色",
+    "每一跳吸附到 160×120 的 12×9 网格，文档页画出格点十字；A 式中间态改成两矩形求并的「像素圆角」十字，五跳间隔 7/9/8/10f 不等距",
+    "文档页重做成出版级原生排版：120px 标题、40px 正文、36px 清单和一条 AI 提示行，提示行就是钴蓝吞屏的起因",
+    "两式接力成一条叙事：钴蓝接管后徽章三跳弹出 + 120px「Drafted in 4 seconds.」，墨色三角再三跳吃掉钴蓝场、把发布卡搬到最终槽位",
+    "阶跃语法之外的元素全部顺滑（页面缓推、标题逐词升起）做对照；收尾句点是一颗阶跃出现的钴蓝像素",
+    "时长 150→180f，尾段 34f hold 是「Ready to ship.」+ 发布卡的完整海报"
   ],
   "issuesEn": [
-    "No duration constant, so the workbench rendered only 44f: variant A ended before filling the screen, and the badge plus all of variant B (diagonal red block carrying a card) never appeared",
-    "Variant A's blue block grew on an empty grey field — nothing was being swallowed, so the takeover felt weak",
-    "Variant B's background was a fake page of grey skeleton bars and the colour blocks were dead-flat fills",
-    "The AI badge was a flat cream disc with a single black shadow and uneven facial line weights",
-    "The carried card's shadow was a uniform 0.3 black that looked dirty on red"
+    "The page being swallowed was generic 18–26px type, unreadable at 1080p and placeholder-like",
+    "Block sizes were arbitrary pixel values with nothing to snap to, so the jumps could read as dropped frames",
+    "The blue takeover held only a 170px smiley badge and the red pass ended on one small card: neither half landed on a poster frame",
+    "A and B were two hard-cut scenes, saturated blue against saturated red, with no story linking them"
   ],
   "changesEn": [
-    "Added COLOR_BLOCK_STEP_WIPE_DURATION = 150 (md: demo total 150f); every step threshold and size, the 0.55→1.12→1 badge jumps and the -4° card angle are untouched — the zero-tween grammar stays",
-    "Both variants now swallow a publication-grade document page: breadcrumb, 64px icon + 60px title, owner/status meta, two 26px paragraphs, a callout and two Cards",
-    "Colour blocks are same-hue 165° micro-gradients with grain — textured solids with hard, unfeathered edges; on the landing frame of each jump the whole block brightens one notch (a 1-frame hit, still discrete) to give each \"clack\" a visual beat",
-    "Badge uses a cream radial gradient, hairline, top inner highlight and a blue-tinted two-layer shadow; facial strokes are unified with small catch-lights in the eyes",
-    "The carried card gets a red-tinted elevation-56 flying shadow, with only an inner highlight on its face"
+    "Porcelain look (cool white, cobalt), with the B block in the look's navy ink: neutrals plus one accent instead of a blue-red clash",
+    "Every jump snaps to a visible 12x9 grid of 160x120 cells marked by crosshair ticks; A's in-between states are pixel-rounded crosses (a union of two rects), five jumps at uneven 7/9/8/10f intervals",
+    "The document is rebuilt with publication-grade native layout: 120px title, 40px body, a 36px checklist and an AI prompt row that motivates the cobalt takeover",
+    "The two passes now hand off as one story: after the cobalt takeover the badge pops in three hard steps under a 120px 'Drafted in 4 seconds.', then a navy triangle eats the cobalt field in three jumps and carries the release card into its final slot",
+    "Everything outside the step grammar is smooth for contrast (slow page push, headlines rising word by word); the closing period is a cobalt pixel that appears in a hard step",
+    "Duration 150 to 180f, ending on a 34f hold of 'Ready to ship.' plus the release card as a complete poster"
   ],
-  "mdChanged": false
+  "look": "porcelain",
+  "mdChanged": true
 }

@@ -1,162 +1,192 @@
-// cube-navigation — Cube Navigation 立方体逐面导航（motion-lab 定稿转原生 Remotion）
-// 内容贴在 3D 立方体六面，相机逐面浏览：正面特写 → 拉远到等轴视角看清棱角 →
-// 转到下一面推近，面间穿插斜角过渡；每面按法线朝向实时算明暗。
-// 设计坐标 480×270（DesignStage 等比放大，raster="zoom" 让面上文字按成片尺寸栅格化），
-// 参数表数值以此坐标系标定。
-// 质感层：六面换成真实感的模块界面（指标 / 柱图 / 里程碑 / 文件 / 开关 / 导出），内容避开
-// 特写时上下各 ~19px 的出画区；面上叠随明暗变化的左上受光 + 1px 棱边高光；立方体下方
-// 一圈随当前面色相变化的地面光晕（等轴俯视时才看得见）；相机的推拉与转向错开 2% 时间——
-// 拉远时先退后转、推近时先转后进（overlap），不再同步机械地一起走。
+// cube-navigation — 立方体逐面导航：六个模块贴在同一个立方体的六面，相机在「正面特写读内容」与
+// 「拉远等轴看棱角」之间交替步进，每面按法线朝向实时算明暗。
+//
+// 第二轮重设计（石墨暗场 · 产品发布会陈列）：
+// - look = graphite（近单色暗场）。舞台不抢色，六面各持一个色相（面身份）——蓝 / 紫 / 玫红 / 青 / 绿 / 琥珀，
+//   都压成同一明度的"深色釉面"，强调色只在各自面内的主数据上。
+// - 不再用 480×270 设计坐标放大：直接按 1920 成片坐标搭，立方体边长 760px，特写时屏幕放大 ≈1.1×，
+//   面上文字按接近原生尺寸栅格化（Q2），整面完整入画——不再"特写时上下出画"。
+// - 构图：立方体中心放在画面 58% 处；左侧是模块索引栏（六个模块名 + 序号），当前面高亮并跟着相机换面，
+//   观众始终知道"我在整体的哪一面"；收尾在索引栏上方升起大标题，成一张发布会海报。
+// - 相机：每次换面是一条"拉远+转向 → 到等轴顶点悬停 → 转向+推近"的弧（两段 in-out 首尾零速，顶点自然悬停），
+//   拉远时推拉先走 3f、推近时转向先走、推拉后到 4f（重叠），不同步机械地一起走。
+//
+// 时间表（30fps，共 240f）：
+//   0–18    正面特写 Overview（第 0 帧即在画面里），折线 0–26f 描出、数字计数
+//   18–44   拉远 + 转向到等轴 A（26f），44–48 顶点悬停
+//   48–72   转向 + 推近到右面 Revenue（24f）
+//   72–98   读 Revenue（26f），柱子 74–96 错峰长起
+//   98–124  拉远到等轴 B；124–128 悬停；128–152 推近到背面 Timeline
+//   152–178 读 Timeline（26f），里程碑逐条点亮
+//   178–208 拉远到收尾等轴（更远、更高），208–240 hold；194–224 左上大标题逐行升起
 import React from 'react';
-import { DesignStage, E, seg, useT } from '../../_fixtures/Motion';
-import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, TYPE, alpha, stagger, type } from '../../_fixtures/Look';
 
-export const CUBE_NAVIGATION_DURATION = 180; // 6000ms @30fps
+export const CUBE_NAVIGATION_DURATION = 240;
 
-const S = 190; // 立方体边长
+const L = LOOKS.graphite;
+const S = 760; // 立方体边长（成片坐标）
 const H = S / 2;
+const P = 2600; // 透视距离（P/S ≈ 3.4：棱角清楚又不畸变）
+const CX = 1114; // 立方体中心（画面 58%）
+const CY = 540;
 
-type FaceKind = 'overview' | 'metrics' | 'timeline' | 'assets' | 'settings' | 'export';
-// 六面：贴面变换 / 法线 / 色相 / 内容
+type FaceKind = 'overview' | 'revenue' | 'timeline' | 'assets' | 'settings' | 'export';
 const FACES: { n: string; tr: string; nm: [number, number, number]; hue: number; kind: FaceKind; meta: string }[] = [
-  { n: 'OVERVIEW', tr: `translateZ(${H}px)`, nm: [0, 0, 1], hue: 224, kind: 'overview', meta: 'Last 30 days' },
-  { n: 'METRICS', tr: `rotateY(90deg) translateZ(${H}px)`, nm: [1, 0, 0], hue: 268, kind: 'metrics', meta: 'Weekly' },
-  { n: 'TIMELINE', tr: `rotateY(180deg) translateZ(${H}px)`, nm: [0, 0, -1], hue: 330, kind: 'timeline', meta: 'Q4 plan' },
-  { n: 'ASSETS', tr: `rotateY(-90deg) translateZ(${H}px)`, nm: [-1, 0, 0], hue: 190, kind: 'assets', meta: '4 files' },
-  { n: 'SETTINGS', tr: `rotateX(90deg) translateZ(${H}px)`, nm: [0, -1, 0], hue: 154, kind: 'settings', meta: 'Workspace' },
-  { n: 'EXPORT', tr: `rotateX(-90deg) translateZ(${H}px)`, nm: [0, 1, 0], hue: 34, kind: 'export', meta: 'Share' },
+  { n: 'Overview', tr: `translateZ(${H}px)`, nm: [0, 0, 1], hue: 218, kind: 'overview', meta: 'Last 30 days' },
+  { n: 'Revenue', tr: `rotateY(90deg) translateZ(${H}px)`, nm: [1, 0, 0], hue: 262, kind: 'revenue', meta: 'This month' },
+  { n: 'Timeline', tr: `rotateY(180deg) translateZ(${H}px)`, nm: [0, 0, -1], hue: 336, kind: 'timeline', meta: 'Q4 plan' },
+  { n: 'Assets', tr: `rotateY(-90deg) translateZ(${H}px)`, nm: [-1, 0, 0], hue: 188, kind: 'assets', meta: '4 files' },
+  { n: 'Settings', tr: `rotateX(90deg) translateZ(${H}px)`, nm: [0, -1, 0], hue: 152, kind: 'settings', meta: 'Workspace' },
+  { n: 'Export', tr: `rotateX(-90deg) translateZ(${H}px)`, nm: [0, 1, 0], hue: 36, kind: 'export', meta: 'Share' },
 ];
 
-// 相机关键姿态：正面 → 等轴 → 右面 → 等轴 → 背面 → 等轴收尾
-const CAM = [
-  { rx: 0, ry: 0, d: 235 },
-  { rx: -22, ry: -38, d: -130 },
-  { rx: 0, ry: -90, d: 235 },
-  { rx: -27, ry: -142, d: -130 },
-  { rx: 0, ry: -180, d: 235 },
-  { rx: -24, ry: -226, d: -165 }, // 收尾等轴略退一点，尾帧立方体完整入画
-];
-// 每段关键帧的时间窗（t 域），窗间即 hold
-const WIN: [number, number][] = [[0.10, 0.24], [0.30, 0.44], [0.50, 0.62], [0.66, 0.78], [0.84, 0.97]];
-// 推拉与转向的错峰量（t 域 ≈ 3.6f）：拉远段 d 提前、推近段 d 滞后
-const LEAD = 0.02;
-
+// 相机姿态：d = rig 的 translateZ（越大越近）。特写 d=-140（正面屏幕放大 ≈1.1×），等轴 d≈-2000（≈0.56×）
 type Cam = { rx: number; ry: number; d: number };
-const CAM_KEYS = ['rx', 'ry', 'd'] as const;
+const CLOSE = -140;
+const POSES: Cam[] = [
+  { rx: 0, ry: 0, d: CLOSE }, // Overview 特写
+  { rx: -24, ry: -42, d: -2000 }, // 等轴 A
+  { rx: 0, ry: -90, d: CLOSE }, // Revenue 特写
+  { rx: -24, ry: -138, d: -2000 }, // 等轴 B
+  { rx: 0, ry: -180, d: CLOSE }, // Timeline 特写
+  { rx: -27, ry: -222, d: -2250 }, // 收尾等轴（更远更高）
+];
+// 每段 [起, 止] 帧
+const MOVES: [number, number][] = [[18, 44], [48, 72], [98, 124], [128, 152], [178, 208]];
+const MOVE_EASE = bezier(0.62, 0, 0.3, 1); // 起步柔、落点更柔的 in-out
+const LAG = 4; // 推拉相对转向的错峰（帧）
 
-// 累加式关键帧插值：各段进度独立过 ease 后按差值叠加，天然支持窗间 hold；
-// d 轴按段性质前移/后移 LEAD，做出"先退后转 / 先转后进"的重叠
-const acc = (t: number, base: Cam, kfs: { at: [number, number]; to: Cam }[], ease: (x: number) => number): Cam => {
-  const out: Cam = { ...base };
-  let prev = base;
-  for (const kf of kfs) {
-    const pullOut = kf.to.d < prev.d;
-    for (const k of CAM_KEYS) {
-      const sh = k === 'd' ? (pullOut ? -LEAD : LEAD) : 0;
-      const u = seg(t, kf.at[0] + sh, kf.at[1] + sh, ease);
-      out[k] += u * (kf.to[k] - prev[k]);
-    }
-    prev = kf.to;
-  }
+const camAt = (f: number): Cam => {
+  const out: Cam = { ...POSES[0] };
+  MOVES.forEach(([a, b], i) => {
+    const from = POSES[i], to = POSES[i + 1];
+    const pullOut = to.d < from.d;
+    // 拉远：推拉先走、转向晚 3f；推近：转向先走、推拉晚 LAG 帧
+    const dA = pullOut ? a : a + LAG, rA = pullOut ? a + 3 : a;
+    const ud = ramp(f, dA, b - a, MOVE_EASE);
+    const ur = ramp(f, rA, b - a - (pullOut ? 3 : 0), MOVE_EASE);
+    out.d += ud * (to.d - from.d);
+    out.rx += ur * (to.rx - from.rx);
+    out.ry += ur * (to.ry - from.ry);
+  });
+  // 全程极缓的匀速漂移（转向 -0.018°/f + 推近 0.25px/f）：hold 段也活着，特写带一点点侧角，不加抖动
+  out.ry += -0.018 * f;
+  out.d += 0.25 * f;
   return out;
 };
 
 const RAD = Math.PI / 180;
 
-// ───── 面内容（设计坐标；特写时可见区约 y 19–171，内容放在 26–168） ─────
-const ink = (h: number, a = 0.95) => `hsla(${h},40%,94%,${a})`;
-const sub = (h: number, a = 0.62) => `hsla(${h},45%,82%,${a})`;
-const acc1 = (h: number, a = 1) => `hsla(${h},88%,72%,${a})`;
+// ───── 面配色：同明度深釉面 + 该面强调色 ─────
+const ink = (h: number, a = 0.96) => `hsla(${h},30%,96%,${a})`;
+const sub = (h: number, a = 0.62) => `hsla(${h},30%,80%,${a})`;
+const acc = (h: number, a = 1) => `hsla(${h},90%,70%,${a})`;
 const tile = (h: number): React.CSSProperties => ({
-  background: `hsla(${h},50%,70%,0.08)`, boxShadow: `inset 0 0 0 0.5px hsla(${h},70%,80%,0.18)`, borderRadius: 5,
+  background: `hsla(${h},40%,70%,0.07)`, boxShadow: `inset 0 0 0 1.5px hsla(${h},60%,80%,0.12)`, borderRadius: 20,
 });
 
-const FaceBody: React.FC<{ kind: FaceKind; h: number }> = ({ kind, h }) => {
+const FaceBody: React.FC<{ kind: FaceKind; h: number; f: number }> = ({ kind, h, f }) => {
   if (kind === 'overview') {
-    const pts = [0.3, 0.42, 0.36, 0.55, 0.5, 0.62, 0.58, 0.74, 0.7, 0.86];
-    const line = pts.map((v, i) => `${(i / 9) * 154},${(1 - v) * 30}`).join(' ');
+    const pts = [0.22, 0.34, 0.3, 0.46, 0.42, 0.55, 0.5, 0.66, 0.62, 0.84];
+    const W = 632, CH = 170;
+    const draw = ramp(f, 0, 26, EASE.out);
+    const line = pts.map((v, i) => `${(i / 9) * W},${(1 - v) * CH}`).join(' ');
+    const n = Math.round(mix(19.2, 24.8, ramp(f, 0, 22, EASE.snappy)) * 10) / 10;
     return (
       <>
-        <div style={{ fontSize: 30, fontWeight: 700, color: ink(h), letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>24.8k</div>
-        <div style={{ marginTop: 4, display: 'flex', gap: 5, alignItems: 'center', fontSize: 6.5, color: sub(h) }}>
-          active users <span style={{ color: '#7ee2b0', fontWeight: 600 }}>▲ 12.4%</span>
+        <div style={{ ...type(160, 760), color: ink(h) }}>{n.toFixed(1)}k</div>
+        <div style={{ marginTop: 14, display: 'flex', gap: 16, alignItems: 'center', ...type(32, 500), color: sub(h) }}>
+          weekly active users <span style={{ color: acc(h), fontWeight: 650 }}>▲ 12.4%</span>
         </div>
-        <svg width={154} height={34} style={{ marginTop: 8, display: 'block', overflow: 'visible' }}>
+        <svg width={W} height={CH + 10} style={{ marginTop: 36, display: 'block', overflow: 'visible' }}>
           <defs>
-            <linearGradient id={`cn-area-${h}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={acc1(h)} stopOpacity={0.35} />
-              <stop offset="100%" stopColor={acc1(h)} stopOpacity={0} />
+            <linearGradient id="cn-area" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={acc(h)} stopOpacity={0.32} />
+              <stop offset="100%" stopColor={acc(h)} stopOpacity={0} />
             </linearGradient>
+            <clipPath id="cn-draw"><rect x={-10} y={-20} width={(W + 20) * draw} height={CH + 40} /></clipPath>
           </defs>
-          <polygon points={`0,34 ${line} 154,34`} fill={`url(#cn-area-${h})`} />
-          <polyline points={line} fill="none" stroke={acc1(h)} strokeWidth={1.4} strokeLinejoin="round" strokeLinecap="round" />
-          <circle cx={154} cy={(1 - 0.86) * 30} r={2.2} fill={ink(h)} />
+          {[0.25, 0.5, 0.75].map((g) => <line key={g} x1={0} x2={W} y1={g * CH} y2={g * CH} stroke={sub(h, 0.12)} strokeWidth={1.5} />)}
+          <g clipPath="url(#cn-draw)">
+            <polygon points={`0,${CH} ${line} ${W},${CH}`} fill="url(#cn-area)" />
+            <polyline points={line} fill="none" stroke={acc(h)} strokeWidth={5} strokeLinejoin="round" strokeLinecap="round" />
+          </g>
+          {draw > 0.98 && <circle cx={W} cy={(1 - 0.84) * CH} r={10} fill={ink(h)} stroke={acc(h)} strokeWidth={4} />}
         </svg>
-        <div style={{ marginTop: 7, display: 'flex', gap: 6 }}>
-          {[['Sessions', '182k'], ['Retention', '64%']].map(([k, v]) => (
-            <div key={k} style={{ ...tile(h), flex: 1, padding: '5px 7px' }}>
-              <div style={{ fontSize: 5.5, color: sub(h) }}>{k}</div>
-              <div style={{ fontSize: 10, fontWeight: 650, color: ink(h), fontVariantNumeric: 'tabular-nums' }}>{v}</div>
+        <div style={{ marginTop: 34, display: 'flex', gap: 22 }}>
+          {[['Sessions', '182k'], ['Retention', '64%'], ['NPS', '71']].map(([k, val]) => (
+            <div key={k} style={{ ...tile(h), flex: 1, padding: '18px 24px' }}>
+              <div style={{ ...type(24, 500), color: sub(h) }}>{k}</div>
+              <div style={{ ...type(46, 700), color: ink(h), marginTop: 6 }}>{val}</div>
             </div>
           ))}
         </div>
       </>
     );
   }
-  if (kind === 'metrics') {
-    const bars = [0.38, 0.52, 0.46, 0.64, 0.58, 0.82, 0.7];
+  if (kind === 'revenue') {
+    const bars = [0.36, 0.5, 0.44, 0.62, 0.56, 0.86, 0.7];
     return (
       <>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: ink(h), letterSpacing: '-0.03em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>$48.2k</div>
-          <div style={{ fontSize: 7, color: '#7ee2b0', fontWeight: 600 }}>+6.3%</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 20 }}>
+          <div style={{ ...type(150, 760), color: ink(h) }}>$48.2k</div>
         </div>
-        <div style={{ marginTop: 4, fontSize: 6.5, color: sub(h) }}>net revenue this month</div>
-        <div style={{ marginTop: 12, display: 'flex', alignItems: 'flex-end', gap: 6, height: 70, borderBottom: `0.5px solid ${sub(h, 0.25)}` }}>
-          {bars.map((v, i) => (
-            <div key={i} style={{
-              flex: 1, height: `${v * 100}%`, borderRadius: '2.5px 2.5px 0 0',
-              background: i === 5 ? `linear-gradient(180deg, ${acc1(h)}, hsla(${h},70%,55%,1))` : `hsla(${h},60%,72%,0.22)`,
-            }} />
-          ))}
+        <div style={{ marginTop: 14, ...type(32, 500), color: sub(h) }}>net revenue <span style={{ color: acc(h), fontWeight: 650 }}>+6.3%</span></div>
+        <div style={{ marginTop: 44, display: 'flex', alignItems: 'flex-end', gap: 22, height: 220, borderBottom: `2px solid ${sub(h, 0.2)}` }}>
+          {bars.map((v, i) => {
+            const g = ramp(f, 74 + stagger(i, 7, 12, EASE.out), 16, EASE.snappy);
+            return (
+              <div key={i} style={{
+                flex: 1, height: `${(v * (0.12 + 0.88 * g) * 100).toFixed(2)}%`, borderRadius: '12px 12px 3px 3px',
+                background: i === 5 ? `linear-gradient(180deg, ${acc(h)}, hsla(${h},70%,52%,1))` : `hsla(${h},50%,72%,0.2)`,
+                boxShadow: i === 5 ? `0 0 30px hsla(${h},90%,65%,0.35)` : undefined,
+              }} />
+            );
+          })}
         </div>
-        <div style={{ marginTop: 4, display: 'flex', justifyContent: 'space-between', fontSize: 5.5, color: sub(h, 0.5) }}>
-          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} style={{ flex: 1, textAlign: 'center' }}>{d}</span>)}
+        <div style={{ marginTop: 14, display: 'flex', ...type(24, 500), color: sub(h, 0.5) }}>
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <span key={i} style={{ flex: 1, textAlign: 'center', color: i === 5 ? acc(h) : undefined }}>{d}</span>)}
         </div>
       </>
     );
   }
   if (kind === 'timeline') {
-    const ms = [['Design freeze', 'Oct 18', 1], ['Beta to 500 teams', 'Oct 30', 1], ['Pricing live', 'Nov 12', 0.5], ['GA launch', 'Dec 2', 0]] as const;
+    const ms = [['Design freeze', 'Oct 18', 1], ['Beta · 500 teams', 'Oct 30', 1], ['Pricing live', 'Nov 12', 0.5], ['GA launch', 'Dec 2', 0]] as const;
     return (
-      <div style={{ position: 'relative', paddingLeft: 14, marginTop: 4 }}>
-        <div style={{ position: 'absolute', left: 3.5, top: 4, bottom: 6, width: 1, background: sub(h, 0.25) }} />
-        {ms.map(([t, d, s], i) => (
-          <div key={i} style={{ position: 'relative', height: 33 }}>
-            <div style={{
-              position: 'absolute', left: -14, top: 1.5, width: 8, height: 8, borderRadius: 4, boxSizing: 'border-box',
-              background: s === 1 ? acc1(h) : 'transparent', border: `1.2px solid ${s ? acc1(h) : sub(h, 0.45)}`,
-              boxShadow: s === 0.5 ? `0 0 6px ${acc1(h, 0.7)}` : 'none',
-            }} />
-            <div style={{ fontSize: 8.5, fontWeight: 600, color: s === 0 ? sub(h, 0.75) : ink(h) }}>{t}</div>
-            <div style={{ marginTop: 2, fontSize: 6, color: sub(h, 0.55), fontVariantNumeric: 'tabular-nums' }}>{d}{s === 0.5 ? ' · next' : ''}</div>
-          </div>
-        ))}
+      <div style={{ position: 'relative', paddingLeft: 64, marginTop: 6 }}>
+        <div style={{ position: 'absolute', left: 15, top: 20, bottom: 70, width: 3, background: sub(h, 0.2), borderRadius: 2 }} />
+        {ms.map(([t, d, s], i) => {
+          const on = ramp(f, 154 + i * 5, 12, EASE.out);
+          return (
+            <div key={i} style={{ position: 'relative', height: 126 }}>
+              <div style={{
+                position: 'absolute', left: -64, top: 10, width: 34, height: 34, borderRadius: 17, boxSizing: 'border-box',
+                background: s === 1 ? acc(h) : 'transparent', border: `4px solid ${s ? acc(h) : sub(h, 0.4)}`,
+                boxShadow: s === 0.5 ? `0 0 ${(10 + 18 * on).toFixed(1)}px ${acc(h, 0.8)}` : 'none',
+              }} />
+              <div style={{ ...type(50, 680), color: s === 0 ? sub(h, 0.7) : ink(h) }}>{t}</div>
+              <div style={{ marginTop: 8, ...type(28, 500), color: s === 0.5 ? acc(h) : sub(h, 0.55) }}>{d}{s === 0.5 ? '  ·  next up' : ''}</div>
+            </div>
+          );
+        })}
       </div>
     );
   }
   if (kind === 'assets') {
     const files = [['Launch-film.mp4', '248 MB', 'MP4'], ['Brand-kit.fig', '36 MB', 'FIG'], ['Pricing-v3.pdf', '2.1 MB', 'PDF'], ['Hero-shots.zip', '512 MB', 'ZIP']];
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 22, marginTop: 8 }}>
         {files.map(([n, sz, ext], i) => (
-          <div key={i} style={{ ...tile(h), display: 'flex', alignItems: 'center', gap: 7, padding: '6px 7px' }}>
+          <div key={i} style={{ ...tile(h), display: 'flex', alignItems: 'center', gap: 24, padding: '22px 26px' }}>
             <div style={{
-              width: 18, height: 18, borderRadius: 4, background: i === 0 ? acc1(h, 0.9) : `hsla(${h},60%,70%,0.2)`,
-              color: i === 0 ? `hsl(${h},50%,14%)` : ink(h, 0.8), fontSize: 4.8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 72, height: 72, borderRadius: 16, background: i === 0 ? acc(h, 0.9) : `hsla(${h},50%,70%,0.16)`,
+              color: i === 0 ? `hsl(${h},50%,12%)` : ink(h, 0.8), ...type(20, 800), display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>{ext}</div>
-            <div style={{ flex: 1, fontSize: 7.5, fontWeight: 550, color: ink(h), whiteSpace: 'nowrap' }}>{n}</div>
-            <div style={{ fontSize: 5.8, color: sub(h, 0.55), fontVariantNumeric: 'tabular-nums' }}>{sz}</div>
+            <div style={{ flex: 1, ...type(34, 600), color: ink(h) }}>{n}</div>
+            <div style={{ ...type(26, 500), color: sub(h, 0.55) }}>{sz}</div>
           </div>
         ))}
       </div>
@@ -165,12 +195,12 @@ const FaceBody: React.FC<{ kind: FaceKind; h: number }> = ({ kind, h }) => {
   if (kind === 'settings') {
     const rows = [['Two-factor auth', true], ['Public share links', false], ['Weekly digest', true], ['Beta features', true]] as const;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', marginTop: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', marginTop: 4 }}>
         {rows.map(([n, on], i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', height: 30, borderBottom: i < 3 ? `0.5px solid ${sub(h, 0.16)}` : 'none' }}>
-            <div style={{ flex: 1, fontSize: 8, fontWeight: 550, color: ink(h) }}>{n}</div>
-            <div style={{ width: 20, height: 11, borderRadius: 6, background: on ? acc1(h) : `hsla(${h},40%,70%,0.2)`, position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 1.5, left: on ? 10.5 : 1.5, width: 8, height: 8, borderRadius: 4, background: '#fff', boxShadow: '0 0.5px 1px rgba(0,0,0,0.3)' }} />
+          <div key={i} style={{ display: 'flex', alignItems: 'center', height: 132, borderBottom: i < 3 ? `2px solid ${sub(h, 0.12)}` : 'none' }}>
+            <div style={{ flex: 1, ...type(40, 600), color: ink(h) }}>{n}</div>
+            <div style={{ width: 96, height: 54, borderRadius: 27, background: on ? acc(h) : `hsla(${h},30%,70%,0.18)`, position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 6, left: on ? 48 : 6, width: 42, height: 42, borderRadius: 21, background: '#fff' }} />
             </div>
           </div>
         ))}
@@ -179,114 +209,127 @@ const FaceBody: React.FC<{ kind: FaceKind; h: number }> = ({ kind, h }) => {
   }
   return (
     <>
-      <div style={{ fontSize: 13, fontWeight: 650, color: ink(h), letterSpacing: '-0.02em' }}>Q4 board report</div>
-      <div style={{ marginTop: 3, fontSize: 6.5, color: sub(h) }}>12 pages · updated 2h ago</div>
-      <div style={{ marginTop: 12, display: 'flex', gap: 6 }}>
+      <div style={{ ...type(TYPE.h3, 720), color: ink(h) }}>Q4 board report</div>
+      <div style={{ marginTop: 14, ...type(30, 500), color: sub(h) }}>12 pages · updated 2h ago</div>
+      <div style={{ marginTop: 50, display: 'flex', gap: 22 }}>
         {['PDF', 'CSV', 'MP4'].map((x, i) => (
           <div key={x} style={{
-            ...tile(h), flex: 1, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 650,
-            color: i === 0 ? ink(h) : sub(h, 0.8), boxShadow: i === 0 ? `inset 0 0 0 1px ${acc1(h, 0.8)}` : tile(h).boxShadow,
+            ...tile(h), flex: 1, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', ...type(40, 700),
+            color: i === 0 ? ink(h) : sub(h, 0.8), boxShadow: i === 0 ? `inset 0 0 0 3px ${acc(h, 0.8)}` : tile(h).boxShadow,
           }}>{x}</div>
         ))}
       </div>
       <div style={{
-        marginTop: 12, height: 26, borderRadius: 6, background: `linear-gradient(180deg, ${acc1(h)}, hsla(${h},80%,58%,1))`,
-        color: `hsl(${h},60%,12%)`, fontSize: 8.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.5)',
+        marginTop: 50, height: 110, borderRadius: 24, background: `linear-gradient(180deg, ${acc(h)}, hsla(${h},80%,56%,1))`,
+        color: `hsl(${h},60%,10%)`, ...type(40, 760), display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>Export report</div>
     </>
   );
 };
 
+// 当前面（索引栏高亮）：随转向在相邻面之间连续过渡（0 Overview → 1 Revenue → 2 Timeline）
+const faceIndexAt = (ry: number) => Math.min(2, Math.max(0, -ry / 90));
+
 export const CubeNavigation: React.FC = () => {
-  const t = useT();
-  // 相机姿态：五段窗口依次插值
-  const v = acc(t, CAM[0], WIN.map((w, i) => ({ at: w, to: CAM[i + 1] })), E.inOutCubic);
-  // 法线明暗：Rx(rx)·Ry(ry)·n 的 z 分量
+  const f = useCurrentFrame();
+  const v = camAt(f);
   const cy = Math.cos(v.ry * RAD), sy = Math.sin(v.ry * RAD);
   const cx = Math.cos(v.rx * RAD), sx = Math.sin(v.rx * RAD);
-  // 地面光晕色相：跟着 ry 在 正面→右面→背面 的色相间过渡
-  const faceIdx = Math.min(2, Math.max(0, -v.ry / 90));
-  const hues = [224, 268, 330];
-  const fi = Math.floor(faceIdx);
-  const glowHue = hues[fi] + (hues[Math.min(2, fi + 1)] - hues[fi]) * (faceIdx - fi);
+  const fi = faceIndexAt(v.ry);
+  const hueNow = FACES[Math.floor(fi)].hue + (FACES[Math.min(2, Math.floor(fi) + 1)].hue - FACES[Math.floor(fi)].hue) * (fi - Math.floor(fi));
+  const iso = Math.min(1, Math.max(0, (CLOSE - v.d) / (CLOSE + 2000))); // 0 特写 / 1 等轴
+  const titleIn = (k: number) => ramp(f, 194 + k * 6, 22, EASE.snappy);
+
   return (
-    <DesignStage bg="#000" raster="zoom">
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(110% 100% at 50% 10%,#171b2a,#07080e 72%)',
-          perspective: 760,
-          overflow: 'hidden',
-          fontFamily: FONT.sans,
-          // 开场整体淡入
-          opacity: seg(t, 0, 0.08, E.outCubic),
-        }}
-      >
-        {/* 背景远处的冷色柔光（跟主光同在左上） */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(40% 50% at 30% 18%, rgba(120,140,220,0.10), rgba(120,140,220,0) 70%)' }} />
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: 0,
-            height: 0,
-            transformStyle: 'preserve-3d',
-            transform: `translateZ(${v.d}px) rotateX(${v.rx}deg) rotateY(${v.ry}deg)`,
-          }}
-        >
-          {/* 地面光晕：立方体下方一张水平圆盘（绕 Y 旋转不变形），等轴俯视时露出 */}
+    <AbsoluteFill style={{ background: L.bg[2], overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: CX / 1920, y: -0.08 }} fill={{ x: 0.08, y: 0.95 }} intensity={0.8} breathe={0.3}>
+        {/* 面色相余光：跟着当前面换色，等轴时更明显 */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: `radial-gradient(ellipse 34% 46% at ${(CX / 1920) * 100}% 56%, hsla(${hueNow.toFixed(1)},70%,55%,${(0.07 + 0.08 * iso).toFixed(3)}), hsla(${hueNow.toFixed(1)},70%,50%,0) 70%)`,
+        }} />
+        <Dust look={L} count={26} seed={7} drift={0.18} opacity={0.35} />
+      </Stage>
+
+      {/* 立方体 */}
+      <div style={{ position: 'absolute', inset: 0, perspective: P, perspectiveOrigin: `${CX}px ${CY}px` }}>
+        <div style={{
+          position: 'absolute', left: CX, top: CY, width: 0, height: 0, transformStyle: 'preserve-3d',
+          transform: `translateZ(${v.d.toFixed(2)}px) rotateX(${v.rx.toFixed(3)}deg) rotateY(${v.ry.toFixed(3)}deg)`,
+        }}>
+          {/* 地面：接触影 + 当前面色相的落地光（水平圆盘，等轴俯视才看得见） */}
           <div style={{
-            position: 'absolute', left: -170, top: -170, width: 340, height: 340, borderRadius: '50%',
-            transform: `translateY(${H + 26}px) rotateX(90deg)`,
-            background: `radial-gradient(circle, hsla(${glowHue},80%,62%,0.22) 0%, hsla(${glowHue},80%,55%,0.08) 38%, hsla(${glowHue},80%,50%,0) 70%)`,
+            position: 'absolute', left: -900, top: -900, width: 1800, height: 1800, borderRadius: '50%',
+            transform: `translateY(${H + 2}px) rotateX(90deg)`,
+            background: `radial-gradient(circle, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 30%, rgba(0,0,0,0) 52%), radial-gradient(circle, hsla(${hueNow.toFixed(1)},80%,60%,0.16) 0%, hsla(${hueNow.toFixed(1)},80%,55%,0) 62%)`,
           }} />
-          {FACES.map((f, i) => {
-            const [nx, ny, nz] = f.nm;
+          {FACES.map((fc, i) => {
+            const [nx, ny, nz] = fc.nm;
             const z1 = -nx * sy + nz * cy, y1 = ny;
             const z2 = y1 * sx + z1 * cx;
             const lit = Math.max(0, z2);
+            if (lit <= 0.001) return null; // 背光面不画（backface 本就看不见），省栅格
             return (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  left: -H,
-                  top: -H,
-                  width: S,
-                  height: S,
-                  transform: f.tr,
-                  backfaceVisibility: 'hidden',
-                  borderRadius: 6,
-                  overflow: 'hidden',
-                  background: `linear-gradient(155deg,hsl(${f.hue},44%,24%),hsl(${f.hue},52%,11%))`,
-                  boxShadow: `inset 0 0 0 0.75px hsla(${f.hue},70%,74%,.38), inset 0 0.75px 0 hsla(${f.hue},80%,90%,.35)`,
-                  filter: `brightness(${(0.5 + lit * 0.62).toFixed(3)}) saturate(${(0.8 + lit * 0.4).toFixed(2)})`,
-                }}
-              >
-                {/* 左上受光：面越正对相机越亮 */}
+              <div key={fc.n} style={{
+                position: 'absolute', left: -H, top: -H, width: S, height: S, transform: fc.tr, backfaceVisibility: 'hidden',
+                borderRadius: 18, overflow: 'hidden', boxSizing: 'border-box',
+                background: `linear-gradient(160deg, hsl(${fc.hue},34%,20%) 0%, hsl(${fc.hue},38%,12%) 60%, hsl(${fc.hue},40%,9%) 100%)`,
+                boxShadow: `inset 0 0 0 2px hsla(${fc.hue},60%,78%,0.22), inset 0 2px 0 hsla(${fc.hue},80%,92%,0.3)`,
+                filter: `brightness(${(0.42 + lit * 0.66).toFixed(3)}) saturate(${(0.75 + lit * 0.35).toFixed(2)})`,
+              }}>
+                {/* 左上受光：越正对越亮 */}
                 <div style={{
                   position: 'absolute', inset: 0, pointerEvents: 'none',
-                  background: `radial-gradient(120% 90% at 18% 0%, hsla(${f.hue},80%,80%,${(0.05 + lit * 0.1).toFixed(3)}), hsla(${f.hue},80%,80%,0) 60%)`,
+                  background: `radial-gradient(110% 80% at 15% 0%, hsla(${fc.hue},80%,82%,${(0.05 + lit * 0.1).toFixed(3)}), hsla(${fc.hue},80%,80%,0) 62%)`,
                 }} />
-                <div style={{ position: 'absolute', left: 18, right: 18, top: 28, bottom: 22 }}>
-                  {/* 面标题行 */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-                    <div style={{ width: 9, height: 9, borderRadius: 2.5, background: acc1(f.hue), boxShadow: `0 0 6px ${acc1(f.hue, 0.5)}` }} />
-                    <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.14em', color: acc1(f.hue, 0.95) }}>{f.n}</div>
-                    <div style={{ marginLeft: 'auto', fontSize: 6, color: sub(f.hue, 0.5) }}>{f.meta}</div>
+                <div style={{ position: 'absolute', left: 64, right: 64, top: 58, bottom: 56 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 44 }}>
+                    <div style={{ width: 18, height: 18, borderRadius: 5, background: acc(fc.hue), boxShadow: `0 0 16px ${acc(fc.hue, 0.6)}` }} />
+                    <div style={{ ...type(28, 700, { caps: true }), letterSpacing: '0.18em', color: acc(fc.hue, 0.95) }}>{fc.n}</div>
+                    <div style={{ marginLeft: 'auto', ...type(26, 500), color: sub(fc.hue, 0.5) }}>{fc.meta}</div>
                   </div>
-                  <FaceBody kind={f.kind} h={f.hue} />
+                  <FaceBody kind={fc.kind} h={fc.hue} f={f} />
                 </div>
               </div>
             );
           })}
         </div>
-        <Vignette strength={0.4} inner={0.5} color="#020308" />
-        <Grain opacity={0.07} blend="soft-light" scale={0.25} />
       </div>
-    </DesignStage>
+
+      {/* 左侧模块索引栏：当前面高亮，跟相机换面 */}
+      <div style={{ position: 'absolute', left: 120, top: 500, width: 380 }}>
+        <div style={{ ...type(TYPE.label, 700, { caps: true }), letterSpacing: '0.24em', color: L.ink3, marginBottom: 26, opacity: ramp(f, 0, 14, EASE.out) }}>
+          Orbit · Modules
+        </div>
+        <div style={{ position: 'relative' }}>
+          {/* 高亮条：竖向连续滑动 */}
+          <div style={{
+            position: 'absolute', left: -24, top: fi * 58 + 6, width: 4, height: 40, borderRadius: 2,
+            background: `hsl(${hueNow.toFixed(1)},90%,70%)`, boxShadow: `0 0 14px hsla(${hueNow.toFixed(1)},90%,65%,0.7)`,
+          }} />
+          {FACES.map((fc, i) => {
+            const on = Math.max(0, 1 - Math.abs(fi - i));
+            const p = ramp(f, 2 + i * 2, 16, EASE.snappy);
+            return (
+              <div key={fc.n} style={{
+                height: 58, display: 'flex', alignItems: 'center', gap: 22, opacity: p, transform: `translateX(${((1 - p) * -18).toFixed(2)}px)`,
+              }}>
+                <span style={{ ...type(24, 600, { mono: true }), color: on > 0.5 ? acc(fc.hue) : L.ink3, width: 34 }}>{String(i + 1).padStart(2, '0')}</span>
+                <span style={{ ...type(36, on > 0.5 ? 700 : 500), color: `rgba(244,244,242,${(0.34 + 0.66 * on).toFixed(3)})` }}>{fc.n}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 收尾大标题（左上） */}
+      <div style={{ position: 'absolute', left: 120, top: 150, ...type(TYPE.h2, 760), color: L.ink }}>
+        {['Six views.', 'One workspace.'].map((t, k) => (
+          <div key={t} style={{ overflow: 'hidden', padding: '0.04em 0 0.14em', margin: '-0.04em 0 -0.14em' }}>
+            <div style={{ transform: `translateY(${((1 - titleIn(k)) * 115).toFixed(2)}%)`, color: k === 1 ? L.ink2 : L.ink }}>{t}</div>
+          </div>
+        ))}
+      </div>
+    </AbsoluteFill>
   );
 };

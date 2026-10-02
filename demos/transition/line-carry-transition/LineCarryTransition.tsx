@@ -1,228 +1,247 @@
-// line-carry-transition｜线条接力横移转场（Catch Me If You Can 图形接力）
-// 世界宽 3840（A 左半 / B 右半）。0–22f 卡 A 底部 6px ink 进度条走满（2f 满格停顿）；
-// 24–34f 进度条末端延伸成横线冲出卡右缘；34–94f 镜头整体左移 1920px
-// （Easing.inOut(cubic)，60f），线与镜头同速延伸，笔头始终在画面偏右；
-// 94–112f 线拐直角围出 560×330 卡框（一条 path 全程 evolve，dashoffset 生长）；
-// 112–124f 框闭合后 B 卡内容淡入 12f。124–160f 真静止 36f ≥ 35f。
-// 帧确定，无随机；笔头墨点 118f 起条件卸载（摘罩判例）。
-// 质感层：A = "导出影片"进度卡（百分比随线计数，走满 = 线的出发理由），B = 导出完成后的
-// 分享卡（线围成的框就是它的边）；冲出段改为两端零速的 swift 曲线，与进度条 ease-out 收尾、
-// 镜头 inOut 起步速度连续，不再"冲一下顿一下"；横移时世界内容按镜头速度做水平运动模糊
-// （线与笔头在模糊层外，始终锐利）；底色是随世界走的冷暖过渡 + 屏幕空间柔光，不再有硬接缝。
+// line-carry-transition｜线条接力横移转场（Catch Me If You Can 片头式图形接力）
+// 场景 A 的进度条走满 → 末端延伸成长线冲出卡缘 → 镜头跟线横移 1920px → 线在移动中直角拐弯围出
+// 场景 B 的画框，框闭合、画框里的海报长出来。全程一条线、没有切。
+//
+// 第二轮重设计（沙色制图 · Saul Bass 平面海报）：
+// - look = sand（米色纸 + 墨 + 赤陶）。线是 8px 墨色硬线、方头直角，笔头是全片唯一的赤陶色点——
+//   观众的眼睛只需要追这一个点。
+// - 叙事：A = 印刷工作室 App 的「导出海报」进度卡（160px 百分比随线计数，走满 = 线出发的理由）；
+//   B = 线围出的 720×480 画框里长出那张海报（赤陶太阳 + 海军蓝山丘 + 粗黑体字），左侧是展签式标题，
+//   线的水平段在 B 里刚好成了展签下的基线。
+// - 世界宽 3840（A 左半 / B 右半），一条折线 path 全程 dashoffset 生长：
+//   M 336,760 → H 2880（画框左下角）→ V 280 → H 3600 → V 760 → H 2880 闭合，总长 4944。
+// - 命门：横移段 drawn = 1144 + cam，线生长与镜头同速，笔头钉在画面 x≈1480 直到拐角；
+//   每段交接处速度连续（进度条 ease-out 到零 → 冲出段两端零速 → 镜头 in-out 起步 → 收框 in-out）。
+// - 横移时世界内容（卡、点阵、展签）按镜头速度做水平运动模糊；线与笔头在模糊层外，始终锐利。
+//
+// 时间表（30fps，共 190f）：
+//   0–4     A 进度卡静置（第 0 帧即在画面里），空轨道
+//   4–40    进度条 0→100%（36f ease-out），百分比与 MB 同步计数
+//   40–46   满格停一拍：状态变「Ready to print」，对勾弹出（弹簧）
+//   46–56   冲出段：线从条尾冲出卡缘到画面 x=1480（两端零速）
+//   56–112  镜头左移 1920px（56f smooth in-out），线同速延伸；~92f 线到画框左下角、开始向上拐
+//   100–126 B 展签标题逐行升起（框外，可以先到）
+//   112–136 收框：线走完上边、右边、底边闭合（24f in-out）；136–142 笔头消散并卸载
+//   136–166 框内海报：底色铺开 → 太阳升起 → 山丘错峰 → 海报字升起
+//   166–190 hold 24f
+// 线下的制图刻度（1200–2760，每 120px 一格）在线经过后才出现，给横移中段一个速度参照。
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { EASE, ramp, mix, velocity, FONT, tracking, softShadow, hairline, innerHighlight, Grain, Vignette, SpeedBlur } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, mix, ramp, softShadow, velocity } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TYPE, alpha, springAt, stagger, type } from '../../_fixtures/Look';
 
-export const LINE_CARRY_TRANSITION_DURATION = 160;
+export const LINE_CARRY_TRANSITION_DURATION = 190;
 
-// ---- 世界几何（一条折线：进度条 + 横线 + 直角 + 矩形框）----
-// M 400,705 → 2600,705（进度 560 + 冲出 1640）→ 上 2600,375 → 右 3160,375
-// → 下 3160,705 → 左回 2600,705 闭合。总长 2200+330+560+330+560 = 3980。
-const PATH = 'M 400 705 L 2600 705 L 2600 375 L 3160 375 L 3160 705 L 2600 705';
-const SEGS: Array<[number, number, number, number, number]> = [
-  [400, 705, 2600, 705, 2200],
-  [2600, 705, 2600, 375, 330],
-  [2600, 375, 3160, 375, 560],
-  [3160, 375, 3160, 705, 330],
-  [3160, 705, 2600, 705, 560],
+const L = LOOKS.sand;
+const LINE_Y = 760;
+const X0 = 336; // 进度条起点（卡内左边距）
+const BAR = 648; // 进度条长度
+const TIP_X = 1480; // 横移时笔头钉住的屏幕 x
+const FX0 = 2880, FX1 = 3600, FY0 = 280; // B 画框（底边 = LINE_Y）
+const SEGS: Array<[number, number, number, number]> = [
+  [X0, LINE_Y, FX0, LINE_Y],
+  [FX0, LINE_Y, FX0, FY0],
+  [FX0, FY0, FX1, FY0],
+  [FX1, FY0, FX1, LINE_Y],
+  [FX1, LINE_Y, FX0, LINE_Y],
 ];
-const TOTAL = 3980;
-const INK = '#1b1c21';
+const lens = SEGS.map(([a, b, c, d]) => Math.hypot(c - a, d - b));
+const TOTAL = lens.reduce((s, x) => s + x, 0); // 4944
+const PATH = `M ${X0} ${LINE_Y} H ${FX0} V ${FY0} H ${FX1} V ${LINE_Y} H ${FX0}`;
 
-// 笔头坐标：按已画长度沿折线取点
-const tipAt = (drawn: number): [number, number] => {
-  let d = Math.max(0, Math.min(drawn, TOTAL));
-  for (const [x1, y1, x2, y2, len] of SEGS) {
-    if (d <= len) {
-      const t = d / len;
-      return [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
-    }
-    d -= len;
-  }
-  return [2600, 705];
-};
-
-// 镜头：34–94f 左移 1920px，inOut cubic
-const camAt = (f: number) =>
-  interpolate(f, [34, 94], [0, 1920], { easing: Easing.inOut(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-
-// 已画长度：三段接力（进度条 → 冲出 → 与镜头同速 → 收框）
+const PAN0 = 56, PAN1 = 112;
+const camAt = (f: number) => 1920 * ramp(f, PAN0, PAN1 - PAN0, EASE.smooth);
+const LEAD = TIP_X - X0; // 横移段：drawn = LEAD + cam
 const drawnAt = (f: number) => {
-  if (f < 24) return mix(0, 560, ramp(f, 0, 22, EASE.out)); // 走满后 22–24f 停一拍
-  if (f < 34) return mix(560, 1100, ramp(f, 24, 10, EASE.swift)); // 两端零速：接满格停顿、交给镜头起步
-  if (f < 94) return 1100 + camAt(f); // 与镜头同速延伸，笔头稳在画面偏右
-  return interpolate(f, [94, 112], [3020, TOTAL], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  if (f < 46) return BAR * ramp(f, 4, 36, EASE.out);
+  if (f < PAN0) return mix(BAR, LEAD, ramp(f, 46, 10, EASE.swift));
+  if (f < PAN1) return LEAD + camAt(f);
+  return mix(LEAD + 1920, TOTAL, ramp(f, PAN1, 24, EASE.smooth));
+};
+const tipAt = (d: number): [number, number] => {
+  let r = Math.max(0, Math.min(d, TOTAL));
+  for (let i = 0; i < SEGS.length; i++) {
+    const [a, b, c, e] = SEGS[i];
+    if (r <= lens[i]) {
+      const t = r / lens[i];
+      return [a + (c - a) * t, b + (e - b) * t];
+    }
+    r -= lens[i];
+  }
+  return [FX0, LINE_Y];
 };
 
-// 场景 A：导出进度卡（560×330 @ 400,350），百分比跟进度条
-const ExportCard: React.FC<{ pct: number }> = ({ pct }) => {
-  const done = pct >= 100;
+const NAVY = L.accent2;
+const CREAM = '#f7eedf';
+
+// 平面海报（Saul Bass 式剪纸）：赤陶太阳 + 海军蓝山丘 + 粗黑体字；p = 各层入场进度
+const Poster: React.FC<{ w: number; h: number; f: number; mini?: boolean }> = ({ w, h, f, mini }) => {
+  const sun = mini ? 1 : ramp(f, 140, 22, EASE.snappy);
+  const hill = (i: number) => (mini ? 1 : ramp(f, 146 + stagger(i, 2, 6, EASE.out), 20, EASE.snappy));
+  const txt = mini ? 1 : ramp(f, 152, 18, EASE.snappy);
+  const k = w / 720;
   return (
-    <div style={{
-      position: 'absolute', left: 400, top: 350, width: 560, height: 330, boxSizing: 'border-box', padding: '30px 32px',
-      background: 'linear-gradient(180deg, #ffffff, #fbfbfa)', borderRadius: 16, border: hairline(0.08),
-      boxShadow: `${innerHighlight(0.9)}, ${softShadow(18)}`, fontFamily: FONT.sans, display: 'flex', flexDirection: 'column',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: 14, background: 'linear-gradient(150deg, #2b2d36, #15161b)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px -4px rgba(16,18,26,0.4)',
-        }}>
-          <svg width={26} height={26} viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="#fff" /></svg>
-        </div>
-        <div>
-          <div style={{ fontSize: 24, fontWeight: 650, color: G.ink1, letterSpacing: tracking(24) }}>launch-film.mp4</div>
-          <div style={{ marginTop: 5, fontSize: 18, color: G.ink3 }}>1080p · H.264 · 00:42</div>
-        </div>
-      </div>
-      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end' }}>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 500, color: done ? G.accent : G.ink3, letterSpacing: tracking(18) }}>
-            {done ? 'Export complete' : 'Exporting…'}
-          </div>
-          <div style={{ marginTop: 6, fontSize: 84, fontWeight: 700, color: G.ink1, letterSpacing: tracking(84), lineHeight: 0.95, fontVariantNumeric: 'tabular-nums' }}>
-            {Math.round(pct)}<span style={{ fontSize: 44, color: G.ink3, fontWeight: 600 }}>%</span>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: CREAM }}>
+      <svg width={w} height={h} viewBox="0 0 720 480" style={{ position: 'absolute', inset: 0 }}>
+        <circle cx={468} cy={mix(480, 226, sun)} r={142} fill={L.accent} />
+        {/* 海军蓝山丘与太阳叠印（multiply = 孔版印刷的套色叠印） */}
+        <path d={`M 250 480 Q 540 ${mix(620, 250, hill(0))} 830 480 Z`} fill={NAVY} style={{ mixBlendMode: 'multiply' }} />
+        <path d={`M -60 480 Q 150 ${mix(600, 300, hill(1))} 420 480 Z`} fill={L.ink} />
+        <rect x={0} y={420} width={720} height={60} fill={L.ink} opacity={hill(1)} />
+      </svg>
+      {!mini && (
+        <div style={{ position: 'absolute', left: 44 * k, top: 38 * k, overflow: 'hidden' }}>
+          <div style={{ transform: `translateY(${((1 - txt) * 110).toFixed(2)}%)`, ...type(72, 900), color: L.ink, lineHeight: 0.9, letterSpacing: '-0.035em' }}>
+            SUNDAY<br />MARKET
           </div>
         </div>
-        <div style={{ marginLeft: 'auto', fontSize: 18, color: G.ink3, fontVariantNumeric: 'tabular-nums', paddingBottom: 6 }}>
-          {done ? '214 MB' : `${Math.round(pct * 2.14)} / 214 MB`}
+      )}
+      {!mini && (
+        <div style={{ position: 'absolute', left: 44, bottom: 14, ...type(22, 600, { mono: true }), color: CREAM, opacity: txt, letterSpacing: '0.08em' }}>
+          06.10 — RIVER HALL
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-// 场景 B：分享卡内容（填进线围成的 560×330 框）
-const ShareCard: React.FC = () => (
-  <div style={{ position: 'absolute', inset: 0, padding: '30px 32px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: FONT.sans }}>
-    <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
-      <div style={{
-        width: 150, height: 86, borderRadius: 10, overflow: 'hidden', position: 'relative',
-        background: 'linear-gradient(135deg, #3b3f8f 0%, #5b63d3 45%, #c3a4f0 100%)',
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 70% at 30% 20%, rgba(255,255,255,0.35), rgba(255,255,255,0) 70%)' }} />
-        <div style={{
-          position: 'absolute', left: 57, top: 25, width: 36, height: 36, borderRadius: 18, background: 'rgba(255,255,255,0.9)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width={16} height={16} viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="#3b3f8f" /></svg>
+// 场景 A：导出进度卡（760×500 @ 280,300；进度条轨道在卡内 y=760）
+const ExportCard: React.FC<{ pct: number; f: number }> = ({ pct, f }) => {
+  const done = pct >= 99.95;
+  const check = springAt(f, 40, { damping: 14, stiffness: 220 });
+  return (
+    <div style={{
+      position: 'absolute', left: 280, top: 300, width: 760, height: 500, boxSizing: 'border-box', padding: '48px 56px',
+      background: `linear-gradient(180deg, ${L.surface}, #f8f1e6)`, borderRadius: 28,
+      boxShadow: `inset 0 1px 0 #fff, inset 0 0 0 1px ${L.line}, ${softShadow(22, { color: L.shadow, strength: 0.9 })}`,
+      fontFamily: FONT.sans,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
+        <div style={{ position: 'relative', width: 120, height: 80, borderRadius: 8, overflow: 'hidden', boxShadow: `0 0 0 1px ${L.line}`, flex: 'none' }}>
+          <Poster w={120} h={80} f={f} mini />
+        </div>
+        <div>
+          <div style={{ ...type(38, 680), color: L.ink }}>sunday-market.pdf</div>
+          <div style={{ ...type(28, 500), color: L.ink3, marginTop: 8 }}>A2 · 300 dpi · 3 inks</div>
         </div>
       </div>
-      <div>
-        <div style={{ fontSize: 24, fontWeight: 650, color: G.ink1, letterSpacing: tracking(24) }}>launch-film.mp4</div>
-        <div style={{ marginTop: 5, fontSize: 18, color: G.ink3 }}>Ready · 214 MB</div>
+      <div style={{ position: 'absolute', left: 56, right: 56, top: 236, display: 'flex', alignItems: 'flex-end' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, ...type(30, 600), color: done ? L.accent : L.ink3 }}>
+            {done && (
+              <svg width={30} height={30} viewBox="0 0 30 30" style={{ transform: `scale(${check.toFixed(3)})` }}>
+                <circle cx={15} cy={15} r={15} fill={L.accent} />
+                <path d="M8.5 15.5 13 20l8.5-9" stroke="#fff" strokeWidth={3.2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+            {done ? 'Ready to print' : 'Exporting…'}
+          </div>
+          <div style={{ ...type(170, 780), color: L.ink, marginTop: 4 }}>
+            {Math.round(pct)}<span style={{ ...type(TYPE.h3, 650), color: L.ink3, marginLeft: 6 }}>%</span>
+          </div>
+        </div>
+        <div style={{ marginLeft: 'auto', ...type(28, 500, { mono: true }), color: L.ink3, paddingBottom: 34 }}>
+          {(pct * 0.48).toFixed(1)} / 48 MB
+        </div>
       </div>
+      {/* 进度条轨道（墨色填充即 path 本体） */}
+      <div style={{ position: 'absolute', left: X0 - 280, top: LINE_Y - 300 - 4, width: BAR, height: 8, background: alpha(L.ink, 0.1) }} />
     </div>
-    <div style={{
-      marginTop: 26, height: 52, borderRadius: 12, background: G.fill, border: hairline(0.08), display: 'flex', alignItems: 'center',
-      padding: '0 8px 0 18px', gap: 12,
-    }}>
-      <div style={{ flex: 1, fontFamily: FONT.mono, fontSize: 17, color: G.ink2 }}>northwind.app/s/launch-42</div>
-      <div style={{ height: 38, padding: '0 18px', borderRadius: 9, background: INK, color: '#fff', fontSize: 17, fontWeight: 600, display: 'flex', alignItems: 'center' }}>Copy link</div>
-    </div>
-    <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-      <div style={{ display: 'flex' }}>
-        {['JL', 'AK', 'MR'].map((t, i) => (
-          <div key={t} style={{
-            marginLeft: i ? -8 : 0, width: 34, height: 34, borderRadius: 17, background: ['#e4e4e1', '#d9dade', '#e9e6df'][i],
-            boxShadow: '0 0 0 2px #fff', fontSize: 13, fontWeight: 650, color: '#4a4c53', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>{t}</div>
-        ))}
-      </div>
-      <div style={{ fontSize: 18, color: G.ink3 }}>Shared with 3 people</div>
-    </div>
-  </div>
-);
+  );
+};
 
 export const LineCarryTransition: React.FC = () => {
-  const frame = useCurrentFrame();
-  const cam = camAt(frame);
-  const drawn = drawnAt(frame);
-  // 镜头水平速度（px/帧），给世界内容的运动模糊
-  const vx = -velocity(camAt, frame);
-
-  // B 卡内容：框闭合(112f)后淡入 12f
-  const contentOpacity = ramp(frame, 112, 12, EASE.out);
-  const pct = Math.min(100, (Math.min(drawn, 560) / 560) * 100);
-
-  // 笔头墨点：全程随笔走，112–118f 线性消散，118f 起条件卸载
-  const tipMounted = frame < 118;
-  const tipOpacity = interpolate(frame, [112, 118], [1, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  const f = useCurrentFrame();
+  const cam = camAt(f);
+  const drawn = drawnAt(f);
+  const vx = -velocity(camAt, f);
+  const pct = Math.min(100, (Math.min(drawn, BAR) / BAR) * 100);
   const [tx, ty] = tipAt(drawn);
+  const tipO = 1 - ramp(f, 136, 6, EASE.linear);
+  const closed = f >= 136;
+  const fillIn = ramp(f, 134, 10, EASE.out); // 框内底色
   const world: React.CSSProperties = { position: 'absolute', left: 0, top: 0, width: 3840, height: 1080, transform: `translateX(${(-cam).toFixed(2)}px)` };
+  const capIn = (k: number) => ramp(f, 100 + k * 6, 20, EASE.snappy);
 
   return (
-    <AbsoluteFill style={{ background: G.bg, overflow: 'hidden' }}>
-      {/* 世界底色：A 暖灰 → B 冷白，900px 柔过渡（替代 x=1920 处的硬接缝）；本身平滑，不进模糊层 */}
-      <div style={world}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #ecebe8 0%, #ecebe8 38%, #f4f5f7 62%, #f6f7f9 100%)' }} />
-      </div>
-      {/* 世界内容（制图点阵 + 两张卡 + 标题）：随镜头横移，快段水平模糊。
-          外包一层屏幕尺寸的裁切，滤镜只处理 1920×1080，避免 3840 宽层的分块条纹 */}
-      <SpeedBlur vx={vx} amount={0.3} max={14}>
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden' }}>
+      {/* 共享舞台（屏幕空间，像摄影棚里的固定灯） */}
+      <Stage look={L} keyLight={{ x: 0.28, y: 0.02 }} fill={{ x: 0.9, y: 0.95 }} />
+
+      {/* 世界内容：随镜头横移，快段水平模糊 */}
+      <SpeedBlur vx={vx} amount={0.28} max={16}>
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-        <div style={world}>
-          {/* 制图点阵：横移时给眼睛一个速度参照（否则只有一条线，读不出镜头在动），边缘渐隐 */}
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: 'radial-gradient(circle, rgba(20,22,28,0.11) 1.6px, rgba(20,22,28,0) 2.2px)',
-            backgroundSize: '48px 48px', backgroundPosition: '0 9px',
-            WebkitMaskImage: 'linear-gradient(180deg, transparent 4%, #000 26%, #000 74%, transparent 96%)',
-            maskImage: 'linear-gradient(180deg, transparent 4%, #000 26%, #000 74%, transparent 96%)',
-          }} />
-          {/* 场景 A */}
-          <div style={{ position: 'absolute', left: 400, top: 240, fontFamily: FONT.sans }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: G.ink3, letterSpacing: tracking(22, true), textTransform: 'uppercase' }}>Step 1</div>
-            <div style={{ marginTop: 8, fontSize: 52, fontWeight: 700, color: G.ink1, letterSpacing: tracking(52), lineHeight: 1 }}>Render</div>
+          <div style={world}>
+            {/* 制图点阵：给眼睛一个速度参照，上下渐隐 */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              backgroundImage: `radial-gradient(circle, ${alpha(L.ink, 0.13)} 1.7px, ${alpha(L.ink, 0)} 2.3px)`,
+              backgroundSize: '60px 60px', backgroundPosition: '6px 10px',
+              WebkitMaskImage: 'linear-gradient(180deg, transparent 6%, #000 28%, #000 80%, transparent 97%)',
+              maskImage: 'linear-gradient(180deg, transparent 6%, #000 28%, #000 80%, transparent 97%)',
+            }} />
+            {/* A 眉题 */}
+            <div style={{ position: 'absolute', left: 280, top: 214, display: 'flex', gap: 18, alignItems: 'baseline', ...type(TYPE.label + 4, 700, { caps: true }), letterSpacing: '0.24em' }}>
+              <span style={{ color: L.accent }}>01</span><span style={{ color: L.ink2 }}>Export</span>
+            </div>
+            <ExportCard pct={pct} f={f} />
+            {/* B 展签：框外标题，镜头到位前后逐行升起 */}
+            <div style={{ position: 'absolute', left: 2080, top: 300, width: 720 }}>
+              <div style={{ display: 'flex', gap: 18, alignItems: 'baseline', ...type(TYPE.label + 4, 700, { caps: true }), letterSpacing: '0.24em', opacity: capIn(0) }}>
+                <span style={{ color: L.accent }}>02</span><span style={{ color: L.ink2 }}>Print</span>
+              </div>
+              <div style={{ ...type(TYPE.h1, 820), color: L.ink, marginTop: 26 }}>
+                {['Sunday', 'Market.'].map((t, k) => (
+                  <div key={t} style={{ overflow: 'hidden', padding: '0.04em 0 0.14em', margin: '-0.04em 0 -0.14em' }}>
+                    <div style={{ transform: `translateY(${((1 - capIn(k + 0.5)) * 115).toFixed(2)}%)` }}>{t}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ ...type(TYPE.small, 500), color: L.ink2, marginTop: 30, opacity: capIn(2.2) }}>
+                A2 risograph · three inks · 40 copies
+              </div>
+            </div>
+            {/* B 画框内：框闭合后才长出海报 */}
+            {closed && (
+              <div style={{
+                position: 'absolute', left: FX0, top: FY0, width: FX1 - FX0, height: LINE_Y - FY0, opacity: fillIn,
+                boxShadow: softShadow(26 * fillIn, { color: L.shadow, strength: 0.8 }),
+              }}>
+                <Poster w={FX1 - FX0} h={LINE_Y - FY0} f={f} />
+              </div>
+            )}
           </div>
-          <ExportCard pct={pct} />
-          {/* 进度条轨道（ink 填充即 path 本体） */}
-          <div style={{ position: 'absolute', left: 400, top: 702, width: 560, height: 6, borderRadius: 3, background: G.fill2 }} />
-          {/* 场景 B：框(2600,375–3160,705)由线画成，底面与内容淡入 */}
-          <div style={{
-            position: 'absolute', left: 2600, top: 375, width: 560, height: 330, opacity: contentOpacity,
-            background: '#ffffff', boxShadow: softShadow(18 * contentOpacity),
-          }}>
-            <ShareCard />
-          </div>
-          <div style={{ position: 'absolute', left: 2600, top: 240, opacity: contentOpacity, fontFamily: FONT.sans }}>
-            <div style={{ fontSize: 22, fontWeight: 600, color: G.ink3, letterSpacing: tracking(22, true), textTransform: 'uppercase' }}>Step 2</div>
-            <div style={{ marginTop: 8, fontSize: 52, fontWeight: 700, color: G.ink1, letterSpacing: tracking(52), lineHeight: 1 }}>Share</div>
-          </div>
-        </div>
         </div>
       </SpeedBlur>
 
-      {/* 一条线全程 evolve：dasharray/dashoffset 生长（模糊层外，始终锐利） */}
+      {/* 一条线全程 evolve（模糊层外，始终锐利） */}
       <div style={world}>
-        <svg width={3840} height={1080} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          <path
-            d={PATH}
-            fill="none"
-            stroke={INK}
-            strokeWidth={6}
-            strokeLinecap="round"
-            strokeLinejoin="miter"
-            strokeDasharray={TOTAL}
-            strokeDashoffset={TOTAL - drawn}
-          />
-          {tipMounted && (
-            <g opacity={tipOpacity}>
-              <circle cx={tx} cy={ty} r={22} fill={INK} opacity={0.08} />
-              <circle cx={tx} cy={ty} r={11} fill={INK} />
+        <svg width={3840} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+          {/* 制图刻度：线经过后才出现在线下（横移中段的速度参照 + 尺规感），主刻度标距离 */}
+          {Array.from({ length: 14 }, (_, i) => {
+            const x = 1200 + i * 120;
+            const on = ramp(X0 + drawn, x, 40, EASE.out);
+            if (on <= 0) return null;
+            const major = i % 4 === 0;
+            return (
+              <g key={i} opacity={on}>
+                <line x1={x} x2={x} y1={LINE_Y + 10} y2={LINE_Y + (major ? 34 : 20)} stroke={alpha(L.ink, major ? 0.55 : 0.3)} strokeWidth={2} />
+                {major && (
+                  <text x={x + 8} y={LINE_Y + 62} fill={alpha(L.ink, 0.42)} style={{ ...type(22, 600, { mono: true }) }}>{`${(i / 4 + 1) * 12} cm`}</text>
+                )}
+              </g>
+            );
+          })}
+          <path d={PATH} fill="none" stroke={L.ink} strokeWidth={8} strokeLinecap="square" strokeLinejoin="miter"
+            strokeDasharray={`${drawn.toFixed(2)} ${TOTAL + 20}`} />
+          {tipO > 0.001 && (
+            <g opacity={tipO}>
+              <circle cx={tx} cy={ty} r={30} fill={L.accent} opacity={0.16} />
+              <circle cx={tx} cy={ty} r={14} fill={L.accent} />
             </g>
           )}
         </svg>
       </div>
-
-      {/* 屏幕空间光：左上主光 + 暗角 + 颗粒（不随世界走，像摄影棚里的固定灯） */}
-      <AbsoluteFill style={{ pointerEvents: 'none', background: 'radial-gradient(ellipse 60% 70% at 30% 12%, rgba(255,255,255,0.5), rgba(255,255,255,0) 70%)', mixBlendMode: 'soft-light' }} />
-      <Vignette strength={0.16} inner={0.45} color="#2a2c36" />
-      <Grain opacity={0.045} />
     </AbsoluteFill>
   );
 };

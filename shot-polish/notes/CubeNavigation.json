@@ -1,32 +1,33 @@
 {
   "stem": "CubeNavigation",
   "issues": [
-    "六面只有一个标题 + 4 条色条 + 一个 Unicode 角标，换了色相也读不出各面是什么模块",
-    "正面特写时标题被顶出画面上沿（OVERVIEW 只剩半截），内容没避开特写裁切区",
-    "DesignStage 用 transform scale 放大 480×270 设计稿，小字和细边在 4 倍放大后发软",
-    "相机推拉与转向在同一窗口同一缓动下同步走，转面读作机械插值",
-    "收尾等轴位立方体底角贴着画框下沿"
+    "按 480×270 设计坐标放大，立方体特写时面的上下出画，面上 6–10px 的设计字放大后仍是小字",
+    "画面只有一个立方体居中，左右大片空黑，观众不知道一共几个模块、现在在第几面",
+    "相机五段等时长 inOutCubic 机械步进，hold 段完全静止",
+    "结尾停在一个等轴立方体上，没有收口的标题或海报画面"
   ],
   "changes": [
-    "六面换成真实模块界面：Overview 指标 + 面积折线 + 两枚小卡、Metrics 金额 + 周柱图、Timeline 四个里程碑、Assets 文件列表、Settings 开关、Export 格式选择 + 主按钮；保留每面独立色相作面身份",
-    "内容区整体下移到 y 28–168，避开特写时上下各 ~19px 的出画区；标题字距从 0.27em 收到 0.14em",
-    "DesignStage 改 raster=\"zoom\"，面上文字按成片尺寸栅格化，特写也锐利",
-    "相机推拉轴错开 2% 时间：拉远段先退后转、推近段先转后进（overlap）；CAM 表、五段窗口与 inOutCubic 不变，仅收尾等轴 d −95→−165 让尾帧立方体完整入画",
-    "面上叠随法线明暗变化的左上受光 + 1px 棱边高光，立方体下方加随当前面色相过渡的地面光晕，整幅加暗角与颗粒；删掉为对齐旧样片做的 R 通道压暗补丁"
+    "look 换成 graphite（近单色暗场），六面色相压成同一明度的深色釉面，强调色只给各面的主数据",
+    "改为 1920 成片坐标直接搭：S=760 的立方体特写时 ≈1.1× 放大、整面完整入画，主数字 150–160px、说明 32px，文字按近原生尺寸栅格化",
+    "构图偏右（立方体中心 58%），左侧加模块索引栏，高亮条按转向角连续滑到当前面，舞台余光与地面落地光随当前面换色",
+    "换面改成「拉远+转向 → 等轴顶点悬停 → 转向+推近」的弧，推拉与转向错峰 3–4f，全程叠极缓匀速漂移，hold 段不再死帧",
+    "面内容各有小动作：折线描出 + 计数、柱子错峰长起、里程碑点亮；背光面不渲染以省栅格",
+    "时长 180→240f，收尾拉到更高更远的等轴，左上两行大标题遮罩升起，成一张陈列海报"
   ],
   "issuesEn": [
-    "Each face had only a title, four colour bars and a Unicode glyph — even with distinct hues you couldn't tell what module a face was",
-    "In the front close-up the title was pushed off the top edge (OVERVIEW half cut); content ignored the close-up crop zone",
-    "DesignStage upscaled the 480×270 design with transform scale, so small text and thin edges went soft at 4×",
-    "Dolly and rotation moved in lockstep on the same window and curve, so face turns read as mechanical interpolation",
-    "In the final isometric pose the cube's bottom corner touched the frame edge"
+    "Built in a 480x270 design space and scaled up: close-ups cropped the faces top and bottom, and the 6–10px design text was still small after scaling",
+    "A lone centred cube with empty black on both sides: no sense of how many modules exist or which face you are on",
+    "Five equal-length inOutCubic camera steps felt mechanical, and the holds were completely static",
+    "It ended on an isometric cube with no closing title or poster frame"
   ],
   "changesEn": [
-    "Faces are now real module UIs: Overview metric + area line + two mini tiles, Metrics revenue + weekly bars, Timeline four milestones, Assets file list, Settings toggles, Export format picker + primary button; each face keeps its own hue as identity",
-    "Content moved to y 28–168, clear of the ~19px cropped top/bottom in close-ups; title tracking reduced from 0.27em to 0.14em",
-    "DesignStage switched to raster=\"zoom\" so face text rasterises at output size and stays sharp in close-ups",
-    "The dolly axis is offset by 2% of the timeline — pull back before turning, turn before pushing in (overlap); CAM table, the five windows and inOutCubic are unchanged, except the closing isometric d −95→−165 so the last frame holds the whole cube",
-    "Faces get a normal-driven top-left light and a 1px edge highlight, a floor glow under the cube blends between the current faces' hues, plus vignette and grain; removed the red-channel crush hack that only existed to match the old sample video"
+    "Graphite look (near-monochrome dark stage); the six face hues are pressed to one value as dark glazed panels, with accent colour only on each face's key figure",
+    "Built directly in 1920 frame space: an S=760 cube at ~1.1x in close-up with the whole face in frame, 150–160px key numbers and 32px captions, text rasterised near native size",
+    "Off-centre composition (cube at 58%) with a module index rail on the left whose highlight slides continuously to the current face; stage tint and floor glow follow the face hue",
+    "Face changes are now arcs (pull back and turn, hang at the isometric apex, turn and push in), with dolly and rotation offset by 3–4f and a slow constant drift so holds never freeze",
+    "Each face has a small beat of its own: line draw plus count-up, staggered bars, milestones lighting up; back-facing faces are skipped to save raster time",
+    "Duration 180 to 240f, ending on a higher, wider isometric view with a two-line headline rising in the top left as a showcase poster"
   ],
+  "look": "graphite",
   "mdChanged": true
 }
