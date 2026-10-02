@@ -1,0 +1,32 @@
+{
+  "stem": "LineCarryTransition",
+  "issues": [
+    "没有导出时长常量，工作台只渲 60f：镜头刚开始横移就结束，拐角围框和 B 场景都没出现",
+    "冲出段是线性插值：进度条 ease-out 停住后瞬间 54px/帧冲出，到 34f 又骤停等镜头起步，线「冲一下顿一下」",
+    "画面打着「Scene A / Scene B」调试标题，A 是通用卡、B 框里是灰色骨架条，线的出发理由（进度走满）没有被讲出来",
+    "横移段只有一条线在空背景上，镜头动了读不出来；x=1920 处 A/B 底色硬接缝",
+    "拐角 strokeLinejoin 用 round，和 md「直角硬拐」不符"
+  ],
+  "changes": [
+    "补 LINE_CARRY_TRANSITION_DURATION = 160（源码 124–160 真静止），镜头 34–94f 横移 1920、drawn = 1100 + cam 的同速命门、94–112 收框与 118f 笔头卸载全部保持",
+    "A 换成「导出影片」进度卡：百分比与 MB 跟线计数，走满 22f 停一拍显示 Export complete；冲出段改两端零速的 swift 曲线，与进度条收尾、镜头起步速度连续",
+    "B 换成线围成边框的分享卡（缩略图 / 文件信息 / 分享链接 + Copy link / 头像组），白底与软阴影随内容淡入；标题改 Step 1 Render → Step 2 Share",
+    "世界里铺一层 48px 制图点阵给速度参照，横移时世界内容按镜头速度做水平 SpeedBlur（封顶 14px），线与笔头在模糊层外始终锐利；底色改 900px 冷暖柔过渡 + 屏幕空间左上光、暗角、颗粒",
+    "拐角改 miter 直角，笔头墨点外加一圈 8% 光晕"
+  ],
+  "issuesEn": [
+    "No duration constant, so the workbench rendered just 60f: it ended as the camera began to travel — no corner, no frame, no scene B",
+    "The shoot-out segment was linear: after the progress bar eased to a stop it jumped to 54px/frame, then halted at 34f waiting for the camera — a lurch-and-stall",
+    "Debug titles \"Scene A / Scene B\" were on screen, A was a generic card and B's frame held grey skeleton bars, so the line's reason to leave (the progress completing) was never told",
+    "During the pan there was only a line on an empty background, so the camera move didn't read; A/B backgrounds met in a hard seam at x=1920",
+    "Corners used strokeLinejoin round, contrary to the md's hard right-angle turns"
+  ],
+  "changesEn": [
+    "Added LINE_CARRY_TRANSITION_DURATION = 160 (source: 124–160 true hold); the 34–94f 1920px pan, the drawn = 1100 + cam lock, the 94–112 frame draw and the 118f tip unmount are all preserved",
+    "A is now an \"export film\" progress card whose percentage and MB count with the line, pausing 2f at full to show \"Export complete\"; the shoot-out uses a swift curve with zero speed at both ends, continuous with the bar's ease-out and the camera's start",
+    "B is a share card whose border is the drawn line (thumbnail, file info, share link with Copy link, avatar stack), with its white fill and soft shadow fading in with the content; titles became Step 1 Render → Step 2 Share",
+    "A 48px drafting dot grid in world space gives the eye a speed reference, and world content gets horizontal SpeedBlur from camera speed (capped 14px) while the line and tip stay sharp outside it; backgrounds blend warm→cool over 900px with a screen-space top-left light, vignette and grain",
+    "Corners switched to miter right angles; the tip dot gains an 8% halo"
+  ],
+  "mdChanged": false
+}

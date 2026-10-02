@@ -1,0 +1,32 @@
+{
+  "stem": "BubbleSwarmTakeover",
+  "issues": [
+    "气泡只有一层径向渐变，像糊开的粉彩色斑，没有镜面高光、反光和薄膜虹彩，读不出「珠光气泡」",
+    "wobble 的 x/y 同频同相（y = x×0.6），整群沿同一条斜线摆动，像贴图在晃",
+    "页面用 sin 做 ±2% 的「呼吸」缩放，来回拉伸，和穿过泡群的方向感无关",
+    "峰值帧白纱与气泡偏透，旧/新页面细节（如 214、头像）隐约透出",
+    "i18n 胶囊是 Helvetica 800 + 2px 白边，在白纱上几乎隐形；洗白层是纯白平涂"
+  ],
+  "changes": [
+    "补 BUBBLE_SWARM_TAKEOVER_DURATION = 130；气泡改四层：偏 34%/28% 的锐利镜面高光 + 柔高光 + 右下反光 + 中心透外圈染色的珠光体色，再叠 conic 薄膜虹彩环（mask 裁成外缘环带、随帧缓转），体色不透明度提高一档压住峰值透底",
+    "wobble 改 x/y 不同频（0.09 / 0.071）+ 相位差，群体不再同步斜摆；飘入改 quint ease-out、散开改 quart ease-in",
+    "按真实速度做方向性拖影：沿速度方向拉长至多 32%、垂直方向微收，快时额外虚化 ≤4px，静止为 0",
+    "去掉呼吸缩放，改为单向推镜：旧页 1→1.035 越推越快，藏切后新页从 1.05 软落回 1，读作穿过泡群",
+    "胶囊改系统字体 650 + 语言代码小标（DE/ES/IT）+ 发丝线 + 紫调两层软阴影，弹出带一次轻过冲；洗白层改带珠光冷暖的径向白纱，全片加颗粒防色带"
+  ],
+  "issuesEn": [
+    "Bubbles were a single radial gradient — smeared pastel blobs with no specular, bounce light or thin-film iridescence, so they didn't read as pearly bubbles",
+    "Wobble moved x and y at the same frequency and phase (y = x×0.6), so the whole swarm swayed along one diagonal like a jiggling sprite",
+    "The page did a ±2% sin \"breathing\" scale back and forth, unrelated to travelling through the swarm",
+    "At the peak frame the veil and bubbles were too transparent, letting old/new page details (e.g. \"214\", avatars) show through",
+    "The i18n capsules were Helvetica 800 with a 2px white border, nearly invisible on the veil; the whiteout was flat pure white"
+  ],
+  "changesEn": [
+    "Added BUBBLE_SWARM_TAKEOVER_DURATION = 130; bubbles now have four layers — a sharp specular at 34%/28%, a soft highlight, bottom-right bounce light and a pearl body that's clear in the middle and tinted at the rim — plus a conic thin-film ring masked to the outer band and slowly rotating; body opacity raised a notch to hide the page at the peak",
+    "Wobble uses different x/y frequencies (0.09 / 0.071) with a phase offset so the swarm no longer sways in sync; float-in is quint ease-out, dispersal quart ease-in",
+    "Velocity-driven directional smear: up to 32% stretch along the motion direction with slight perpendicular squash, plus ≤4px extra blur when fast, zero at rest",
+    "Replaced the breathing scale with a one-way push: the old page goes 1→1.035, accelerating, and after the hidden cut the new page settles from 1.05 to 1 — reading as passing through the swarm",
+    "Capsules use the system font at 650 with a language-code tag (DE/ES/IT), hairline and violet two-layer shadow, popping in with one light overshoot; the whiteout became a pearly warm/cool radial veil, with grain over everything against banding"
+  ],
+  "mdChanged": false
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "GradientTransition",
+  "issues": [
+    "radial 段写成 `circle 45%`（circle 半径不接受百分比），整条渐变失效，2–4.2s 整段是纯黑屏",
+    "linear 段只有两个色标，整屏死平，没有受光",
+    "conic 段 85% 饱和的七色彩虹，色环中心有尖点、相邻色标之间有硬带，h264 下还出色带",
+    "中央 pill 文字按 480 设计稿栅格化后 4 倍放大，发虚；段切换时 LINEAR/RADIAL/CONIC 硬跳字"
+  ],
+  "changes": [
+    "radial 半径按 400px=100% 换算成 px，修复黑屏；圆心对角游走 + 半径 45→85% 的参数不变，光斑中段加一档暗色标让外圈更快沉下去",
+    "linear 段叠一处沿渐变反向缓慢游走的柔光斑（白 0.22）",
+    "conic 段饱和度压到 66–76%，外扩 12px 后 blur(5px) 抹掉中心尖点与色标硬带，中心加一圈 0.16 柔光",
+    "DesignStage 改 raster=\"zoom\"；pill 换成发丝线 + 顶部内高光 + 投影的玻璃胶囊，右侧实时读出正在插值的参数（角度 / r% / 起始角，tabular-nums），换字跟随层权重过半交接、不叠影",
+    "全片加暗角 + soft-light 颗粒防色带；md 已知坑补一条 circle 半径不能用百分比"
+  ],
+  "issuesEn": [
+    "The radial phase used `circle 45%` (circle radius can't be a percentage), so the whole gradient was invalid and 2–4.2s rendered pure black",
+    "The linear phase had just two stops — a dead-flat, unlit field",
+    "The conic phase was an 85%-saturated seven-colour rainbow with a sharp pinch at the centre, hard bands between stops, and h264 banding",
+    "The centre pill was rasterised at 480px design size and upscaled 4×, so it was soft; labels hard-switched LINEAR/RADIAL/CONIC between phases"
+  ],
+  "changesEn": [
+    "Radial radius is converted to px (400px = 100%), fixing the black screen; the diagonal centre drift and 45→85% radius are unchanged, with an extra dark mid-stop so the rim falls off faster",
+    "The linear phase gets a soft light spot (white 0.22) drifting slowly against the gradient direction",
+    "Conic saturation lowered to 66–76%; the layer is over-scanned 12px and blurred 5px to erase the centre pinch and stop banding, with a 0.16 soft glow at the centre",
+    "DesignStage uses raster=\"zoom\"; the pill is now a glass capsule with hairline, top highlight and drop shadow, reading out the live interpolated parameter (angle / r% / start angle, tabular-nums), and labels hand off at the layer-weight midpoint without overlapping",
+    "Added vignette and soft-light grain against banding; added a pitfall line to the md about circle radii not accepting percentages"
+  ],
+  "mdChanged": true
+}

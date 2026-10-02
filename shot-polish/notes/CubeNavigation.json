@@ -1,0 +1,32 @@
+{
+  "stem": "CubeNavigation",
+  "issues": [
+    "六面只有一个标题 + 4 条色条 + 一个 Unicode 角标，换了色相也读不出各面是什么模块",
+    "正面特写时标题被顶出画面上沿（OVERVIEW 只剩半截），内容没避开特写裁切区",
+    "DesignStage 用 transform scale 放大 480×270 设计稿，小字和细边在 4 倍放大后发软",
+    "相机推拉与转向在同一窗口同一缓动下同步走，转面读作机械插值",
+    "收尾等轴位立方体底角贴着画框下沿"
+  ],
+  "changes": [
+    "六面换成真实模块界面：Overview 指标 + 面积折线 + 两枚小卡、Metrics 金额 + 周柱图、Timeline 四个里程碑、Assets 文件列表、Settings 开关、Export 格式选择 + 主按钮；保留每面独立色相作面身份",
+    "内容区整体下移到 y 28–168，避开特写时上下各 ~19px 的出画区；标题字距从 0.27em 收到 0.14em",
+    "DesignStage 改 raster=\"zoom\"，面上文字按成片尺寸栅格化，特写也锐利",
+    "相机推拉轴错开 2% 时间：拉远段先退后转、推近段先转后进（overlap）；CAM 表、五段窗口与 inOutCubic 不变，仅收尾等轴 d −95→−165 让尾帧立方体完整入画",
+    "面上叠随法线明暗变化的左上受光 + 1px 棱边高光，立方体下方加随当前面色相过渡的地面光晕，整幅加暗角与颗粒；删掉为对齐旧样片做的 R 通道压暗补丁"
+  ],
+  "issuesEn": [
+    "Each face had only a title, four colour bars and a Unicode glyph — even with distinct hues you couldn't tell what module a face was",
+    "In the front close-up the title was pushed off the top edge (OVERVIEW half cut); content ignored the close-up crop zone",
+    "DesignStage upscaled the 480×270 design with transform scale, so small text and thin edges went soft at 4×",
+    "Dolly and rotation moved in lockstep on the same window and curve, so face turns read as mechanical interpolation",
+    "In the final isometric pose the cube's bottom corner touched the frame edge"
+  ],
+  "changesEn": [
+    "Faces are now real module UIs: Overview metric + area line + two mini tiles, Metrics revenue + weekly bars, Timeline four milestones, Assets file list, Settings toggles, Export format picker + primary button; each face keeps its own hue as identity",
+    "Content moved to y 28–168, clear of the ~19px cropped top/bottom in close-ups; title tracking reduced from 0.27em to 0.14em",
+    "DesignStage switched to raster=\"zoom\" so face text rasterises at output size and stays sharp in close-ups",
+    "The dolly axis is offset by 2% of the timeline — pull back before turning, turn before pushing in (overlap); CAM table, the five windows and inOutCubic are unchanged, except the closing isometric d −95→−165 so the last frame holds the whole cube",
+    "Faces get a normal-driven top-left light and a 1px edge highlight, a floor glow under the cube blends between the current faces' hues, plus vignette and grain; removed the red-channel crush hack that only existed to match the old sample video"
+  ],
+  "mdChanged": true
+}

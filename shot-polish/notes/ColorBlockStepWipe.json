@@ -1,0 +1,32 @@
+{
+  "stem": "ColorBlockStepWipe",
+  "issues": [
+    "没有导出时长常量，工作台只渲 44f：A 式还没铺满就结束，徽章和整个 B 式（红块斜吃 + 携带卡）都没出现",
+    "A 式蓝块在一片空灰底上长，没有被「吞」的东西，接管感弱",
+    "B 式背景是灰色骨架条拼的假页面，色块是死平纯色",
+    "AI 徽章是平涂奶油圆 + 单层黑影，五官线宽不一",
+    "携带卡的阴影是统一黑色 0.3，压在红底上发脏"
+  ],
+  "changes": [
+    "补 COLOR_BLOCK_STEP_WIPE_DURATION = 150（md demo 合计 150f）；全部阶跃阈值、尺寸、徽章 0.55→1.12→1 三跳和 -4° 定角原样保留，零补间语法不动",
+    "两式被吞的都换成出版级文档页：面包屑、64px 图标 + 60px 标题、Owner/Status 元信息、两段 26px 正文、提示框、两张 Card",
+    "色块改为同色相 165° 微渐变 + 颗粒的有材质纯色，硬边不羽化；每一跳的落地帧整块提亮一档（1 帧打击帧，仍是离散的），给「咔、咔、咔」一个视觉落点",
+    "徽章改奶油径向渐变 + 发丝线 + 顶部内高光 + 蓝调两层软阴影，五官统一笔画并加眼神高光",
+    "携带卡改红调 elevation 56 的飞行软阴影，卡面只留内高光"
+  ],
+  "issuesEn": [
+    "No duration constant, so the workbench rendered only 44f: variant A ended before filling the screen, and the badge plus all of variant B (diagonal red block carrying a card) never appeared",
+    "Variant A's blue block grew on an empty grey field — nothing was being swallowed, so the takeover felt weak",
+    "Variant B's background was a fake page of grey skeleton bars and the colour blocks were dead-flat fills",
+    "The AI badge was a flat cream disc with a single black shadow and uneven facial line weights",
+    "The carried card's shadow was a uniform 0.3 black that looked dirty on red"
+  ],
+  "changesEn": [
+    "Added COLOR_BLOCK_STEP_WIPE_DURATION = 150 (md: demo total 150f); every step threshold and size, the 0.55→1.12→1 badge jumps and the -4° card angle are untouched — the zero-tween grammar stays",
+    "Both variants now swallow a publication-grade document page: breadcrumb, 64px icon + 60px title, owner/status meta, two 26px paragraphs, a callout and two Cards",
+    "Colour blocks are same-hue 165° micro-gradients with grain — textured solids with hard, unfeathered edges; on the landing frame of each jump the whole block brightens one notch (a 1-frame hit, still discrete) to give each \"clack\" a visual beat",
+    "Badge uses a cream radial gradient, hairline, top inner highlight and a blue-tinted two-layer shadow; facial strokes are unified with small catch-lights in the eyes",
+    "The carried card gets a red-tinted elevation-56 flying shadow, with only an inner highlight on its face"
+  ],
+  "mdChanged": false
+}

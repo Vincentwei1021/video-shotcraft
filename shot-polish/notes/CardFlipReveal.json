@@ -1,0 +1,32 @@
+{
+  "stem": "CardFlipReveal",
+  "issues": [
+    "没有导出时长常量，工作台按单卡 26f 只渲出翻转前的 hold 和第一张卡刚起翻，三连翻和结论数字完全没出现",
+    "画面上方打着调试占位标题「CARD FLIP REVEAL」",
+    "背面只有一个 Helvetica 800 大数字，缺 md 要求的那行小标签，也看不出它是哪张功能卡的成果",
+    "翻转时卡片贴在原地转、阴影跟着面片一起转，没有离桌感；背面 2px 灰边",
+    "平灰底色，画面没有光向和层次"
+  ],
+  "changes": [
+    "补 CARD_FLIP_REVEAL_DURATION = 145（源码时间轴写明 64–145 三卡静止），翻转 18f+8f、192° 过冲、10f 错峰、侧棱加深高光带全部保持原值",
+    "调试标题换成居中的 kicker「Launch results」+ 60px 标题，柔光 Backdrop 主光在正上方",
+    "正反面语义成对：正面 Active users / Top pages / Deploys 三张出版级功能卡，背面左上同名小标 + 104px 数字 + 32px 结论标签；标签比数字晚 4f 起、上浮 10px 落定（跟随）",
+    "翻转时卡片按 sin 包络离桌放大 5%；地面影子独立于 3D 旋转，宽度跟投影宽度 |cos θ| 收放，接触影随抬起淡出、环境影变大变虚下移 34px",
+    "背面改为发丝线 + 顶部内高光 + 微渐变白，系统字体栈 + tabular-nums"
+  ],
+  "issuesEn": [
+    "No duration constant: the workbench rendered only 26f, i.e. the pre-roll hold and the first card barely starting to turn — the triple flip and result numbers never appeared",
+    "A debug placeholder title \"CARD FLIP REVEAL\" sat at the top of the frame",
+    "The back face was a lone Helvetica 800 number, missing the one-line label the md calls for, with no link to which feature it came from",
+    "Cards spun in place with the shadow painted onto the rotating face, so there was no lift off the table; the back face had a 2px grey border",
+    "Flat grey background with no light direction or depth"
+  ],
+  "changesEn": [
+    "Added CARD_FLIP_REVEAL_DURATION = 145 (the source timeline states 64–145 is the all-settled hold); 18f+8f flip, 192° overshoot, 10f stagger and the edge-darkening sheen keep their original values",
+    "Replaced the debug title with a centred \"Launch results\" kicker and a 60px headline over a soft Backdrop lit from directly above",
+    "Faces now pair semantically: fronts are publication-grade Active users / Top pages / Deploys cards; backs carry the same topic tag, a 104px number and a 32px outcome label that trails the number by 4f and rises 10px into place",
+    "During the flip the card lifts 5% on a sin envelope; a floor shadow outside the 3D transform tracks the projected width |cos θ|, its contact layer fading and ambient layer growing softer and dropping 34px as the card rises",
+    "Back face uses a hairline border, top inner highlight and a faint white gradient, with the system font stack and tabular numerals"
+  ],
+  "mdChanged": false
+}

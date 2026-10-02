@@ -1,0 +1,32 @@
+{
+  "stem": "CircleMatchIris",
+  "issues": [
+    "没有导出时长常量，工作台只渲 30f——只有锚点脉冲，光圈和圆环图表根本没出现",
+    "锚点是灰色实心圆套 3px 黑边，看不出是什么元素；脉冲用 |sin| 放大到 1.45 倍（md 写 1.15），像在抽搐",
+    "光圈是硬切 clip-path 边，没有边缘光也没有落影，新旧景像贴在同一平面",
+    "景 B 是平涂 #2f2f2f 底 + 灰白圆环 + 灰色骨架条，数字下的标签也只是一根灰条",
+    "景 B 下半屏空着，构图头重脚轻"
+  ],
+  "changes": [
+    "补 CIRCLE_MATCH_IRIS_DURATION = 140（源码时间轴 100–140 静止收尾）；CX/CY 同心常量、光圈 22→2100/45f、圆环 22→170、sweep 78% 全部保持",
+    "锚点换成真圆项目图标（强调色渐变 + 白色闪电 + 随脉冲加深的投影），脉冲按 md 改回两次 1→1.15（5f snappy 弹起 + 10f 回落），扩散环 ease-out 外扩、线宽 3→1 渐细",
+    "光圈边缘加 1.5px 冷白受光环（开圈最亮、吃满前淡出）+ 圈外 70px 柔化落影，新景读作压在旧页之上",
+    "景 B 换成带光斑的暗场 Backdrop：圆环底轨 7% 白、弧用强调色渐变 + 弧头柔光，中央 92px tabular 数字 + 「cache hit rate」；右侧是真实项目页（状态 chip / 64px 标题 / 30px 说明 / 三枚发丝线指标卡），只做三档错峰淡入",
+    "下方补「Hit rate by region」分区面板（6 区域命中率条），版式撑满且与上方卡片左右对齐"
+  ],
+  "issuesEn": [
+    "No duration constant, so the workbench rendered just 30f — only the anchor pulse; the iris and ring chart never appeared",
+    "The anchor was a solid grey disc with a 3px black ring, unidentifiable; the pulse used |sin| up to 1.45× (md says 1.15) and looked like a twitch",
+    "The iris was a hard clip-path edge with no rim light or shadow, so both scenes felt pasted on one plane",
+    "Scene B was a flat #2f2f2f fill, a grey/white ring and grey skeleton bars; the label under the number was just a grey bar",
+    "The lower half of scene B was empty, leaving the composition top-heavy"
+  ],
+  "changesEn": [
+    "Added CIRCLE_MATCH_IRIS_DURATION = 140 (source timeline holds 100–140); the shared CX/CY centre, 22→2100 iris over 45f, 22→170 ring growth and 78% sweep are unchanged",
+    "The anchor is now a true-circle project icon (accent gradient, white bolt, shadow that deepens with the pulse); the pulse follows the md again — two 1→1.15 beats (5f snappy rise, 10f fall) — and the echo rings expand ease-out while thinning 3→1px",
+    "The iris edge gets a 1.5px cool rim light (brightest as it opens, gone before full screen) plus a 70px soft shadow outside it, so the new scene reads as lying on top of the old page",
+    "Scene B is a dark Backdrop with a soft light: 7%-white track, accent-gradient arc with a glowing tip, a 92px tabular number and \"cache hit rate\"; on the right a real project page (status chip, 64px title, 30px description, three hairline stat cards) that only fades in on three staggered beats",
+    "Added a \"Hit rate by region\" panel along the bottom (six region bars) to fill the layout, aligned with the cards above"
+  ],
+  "mdChanged": false
+}
