@@ -1,28 +1,31 @@
 {
   "stem": "ImpactBurstKit",
   "issues": [
-    "没有导出时长，工作台按 md 的 22f 渲染——砸落刚到落点就结束，邻卡被波及与回弹全被截掉",
-    "主卡在 0–14f 以 1.8 倍死停悬在空中，并盖住调试标题 IMPACT BURST KIT",
-    "冲击环是 3px 实黑线、粒子是纯黑方点和圆点，与浅色界面格格不入",
-    "邻卡被推开没有速度感和高度变化，背景是纯灰平铺"
+    "三张卡都是灰线占位卡，读不出是什么页面，左上角是调试卡名「IMPACT BURST KIT」",
+    "卡片只有 400×280，三张加起来不到画宽 70%，四周大面积空灰",
+    "主卡和邻卡长得一样，砸进来的那张没有视觉重心；冲击环是细淡蓝线、粒子是零星小点",
+    "砸入前没有槽位参照，主卡\"砸到哪\"不明确"
   ],
   "changes": [
-    "补导出 IMPACT_BURST_KIT_DURATION = 140（源码时间轴：63f 动作与余波 + 77f 静止 hold）",
-    "调试标题换成页面里的区块标题 Overview / This week · 3 widgets；悬停段改为蓄力——主卡缓缓上提 18px、放大到 1.84，离镜头近时景深虚化，地面接触影随下落变实",
-    "冲击环改强调色细亮环（4.5→1px）+ 柔辉；14 粒子改为一半强调色碎片、一半带投影的浅色碎屑，自旋并按速度沿飞行方向拉长",
-    "邻卡被推开那一下按速度给水平 SpeedBlur，阴影随推力抬高；柔光底 + 颗粒；460px 中心距与落点后 3f 的波及帧不变"
+    "look 换成 porcelain（冷白 · 钴蓝），页面改为虚构文档工具「Inkwell」的定价区：76px 标题 + 三张 470×600 方案卡（Starter / Pro / Team），价格 100–112px、功能 30px、CTA 按钮",
+    "主角 Pro 卡是全片唯一的深墨蓝暗面（钴蓝顶光 + 钴蓝 CTA），落定后弹簧弹出「MOST POPULAR」签——砸进来的就是视觉重心",
+    "中间留虚线空槽 + 随下落变实的接触影（Q9 真实槽位）；0–16f Pro 卡悬在镜头前蓄力（上提 + 放大 + 景深虚化）→ 6f ease-in 砸进槽 → 压扁 3f 弹簧回正",
+    "落点：白色压力盘打底的钴蓝冲击环（16f）+ 18 片钴蓝 / 白纸碎屑按速度拉长 + 8px 震屏 4f；环前沿 +3f 扫到邻卡中心，邻卡外推 34px / ±3.5° 阻尼弹回、推开那一下水平拖影",
+    "余波 ~65f 全部硬钳归零，之后 75f 真静止只留极缓推镜，尾帧是一张完整定价页；时长 140f"
   ],
   "issuesEn": [
-    "No duration was exported, so the workbench rendered md's 22f: it ended right at the impact and cut off the neighbours being hit and springing back",
-    "The main card hung frozen at 1.8× for frames 0–14, covering the debug title IMPACT BURST KIT",
-    "The shockwave was a 3px solid black line and the particles were pure black squares and dots, clashing with the light UI",
-    "Neighbour cards were pushed with no sense of speed or lift, on a flat grey background"
+    "All three cards were grey-bar placeholders, so you could not tell what page this was, and the debug name 'IMPACT BURST KIT' sat in the corner",
+    "The cards were only 400×280, together under 70% of the frame width, surrounded by empty grey",
+    "The hero and its neighbours looked identical, so the card slamming in had no visual weight; the shock ring was a faint thin blue line and the particles a few specks",
+    "There was no slot before the slam, so where the card was landing was unclear"
   ],
   "changesEn": [
-    "Exported IMPACT_BURST_KIT_DURATION = 140 (from the source timeline: 63f of action and aftermath plus a 77f still hold)",
-    "The debug title became an in-page section header, Overview / This week · 3 widgets; the hover is now a wind-up, the card rising 18px and growing to 1.84× with depth-of-field blur near the lens, and a floor contact shadow that firms up as it falls",
-    "The ring is now a thin accent ring (4.5→1px) with a soft glow; the 14 particles are half accent shards and half light debris with shadows, spinning and stretching along their flight direction with speed",
-    "Neighbours get a horizontal SpeedBlur on the push and their shadows lift with it; soft backdrop with grain; the 460px centre distance and the hit 3f after impact are unchanged"
+    "Porcelain look (cool white and cobalt): the page is a pricing section for a fictional docs tool, Inkwell, with a 76px headline and three 470×600 plan cards (Starter / Pro / Team), 100–112px prices, 30px features and CTA buttons",
+    "The Pro hero is the only dark navy surface in the frame (cobalt top glow, cobalt CTA) and springs a 'MOST POPULAR' tag after landing, so the card that slams in is the focal point",
+    "A dashed empty slot with a contact shadow that firms up as the card drops (a real slot per Q9); 0–16f the Pro card hovers in front of the lens (lift, scale, depth blur), slams into the slot in 6f ease-in, squashes for 3f and springs back",
+    "Impact: a cobalt shock ring over a white pressure disc (16f), 18 cobalt and white-paper shards stretched by velocity, an 8px 4f shake; the ring front reaches the neighbours' centres 3f later and they get pushed 34px / ±3.5° with a damped return and a horizontal smear on the push",
+    "All aftershocks are hard-clamped to zero by ~65f, followed by 75f of true stillness with only a slow push, ending on a complete pricing page; 140f total"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

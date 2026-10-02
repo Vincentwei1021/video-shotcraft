@@ -1,28 +1,31 @@
 {
   "stem": "ScoreSlam",
   "issues": [
-    "没有导出时长，工作台按 md 的 22f 渲染，砸落后的 hold 被截掉",
-    "调试标题 SCORE SLAM 压在虚化 dashboard 上还被切掉一半；背景虚化后依然抢眼，没有把视线收到卡上",
-    "KPI 卡是 3px 灰边 + Helvetica 粗字 + 宽字距标签，像线框稿；高空 2.5 倍大时和落地后一样锐利，读不出\"从镜头前砸下\"",
-    "冲击环是 6px 实黑圈、尘点是黑色小方块，读作贴纸而不是冲击"
+    "比分卡只有 +247% 一个数加一行小字，放在灰白虚化 dashboard 上，像网页弹窗不像转播重磅",
+    "砸落前 8f 是静止空镜，没有预备；冲击环是细灰线、尘点是几粒黑方块，几乎不可感",
+    "整片灰白低对比，没有光，落定后 100f 只有一张静止卡",
+    "左上角留着调试卡名，信息层级只有一层"
   ],
   "changes": [
-    "补导出 SCORE_SLAM_DURATION = 135（源码时间轴：30f 动作与余波 + 105f 静止 hold）",
-    "去掉调试标题；dashboard 虚化加到 9px，砸落途中压上一层径向 scrim，把视线收到 KPI 卡",
-    "卡片换成出版级 KPI 面板：发丝线 + 内高光 + 随高度变化的两层阴影、系统字体 tabular 大数字、Q3 chip、本季强调色的迷你柱状图；离镜头近时按高度给 ≤5px 景深虚化，落地清晰",
-    "圆环改白色细亮环（7→1.4px 越扩越细）+ 柔辉两层；尘点改带翻转与投影的浅色碎屑 + 12 条径向拉长的细火花；震屏偏竖向，砸落节拍与 18px 衰减不变"
+    "look 换成 graphite（近单色暗场 + 香槟金点缀），舞台是夜场球场：顶缘四盏泛光灯 0–7f 依次\"啪\"地亮起，远处看台是虚化暖色光点",
+    "主角改为 1240×400 杯赛终场比分卡：两队徽章与队名、220px tabular 比分「3 – 2」、金色「FULL TIME · 90+4′」签、底部赛事信息行",
+    "节奏「悬—砸—炸—落—读」：0–9f 卡悬在镜头前（2.75→2.6、虚化 10px、半透）→ 6f ease-in 加速砸落 → 15f 冲击环（白芯 + 金辉，扩散 / 消散解耦）+ 14 片玻璃金箔碎片 + 16 道火花 + 竖向震屏 5f + 2f 白闪",
+    "跟随：卡片弹簧回弹，两个比分数字晚 3f / 6f 二次落地，FULL TIME 签从卡顶滑出，胜方数字下划金线擦出",
+    "落定后 84px 标题「Norvik lift the Cup.」逐词升起 + 36px 副句，尾帧是完整的终场海报；时长 135f"
   ],
   "issuesEn": [
-    "No duration was exported, so the workbench rendered md's 22f and cut off the hold after the slam",
-    "The debug title SCORE SLAM sat on the blurred dashboard and was half clipped; the blurred background still competed for attention instead of focusing on the card",
-    "The KPI card had a 3px grey border, heavy Helvetica and widely tracked label, like a wireframe; at 2.5× near the lens it was as sharp as when landed, so it never read as slamming down from in front of the camera",
-    "The shockwave was a 6px solid black circle and the dust was black squares, reading as stickers rather than impact"
+    "The card held a single +247% and one line of small text over a blurred grey dashboard, reading like a web toast rather than a broadcast moment",
+    "The 8f before the slam were a static empty shot with no wind-up; the shock ring was a thin grey line and the dust a few black squares, barely perceptible",
+    "Grey, low-contrast and unlit throughout, with 100f of a static card after landing",
+    "A debug card name sat in the corner and the information had only one level"
   ],
   "changesEn": [
-    "Exported SCORE_SLAM_DURATION = 135 (from the source timeline: 30f of action and aftermath plus a 105f still hold)",
-    "Removed the debug title; dashboard blur raised to 9px with a radial scrim darkening in during the drop to pull focus onto the KPI card",
-    "The card is now a publication-grade KPI panel: hairline, inner highlight, a two-layer shadow that changes with height, system-font tabular figures, a Q3 chip and a mini bar chart with this quarter in the accent; depth-of-field blur up to 5px while near the lens, sharp on landing",
-    "The ring is now a thin white ring (thinning 7→1.4px as it grows) with a soft glow; dust became light debris that flips and casts shadows plus 12 radially stretched sparks; shake is biased vertically, with slam timing and the 18px decay unchanged"
+    "Graphite look (near-monochrome dark with champagne gold): a night stadium where four floodlights snap on one by one over 0–7f above a blurred warm crowd bokeh",
+    "The hero is a 1240×400 cup-final score card: two crests and team names, a 220px tabular '3 – 2', a gold 'FULL TIME · 90+4′' tag and a fixture line",
+    "Rhythm is hover, slam, burst, settle, read: 0–9f the card hangs in front of the lens (2.75→2.6, 10px blur, translucent), a 6f ease-in slam, then on 15f a shock ring (white core, gold glow, expansion and fade decoupled), 14 glass and gold-foil shards, 16 sparks, a vertical 5f shake and a 2f white flash",
+    "Follow-through: the card springs back, the two score digits land a second time 3f and 6f later, the FULL TIME tag slides out of the top edge and a gold underline wipes under the winning score",
+    "After landing an 84px headline 'Norvik lift the Cup.' rises word by word with a 36px subline, ending on a complete full-time poster; 135f total"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

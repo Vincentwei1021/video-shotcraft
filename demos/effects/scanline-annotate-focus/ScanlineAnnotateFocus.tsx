@@ -1,272 +1,328 @@
-// scanline-annotate-focus — Scanline Annotate 扫描分析取景标注（motion-lab 定稿转原生 Remotion）
-// 一条亮扫描线自上而下掠过页面，扫过之处按先后顺序弹出相机取景框：四角括号从约 1.75 倍
-// 大小快速收拢对准目标区块（对准瞬间轻微过冲再回稳），随后旁侧打出等宽小字标注。
-// 顶部状态行同步计数 00/06→06/06，扫完切换 ANALYSIS · COMPLETE。
-// 页面内容为虚构品牌站，标注词与强调色均可按项目替换。设计坐标 480×270（DesignStage 等比放大）。
+// scanline-annotate-focus — 扫描分析取景标注：一条扫描线自上而下匀速掠过一张已存在的品牌官网，
+// 扫过哪个区块的下缘，哪块就被一组取景角标"收拢对准"，随后贴一枚机器标签把它命名；顶部状态行实时计数。
 //
-// 质感升级：占位文案（"The headline for / your product here"、sample、@USERNAME）换成一张
-// 可信的工作室官网；扫描线做成冷蓝光芯 + 两端衰减 + 尾迹，扫过的区域留一层渐隐的扫描网格余晖；
-// 取景框角标改细并带微弱辉光、收拢后臂长再收一档（二次动作）；标注升到 8px 可读字号，
-// 先亮一颗强调色定位点、再从左向右擦出文字（类目亮 / 细项暗两级）；H1 标注挪到标题下方
-// 不再压住右侧模块卡；状态行下加扫描进度细条；背景加暗角与颗粒。
+// 第二轮重设计（暖沙官网 × 钴蓝机器视线）：
+// - look = sand（米色 · 赤陶）。被分析的是一张虚构陶器工作室「Hollis」的官网：大号粗黑体 H1、手绘感陶瓶产品图、
+//   赤陶色 CTA、四色釉色板——页面本身就是一张好看的品牌页（原版是占位文案 + 8px 小字）。
+// - 两套颜色严格分工：赤陶 = 品牌（页面内容），钴蓝 = 机器（扫描线 / 角标 / 标签 / 状态行）。
+//   标签照设计工具的选中标签惯例做成钴蓝底白字小签，32px 等宽字，任何底上都读得清。
+// - 页面放进一扇有两层软阴影的浏览器窗（1560×840），状态行在窗外上方；全程 1.000→1.035 极缓推镜。
+// - 扫描线严格匀速（机器的视线，不加缓动）：3px 钴蓝光芯 + 身后 140px 渐隐的"已读"淡蓝余晖与点阵；
+//   窗框两侧各一枚随线滑动的游标，左侧读出当前 Y 坐标。
+// - 取景框：四个 L 角从外扩 76px 处按弹簧（damping 15，一次可见过冲）收拢到 bbox，臂长晚 3f 收一档（跟随）；
+//   对准瞬间框内钴蓝对焦闪；标签 5f 后从左擦出、文字逐字打出（机器在写）。
+//
+// 时间表（30fps，共 150f）：
+//   0–6     页面已在场（它本来就存在），状态行亮起 READING
+//   6–80    扫描线匀速 −20→860（74f）；越过 bbox 下缘即触发（≥4f 最小间隔）：
+//           LOGO ~19f · NAV ~23f · H1 ~47f · CTA ~66f · HERO ~70f · PALETTE ~75f
+//   ft+0–14 角标弹簧收拢；ft+5–14 标签擦出 + 打字
+//   80–88   扫描线淡出；状态行切 BRAND READ · 6 SIGNALS（钴蓝）
+//   88–150  hold：全部标注就位，极缓推镜让画面活着，尾帧是一张完整海报
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Grain, Vignette } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, ramp, softShadow } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha, springAt } from '../../_fixtures/Look';
 
-export const SCANLINE_ANNOTATE_FOCUS_DURATION = 138; // 4600ms @30fps
+export const SCANLINE_ANNOTATE_FOCUS_DURATION = 150;
 
-const MONO = '"SF Mono","JetBrains Mono",Menlo,Consolas,monospace';
-const SERIF = "Georgia,'Times New Roman',serif";
-const ACCENT = '#9fb6e8'; // 模板强调色，可按项目替换（与 A_RGB 同色，换肤同改）
-const A_RGB = '159,182,232';
-const LINE = 'rgba(255,255,255,0.075)'; // 页面发丝线
-const LINE2 = 'rgba(255,255,255,0.13)';
+const L = LOOKS.sand;
+const MACHINE = '#2b4fd8'; // 机器色（钴蓝）：扫描线 / 角标 / 标签 / 状态行专用，页面内容不用
+const TERRA = L.accent; // 品牌色（赤陶）：只在页面内容里出现
+const MONO = FONT.mono;
 
-/* ---- 分析目标（bbox 手动微调留边）：ft=取景框触发时刻，按扫描顺序推导 ---- */
-type Target = { x: number; y: number; w: number; h: number; label: string; lx: number; ly: number; ft: number };
+// 浏览器窗（帧坐标）
+const WX = 180;
+const WY = 168;
+const WW = 1560;
+const WH = 840;
+const CHROME = 52;
+
+// 扫描线（页面坐标，窗内 y）：严格匀速
+const SCAN0 = 6;
+const SCAN1 = 80;
+const Y0 = -20;
+const Y1 = 860;
+const scanY = (f: number) => Y0 + (Y1 - Y0) * Math.min(1, Math.max(0, (f - SCAN0) / (SCAN1 - SCAN0)));
+const frameAtY = (y: number) => SCAN0 + ((y - Y0) / (Y1 - Y0)) * (SCAN1 - SCAN0);
+
+// ───────────── 分析目标（页面坐标；tag = 标签相对 bbox 的放置） ─────────────
+type Tag = 'right' | 'above' | 'below' | 'belowRight';
+type Target = { key: string; x: number; y: number; w: number; h: number; head: string; detail: string; tag: Tag; ft: number };
 const TARGETS: Target[] = (() => {
   const ts: Target[] = [
-    { x: 18, y: 30, w: 108, h: 22, label: 'LOGO · MARK + WORDMARK', lx: 133, ly: 36.5, ft: 0 },
-    { x: 292, y: 48, w: 170, h: 158, label: 'MODULE · KINETIC TYPE', lx: 292, ly: 35, ft: 0 },
-    { x: 18, y: 58, w: 242, h: 78, label: 'H1 · SERIF DISPLAY', lx: 20, ly: 141, ft: 0 },
-    { x: 18, y: 160, w: 136, h: 32, label: 'CTA · PRIMARY + GHOST', lx: 161, ly: 171.5, ft: 0 },
-    { x: 14, y: 240, w: 224, h: 18, label: 'FOOTER · LEGAL', lx: 245, ly: 244.5, ft: 0 },
-    { x: 348, y: 235, w: 116, h: 23, label: 'SOCIAL · BRAND VOICE', lx: 348, ly: 222.5, ft: 0 },
+    { key: 'logo', x: 48, y: 64, w: 186, h: 66, head: 'LOGO', detail: 'Monogram mark', tag: 'right', ft: 0 },
+    { key: 'nav', x: 1000, y: 64, w: 512, h: 66, head: 'NAV', detail: '4 items', tag: 'belowRight', ft: 0 },
+    { key: 'h1', x: 48, y: 222, w: 700, h: 262, head: 'H1', detail: 'Grotesk 850 · −4%', tag: 'above', ft: 0 },
+    { key: 'cta', x: 48, y: 632, w: 392, h: 88, head: 'CTA', detail: '#C4552D', tag: 'right', ft: 0 },
+    { key: 'hero', x: 892, y: 216, w: 620, h: 532, head: 'HERO', detail: 'Product shot', tag: 'below', ft: 0 },
+    { key: 'palette', x: 48, y: 756, w: 220, h: 66, head: 'PALETTE', detail: '4 glazes', tag: 'right', ft: 0 },
   ];
-  // 触发时刻：扫描线（0.06→0.66 纵扫 -30→300）越过 bbox 下缘
-  const rawT = (tg: Target) => 0.06 + ((tg.y + tg.h + 30) / 330) * 0.6;
-  let prev = -1;
-  for (const tg of [...ts].sort((a, b) => a.y + a.h - (b.y + b.h))) {
-    tg.ft = Math.max(rawT(tg), prev + 0.05); // 依序钳制最小间隔
-    prev = tg.ft;
+  // 触发 = 扫描线越过 bbox 下缘的那一帧；按下缘排序后钳制最小间隔 4f（两块同高的不会同帧弹）
+  let prev = -99;
+  for (const t of [...ts].sort((a, b) => a.y + a.h - (b.y + b.h))) {
+    t.ft = Math.max(frameAtY(t.y + t.h), prev + 4);
+    prev = t.ft;
   }
   return ts;
 })();
+const LAST_FIRE = Math.max(...TARGETS.map((t) => t.ft));
 
-// 取景框四角：每角两条 1px 细臂（SVG 圆头），arm = 臂长
-const Corner: React.FC<{ k: number; arm: number; w: number; h: number }> = ({ k, arm, w, h }) => {
-  const x = k % 2 === 0 ? 0 : w;
-  const y = k < 2 ? 0 : h;
-  const sx = k % 2 === 0 ? 1 : -1;
-  const sy = k < 2 ? 1 : -1;
-  return <path d={`M${x} ${y + sy * arm}V${y}H${x + sx * arm}`} />;
+// ───────────── 页面内容：Hollis 陶器工作室官网 ─────────────
+const Vase: React.FC = () => (
+  <svg width={620} height={580} viewBox="0 0 620 580" style={{ position: 'absolute', left: 0, top: 0 }}>
+    <defs>
+      <linearGradient id="haf-vase" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stopColor="#7d3418" />
+        <stop offset="0.3" stopColor="#c45a31" />
+        <stop offset="0.46" stopColor="#e9925f" />
+        <stop offset="0.62" stopColor="#c2552c" />
+        <stop offset="1" stopColor="#6e2c13" />
+      </linearGradient>
+      <linearGradient id="haf-bowl" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0" stopColor="#a99a83" />
+        <stop offset="0.4" stopColor="#f3ece1" />
+        <stop offset="0.7" stopColor="#ddd1bf" />
+        <stop offset="1" stopColor="#8f8069" />
+      </linearGradient>
+      <radialGradient id="haf-shadow" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stopColor="#5a3a1c" stopOpacity="0.38" />
+        <stop offset="1" stopColor="#5a3a1c" stopOpacity="0" />
+      </radialGradient>
+      <clipPath id="haf-clip"><path d="M228 118 C226 150 214 168 196 196 C150 262 142 336 168 398 C186 444 214 466 268 468 C322 466 350 444 368 398 C394 336 386 262 340 196 C322 168 310 150 308 118 Z" /></clipPath>
+      <linearGradient id="haf-glaze" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0" stopColor="#fff" stopOpacity="0.18" />
+        <stop offset="0.25" stopColor="#fff" stopOpacity="0" />
+      </linearGradient>
+    </defs>
+    {/* 接触影 */}
+    <ellipse cx={268} cy={470} rx={150} ry={22} fill="url(#haf-shadow)" />
+    <ellipse cx={452} cy={478} rx={98} ry={15} fill="url(#haf-shadow)" />
+    {/* 陶瓶：窄口 · 鼓腹 · 收足 */}
+    <path
+      d="M228 118 C226 150 214 168 196 196 C150 262 142 336 168 398 C186 444 214 466 268 468 C322 466 350 444 368 398 C394 336 386 262 340 196 C322 168 310 150 308 118 Z"
+      fill="url(#haf-vase)"
+    />
+    <path
+      d="M228 118 C226 150 214 168 196 196 C150 262 142 336 168 398 C186 444 214 466 268 468 C322 466 350 444 368 398 C394 336 386 262 340 196 C322 168 310 150 308 118 Z"
+      fill="url(#haf-glaze)"
+    />
+    <ellipse cx={268} cy={118} rx={40} ry={9} fill="#5e260f" />
+    <ellipse cx={268} cy={116} rx={40} ry={8} fill="none" stroke="#e7a073" strokeWidth={2} opacity={0.7} />
+    {/* 拉坯留下的轮纹：几道极淡的横向弧线，手作感 */}
+    <g clipPath="url(#haf-clip)">
+      {[176, 222, 270, 320, 370, 420].map((y, i) => (
+        <path key={i} d={`M60 ${y} Q268 ${y + 14} 476 ${y}`} fill="none" stroke="#3e1608" strokeWidth={1.6} opacity={0.09} />
+      ))}
+    </g>
+    {/* 釉面流挂的一道亮痕 */}
+    <path d="M232 210 C214 262 206 330 222 400" fill="none" stroke="#ffd2b0" strokeWidth={6} strokeLinecap="round" opacity={0.28} />
+    {/* 骨白小碗 */}
+    <path d="M362 402 C366 452 404 478 452 478 C500 478 538 452 542 402 Z" fill="url(#haf-bowl)" />
+    <ellipse cx={452} cy={402} rx={90} ry={14} fill="#efe6d8" />
+    <ellipse cx={452} cy={404} rx={78} ry={9} fill="#cdbfa9" />
+  </svg>
+);
+
+const Page: React.FC = () => (
+  <div style={{ position: 'absolute', inset: 0, background: '#f8f2e9', fontFamily: FONT.sans, color: L.ink }}>
+    {/* 浏览器顶栏 */}
+    <div style={{ position: 'absolute', left: 0, top: 0, width: WW, height: CHROME, background: '#efe7db', borderBottom: `1px solid ${L.line}` }}>
+      {[0, 1, 2].map((i) => (
+        <div key={i} style={{ position: 'absolute', left: 24 + i * 22, top: 20, width: 12, height: 12, borderRadius: 6, background: alpha(L.ink, 0.16) }} />
+      ))}
+      <div style={{ position: 'absolute', left: WW / 2 - 170, top: 11, width: 340, height: 30, borderRadius: 8, background: alpha('#ffffff', 0.7), border: `1px solid ${L.line}`, font: `500 18px ${MONO}`, color: L.ink3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        hollis.studio
+      </div>
+    </div>
+    {/* logo：圆形单字母印章 + 字标 */}
+    <div style={{ position: 'absolute', left: 64, top: 76, display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ width: 46, height: 46, borderRadius: 23, background: L.ink, color: '#f8f2e9', display: 'flex', alignItems: 'center', justifyContent: 'center', font: `800 26px ${FONT.sans}`, letterSpacing: '-0.04em' }}>H</div>
+      <div style={{ font: `800 40px ${FONT.sans}`, letterSpacing: '-0.045em' }}>Hollis</div>
+    </div>
+    {/* 导航 */}
+    <div style={{ position: 'absolute', right: 64, top: 84, display: 'flex', gap: 46, font: `550 28px ${FONT.sans}`, color: L.ink2, letterSpacing: '-0.01em' }}>
+      <span>Shop</span>
+      <span>Studio</span>
+      <span>Journal</span>
+      <span style={{ color: L.ink }}>Cart (2)</span>
+    </div>
+    {/* H1 */}
+    <div style={{ position: 'absolute', left: 60, top: 236, font: `850 120px ${FONT.sans}`, letterSpacing: '-0.045em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+      Made slowly.
+      <br />
+      <span style={{ color: TERRA }}>Used</span> daily.
+    </div>
+    {/* 正文 */}
+    <div style={{ position: 'absolute', left: 64, top: 512, width: 700, font: `450 34px ${FONT.sans}`, lineHeight: 1.36, color: L.ink2, letterSpacing: '-0.012em' }}>
+      Stoneware thrown by hand in small batches, glazed in colours pulled from the coast.
+    </div>
+    {/* CTA */}
+    <div style={{ position: 'absolute', left: 64, top: 644, height: 64, padding: '0 34px', borderRadius: 32, background: TERRA, color: L.onAccent, display: 'flex', alignItems: 'center', gap: 14, font: `650 30px ${FONT.sans}`, letterSpacing: '-0.01em', boxShadow: `0 10px 24px -10px ${alpha('#7a2a10', 0.55)}, inset 0 1px 0 rgba(255,255,255,0.25)` }}>
+      Shop the collection <span style={{ fontWeight: 500 }}>→</span>
+    </div>
+    {/* 釉色板 */}
+    <div style={{ position: 'absolute', left: 64, top: 768, display: 'flex', alignItems: 'center', gap: 12 }}>
+      {['#ebe5da', '#5d6c4f', TERRA, '#d6c3a5'].map((c, i) => (
+        <div key={i} style={{ width: 42, height: 42, borderRadius: 21, background: `radial-gradient(circle at 35% 30%, ${alpha('#ffffff', 0.45)}, ${alpha('#ffffff', 0)} 55%), ${c}`, boxShadow: `inset 0 0 0 1px ${alpha(L.ink, 0.12)}` }} />
+      ))}
+    </div>
+    {/* 产品图卡 */}
+    <div style={{ position: 'absolute', left: 900, top: 224, width: 604, height: 516, borderRadius: 22, overflow: 'hidden', background: 'linear-gradient(180deg, #ecdcc7 0%, #e2cbae 62%, #d4b896 62.2%, #cdb08c 100%)' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 55% at 70% 18%, rgba(255,248,236,0.75) 0%, rgba(255,248,236,0) 70%)' }} />
+      <div style={{ position: 'absolute', left: -8, top: -24 }}>
+        <Vase />
+      </div>
+      <div style={{ position: 'absolute', left: 28, bottom: 26, padding: '10px 18px', borderRadius: 14, background: alpha('#fbf6ef', 0.86), font: `600 24px ${FONT.sans}`, color: L.ink, letterSpacing: '-0.01em' }}>
+        Tide Vase <span style={{ color: L.ink3, fontWeight: 500 }}>· $68</span>
+      </div>
+    </div>
+  </div>
+);
+
+// ───────────── 取景框 + 标签 ─────────────
+const Bracket: React.FC<{ t: Target; frame: number }> = ({ t, frame }) => {
+  const f = frame - t.ft;
+  if (f < 0) return null;
+  const s = springAt(frame, t.ft, { damping: 15, stiffness: 210 }); // 0→1（过冲 ~1.06）
+  const pad = 76 * (1 - s); // 外扩 76px → 0（过冲时略收进 bbox）
+  const op = Math.min(1, f / 3);
+  const arm = 40 - 14 * ramp(frame, t.ft + 3, 12, EASE.out); // 臂长晚一拍收一档
+  const flash = ramp(frame, t.ft + 3, 3, EASE.out) * (1 - ramp(frame, t.ft + 6, 12, EASE.out));
+  const x = t.x - pad;
+  const y = t.y - pad;
+  const w = t.w + pad * 2;
+  const h = t.h + pad * 2;
+  const d = [
+    `M${x} ${y + arm}V${y}H${x + arm}`,
+    `M${x + w - arm} ${y}H${x + w}V${y + arm}`,
+    `M${x + w} ${y + h - arm}V${y + h}H${x + w - arm}`,
+    `M${x + arm} ${y + h}H${x}V${y + h - arm}`,
+  ].join('');
+  return (
+    <>
+      <div style={{ position: 'absolute', left: t.x, top: t.y, width: t.w, height: t.h, borderRadius: 6, background: alpha(MACHINE, 0.075 * flash), boxShadow: `inset 0 0 0 2px ${alpha(MACHINE, 0.4 * flash)}` }} />
+      <svg width={WW} height={WH} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity: op }}>
+        <path d={d} fill="none" stroke={MACHINE} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </>
+  );
+};
+
+const TAG_H = 50;
+const CHAR_W = 0.6 * 32; // 32px 等宽字步进
+const tagWidth = (t: Target) => Math.round((t.head.length + 3 + t.detail.length) * CHAR_W + 34);
+
+const Label: React.FC<{ t: Target; frame: number }> = ({ t, frame }) => {
+  const s0 = t.ft + 5;
+  if (frame < s0) return null;
+  const rise = ramp(frame, s0, 12, EASE.out);
+  const pop = ramp(frame, s0, 4, EASE.out);
+  const full = `${t.head} · ${t.detail}`;
+  const typedF = Math.min(full.length, (frame - s0) * 2.2 + 1); // 机器在写：~2 字/帧
+  const typed = Math.floor(typedF);
+  const w = tagWidth(t); // 定位用的最终宽度
+  const wNow = Math.min(w, typedF * CHAR_W + 34); // 签条随字长出来（右缘略领先于字）
+  const typing = typed < full.length;
+  let x = t.x;
+  let y = t.y;
+  if (t.tag === 'right') { x = t.x + t.w + 16; y = t.y + (t.h - TAG_H) / 2; }
+  if (t.tag === 'above') { x = t.x; y = t.y - TAG_H - 10; }
+  if (t.tag === 'below') { x = t.x; y = t.y + t.h + 12; }
+  if (t.tag === 'belowRight') { x = t.x + t.w - w; y = t.y + t.h + 10; }
+  const head = full.slice(0, Math.min(typed, t.head.length));
+  const rest = typed > t.head.length ? full.slice(t.head.length, typed) : '';
+  return (
+    <div style={{
+      position: 'absolute', left: t.tag === 'belowRight' ? x + w - wNow : x, top: y, width: wNow, height: TAG_H, borderRadius: 10, background: MACHINE,
+      boxShadow: `0 10px 22px -10px ${alpha('#0c1a5a', 0.55)}, inset 0 1px 0 rgba(255,255,255,0.22)`,
+      opacity: pop, overflow: 'hidden',
+      transform: `translateY(${((1 - rise) * 8).toFixed(2)}px)`,
+      display: 'flex', alignItems: 'center', paddingLeft: 17, boxSizing: 'border-box',
+      font: `600 32px ${MONO}`, letterSpacing: 0, whiteSpace: 'pre', color: '#ffffff',
+    }}>
+      <span style={{ fontWeight: 750 }}>{head}</span>
+      <span style={{ color: 'rgba(255,255,255,0.78)', fontWeight: 500 }}>{rest}</span>
+      {typing && <span style={{ display: 'inline-block', width: 14, height: 30, marginLeft: 2, background: 'rgba(255,255,255,0.85)' }} />}
+    </div>
+  );
 };
 
 export const ScanlineAnnotateFocus: React.FC = () => {
-  const t = useT();
-
-  // 扫描线纵扫（严格匀速：机器的视线）+ 首尾淡入淡出
-  const ly = lerp(seg(t, 0.06, 0.66), -30, 300);
-  const lineOpacity = seg(t, 0.04, 0.09) * (1 - seg(t, 0.66, 0.71));
-
-  // 已触发的取景框计数（a>0 即已弹出）
-  const fired = TARGETS.reduce((acc, tg) => acc + (seg(t, tg.ft, tg.ft + 0.11, E.outCubic) > 0 ? 1 : 0), 0);
-  const done = seg(t, 0.74, 0.8);
-  const scanProg = seg(t, 0.06, 0.66);
+  const frame = useCurrentFrame();
+  const ly = scanY(frame);
+  const lineOn = ramp(frame, SCAN0 - 4, 5, EASE.out) * (1 - ramp(frame, SCAN1, 8, EASE.exit));
+  const fired = TARGETS.filter((t) => frame >= t.ft).length;
+  const done = ramp(frame, LAST_FIRE + 8, 8, EASE.out);
+  const push = 1 + 0.035 * ramp(frame, 0, SCANLINE_ANNOTATE_FOCUS_DURATION, EASE.swift); // 极缓推镜
+  const statusIn = ramp(frame, 0, 10, EASE.out);
+  const scanProg = Math.min(1, Math.max(0, (frame - SCAN0) / (SCAN1 - SCAN0)));
 
   return (
-    <AbsoluteFill style={{ background: '#0a0b0e' }}>
-      <DesignStage bg="transparent">
-        {/* ---- 页面（静态底）：虚构工作室官网 ---- */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#111319 0%,#0d0e13 60%,#0b0c10 100%)' }}>
-          {/* 顶部主光：极淡冷光斑，让页面不是死平的黑 */}
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 55% at 32% 18%, rgba(150,165,210,0.07) 0%, rgba(150,165,210,0) 70%)' }} />
-          {/* 顶栏（url pill + 协议状态） */}
-          <div style={{ position: 'absolute', left: 18, top: 11, padding: '3px 9px 3px 8px', boxShadow: `inset 0 0 0 0.5px ${LINE2}`, borderRadius: 9, background: 'rgba(255,255,255,0.025)', font: `500 6.5px ${MONO}`, color: '#8d93a0', letterSpacing: 0.6, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <svg width={5} height={6} viewBox="0 0 5 6"><rect x={0.4} y={2.6} width={4.2} height={3} rx={0.6} fill="#6f7685" /><path d="M1.3 2.6V1.8a1.2 1.2 0 0 1 2.4 0v.8" fill="none" stroke="#6f7685" strokeWidth={0.55} /></svg>
-            ardenstudio.com
+    <AbsoluteFill>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.05 }} fill={{ x: 0.9, y: 0.95 }} vignette={0.2} />
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: '50% 54%' }}>
+        {/* ── 状态行（窗外上方）── */}
+        <div style={{ position: 'absolute', left: WX, top: 84, width: WW, height: 48, opacity: statusIn, font: `600 30px ${MONO}`, color: L.ink, display: 'flex', alignItems: 'center' }}>
+          <div style={{ width: 14, height: 14, borderRadius: 7, marginRight: 16, background: done > 0.5 ? MACHINE : alpha(MACHINE, 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(frame / 3))), boxShadow: `0 0 0 6px ${alpha(MACHINE, 0.12)}` }} />
+          <span style={{ color: done > 0.5 ? MACHINE : L.ink, letterSpacing: '0.06em' }}>{done > 0.5 ? 'BRAND READ' : 'READING'}</span>
+          <span style={{ color: L.ink3, marginLeft: 18, fontWeight: 500 }}>hollis.studio</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ width: 220, height: 6, borderRadius: 3, background: alpha(L.ink, 0.1), overflow: 'hidden' }}>
+              <div style={{ width: `${(scanProg * 100).toFixed(2)}%`, height: '100%', background: MACHINE, borderRadius: 3 }} />
+            </div>
+            <span style={{ fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
+              <span style={{ color: L.ink3, fontWeight: 500 }}>SIGNALS </span>
+              <span style={{ color: fired === TARGETS.length ? MACHINE : L.ink }}>{String(fired).padStart(2, '0')}</span>
+              <span style={{ color: L.ink3 }}> / {String(TARGETS.length).padStart(2, '0')}</span>
+            </span>
           </div>
-          <div style={{ position: 'absolute', right: 18, top: 14, font: `500 6.5px ${MONO}`, color: '#565b66', letterSpacing: 1 }}>200 OK · TLS 1.3</div>
-          {/* logo：点阵 mark + 衬线字标 */}
-          <div style={{ position: 'absolute', left: 24, top: 35, width: 100, height: 18 }}>
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} style={{ position: 'absolute', width: 4, height: 4, borderRadius: '50%', background: i === 3 ? ACCENT : '#e8e9ee', left: (i % 2) * 6, top: 2 + (i >> 1) * 6 }} />
-            ))}
-            <div style={{ position: 'absolute', left: 17, top: 0, font: `400 13px ${SERIF}`, color: '#eceef2', letterSpacing: -0.1 }}>
-              Arden <i>Studio</i>
+        </div>
+
+        {/* ── 浏览器窗：页面 + 扫描余晖（裁进窗内）── */}
+        <div style={{ position: 'absolute', left: WX, top: WY, width: WW, height: WH, borderRadius: 20, overflow: 'hidden', boxShadow: `${softShadow(30, { color: L.shadow, strength: 1.1 })}, 0 0 0 1px ${alpha(L.ink, 0.08)}` }}>
+          <Page />
+          {/* 已读余晖：扫描线身后 140px 的淡蓝洗色 + 点阵（机器"读过"的痕迹） */}
+          {lineOn > 0.01 && (
+            <>
+              <div style={{
+                position: 'absolute', left: 0, width: WW, top: ly - 140, height: 140, opacity: lineOn,
+                background: `linear-gradient(180deg, ${alpha(MACHINE, 0)} 0%, ${alpha(MACHINE, 0.05)} 60%, ${alpha(MACHINE, 0.13)} 100%)`,
+              }} />
+              <div style={{
+                position: 'absolute', left: 0, width: WW, top: ly - 90, height: 90, opacity: lineOn * 0.8,
+                backgroundImage: `radial-gradient(circle, ${alpha(MACHINE, 0.55)} 1.3px, transparent 1.9px)`, backgroundSize: '18px 18px', backgroundPosition: '0 0',
+                WebkitMaskImage: 'linear-gradient(180deg, transparent, #000)', maskImage: 'linear-gradient(180deg, transparent, #000)',
+              }} />
+              <div style={{
+                position: 'absolute', left: 0, width: WW, top: ly - 1.5, height: 3, opacity: lineOn, background: MACHINE,
+                boxShadow: `0 0 10px ${alpha(MACHINE, 0.55)}, 0 0 28px ${alpha(MACHINE, 0.3)}`,
+              }} />
+            </>
+          )}
+        </div>
+
+        {/* ── 窗框两侧游标：随线滑动，左侧读出 Y ── */}
+        {lineOn > 0.01 && (
+          <div style={{ opacity: lineOn }}>
+            <svg width={22} height={26} viewBox="0 0 22 26" style={{ position: 'absolute', left: WX - 30, top: WY + ly - 13 }}>
+              <path d="M2 2 L20 13 L2 24 Z" fill={MACHINE} />
+            </svg>
+            <svg width={22} height={26} viewBox="0 0 22 26" style={{ position: 'absolute', left: WX + WW + 8, top: WY + ly - 13 }}>
+              <path d="M20 2 L2 13 L20 24 Z" fill={MACHINE} />
+            </svg>
+            <div style={{ position: 'absolute', left: WX - 150, top: WY + ly - 14, width: 112, textAlign: 'right', font: `600 22px ${MONO}`, color: MACHINE, fontVariantNumeric: 'tabular-nums' }}>
+              Y {String(Math.max(0, Math.round(ly))).padStart(4, '0')}
             </div>
           </div>
-          {/* H1 两行 */}
-          <div style={{ position: 'absolute', left: 22, top: 64, width: 242, height: 84 }}>
-            <div style={{ position: 'absolute', left: 0, top: 0, font: `400 29px ${SERIF}`, color: '#f2f3f6', letterSpacing: -0.4, whiteSpace: 'nowrap' }}>Type that moves</div>
-            <div style={{ position: 'absolute', left: 0, top: 36, font: `italic 400 29px ${SERIF}`, color: '#f2f3f6', letterSpacing: -0.4, whiteSpace: 'nowrap' }}>the way you speak</div>
-          </div>
-          {/* CTA 行：实心主按钮 + 幽灵链接 */}
-          <div style={{ position: 'absolute', left: 22, top: 166, width: 136, height: 26 }}>
-            <div style={{ position: 'absolute', left: 0, top: 0, padding: '6px 12px', borderRadius: 12, background: 'linear-gradient(180deg,#f4f5f8,#dfe2e8)', boxShadow: '0 0.5px 0 rgba(255,255,255,0.6) inset, 0 3px 8px -3px rgba(0,0,0,0.6)', font: `600 7.5px ${MONO}`, color: '#121319', letterSpacing: 1 }}>BOOK A CALL</div>
-            <div style={{ position: 'absolute', left: 96, top: 7, font: `500 7.5px ${MONO}`, color: '#7a808c', letterSpacing: 1 }}>WORK →</div>
-          </div>
-          {/* 右侧模块卡：作品集里的动态字体样片 */}
-          <div style={{ position: 'absolute', left: 296, top: 52, width: 162, height: 150, background: 'linear-gradient(180deg,#15171d,#111217)', boxShadow: `inset 0 0 0 0.5px ${LINE2}, inset 0 0.5px 0 rgba(255,255,255,0.06), 0 8px 24px -8px rgba(0,0,0,0.7)`, borderRadius: 5, overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', left: 10, top: 9, font: `500 6.5px ${MONO}`, color: '#8a909c', letterSpacing: 1.2 }}>WORK</div>
-            <div style={{ position: 'absolute', right: 10, top: 9, font: `500 6.5px ${MONO}`, color: '#565b66', letterSpacing: 1.2, fontVariantNumeric: 'tabular-nums' }}>04 / 08</div>
-            <div style={{ position: 'absolute', left: 0, top: 24, width: '100%', height: 0.5, background: LINE }} />
-            <div style={{ position: 'absolute', left: 0, top: 44, width: '100%', textAlign: 'center', font: `italic 400 36px ${SERIF}`, color: '#f4f5f8', letterSpacing: -0.6 }}>kinetic</div>
-            <div style={{ position: 'absolute', left: 0, top: 104, width: '100%', height: 0.5, background: LINE }} />
-            <div style={{ position: 'absolute', left: 10, top: 112, font: `500 6px ${MONO}`, color: '#6a707c', letterSpacing: 1.2 }}>KINETIC TYPE · 04</div>
-            {/* 四格缩略帧：同一个字母的四个关键姿态 */}
-            {['Aa', 'Aa', 'Aa', 'Aa'].map((g, i) => (
-              <div key={i} style={{ position: 'absolute', left: 10 + i * 30, top: 124, width: 24, height: 16, background: i === 1 ? '#20232c' : '#191b22', boxShadow: `inset 0 0 0 0.5px ${i === 1 ? 'rgba(159,182,232,0.45)' : LINE}`, borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', left: 0, right: 0, top: 3.5, textAlign: 'center', font: `${i % 2 ? 'italic ' : ''}400 8px ${SERIF}`, color: i === 1 ? '#e6eaf3' : '#5f6470', transform: `skewX(${(i - 1.5) * -6}deg)` }}>{g}</div>
-              </div>
-            ))}
-            <div style={{ position: 'absolute', right: 8, top: 129, font: `500 6px ${MONO}`, color: '#565b66', fontVariantNumeric: 'tabular-nums' }}>00:30</div>
-          </div>
-          {/* 页脚 + 社交 chip */}
-          <div style={{ position: 'absolute', left: 18, top: 246, font: `500 6px ${MONO}`, color: '#4c515c', letterSpacing: 1, whiteSpace: 'nowrap' }}>© 2026 ARDEN STUDIO · PRIVACY · TERMS</div>
-          <div style={{ position: 'absolute', left: 352, top: 239, width: 108, height: 16 }}>
-            <div style={{ position: 'absolute', left: 0, top: 2, width: 12, height: 12, boxShadow: `inset 0 0 0 0.5px ${LINE2}`, borderRadius: 3, background: 'rgba(255,255,255,0.03)' }}>
-              <svg style={{ position: 'absolute', left: 3, top: 3 }} width={6} height={6} viewBox="0 0 6 6"><path d="M0.6 0.6 5.4 5.4M5.4 0.6 0.6 5.4" stroke="#c9cdd6" strokeWidth={0.8} strokeLinecap="round" /></svg>
-            </div>
-            <div style={{ position: 'absolute', left: 17, top: 4, font: `600 7px ${MONO}`, color: '#c9cdd6', letterSpacing: 0.8 }}>@ardenstudio</div>
-          </div>
-        </div>
+        )}
 
-        {/* ---- 扫描余晖：扫过的区域短暂留一层点阵网格，随距离渐隐（机器"读过"的痕迹） ---- */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: lineOpacity * 0.9,
-            backgroundImage: `radial-gradient(circle, rgba(${A_RGB},0.5) 0.35px, transparent 0.6px)`,
-            backgroundSize: '6px 6px',
-            WebkitMaskImage: `linear-gradient(180deg, transparent ${ly - 70}px, rgba(0,0,0,0.5) ${ly - 8}px, transparent ${ly}px)`,
-            maskImage: `linear-gradient(180deg, transparent ${ly - 70}px, rgba(0,0,0,0.5) ${ly - 8}px, transparent ${ly}px)`,
-          }}
-        />
-
-        {/* ---- 取景框 + 标注（按扫描顺序触发） ---- */}
-        {TARGETS.map((tg, i) => {
-          const a = seg(t, tg.ft, tg.ft + 0.11, E.outCubic); // 弹出进度
-          const s = lerp(E.outBack(seg(t, tg.ft, tg.ft + 0.13)), 1.75, 1); // 1.75 倍收拢 + 过冲回稳
-          const arm = lerp(seg(t, tg.ft + 0.06, tg.ft + 0.16, E.outCubic), 12, 9); // 收拢后臂长再收一档（跟随）
-          const fillO = 0.07 * seg(t, tg.ft + 0.04, tg.ft + 0.09) * (1 - seg(t, tg.ft + 0.09, tg.ft + 0.22)); // 对准瞬间微闪
-          const dot = seg(t, tg.ft + 0.04, tg.ft + 0.08, E.outCubic); // 定位点先亮
-          const la = seg(t, tg.ft + 0.05, tg.ft + 0.16, E.outCubic); // 标注擦出 + 上移
-          const [head, ...rest] = tg.label.split(' · ');
-          return (
-            <React.Fragment key={i}>
-              <div
-                style={{
-                  position: 'absolute',
-                  left: tg.x,
-                  top: tg.y,
-                  width: tg.w,
-                  height: tg.h,
-                  opacity: Math.min(1, a * 1.6),
-                  transform: `scale(${a > 0 ? s : 1.75})`,
-                }}
-              >
-                <div style={{ position: 'absolute', inset: 0.5, background: `rgba(${A_RGB},0.35)`, opacity: fillO * 2.2, borderRadius: 1 }} />
-                <svg
-                  width={tg.w}
-                  height={tg.h}
-                  style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', filter: `drop-shadow(0 0 1.5px rgba(${A_RGB},0.55))` }}
-                  fill="none"
-                  stroke="#f2f4f8"
-                  strokeWidth={1}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  {[0, 1, 2, 3].map((k) => (
-                    <Corner key={k} k={k} arm={arm} w={tg.w} h={tg.h} />
-                  ))}
-                </svg>
-              </div>
-              <div
-                style={{
-                  position: 'absolute',
-                  left: tg.lx,
-                  top: tg.ly,
-                  height: 9,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  whiteSpace: 'nowrap',
-                  transform: `translateY(${lerp(la, 3, 0).toFixed(3)}px)`,
-                }}
-              >
-                <div style={{ width: 2.5, height: 2.5, borderRadius: 0.6, background: ACCENT, opacity: dot, boxShadow: `0 0 3px rgba(${A_RGB},0.8)`, flexShrink: 0 }} />
-                <div
-                  style={{
-                    font: `500 8px ${MONO}`,
-                    letterSpacing: 0.8,
-                    lineHeight: '9px',
-                    opacity: Math.min(1, la * 1.4),
-                    clipPath: `inset(-2px ${((1 - la) * 100).toFixed(2)}% -2px 0)`,
-                  }}
-                >
-                  <span style={{ color: '#e4e7ee', fontWeight: 600 }}>{head}</span>
-                  <span style={{ color: '#7f8592' }}>{rest.length ? ` · ${rest.join(' · ')}` : ''}</span>
-                </div>
-              </div>
-            </React.Fragment>
-          );
-        })}
-
-        {/* ---- 扫描线：前方无光、身后尾迹；光芯两端衰减 + 冷蓝辉光 ----
-            mask 只作用于 border-box，所以外层比尾迹多留 20px，光芯下侧的辉光才不会被裁掉 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            width: '100%',
-            height: 68,
-            transform: `translateY(${(ly - 48).toFixed(3)}px)`,
-            opacity: lineOpacity,
-            WebkitMaskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)',
-            maskImage: 'linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%)',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              width: '100%',
-              height: 48,
-              background: `linear-gradient(180deg,transparent,rgba(${A_RGB},.03) 40%,rgba(${A_RGB},.11) 94%,rgba(${A_RGB},.0) 100%)`,
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 47.55,
-              left: 0,
-              width: '100%',
-              height: 0.9,
-              background: '#f4f7ff',
-              boxShadow: `0 0 1.5px #ffffff,0 0 5px ${ACCENT},0 0 14px rgba(${A_RGB},.55)`,
-            }}
-          />
+        {/* ── 取景框与标签（页面坐标，叠在窗上；不裁切，标签可略出框）── */}
+        <div style={{ position: 'absolute', left: WX, top: WY, width: WW, height: WH }}>
+          {TARGETS.map((t) => <Bracket key={t.key} t={t} frame={frame} />)}
+          {TARGETS.map((t) => <Label key={t.key} t={t} frame={frame} />)}
         </div>
-
-        {/* ---- 顶部状态行：SCAN 计数 → ANALYSIS · COMPLETE，下挂扫描进度细条 ---- */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            width: 480,
-            top: 12,
-            textAlign: 'center',
-            font: `600 7.5px ${MONO}`,
-            letterSpacing: 1.8,
-            fontVariantNumeric: 'tabular-nums',
-            color: done >= 1 ? ACCENT : '#a3a9b5',
-            opacity: seg(t, 0.03, 0.08),
-            textShadow: done >= 1 ? `0 0 6px rgba(${A_RGB},0.5)` : 'none',
-          }}
-        >
-          {done >= 1 ? 'ANALYSIS · COMPLETE' : `SCAN · 0${fired}/0${TARGETS.length}`}
-        </div>
-        <div style={{ position: 'absolute', left: 205, top: 23.5, width: 70, height: 0.75, borderRadius: 1, background: 'rgba(255,255,255,0.09)', opacity: seg(t, 0.03, 0.08), overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${(scanProg * 100).toFixed(2)}%`, background: ACCENT, opacity: lerp(done, 0.7, 1) }} />
-        </div>
-      </DesignStage>
-      <Vignette strength={0.42} inner={0.5} color="#000000" />
-      <Grain opacity={0.08} blend="soft-light" />
+      </div>
     </AbsoluteFill>
   );
 };

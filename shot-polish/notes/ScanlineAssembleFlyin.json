@@ -1,32 +1,31 @@
 {
   "stem": "ScanlineAssembleFlyin",
   "issues": [
-    "开场的\"空页网格\"只有 .025×.5 的透明度，前半秒基本是一片死黑，看不出是一张待施工的蓝图",
-    "页面内容是占位模板（The headline for / your product here、sample、@USERNAME）",
-    "飞入残影是各向同性的 blur，读作失焦而不是速度，和飞行方向无关",
-    "落位闪的是整圈 1px 矩形描边，像调试框，且 7 个组件逐个群发（Q4）",
-    "扫描线下侧辉光被裁、背景无暗角颗粒，状态行只有一行字"
+    "开场是几乎全黑的空页，蓝图网格淡到看不见，前 1 秒没有可看的东西",
+    "页面是占位文案和 6–8px 小字，装完也只是一张读不清的暗色线框页",
+    "组件飞入位移小、残影弱，\"从画外飞来\"的力度不够，看着像淡入",
+    "扫描线和页面同一层冷灰蓝，装配完成没有收尾的高光时刻"
   ],
   "changes": [
-    "网格提到可读的蓝图：0.5px 细线 + 交点亮点，扫描线身后 60px 内网格被强调色照亮，装配完成后网格退到 35% 让页面成为主角",
-    "页面换成与 scanline-annotate-focus 同一张可信的工作室官网 Arden Studio（实心主按钮、kinetic 样片卡与关键姿态缩略帧、真实页脚）",
-    "残影改成按位姿中心差分求速度的 SpeedBlur，沿飞行方向拖影（0.11×速度、封顶 3.2px），落定零滤镜；模块卡飞行中阴影大而虚、落定收紧",
-    "整圈闪框换成四角咬合角标（外扩 3px、臂长 5px 的强调色 L 角，带微辉，0.1s 内收掉），满宽顶栏不加",
-    "扫描线改白热光芯 + 冷蓝辉光并修掉下侧被裁；状态行下加装配进度细条；顶部冷光、暗角与颗粒"
+    "look 换成 midnight（深蓝 · 电光蓝 · 青），第 1 帧就是完整施工图：120/24px 双层蓝图网格、1640×860 画板虚线外框与尺寸标注、每个组件带「H1 820×250」小标的虚线槽位",
+    "页面为镜头重做成虚构天文摄影 App「Umbra」的落地页：120px 两行 H1（渐变强调词）、34px 正文、CTA、程序化银河照片卡（星点 + 银河带 + 山脊剪影）、三项数据",
+    "扫描线白芯 + 三层电光蓝辉光，扫过之处页面底色被\"刷\"出来、网格被照亮；组件在扫描线越过槽位下缘的同一帧落位（提前 14f 起飞，≥4f 间隔）",
+    "七个组件从各自方位的画外 260–980px 飞入，±2–7° 起始旋转，EASE.overshoot 过冲贴合，按速度 SpeedBlur 拖影；落位时槽位消失、四角咬合角标从外 20px 咬进",
+    "收尾：状态行秒表定格「✓ BUILT · 3.1 s」，蓝图退到 30%，银河卡亮起；全程 1→1.03 极缓推镜，时长 156f"
   ],
   "issuesEn": [
-    "The empty-page grid sat at .025×.5 opacity, so the first half second was essentially dead black and never read as a blueprint waiting to be built",
-    "Page content was template placeholder copy (The headline for / your product here, sample, @USERNAME)",
-    "The fly-in trail was an isotropic blur that read as defocus rather than speed and ignored the flight direction",
-    "Each landing flashed a full 1px rectangle outline that looked like a debug box, fired one by one for all 7 components (Q4)",
-    "The glow under the scanline was clipped, the background had no vignette or grain, and the status line was just one line of text"
+    "It opened on a near-black empty page with a blueprint grid too faint to see, nothing to look at for the first second",
+    "The page was placeholder copy in 6–8px type, so even fully built it was an unreadable dark wireframe",
+    "Fly-ins travelled short distances with weak trails, so they read more like fades than pieces arriving from off-frame",
+    "Scanline and page shared one cold grey-blue, and the finished build had no closing highlight"
   ],
   "changesEn": [
-    "The grid is now a readable blueprint: 0.5px lines with bright intersections, lit in the accent colour for 60px behind the scanline, receding to 35% once assembly completes so the page takes over",
-    "The page is the same believable studio site as scanline-annotate-focus, Arden Studio (solid primary button, kinetic sample card with key-pose thumbnails, real footer)",
-    "The trail is now a SpeedBlur driven by the pose's central-difference velocity, smearing along the flight direction (0.11×speed, max 3.2px) and dropping the filter on landing; the module card's shadow is large and soft in flight and tightens as it lands",
-    "The full outline flash became four snap-in corner ticks (accent L-marks 3px outside with 5px arms and a faint glow, gone within 0.1s); the full-width top bar gets none",
-    "The scanline has a white-hot core with cool-blue glow and no longer clips below; an assembly progress hairline sits under the status line; top cool light, vignette and grain added"
+    "Midnight look (deep blue, electric blue, cyan); frame 1 is a full construction drawing: a 120/24px two-level blueprint grid, a dashed 1640×860 artboard with a dimension mark, and dashed slots labelled like 'H1 820×250'",
+    "The page is rebuilt for camera as a landing page for a fictional astrophotography app, Umbra: a 120px two-line H1 with a gradient accent, 34px body, CTA, a procedural Milky Way photo card (stars, galactic band, ridge silhouette) and three stats",
+    "A white-core scanline with three electric-blue glow layers paints the page surface in and lights the grid as it passes; each block lands on the frame the line crosses its slot's bottom edge (takes off 14f early, ≥4f apart)",
+    "Seven blocks fly 260–980px in from their own off-frame direction with ±2–7° start rotation, EASE.overshoot snap and velocity-based SpeedBlur; on landing the slot outline vanishes and corner ticks bite in from 20px out",
+    "Close: the status timer freezes at '✓ BUILT · 3.1 s', the blueprint drops to 30% and the galaxy card brightens; slow 1→1.03 push throughout, 156f total"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

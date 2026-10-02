@@ -1,28 +1,31 @@
 {
   "stem": "KanadaPerspectiveSnap",
   "issues": [
-    "没有导出时长，工作台按卡片 md 的 22f 渲染，只剩甩入动作、落定后的 hold 全被截掉",
-    "画面上方印着调试标题 KANADA PERSPECTIVE SNAP，落点是 3px 灰色虚线框，背景纯灰平铺",
-    "甩入全程是固定 blur(2px)，在落定那一帧突然摘掉，画面\"跳清\"一下，且模糊与方向无关",
-    "斜影用 filter drop-shadow 一层黑影，飞行与落定都显得脏；主角卡只有 520×340，落定后内容太小"
+    "主体是一张灰色占位卡（几条灰线 + 圆点），没有任何内容可读，左上角还留着调试卡名",
+    "浅灰底 + 灰卡，画面没有光、没有色彩，冲击感全靠位移撑",
+    "透视与扭转和位移同一条曲线同时收，到位前几帧卡片已经平了，鱼眼感几乎看不到",
+    "落定只有 6px 震屏，缺少动漫式\"定格一拍\"的视觉重音；之后 100f 完全空转"
   ],
   "changes": [
-    "补导出 KANADA_PERSPECTIVE_SNAP_DURATION = 130（源码时间轴：22f 动作 + 108f 静止 hold）",
-    "去掉调试标题，换柔光渐变底 + 颗粒；落点改成浅浅凹进去的圆角槽 + 1.5px 发丝虚线，卡片盖上后 18–30f 隐去",
-    "固定 blur 换成按 translateX 速度计算的水平 SpeedBlur（0.16×速度、≤22px），身后拖 5 条随减速收短淡出的动漫速度线，速度归零自然清晰",
-    "阴影改两层 box-shadow：近地实影 + 远地长斜虚影，落定收成静置卡片的软投影；主角卡放大到 660×430，透视 / 过冲 / 6px 震屏节拍不变"
+    "look 换成 aurora（紫黑 · 紫 · 粉），主角改为虚构流媒体「Hikari」的番剧首播卡（1000×580）：程序化霓虹黄昏插画（条纹落日 + 城市剪影 + 水面倒影）+ 92px 片名「Neon Tide」+ Watch now 按钮",
+    "甩入 18f：位移 −1350→0 走 snappy 急停，透视 260→1800px / rotate3d 62°→0 / scale 1.8→1 走晚收曲线——卡片\"扭着\"冲到位、最后几帧才被拍平，金田式鱼眼一目了然",
+    "落定重音：rotateY 冲到 +6° 再弹簧回零、8px 震屏 2f、48 道动漫集中线 9f 向外退散；飞行中水平 SpeedBlur + 7 条粉白速度线",
+    "跟随：卡内文字晚 3f 落定，片名带 −10° skew 收正；随后字幕「Streams Friday · only on Hikari」逐词升起",
+    "海报构图：顶部一条 168px 低透明片名大字带缓慢反向漂移，主卡居中、字幕在下；时长 120f，后段极缓推镜"
   ],
   "issuesEn": [
-    "No duration was exported, so the workbench rendered the card md's 22f: only the swing-in survived and the whole post-landing hold was cut off",
-    "A debug title KANADA PERSPECTIVE SNAP was printed on screen, the landing spot was a 3px grey dashed box, and the background was flat grey",
-    "The swing-in carried a constant blur(2px) that was removed abruptly on the landing frame, so the image visibly snapped sharp, and the blur ignored direction",
-    "The slanted shadow was a single black filter drop-shadow that looked dirty in flight and at rest; the hero card was only 520×340, too small once landed"
+    "The hero was a grey placeholder card (grey bars and a dot) with nothing to read, plus the debug card name left in the corner",
+    "Light grey stage and grey card: no light, no colour, so all the impact rested on translation",
+    "Perspective and twist eased on the same curve as position, so the card was flat a few frames before arriving and the fisheye barely showed",
+    "The landing had only a 6px shake, no anime-style held accent, and the remaining 100f idled"
   ],
   "changesEn": [
-    "Exported KANADA_PERSPECTIVE_SNAP_DURATION = 130 (from the source timeline: 22f of action plus a 108f still hold)",
-    "Removed the debug title for a soft gradient backdrop with grain; the landing spot is now a shallow recessed rounded slot with a 1.5px hairline dash that fades out 18–30f after the card covers it",
-    "The constant blur became a horizontal SpeedBlur driven by translateX velocity (0.16×speed, max 22px) plus five anime speed lines that shorten and fade as it decelerates, so it sharpens naturally as speed reaches zero",
-    "Shadow is now two box-shadow layers, a firm contact shadow and a long soft slanted one, settling into a resting card shadow; the hero card is enlarged to 660×430 with the perspective, overshoot and 6px shake beats unchanged"
+    "Aurora look (purple-black, violet, pink); the hero is a premiere card for a fictional streaming service, Hikari (1000×580): procedural neon-dusk artwork (striped sun, skyline, reflections), a 92px 'Neon Tide' title and a Watch now button",
+    "18f fling: translation −1350→0 on a snappy ease for the hard stop, while perspective 260→1800px, rotate3d 62°→0 and scale 1.8→1 resolve on a late curve, so the card arrives still twisted and is slapped flat in the last frames, a clear Kanada fisheye",
+    "Landing accent: rotateY overshoots to +6° and springs back, an 8px 2f shake, and 48 anime focus lines retreat outward over 9f; horizontal SpeedBlur plus 7 pink-white speed lines during flight",
+    "Follow-through: the card's text settles 3f late with the title straightening from a −10° skew, then the line 'Streams Friday · only on Hikari' rises word by word",
+    "Poster layout: a 168px low-opacity title band drifts slowly along the top, card centred, caption below; 120f total with a slow push in the tail"
   ],
+  "look": "aurora",
   "mdChanged": true
 }
