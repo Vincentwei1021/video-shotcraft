@@ -1,293 +1,273 @@
-// scan-bracket-sweep — Scan Bracket 取景括号扫描光带（motion-lab 定稿转原生 Remotion）
-// 文档弹到画面中央，四角落下 L 形取景括号（向内位移 8px），随后一条扫描光带带着
-// 朝来向的渐变拖尾在文档上往复扫 5 趟，两端慢中间快，文档本身完全静止。
-// 设计坐标 480×270（DesignStage raster="zoom"：文档小字按成片尺寸栅格化，不糊）。
+// scan-bracket-sweep — 取景括号 + 扫描光带：文档落到画面中央，四角落下 L 形取景括号，
+// 一条扫描光带拖着随速度伸缩的尾迹在文档上往复扫 5 趟，两端慢中间快——文档全程静止，只有光在读它。
 //
-// 质感升级：骨架灰条换成出版级的合同明细表（标题 / 元信息 / 4 列 7 行 / 合计）；
-// 光带从"黑线 + 灰泥拖尾"改成靛蓝扫描光——细亮芯 + 柔辉 + 正片叠底的色调拖尾，
-// 拖尾长度随扫描速度伸缩（趟末停顿时收成 0，换向不再"啪"地跳到另一侧）；
-// 光带经过的表格行被轻微照亮（光在读，文档不动）；括号改成圆头描边并带一次轻过冲落位；
-// 背景换柔光底 + 颗粒，文档带随落位收紧的两层阴影。
+// 第二轮重设计（暖黑 · 琥珀扫描光 · 合同审阅）：
+// - look = ember。主体是一份 1180×700 的暗色合同条款表（「Master Services Agreement」7 条条款），
+//   放在暖黑舞台正中，占画宽 61%；条款字 30px，真能读。扫描光是琥珀色：白热细芯 + 金色柔辉 +
+//   screen 叠加的暖色拖尾（暗场里光是"加"上去的，不再是亮场的 multiply 染色），整条裁进文档圆角。
+// - "光在读"做成可见的结果：第 1 趟光芯扫过的行由暗转亮（未读 ink3 → 已读 ink），两条有风险的条款
+//   在光芯经过时于右侧页边亮起琥珀标记；之后每趟光芯经过行只做瞬时提亮。文档本身一像素不动。
+// - 底部 HUD（不在文档里）：状态点 + 进度条 + 「Clause 04 / 07」跟着扫描走；扫完收束为
+//   「Review ready · 2 clauses flagged」，四角括号同帧向内收紧一次（锁定），给结尾一拍。
+//
+// 时间表（30fps，共 190f）：
+//   0–18    预备 + 入场：舞台光第 1 帧就在；文档 scale 0.94→1（snappy），透明度先到——先"在了"再"稳了"
+//   10–30   四角括号错峰从外侧 40px 斜向落位（overshoot ~8% 一次回弹），各 14f
+//   30–146  扫描 5 趟（每趟 ~23f：inOutSine + 末 12% 停顿换气），30–36 淡入、142–150 淡出
+//   148–162 收束：括号向内收紧 14px（spring damping 16）、HUD 文案切换、标记常驻
+//   162–190 hold 28f：相机全程 smooth 极缓推进 1.000→1.018（~180f 收敛）
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, EASE, FONT, Grain, softShadow } from '../../_fixtures/Polish';
+import { useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const SCAN_BRACKET_SWEEP_DURATION = 150; // 5000ms @30fps
+export const SCAN_BRACKET_SWEEP_DURATION = 190;
 
-// —— 颜色：INK 负责括号与正文，SCAN 是唯一的光色（光带芯 / 辉光 / 拖尾共用，换肤只改这两个）——
-const INK = '#16171c'; // 带冷调的近黑（替代纯黑）
-const SCAN = '91,99,211'; // 靛蓝扫描光（rgb 分量，便于拼 alpha）
-const INK2 = '#5d5f66';
-const INK3 = '#9b9da3';
-const HAIR = 'rgba(20,22,28,0.09)';
+const L = LOOKS.ember;
+const AMBER = L.accent2; // 扫描光 / 标记（唯一的光色）
+const ORANGE = L.accent;
+
+// 文档几何（画布像素）
+const DW = 1180;
+const DH = 700;
+const DX = (1920 - DW) / 2;
+const DY = 128;
+const R = 22; // 文档圆角（光带裁切与之一致）
+
+// 表格
+const ROW_TOP = 196; // 第一行顶（文档内）
+const ROW_H = 58;
+const COLS = [64, 150, 560, 960]; // §、条款、条款内容、负责人 的左缘
+type Row = { no: string; clause: string; term: string; owner: string; flag?: string };
+const ROWS: Row[] = [
+  { no: '01', clause: 'Term', term: '24 months, auto-renews', owner: 'Legal' },
+  { no: '02', clause: 'Fees', term: '$18,400 per month', owner: 'Finance' },
+  { no: '03', clause: 'Payment', term: 'Net 45 from invoice', owner: 'Finance', flag: 'Policy is Net 30' },
+  { no: '04', clause: 'Liability cap', term: '1× annual fees', owner: 'Legal' },
+  { no: '05', clause: 'Data residency', term: 'EU region only', owner: 'Security' },
+  { no: '06', clause: 'Termination', term: '90 days written notice', owner: 'Legal', flag: 'Standard is 30 days' },
+  { no: '07', clause: 'Governing law', term: 'State of Delaware', owner: 'Legal' },
+];
+const rowCenter = (r: number) => ROW_TOP + r * ROW_H + ROW_H / 2;
+
+// 扫描
+const SCAN0 = 30;
+const SCAN1 = 146;
+const PASSES = 5;
+const Y_MIN = 150; // 光带行程：表头下沿 → 表尾（文档内 y）
+const Y_MAX = ROW_TOP + ROWS.length * ROW_H + 12;
+const TAIL = 200; // 峰值速度时的拖尾长度（px）
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const inOutSin = (x: number) => 0.5 - Math.cos(Math.PI * clamp01(x)) / 2;
 
-// 文档几何：440×240 定尺画布内居中的 300×178 文档
-const DW = 300;
-const DH = 178;
-const DX = (440 - DW) / 2;
-const DY = (240 - DH) / 2;
-
-// 表格列：沿用原骨架的 4 列栅格（左右各 14 内边距、列距 10）
-const COLS = 4;
-const COL_W = (DW - 28 - (COLS - 1) * 10) / COLS;
-const colX = (c: number) => 14 + c * (COL_W + 10);
-const HEAD = ['Line item', 'Owner', 'Due', 'Amount'];
-const ROWS: [string, string, string, string][] = [
-  ['Cloud hosting', 'M. Chen', 'Jul 14', '$12,400'],
-  ['Data pipeline', 'A. Rossi', 'Jul 21', '$8,750'],
-  ['Security audit', 'J. Park', 'Aug 02', '$6,200'],
-  ['Support tier II', 'L. Novak', 'Aug 09', '$4,980'],
-  ['API overage', 'S. Iyer', 'Aug 16', '$3,140'],
-  ['Cold storage', 'D. Okafor', 'Aug 30', '$2,650'],
-  ['Onboarding', 'R. Silva', 'Sep 05', '$10,800'],
-];
-const ROW_TOP = 58; // 第一行顶（与原骨架行距 13 一致）
-const ROW_H = 13;
-
-// 四角取景括号：外扩 −7、臂长 34（含描边共 36），1.6px 圆头 L 形
-const CS = 36;
-const CORNERS = [
-  { left: -8, top: -8, d: 'M1 35V1h34', dx: 1, dy: 1 },
-  { left: DW + 8 - CS, top: -8, d: 'M1 1h34v34', dx: -1, dy: 1 },
-  { left: DW + 8 - CS, top: DH + 8 - CS, d: 'M35 1v34H1', dx: -1, dy: -1 },
-  { left: -8, top: DH + 8 - CS, d: 'M35 35H1V1', dx: 1, dy: -1 },
-];
-
-const PASSES = 5;
-const TAIL = 82; // 拖尾最大长度（峰值速度时）
-
-// 扫描位置（文档内 y，0→DH）与方向：t 的纯函数，便于求速度
-const scanAt = (t: number) => {
-  const sp = seg(t, 0.17, 0.95, E.linear);
+// 扫描位置（文档内 y）与方向、所在趟：帧的纯函数（便于求速度）
+const scanAt = (f: number) => {
+  const sp = clamp01((f - SCAN0) / (SCAN1 - SCAN0));
   const raw = sp * PASSES;
   const pi = Math.min(PASSES - 1, Math.floor(raw));
-  const local = clamp01((raw - pi) / 0.88); // 每趟末尾 12% 完全停顿
+  const local = clamp01((raw - pi) / 0.88); // 每趟末 12% 完全停顿
   const dir = pi % 2 === 0 ? 1 : -1;
   const prog = inOutSin(local);
-  return { y: dir > 0 ? prog * DH : DH - prog * DH, dir };
+  const y = dir > 0 ? mix(Y_MIN, Y_MAX, prog) : mix(Y_MAX, Y_MIN, prog);
+  return { y, dir, pass: pi };
 };
 
+// 第 1 趟光芯到达某 y 的帧（行"已读"与标记亮起的时刻）
+const firstPassFrame = (yy: number) => {
+  const per = (SCAN1 - SCAN0) / PASSES;
+  const p = clamp01((yy - Y_MIN) / (Y_MAX - Y_MIN));
+  // 反解 inOutSin：local = acos(1-2p)/π
+  const local = Math.acos(1 - 2 * p) / Math.PI;
+  return SCAN0 + local * 0.88 * per;
+};
+
+// 四角括号：臂长 72、线宽 5，外扩 26px
+const ARM = 72;
+const OUT = 26;
+const CORNERS = [
+  { x: -OUT, y: -OUT, d: `M3 ${ARM} V3 H${ARM}`, sx: -1, sy: -1 },
+  { x: DW + OUT - ARM - 3, y: -OUT, d: `M3 3 H${ARM} V${ARM}`, sx: 1, sy: -1 },
+  { x: DW + OUT - ARM - 3, y: DH + OUT - ARM - 3, d: `M${ARM} 3 V${ARM} H3`, sx: 1, sy: 1 },
+  { x: -OUT, y: DH + OUT - ARM - 3, d: `M${ARM} ${ARM} H3 V3`, sx: -1, sy: 1 },
+];
+
 export const ScanBracketSweep: React.FC = () => {
-  const t = useT();
-  const dt = 1 / (SCAN_BRACKET_SWEEP_DURATION - 1); // 一帧对应的 t
+  const f = useCurrentFrame();
 
-  // 文档弹入：scale 0.86→1（snappy），透明度 dp*3 提前满亮——先"在了"再"稳了"
-  const dp = seg(t, 0, 0.11, EASE.snappy);
-  const elev = lerp(dp, 22, 6);
+  // 文档入场
+  const dp = ramp(f, 0, 18, EASE.snappy);
+  const docOp = clamp01(dp * 2.5);
+  const docS = mix(0.94, 1, dp);
 
-  // 扫描：位置 + 速度（拖尾长度跟速度走，趟末停顿处收成 0）
-  const { y, dir } = scanAt(t);
-  const speed = Math.abs(scanAt(t + dt / 2).y - scanAt(t - dt / 2).y); // 设计 px/帧
-  const PEAK = (DH * Math.PI) / 2 / (((0.78 * SCAN_BRACKET_SWEEP_DURATION) / PASSES) * 0.88);
-  const sNorm = clamp01(speed / PEAK);
-  const tail = TAIL * Math.pow(sNorm, 0.75);
-  // 光带整体淡入（0.16–0.20）淡出（0.93–0.99）
-  const clipOp = seg(t, 0.16, 0.2) * (1 - seg(t, 0.93, 0.99));
+  // 扫描
+  const { y, dir } = scanAt(f);
+  const speed = Math.abs(scanAt(f + 0.5).y - scanAt(f - 0.5).y);
+  const PEAK = ((Y_MAX - Y_MIN) * Math.PI) / 2 / (((SCAN1 - SCAN0) / PASSES) * 0.88);
+  const tail = TAIL * Math.pow(clamp01(speed / PEAK), 0.75);
+  const beamOp = ramp(f, SCAN0, 6, EASE.out) * (1 - ramp(f, SCAN1 - 4, 8, EASE.swift));
+  const lit = (cy: number) => beamOp * Math.exp(-Math.pow((y - cy) / 30, 2));
 
-  // 行照亮：光芯离行中心越近越亮（纯空间函数，文档本身不动）
-  const lit = (cy: number) => clipOp * Math.exp(-Math.pow((y - cy) / 7, 2));
+  // 收束：括号向内收紧（spring）+ HUD 切换
+  const lockT = 148;
+  const lock = f < lockT ? 0 : springAt(f, lockT, { damping: 16, stiffness: 200 });
+  const done = f >= lockT + 2;
 
-  const cell = (txt: string, c: number, top: number, style: React.CSSProperties) => (
-    <div
-      style={{
-        position: 'absolute',
-        top,
-        left: colX(c),
-        width: COL_W,
-        textAlign: c === 3 ? 'right' : 'left',
-        whiteSpace: 'nowrap',
-        lineHeight: 1,
-        ...style,
-      }}
-    >
-      {txt}
-    </div>
-  );
+  // 进度（HUD）：扫描窗口内线性推进（机械读条语义）
+  const prog = clamp01((f - SCAN0) / (SCAN1 - SCAN0));
+  const curRow = Math.max(0, Math.min(ROWS.length - 1, Math.floor((y - ROW_TOP) / ROW_H)));
+  const flagged = ROWS.filter((r, i) => r.flag && f >= firstPassFrame(rowCenter(i))).length;
+
+  // 相机：极缓推进
+  const cam = 1 + 0.018 * ramp(f, 0, 180, EASE.smooth);
 
   return (
-    <AbsoluteFill>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.3 }} accent="#5b63d3" grain={0} vignette={0.16} />
-      <DesignStage bg="transparent" raster="zoom">
-        {/* 440×240 定尺画布，居中于 480×270 设计坐标 */}
-        <div style={{ position: 'absolute', left: '50%', top: '50%', width: 440, height: 240, margin: '-120px 0 0 -220px' }}>
-          {/* holder：文档 + 光带 + 括号共用的定位容器 */}
-          <div style={{ position: 'absolute', left: DX, top: DY, width: DW, height: DH }}>
-            {/* 文档卡片：发丝线 + 顶部内高光 + 随落位收紧的两层阴影 */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(180deg, #ffffff 0%, #fcfcfb 100%)',
-                borderRadius: 10,
-                boxShadow: `inset 0 0 0 0.3px ${HAIR}, inset 0 0.4px 0 rgba(255,255,255,0.9), ${softShadow(elev / 4, { strength: 1.1 })}`,
-                overflow: 'hidden',
-                transformOrigin: '50% 50%',
-                transform: `scale(${lerp(dp, 0.86, 1)})`,
-                opacity: clamp01(dp * 3),
-                fontFamily: FONT.sans,
-                color: INK,
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              {/* 页眉：文档图标 + 标题 + 页数 chip */}
-              <svg style={{ position: 'absolute', left: 14, top: 10.5 }} width={9} height={11} viewBox="0 0 9 11">
-                <path d="M1 .5h4.6L8.5 3.4V10a.5.5 0 0 1-.5.5H1A.5.5 0 0 1 .5 10V1A.5.5 0 0 1 1 .5z" fill="#eef0fb" stroke={`rgb(${SCAN})`} strokeWidth={0.6} />
-                <path d="M5.5.6v2.9h2.9" fill="none" stroke={`rgb(${SCAN})`} strokeWidth={0.6} />
-              </svg>
-              <div style={{ position: 'absolute', left: 27, top: 11, fontSize: 8.6, fontWeight: 650, letterSpacing: '-0.01em', lineHeight: 1 }}>
-                Vendor Agreement — Q3
-              </div>
-              <div style={{ position: 'absolute', left: 27, top: 23, fontSize: 5.4, color: INK2, lineHeight: 1, letterSpacing: '-0.01em' }}>
-                Northwind Supply Co. · Effective 1 Jul 2026
-              </div>
-              <div
-                style={{
-                  position: 'absolute',
-                  right: 14,
-                  top: 12,
-                  padding: '2px 4.5px',
-                  borderRadius: 4,
-                  background: '#f3f3f1',
-                  boxShadow: `inset 0 0 0 0.3px ${HAIR}`,
-                  fontFamily: FONT.mono,
-                  fontSize: 4.6,
-                  color: INK2,
-                  letterSpacing: '0.04em',
-                  lineHeight: 1,
-                }}
-              >
-                PDF · 4 PAGES
-              </div>
-              <div style={{ position: 'absolute', left: 14, right: 14, top: 36, height: 0.3, background: HAIR }} />
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.02 }} fill={{ x: 0.86, y: 0.96 }} horizon={0.88} intensity={0.72} breathe={0.4}>
+        <Dust look={L} count={26} seed={7} drift={0.18} opacity={0.45} />
+      </Stage>
 
-              {/* 表头 */}
-              {HEAD.map((h, c) =>
-                cell(h.toUpperCase(), c, 44, { fontSize: 4.5, fontWeight: 600, color: INK3, letterSpacing: '0.07em' }),
-              )}
-              <div style={{ position: 'absolute', left: 14, right: 14, top: 52.5, height: 0.3, background: HAIR }} />
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam.toFixed(5)})`, transformOrigin: '50% 45%' }}>
+        {/* 文档后的暖色地光：让暗色文档从暗场里"浮"出来 */}
+        <div style={{
+          position: 'absolute', left: DX - 160, top: DY + DH - 120, width: DW + 320, height: 300, opacity: docOp,
+          background: `radial-gradient(ellipse 50% 40% at 50% 50%, ${alpha(ORANGE, 0.16)} 0%, ${alpha(ORANGE, 0)} 70%)`,
+        }} />
 
-              {/* 明细行：光芯经过时整行被轻微照亮 */}
-              {ROWS.map((row, r) => {
-                const top = ROW_TOP + r * ROW_H;
-                const L = lit(top + 3);
-                return (
-                  <React.Fragment key={r}>
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: 8,
-                        right: 8,
-                        top: top - 3.5,
-                        height: ROW_H - 1,
-                        borderRadius: 3,
-                        background: `rgba(${SCAN},${(L * 0.09).toFixed(3)})`,
-                      }}
-                    />
-                    {row.map((v, c) =>
-                      cell(v, c, top, {
-                        fontSize: 5.6,
-                        letterSpacing: '-0.012em',
-                        fontWeight: c === 0 || c === 3 ? 520 : 420,
-                        color: c === 0 || c === 3 ? INK : INK2,
-                      }),
-                    )}
-                  </React.Fragment>
-                );
-              })}
-
-              {/* 合计 */}
-              <div style={{ position: 'absolute', left: 14, right: 14, top: 151, height: 0.3, background: HAIR }} />
-              {cell('Total due', 0, 158, { fontSize: 5.6, fontWeight: 600 })}
-              {cell('Net 30', 2, 158, { fontSize: 5.6, color: INK2 })}
-              {cell('$48,920.00', 3, 157.2, { fontSize: 7, fontWeight: 680, letterSpacing: '-0.01em' })}
+        <div style={{ position: 'absolute', left: DX, top: DY, width: DW, height: DH }}>
+          {/* 文档：带色相的深色面板 + 低透明度白描边 + 顶部内高光 + 两层阴影 */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: R, overflow: 'hidden', opacity: docOp,
+            transform: `scale(${docS.toFixed(5)})`, transformOrigin: '50% 50%',
+            background: `linear-gradient(180deg, #21160f 0%, #190f0a 100%)`,
+            boxShadow: `inset 0 0 0 1.5px rgba(255,220,190,0.09), inset 0 1.5px 0 rgba(255,230,210,0.10), 0 2px 6px rgba(0,0,0,0.5), 0 40px 90px -20px rgba(0,0,0,0.75)`,
+            fontFamily: FONT.sans, color: L.ink, fontVariantNumeric: 'tabular-nums',
+          }}>
+            {/* 页眉 */}
+            <div style={{ position: 'absolute', left: 64, top: 48, ...type(46, 720), letterSpacing: '-0.025em', color: L.ink }}>
+              Master Services Agreement
             </div>
-
-            {/* 扫描光带（裁在文档同 10px 圆角内）：细亮芯 + 柔辉 + 朝来向的色调拖尾 */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: 10,
-                overflow: 'hidden',
-                pointerEvents: 'none',
-                opacity: clipOp,
-              }}
-            >
-              <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 0, transform: `translateY(${y.toFixed(3)}px)` }}>
-                {/* 拖尾：正片叠底把表格"染"上光色；长度随速度伸缩，下行挂上方、上行挂下方 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    height: tail,
-                    top: dir > 0 ? -tail : 0,
-                    mixBlendMode: 'multiply',
-                    background:
-                      dir > 0
-                        ? `linear-gradient(180deg, rgba(${SCAN},0) 0%, rgba(${SCAN},0.06) 55%, rgba(${SCAN},0.2) 100%)`
-                        : `linear-gradient(0deg, rgba(${SCAN},0) 0%, rgba(${SCAN},0.06) 55%, rgba(${SCAN},0.2) 100%)`,
-                  }}
-                />
-                {/* 柔辉：光芯两侧对称的窄光晕 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: -5,
-                    height: 10,
-                    background: `linear-gradient(180deg, rgba(${SCAN},0) 0%, rgba(${SCAN},0.22) 50%, rgba(${SCAN},0) 100%)`,
-                  }}
-                />
-                {/* 光芯：1.2px 靛蓝线，中间提亮成白热 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: -0.6,
-                    height: 1.2,
-                    background: `linear-gradient(90deg, rgba(${SCAN},0.55) 0%, rgb(${SCAN}) 18%, #8f95ff 50%, rgb(${SCAN}) 82%, rgba(${SCAN},0.55) 100%)`,
-                    boxShadow: `0 0 2.5px rgba(${SCAN},0.75)`,
-                  }}
-                />
-              </div>
+            <div style={{ position: 'absolute', left: 64, top: 108, ...type(26, 450), color: L.ink2 }}>
+              Halvorsen &amp; Pike Ltd. · Effective 1 March 2027
             </div>
+            <div style={{
+              position: 'absolute', right: 56, top: 54, padding: '9px 16px', borderRadius: 10,
+              border: `1.5px solid ${alpha(L.ink, 0.14)}`, fontFamily: FONT.mono, fontSize: 22, fontWeight: 600,
+              letterSpacing: '0.1em', color: L.ink2,
+            }}>
+              PDF · 14 PAGES
+            </div>
+            <div style={{ position: 'absolute', left: 48, right: 48, top: 164, height: 1.5, background: alpha(L.ink, 0.1) }} />
 
-            {/* 四角取景括号：交错落位，从外侧 8px 带一次轻过冲收进来 */}
-            {CORNERS.map((c, i) => {
-              const t0 = 0.08 + i * 0.022;
-              const a = seg(t, t0, t0 + 0.03); // 透明度先到
-              const p = EASE.overshoot(clamp01((t - t0) / 0.055)); // 位移带 ~8% 过冲
-              const off = (1 - p) * 8;
+            {/* 条款行 */}
+            {ROWS.map((r, i) => {
+              const cy = rowCenter(i);
+              const read = ramp(f, firstPassFrame(cy) - 2, 8, EASE.out); // 第 1 趟光芯扫过即"已读"
+              const k = lit(cy);
+              const c1 = `rgba(255,245,238,${(0.24 + 0.76 * read).toFixed(3)})`;
+              const c2 = `rgba(212,182,164,${(0.24 + 0.68 * read).toFixed(3)})`;
+              const flagOn = r.flag ? ramp(f, firstPassFrame(cy), 10, EASE.snappy) : 0;
               return (
-                <svg
-                  key={i}
-                  width={CS}
-                  height={CS}
-                  viewBox={`0 0 ${CS} ${CS}`}
-                  style={{
-                    position: 'absolute',
-                    left: c.left,
-                    top: c.top,
-                    overflow: 'visible',
-                    opacity: a,
-                    transform: `translate(${(-off * c.dx).toFixed(3)}px,${(-off * c.dy).toFixed(3)}px)`,
-                  }}
-                >
-                  <path d={c.d} fill="none" stroke={INK} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <React.Fragment key={i}>
+                  {/* 行照亮：光芯经过时整行被暖光照一下（纯空间函数，文档不动） */}
+                  <div style={{
+                    position: 'absolute', left: 24, right: 24, top: ROW_TOP + i * ROW_H + 3, height: ROW_H - 6, borderRadius: 10,
+                    background: `rgba(255,194,75,${(k * 0.1 + flagOn * 0.05).toFixed(3)})`,
+                  }} />
+                  {i > 0 && <div style={{ position: 'absolute', left: 48, right: 48, top: ROW_TOP + i * ROW_H, height: 1, background: alpha(L.ink, 0.06) }} />}
+                  {/* 一行四列：flex + baseline 对齐（等宽编号 / 负责人与无衬线正文共用基线） */}
+                  <div style={{ position: 'absolute', left: COLS[0], right: 48, top: cy - 20, height: 40, display: 'flex', alignItems: 'baseline' }}>
+                    <div style={{ width: COLS[1] - COLS[0], fontFamily: FONT.mono, fontSize: 24, fontWeight: 600, color: c2, letterSpacing: '0.04em' }}>§{r.no}</div>
+                    <div style={{ width: COLS[2] - COLS[1], ...type(30, 640), letterSpacing: '-0.015em', color: c1 }}>{r.clause}</div>
+                    <div style={{ width: COLS[3] - COLS[2], ...type(30, 430), letterSpacing: '-0.015em', color: r.flag && flagOn > 0 ? `rgba(255,214,140,${(0.4 + 0.6 * read).toFixed(3)})` : c1 }}>{r.term}</div>
+                    <div style={{ fontFamily: FONT.mono, fontSize: 24, fontWeight: 500, color: c2, letterSpacing: '0.04em' }}>{r.owner.toUpperCase()}</div>
+                  </div>
+                  {/* 风险标记：右侧页边的琥珀竖条 + 点（第 1 趟光芯经过时亮起） */}
+                  {r.flag && (
+                    <>
+                      <div style={{
+                        position: 'absolute', left: 0, top: ROW_TOP + i * ROW_H + 10, width: 6, height: ROW_H - 20, borderRadius: 3,
+                        background: AMBER, opacity: flagOn, transform: `scaleY(${flagOn.toFixed(4)})`, boxShadow: `0 0 16px ${alpha(AMBER, 0.7)}`,
+                      }} />
+                      <div style={{
+                        position: 'absolute', right: 40, top: cy - 9, width: 18, height: 18, borderRadius: 9, background: AMBER,
+                        opacity: flagOn, transform: `scale(${mix(0.3, 1, EASE.overshoot(clamp01((f - firstPassFrame(cy)) / 10))).toFixed(4)})`,
+                        boxShadow: `0 0 18px ${alpha(AMBER, 0.8)}`,
+                      }} />
+                    </>
+                  )}
+                </React.Fragment>
               );
             })}
+
+            {/* 页脚 */}
+            <div style={{ position: 'absolute', left: 48, right: 48, top: DH - 72, height: 1.5, background: alpha(L.ink, 0.1) }} />
+            <div style={{ position: 'absolute', left: 64, top: DH - 52, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink3 }}>
+              SCHEDULE A — COMMERCIAL TERMS
+            </div>
+            <div style={{ position: 'absolute', right: 64, top: DH - 52, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.1em', color: L.ink3 }}>
+              PAGE 3 / 14
+            </div>
+
+            {/* 扫描光带：裁在文档圆角内（与文档同一 overflow:hidden 层） */}
+            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 0, opacity: beamOp, transform: `translateY(${y.toFixed(2)}px)` }}>
+              {/* 拖尾：screen 叠加的暖光，挂在来向一侧，长度随速度伸缩 */}
+              <div style={{
+                position: 'absolute', left: 0, right: 0, height: tail, top: dir > 0 ? -tail : 0, mixBlendMode: 'screen',
+                background: `linear-gradient(${dir > 0 ? 180 : 0}deg, ${alpha(AMBER, 0)} 0%, ${alpha(AMBER, 0.05)} 50%, ${alpha(AMBER, 0.2)} 100%)`,
+              }} />
+              {/* 柔辉 */}
+              <div style={{
+                position: 'absolute', left: 0, right: 0, top: -22, height: 44, mixBlendMode: 'screen',
+                background: `linear-gradient(180deg, ${alpha(AMBER, 0)} 0%, ${alpha(AMBER, 0.32)} 50%, ${alpha(AMBER, 0)} 100%)`,
+              }} />
+              {/* 光芯：白热中段 → 两端琥珀 */}
+              <div style={{
+                position: 'absolute', left: 0, right: 0, top: -1.5, height: 3,
+                background: `linear-gradient(90deg, ${alpha(AMBER, 0.4)} 0%, ${AMBER} 16%, #fff6e2 50%, ${AMBER} 84%, ${alpha(AMBER, 0.4)} 100%)`,
+                boxShadow: `0 0 10px ${alpha(AMBER, 0.9)}, 0 0 28px ${alpha(ORANGE, 0.5)}`,
+              }} />
+            </div>
           </div>
+
+          {/* 四角取景括号：错峰从外侧斜向落位（overshoot），收束时向内收紧一次 */}
+          {CORNERS.map((c, i) => {
+            const t0 = 10 + i * 3;
+            const a = ramp(f, t0, 6, EASE.out);
+            const p = EASE.overshoot(clamp01((f - t0) / 14));
+            const off = (1 - p) * 40 - lock * 14;
+            return (
+              <svg key={i} width={ARM + 6} height={ARM + 6} viewBox={`0 0 ${ARM + 6} ${ARM + 6}`}
+                style={{
+                  position: 'absolute', left: c.x, top: c.y, overflow: 'visible', opacity: a,
+                  transform: `translate(${(off * c.sx).toFixed(2)}px, ${(off * c.sy).toFixed(2)}px)`,
+                  filter: `drop-shadow(0 0 ${(6 + 10 * Math.min(1, lock)).toFixed(1)}px ${alpha(AMBER, 0.45 + 0.3 * Math.min(1, lock))})`,
+                }}>
+                <path d={c.d} fill="none" stroke={done ? '#fff1d6' : AMBER} strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            );
+          })}
         </div>
-      </DesignStage>
-      <Grain opacity={0.045} />
-    </AbsoluteFill>
+
+        {/* HUD：文档下方，状态 + 进度 + 当前条款 */}
+        <div style={{
+          position: 'absolute', left: DX, top: DY + DH + 64, width: DW, display: 'flex', alignItems: 'center', gap: 28,
+          fontFamily: FONT.mono, fontSize: 28, fontWeight: 600, letterSpacing: '0.08em', color: L.ink2,
+          opacity: ramp(f, 22, 12, EASE.out), transform: `translateY(${((1 - ramp(f, 22, 16, EASE.snappy)) * 16).toFixed(2)}px)`,
+        }}>
+          <div style={{
+            width: 14, height: 14, borderRadius: 7, background: done ? L.ink : AMBER, flex: 'none',
+            boxShadow: `0 0 ${done ? 8 : 14}px ${alpha(done ? L.ink : AMBER, 0.8)}`,
+          }} />
+          <span style={{ color: L.ink, whiteSpace: 'nowrap' }}>{done ? 'REVIEW READY' : 'QUILLON · READING'}</span>
+          <div style={{ flex: 1, height: 4, borderRadius: 2, background: alpha(L.ink, 0.1), overflow: 'hidden' }}>
+            <div style={{ width: `${(prog * 100).toFixed(2)}%`, height: '100%', background: done ? L.ink : `linear-gradient(90deg, ${ORANGE}, ${AMBER})`, borderRadius: 2 }} />
+          </div>
+          <span style={{ whiteSpace: 'nowrap', color: done ? AMBER : L.ink2 }}>
+            {done ? `${flagged} CLAUSES FLAGGED` : `CLAUSE ${ROWS[curRow].no} / 07`}
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };

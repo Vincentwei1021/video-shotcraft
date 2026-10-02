@@ -1,28 +1,31 @@
 {
   "stem": "LineBoil",
   "issues": [
-    "工作台按 105f 截断，正好切在摘罩那一帧，“沸腾 → 回到真静止”的对比后半段没了",
-    "画面左上打着调试标题 \"LINE BOIL\"，右下是 3px 粗描边的 \"boil on/off\" 胶囊，像调试界面",
-    "被沸腾的描边卡里是实心灰条，沸腾起来读作模糊而不是重描",
-    "平铺浅灰底、Helvetica 大字，和卡片 md 说的“纸墨手工感”宿主不沾边"
+    "左上角打着调试标题「LINE BOIL」，右下是粗描边的「boil on / boil off」胶囊，像调试面板",
+    "被沸腾的卡片里是实心灰条，沸腾起来读作发糊，不像重描",
+    "平铺浅灰底 + 一个居中小字「ALIVE」，主体只占画面一小块，没有设计",
+    "工作台在 105f 截断，正好切在摘罩那一帧，「沸腾 → 回到真静止」的对比后半段看不到"
   ],
   "changes": [
-    "补 LINE_BOIL_DURATION = 140，完整呈现 静止 35f → 沸腾 70f → 摘罩真静止 35f 三段",
-    "宿主改为纸墨字卡：暖纸径向渐变 + 静态大尺度纸纤维（multiply）+ 暖褐暗角；眉题 \"CHAPTER TWO\"（不入滤镜，当静止参照物），大标题 \"Still alive.\" 用系统 SF 栈 190px/800 负字距，墨色 #1e1d1b",
-    "描边卡改为全墨线的手绘分镜卡：不规则起笔外框、三行手写线稿、取景框加人物线、指向箭头和一圈朱红圈注，正好是 md 说的最适合沸腾的对象",
-    "调试胶囊换成右下角极小的等宽状态标（朱红实点 boiling / 空心点 still），5f 交叉淡变，100–105f 前全部完成；沸腾参数（scale 8、baseFrequency 0.015、seed=floor(f/3)、条件挂载）不变"
+    "look 换成 midnight 派生的蓝晒纸：钴蓝渐变底 + 静态蓝图网格与双线图框，线是蓝图白，唯一强调色是琥珀黄圈注",
+    "画面重做成一张工业设计概念稿：左侧 200px 大标题「Start」实心 +「rough.」描边空心字的字重对比，右侧一只手绘圆柱音箱（透视网罩孔点阵、旋钮、背光排线、尺寸线、中轴构造虚线）",
+    "每条线稿画两遍（主线 + 偏 2px 的细淡复描），静止时也是手稿感；沸腾只作用于标题与线稿，眉题、副标题、网格不进滤镜，当静止参照物",
+    "新时间表 150f：0–40f 线稿按「构造线 → 轮廓 → 网罩 → 尺寸 → 圈注」描出、标题从线下升起；40–112f 沸腾（seed 每 3 帧一换）；112f 摘罩后真静止 38f；相机全程 smooth 极缓推进 2.2%，尾 10f 静止",
+    "调试胶囊换成画面里的状态标：左下「● LIVE SKETCH」，摘罩同帧换成「✓ INKED」"
   ],
   "issuesEn": [
-    "The workbench cut it at 105f, exactly on the unmount frame, so the back half of the boil-then-truly-still contrast was missing",
-    "A debug title \"LINE BOIL\" sat top-left and a thick-bordered \"boil on/off\" pill bottom-right, like a debug panel",
-    "The stroked card contained solid grey bars, which read as blur rather than redrawn lines when boiling",
-    "Flat light grey and Helvetica display type had nothing to do with the paper-and-ink host the card's md describes"
+    "A debug title \"LINE BOIL\" sat top-left and a thick-bordered \"boil on / boil off\" pill bottom-right, like a debug panel",
+    "The boiled card held solid grey bars, which read as blur rather than redrawn lines",
+    "Flat light grey with a small centred \"ALIVE\": the subject filled a tiny part of the frame and there was no real design",
+    "The workbench cut it at 105f, exactly on the unmount frame, so the back half of the boil-then-truly-still contrast was missing"
   ],
   "changesEn": [
-    "Added LINE_BOIL_DURATION = 140 so all three phases play: 35f still, 70f boil, 35f truly still after unmounting",
-    "The host is now a paper-and-ink title card: warm radial paper gradient, static large-scale paper fibre (multiply), warm-brown vignette; a \"CHAPTER TWO\" eyebrow stays outside the filter as a still reference, and the headline \"Still alive.\" is set in the system SF stack at 190px/800 with negative tracking in #1e1d1b ink",
-    "The stroked card is now an all-ink-line storyboard sketch: an irregular hand-started frame, three handwritten lines, a viewfinder with a figure, a pointer arrow and a vermilion circle annotation, exactly the kind of subject the md says boils best",
-    "The debug pills became a tiny mono state tag bottom-right (solid vermilion dot = boiling, hollow dot = still) with a 5f cross-fade, all finished before 100–105f; boil parameters (scale 8, baseFrequency 0.015, seed = floor(f/3), conditional mounting) unchanged"
+    "Look switched to a blueprint derived from midnight: cobalt gradient, static blueprint grid and double-rule frame, blueprint-white lines, and amber as the only accent for the annotation",
+    "The frame is now an industrial-design concept sheet: a 200px headline with solid \"Start\" over outlined \"rough.\" for weight contrast on the left, and a hand-drawn cylindrical speaker on the right (perspective grille dots, knob, shadow hatching, dimension line, dashed construction axis)",
+    "Every stroke is drawn twice (main line plus a thin faint re-trace offset by 2px) so it reads as a sketch even when still; only the headline and drawing boil, while eyebrow, subtitle and grid stay outside the filter as still references",
+    "New 150f timeline: 0–40f the drawing traces on in order (construction, contour, grille, dimensions, annotation) while the headline rises; 40–112f boil (seed changes every 3 frames); 112f unmount, then 38f truly still; a smooth 2.2% camera push across the shot, last 10f static",
+    "The debug pills became an in-world status tag bottom-left: \"● LIVE SKETCH\" while boiling, switching to \"✓ INKED\" on the unmount frame"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

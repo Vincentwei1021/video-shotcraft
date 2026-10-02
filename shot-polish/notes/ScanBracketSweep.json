@@ -1,32 +1,31 @@
 {
   "stem": "ScanBracketSweep",
   "issues": [
-    "文档只有灰色骨架条，看不出被扫描的是一份什么东西，不像真实文档（Q10）",
-    "扫描光带是 10px 粗黑线加 50% 黑灰渐变拖尾，压在白纸上读成一块脏污的阴影而不是光",
-    "拖尾定长 82px，每趟换向时整块从光带一侧瞬间跳到另一侧",
-    "取景括号是 8px 粗的方头黑边，直线收位没有落定感",
-    "背景是纯色 #F1F1F3 平铺，文档阴影单薄，整体发平"
+    "文档只占画面中间一小块，内容是灰色骨架条，读不出它是一份什么文件",
+    "扫描光是一条黑线拖着大片灰色渐变，读作脏污或遮罩，不像光",
+    "浅灰底 + 白卡片 + 黑括号，没有光源、没有层次，整帧像线框稿",
+    "扫完 5 趟就结束了，扫描没有留下任何结果，结尾没有收束的一拍"
   ],
   "changes": [
-    "骨架换成出版级合同明细表：文档图标 + 标题 + 元信息 + PDF 页数 chip、4 列 7 行明细与合计行，DesignStage 改 raster=\"zoom\" 让小字按成片尺寸栅格化",
-    "光带改成靛蓝扫描光：1.2px 中心提亮的光芯 + 10px 对称柔辉 + 正片叠底的色调拖尾（SCAN .2→0），光芯经过的表格行被轻微照亮",
-    "拖尾长度按扫描速度伸缩（最长 82px，趟末停顿处收成 0），换向时尾迹自然收回再在另一侧长出",
-    "括号改成 1.6px 圆头 SVG 描边，从外侧沿对角收进来并带约 8% 过冲落定，保留 0.022 错峰",
-    "背景换柔光渐变底 + 暗角 + 颗粒；文档加发丝线、顶部内高光与随落位收紧的两层阴影（scale 0.86→1 改 snappy 缓动）"
+    "look 换成 ember：暖黑舞台 + 顶部主光 + 地平线暖光带 + 浮尘；主体是一份 1180×700 的暗色合同条款表（7 条条款、30px 正文、页眉页脚），占画宽 61%",
+    "扫描光重做成琥珀光：3px 白热光芯 + 44px 金色柔辉 + 随速度伸缩的 200px 拖尾，暗场里全部 screen 叠加，整条裁进文档 22px 圆角",
+    "让光真的在读：第 1 趟光芯扫过的行由暗转亮，两条风险条款在光芯经过时亮起琥珀竖条与页边点；文档本体一像素不动",
+    "文档下方加 HUD：状态点 + 进度条 + 「CLAUSE 04 / 07」跟着光带走；扫完收束为「REVIEW READY · 2 CLAUSES FLAGGED」，四角括号同帧 spring 向内收紧并转暖白",
+    "新时间表 190f：0–18f 文档弹入、10–30f 括号错峰 overshoot 落位、30–146f 扫 5 趟、148f 收束、28f hold；相机全程极缓推进 1.8%"
   ],
   "issuesEn": [
-    "The document was only grey skeleton bars, so it never read as a real document being scanned (Q10)",
-    "The scan beam was a 10px black line with a 50% grey gradient tail, reading as a dirty shadow on white paper rather than light",
-    "The 82px tail had a fixed length and jumped from one side of the beam to the other on every turnaround",
-    "The viewfinder brackets were thick square-capped black borders that slid in linearly with no settle",
-    "The background was a flat #F1F1F3 fill and the document shadow was thin, so the frame felt flat"
+    "The document filled only a small patch in the middle and held grey skeleton bars, so you couldn't tell what kind of file it was",
+    "The scan was a black line dragging a large grey gradient, which read as dirt or a mask rather than light",
+    "Light grey background, white card, black brackets: no light source and no depth, so every frame looked like a wireframe",
+    "It simply ended after five passes; the scan left no result and there was no closing beat"
   ],
   "changesEn": [
-    "Replaced the skeleton with a publication-grade vendor agreement table: file icon, title, metadata and page chip, 4 columns by 7 rows plus a total line; DesignStage now uses raster=\"zoom\" so small text rasterises at output size",
-    "The beam is now an indigo scan light: a 1.2px core brightened in the middle, a 10px symmetric glow and a multiply-blended tinted tail (SCAN .2→0); table rows light up faintly as the core passes",
-    "Tail length follows scan speed (max 82px, zero during the end-of-pass pause), so on turnaround it retracts and regrows on the other side",
-    "Brackets are 1.6px round-capped SVG strokes closing in diagonally from outside with an ~8% overshoot, keeping the 0.022 stagger",
-    "Soft gradient backdrop with vignette and grain; the document gets a hairline, top inner highlight and a two-layer shadow that tightens as it lands (scale 0.86→1 now on a snappy ease)"
+    "Look switched to ember: warm-black stage with a top key light, a warm horizon band and drifting dust; the subject is a 1180×700 dark contract terms table (7 clauses, 30px body text, header and footer) filling 61% of the frame width",
+    "The scan beam is now amber light: a 3px white-hot core, a 44px gold glow and a 200px tail that stretches with speed, all screen-blended on the dark stage and clipped to the document's 22px corner radius",
+    "The light visibly reads: rows brighten from dim to read as the core first passes them, and two risky clauses light an amber edge bar and margin dot as it crosses; the document itself never moves a pixel",
+    "A HUD below the document (status dot, progress bar, \"CLAUSE 04 / 07\") tracks the beam; at the end it resolves to \"REVIEW READY · 2 CLAUSES FLAGGED\" while the four brackets spring inward and turn warm white on the same frame",
+    "New 190f timeline: 0–18f document pops in, 10–30f staggered overshoot bracket landing, 30–146f five passes, 148f resolve, 28f hold; a very slow 1.8% camera push throughout"
   ],
+  "look": "ember",
   "mdChanged": true
 }

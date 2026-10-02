@@ -1,30 +1,31 @@
 {
   "stem": "RadialRipplePhoneChips",
   "issues": [
-    "手机 132×264 加边框后高 278，超出 270 的设计画高，整片里手机顶和底一直被画框裁掉",
-    "手机只是一圈 7px 纯黑描边，没有任何硬件细节；屏内是灰色渐变块加灰条骨架",
-    "chip 文案是 \"Feature one / Feature detail\" 占位，白胶囊没有图标，也只有一层投影",
-    "同心圆是平涂色块，底色平铺，波纹读作色环而不像水面"
+    "冷灰底 + 灰色骨架条的手机屏，看不出是什么产品，整帧像线框稿",
+    "手机上下都被画框裁掉，主体不完整",
+    "两枚 chip 写的是占位文案「Feature one / Feature detail」，字小、没有图标",
+    "没有品牌与落点，结尾帧不是一张完整的海报"
   ],
   "changes": [
-    "手机改为 112×234 屏 + 6px 边框（整机 124×246，上下各留 12px 完整入画），chip 贴边偏移 86→76px 同步改；切 DesignStage raster=\"zoom\"，屏内小字按目标尺寸排版、光栅化",
-    "硬件 mockup：145° 金属渐变边框 + 内外发丝环、灵动岛、三枚侧键、静态玻璃斜反光、home 条，两层落地投影（贴近实影 + 远处大柔影）",
-    "屏内改为出版级假 feed：9:41 状态栏（渐隐压住滚上来的内容）、日期眉题 + \"Today\" 大标题 + 完成度进度条、8 条带插画缩略图/标题/元信息/勾选点的条目；匀速自动滚屏 0→−150px 不变",
-    "chip 改为带强调色图标 tile 的 \"Offline sync / Smart reminders\"，发丝描边 + 内高光 + 两层阴影，pop 时再从手机侧外移 6px 弹出（outBack 0.8→1、左 0.22 右 0.40、±3px 悬浮不变）",
-    "同心圆每层加上半受光渐变、内上沿白高光和白色发丝外缘，读作一圈圈水面反光；底色改为上亮下暗的极低对比渐变，手机身后加柔光，四角轻压暗；ACCENT_RGB 改为与 fixture 一致的 #5b63d3"
+    "look 换成 sand：四层暖沙色同心圆（最外两层出画铺满）带受光上沿与发丝外缘，中心暖白柔光托住手机；错相呼吸参数（±6%、1.7 rad、1.5 周期）保留",
+    "按 1080p 原生尺寸重搭手机：430×900 完整入画（占画高 83%），暖钛边框、灵动岛、侧键、玻璃反光、三层带色相的落地投影；开场 26f 从下方升起落位",
+    "屏内做成为镜头设计的播客 App「Murmur」：大标题、精选大卡、带几何插画封面与收听进度的单集卡、常驻迷你播放条（进度在走、波形在跳），feed 匀速自动滚动",
+    "chip 换成真实功能「Offline listening / Smart chapters」：36px 字 + 赤陶色图标圆，spring（damping 13）一次过冲弹出并从手机侧边外移，落位后才渐入 ±8px 悬浮，左右错开 1s",
+    "左下角加品牌字标「Murmur — Podcasts, unhurried.」在 90f 逐词升起，收尾成一张产品海报"
   ],
   "issuesEn": [
-    "At 132×264 plus bezel the phone stood 278 tall, more than the 270 design height, so its top and bottom were cropped by the frame for the whole shot",
-    "The phone was just a 7px solid-black outline with no hardware detail; the screen held grey gradient blocks and skeleton bars",
-    "The chips read \"Feature one / Feature detail\" as placeholders, with plain white pills, no icons and a single shadow",
-    "The concentric circles were flat fills on a flat background, reading as colour rings rather than water"
+    "Cool grey with grey skeleton bars on the phone screen: you couldn't tell what the product was, and every frame looked like a wireframe",
+    "The phone was cropped at both top and bottom, so the subject was never complete",
+    "The two chips carried placeholder copy (\"Feature one / Feature detail\"), small and without icons",
+    "No brand and no landing point, so the last frame wasn't a finished poster"
   ],
   "changesEn": [
-    "Phone is now a 112×234 screen plus 6px bezel (124×246 overall, 12px clear top and bottom), with the chip offset changed 86→76px to match; DesignStage switches to raster=\"zoom\" so on-screen small text is laid out and rasterized at target size",
-    "Hardware mockup: 145° metal-gradient bezel with inner and outer hairline rings, Dynamic Island, three side buttons, a static diagonal glass reflection, a home bar, and two-layer ground shadows (tight contact plus a large soft falloff)",
-    "The screen is now a publication-grade mock feed: a 9:41 status bar (faded over content scrolling beneath it), a date eyebrow, a \"Today\" large title and a progress bar, then eight items with illustrated thumbnails, titles, meta lines and check dots; the linear 0→−150px auto-scroll is unchanged",
-    "Chips are now \"Offline sync / Smart reminders\" with an accent icon tile, hairline border, inner highlight and two-layer shadow, and they slide 6px out from the phone's side as they pop (outBack 0.8→1, left at 0.22, right at 0.40, ±3px float all unchanged)",
-    "Each ring gets a lit upper-half gradient, a white top inner highlight and a white hairline rim, so they read as ripples catching light; the background is a very low-contrast light-to-dark gradient with a soft glow behind the phone and lightly darkened corners; ACCENT_RGB now matches the fixture's #5b63d3"
+    "Look switched to sand: four warm sand concentric discs (the outer two bleed off-frame) with lit top edges and hairline rims, plus a warm-white glow behind the phone; the out-of-phase breathing (±6%, 1.7 rad, 1.5 cycles) is kept",
+    "The phone is rebuilt at native 1080p size: 430×900, fully in frame (83% of frame height), with a warm titanium frame, dynamic island, side buttons, glass reflection and three tinted contact shadows; it rises into place from below over the first 26f",
+    "The screen is a podcast app designed for the shot, \"Murmur\": large title, featured card, episode cards with geometric cover art and listening progress, and a persistent mini-player whose progress advances and waveform moves; the feed auto-scrolls at constant speed",
+    "The chips now name real features, \"Offline listening / Smart chapters\": 36px text with a terracotta icon disc, a single-overshoot spring pop (damping 13) sliding out from the phone's edge, with the ±8px float easing in only after they land, left and right 1s apart",
+    "A wordmark \"Murmur — Podcasts, unhurried.\" rises word by word bottom-left at 90f, so the shot ends on a product poster"
   ],
+  "look": "sand",
   "mdChanged": true
 }

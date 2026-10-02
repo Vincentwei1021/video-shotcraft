@@ -1,28 +1,31 @@
 {
   "stem": "RisoMisregistrationHit",
   "issues": [
-    "没有导出时长，工作台按 150f 默认渲染，44f 静止后又多拖了 30f",
-    "浅灰版 + 深墨版叠在平铺 G.bg 灰底上，读作投影/重影而不是印刷，没有一点纸和油墨的质感",
-    "标题 \"IMPACT\" 用回退的 Helvetica，版面只有一根灰色装饰线，空场 20f 很空",
-    "8f 撞入是纯平移，没有运动模糊，看不出速度"
+    "浅灰平底 + 一个居中的小号「IMPACT」，主体只占画面一条，前 20 帧是空白死帧",
+    "两版是黑 + 灰，叠出来读作投影或重影，没有一点印刷油墨的感觉",
+    "错位幅度相对字号太小，撞停和套准两拍都不够有力，套准后没有任何收束",
+    "版面只有一条细线，整帧不是一张设计过的海报"
   ],
   "changes": [
-    "补 RISO_MISREGISTRATION_HIT_DURATION = 120（套准后真静止 44f），纸纤维与油墨颗粒都改用静态纹理，尾段逐帧相同",
-    "印版换成朱红专色（#e0492f）+ 深墨（#1f1d22）两色，multiply 叠在暖色 riso 再生纸上（径向纸色 + 静态纸纤维 multiply + screen 油墨白点 + 暖褐暗角）；套准即两版归零重合",
-    "版面做成双色印刷品：四角套准十字、左上版记 \"ISSUE 07 — TWO-COLOUR RISO\"、底部 3px 墨线加 \"INK · VERMILION / 120 LPI\" 说明；标题改为 \"Hit print.\"（系统 SF 栈 230px/900）",
-    "撞入段加按速度计算的横向 SpeedBlur；错位包络（A=16/7px、ω=2π/18、τ=60、帧 72 硬切）与 4f 套准脉冲不变"
+    "配色 custom：再生新闻纸 + riso 荧光粉 × 蓝两色油墨，两版 multiply 套准时叠成深紫，错开时一侧粉一侧蓝的彩边",
+    "版式重做成瑞士网格演出海报：300px 黑体两行「PRINT IT / LOUD.」压在右侧一只粉版半调网点大太阳上（点径随离心距离收到 0），顶部版记与通栏线、底部三栏演出信息（蓝版）",
+    "开场不再空等：太阳像被墨辊自上而下滚上纸（0–16f 硬边擦入），版线展开、信息栏错峰升起；20–28f 标题 ease-in 撞入带方向性模糊",
+    "错位加到单版 20/8px（总分离约 40px），命中同帧整页 1.2% 顿挫；72f 硬切套准 + 4f scale 脉冲，同帧盖下一枚「ON REGISTER」圆章作为收束",
+    "尾段 44f 干净 hold，相机按 smooth 曲线极缓推进 1.2%"
   ],
   "issuesEn": [
-    "No duration was exported, so the workbench rendered the 150f default and dragged 30f past the 44f hold",
-    "A light-grey plate and an ink plate over flat G.bg grey read as a drop shadow or ghosting rather than print, with no feel of paper or ink",
-    "The \"IMPACT\" title fell back to Helvetica, the layout was a single grey rule, and the 20f empty opening felt bare",
-    "The 8f slam-in was a plain translation with no motion blur, so speed did not read"
+    "Flat light grey with a small centred \"IMPACT\": the subject was a thin strip, and the first 20 frames were dead blank frames",
+    "The two plates were black and grey, which read as a drop shadow or ghosting, not printing ink",
+    "The offset was small relative to the type size, so neither the hit nor the snap into register landed, and nothing marked the resolve",
+    "A single hairline was the whole layout; no frame looked like a designed poster"
   ],
   "changesEn": [
-    "Added RISO_MISREGISTRATION_HIT_DURATION = 120 (44f truly still after registration); paper fibre and ink grain use static textures so the tail is frame-identical",
-    "Plates are now vermilion spot (#e0492f) plus deep ink (#1f1d22), multiplied onto warm riso stock (radial paper tone, static fibre via multiply, screen-blended ink speckle, warm-brown vignette); registration means both plates snap to zero and coincide",
-    "The layout is now a two-colour print: registration crosshairs in all four corners, an \"ISSUE 07 — TWO-COLOUR RISO\" folio top-left, and a 3px ink rule with an \"INK · VERMILION / 120 LPI\" caption; the title is now \"Hit print.\" (system SF stack, 230px/900)",
-    "The slam-in gets velocity-driven horizontal SpeedBlur; the misregistration envelope (A = 16/7px, ω = 2π/18, τ = 60, hard snap at f72) and the 4f registration pulse are unchanged"
+    "Custom palette: recycled newsprint with fluorescent pink and blue riso inks; multiplied in register they make deep violet, and out of register they leave a pink fringe on one side and blue on the other",
+    "Rebuilt as a Swiss-grid gig poster: a two-line 300px \"PRINT IT / LOUD.\" over a big pink halftone sun on the right (dot size shrinking to zero at the rim), a masthead with full-width rule, and three columns of event info in the blue plate",
+    "No more empty wait: the sun is rolled onto the paper top-down like an ink roller (hard-edged wipe, 0–16f), rules extend and info columns rise in a stagger; 20–28f the headline slams in with ease-in and directional motion blur",
+    "Offset raised to 20/8px per plate (about 40px total), with a 1.2% whole-page jolt on the hit frame; at 72f a hard cut into register plus a 4f scale pulse, and an \"ON REGISTER\" round stamp lands on the same frame as the resolve",
+    "A clean 44f tail hold with a very slow 1.2% smooth camera push"
   ],
+  "look": "custom",
   "mdChanged": true
 }

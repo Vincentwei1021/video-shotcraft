@@ -1,28 +1,31 @@
 {
   "stem": "RisoBeatPump",
   "issues": [
-    "没有导出时长，工作台按 150f 默认渲染，比镜头本意（四拍后 24f 静止，共 140f）多拖 10f",
-    "浅灰/深墨双版叠在平铺灰底上，错位读作阴影，看不出是印刷没对准",
-    "标题下三张卡是通用灰条骨架，和“节拍/印刷”毫无关系",
-    "节拍刻度是四个灰点，回退字体，整张画面像线框稿"
+    "浅灰底 + 中号「ON THE BEAT」+ 三张灰色骨架卡，像线框图，不像印刷品",
+    "错版是黑 + 灰，叠出来像投影；四拍除了错位大小外画面没有任何推进",
+    "底部节拍点只有十几像素，静音时几乎读不出节拍",
+    "拍与拍之间完全静止，节拍之间没有蓄力，命中显得突兀"
   ],
   "changes": [
-    "补 RISO_BEAT_PUMP_DURATION = 140（末拍归零后真静止 24f）；纸纤维与油墨颗粒都是静态纹理，泵缩放只作用画面容器，颗粒/暗角作为镜头外层不跟着缩",
-    "双版换成朱红专色 + 深墨，multiply 叠在暖色 riso 纸上；标题改为 \"On the beat.\"（系统 SF 栈 176px/900，−0.028em），双版常驻、套准时归零重合",
-    "三张卡改为印刷鼓件卡：1.5px 墨线框 + 版号 + \"Kick / Snare / Hi-hat\" + 专色半调网点几何（圆/三角/方）+ 墨线波形",
-    "节拍刻度改为带拍号 1–4 的墨线圈，命中 3f 填朱红再转实心墨并常驻（8f 1.8→1 脉冲不变）；版面加四角套准十字与 \"SIDE A — 75 BPM / 4 / 4\" 版记；泵 1.08·exp(−t/3)、错位 4/7/11/16px 逐拍加码不变"
+    "配色 custom：再生纸 + riso 荧光橙 × 青绿两色油墨，两版套准叠成墨绿，错开时一侧橙边一侧青边（和 A 式的粉 × 蓝区分开）",
+    "版式做成唱片 B 面封套：左侧 196px 黑体标题逐拍盖上一个词 ONE / MORE / TIME, / LOUDER.，每一拍既是冲击也是一句话的推进；右侧 720px 半调网点巨型拍号 1→4 同帧换数",
+    "底部改为四格步进音序器：命中格被橙版填满常驻，未到的词半透明预告；青绿播放头在拍前 6f ease-in 加速扑向下一格，正好落在鼓点上",
+    "错版加码调到单版 5/9/14/20px（总分离 10/18/28/40px，匹配大字号）；整画面泵 1.08 指数回落、错版只作用标题的作用域不变",
+    "开场 0–29f 有预备：版线展开、节拍格错峰浮现、播放头带预备回拉滑进第 1 格、拍号区露出空心「1」；末拍后 24f 真静止"
   ],
   "issuesEn": [
-    "No duration was exported, so the workbench rendered the 150f default, 10f longer than intended (24f still after four beats, 140f total)",
-    "Light-grey and ink plates over flat grey made the offset read as a shadow rather than misregistered print",
-    "The three cards under the title were generic grey skeleton bars with nothing to do with beats or print",
-    "The beat markers were four grey dots in a fallback font; the whole frame looked like a wireframe"
+    "Light grey with a mid-size \"ON THE BEAT\" and three grey skeleton cards: it looked like a wireframe, not print",
+    "The plates were black and grey, which read as a drop shadow; apart from the offset size, nothing progressed across the four beats",
+    "The beat dots at the bottom were a dozen pixels wide, so the beat was barely readable with the sound off",
+    "Everything froze between beats, with no build-up, so each hit felt abrupt"
   ],
   "changesEn": [
-    "Added RISO_BEAT_PUMP_DURATION = 140 (24f truly still after the last beat settles); paper fibre and ink grain are static, and the pump scales only the picture container while grain and vignette sit outside it like a lens layer",
-    "Plates are now vermilion spot plus deep ink, multiplied onto warm riso stock; the title is now \"On the beat.\" (system SF stack, 176px/900, −0.028em), with both plates always present and coinciding when registered",
-    "The three cards are now printed drum-part cards: 1.5px ink frame, part number, \"Kick / Snare / Hi-hat\", a spot-colour halftone shape (circle / triangle / square) and an ink waveform",
-    "Beat markers are now ink rings numbered 1–4 that flash vermilion for 3f on the hit, then stay solid ink (8f 1.8→1 pulse unchanged); registration crosshairs and a \"SIDE A — 75 BPM / 4 / 4\" folio frame the layout; the 1.08·exp(−t/3) pump and the 4/7/11/16px escalating offsets are unchanged"
+    "Custom palette: recycled paper with fluorescent orange and teal riso inks; in register they multiply to an inky green, out of register they leave an orange fringe on one side and teal on the other (kept distinct from style A's pink and blue)",
+    "Laid out as a record B-side sleeve: a 196px headline on the left gains one word per beat, ONE / MORE / TIME, / LOUDER., so every hit both punches and advances the sentence; a 720px halftone beat numeral on the right changes 1 to 4 on the same frame",
+    "The bottom is now a four-step sequencer: hit cells fill with the orange plate and stay lit, upcoming words show at low opacity as a preview, and a teal playhead accelerates (ease-in) into the next cell over the 6f before each beat, landing exactly on it",
+    "Offsets tuned to 5/9/14/20px per plate (10/18/28/40px total) to match the larger type; the 1.08 full-frame pump with exponential decay and the title-only offset scope are unchanged",
+    "The 0–29f pre-roll now has anticipation: rules extend, beat cells fade up in a stagger, the playhead slides into cell 1 with a pull-back, and a hollow \"1\" waits in the numeral slot; 24f of true stillness after the last beat"
   ],
+  "look": "custom",
   "mdChanged": true
 }
