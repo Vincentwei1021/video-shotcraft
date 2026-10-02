@@ -107,6 +107,17 @@ const Panel: React.FC<{ sx: number; env: number }> = ({ sx, env }) => {
             <stop offset="1" stopColor={P.violet} />
           </linearGradient>
         </defs>
+        <filter id="cdzBloom" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="9" /></filter>
+        {/* 泛光只给被照到的柱子（模糊副本垫在下面），不给整片面板 */}
+        <g filter="url(#cdzBloom)" opacity={0.75 * env}>
+          {Array.from({ length: BARS }, (_, i) => {
+            const x = WAVE_X0 + (i + 0.5) * (WAVE_W / BARS);
+            const near = Math.exp(-((x - sx) ** 2) / (2 * 120 ** 2));
+            if (near < 0.08) return null;
+            const h = barH(i) * 230;
+            return <rect key={i} x={x - 5} y={130 - h / 2 - near * 6} width={10} height={h + near * 12} rx={5} fill="#a855f7" opacity={near} />;
+          })}
+        </g>
         {Array.from({ length: BARS }, (_, i) => {
           const x = WAVE_X0 + (i + 0.5) * (WAVE_W / BARS);
           const h = barH(i) * 230;
@@ -197,8 +208,12 @@ export const GlowWakeSleepPanel: React.FC = () => {
   const camY = interpolate(frame, [0, 150], [-18, 18], CLAMP);
 
   // 光池压暗罩：中心平台亮区 → S 形衰减到沉黑（暗部带一点紫调）
-  const dark = (x: number, y: number, k: number) =>
-    `radial-gradient(ellipse ${700 * k}px ${560 * k}px at ${x}px ${y}px, rgba(8,4,18,${(0.04 * env + (1 - env) * 0.96).toFixed(3)}) 0%, rgba(8,4,18,${(0.06 * env + (1 - env) * 0.96).toFixed(3)}) 24%, rgba(8,4,18,${(1 - 0.72 * env).toFixed(3)}) 46%, rgba(8,4,18,${(1 - 0.32 * env).toFixed(3)}) 64%, rgba(8,4,18,${(1 - 0.08 * env).toFixed(3)}) 80%, rgba(7,4,15,0.985) 96%)`;
+  // 光池罩：光是"显影"不是"过曝"——中心也压一层紫调（白面板被照成可读的淡紫，不是白盘），
+  // 再按 S 形衰减到沉黑；内圈用带紫色相的深色、外圈用近黑，光色因此读作紫光
+  const dark = (x: number, y: number, k: number) => {
+    const a = (lit: number) => (lit * env + (1 - env) * 0.96).toFixed(3);
+    return `radial-gradient(ellipse ${760 * k}px ${600 * k}px at ${x}px ${y}px, rgba(46,24,108,${a(0.3)}) 0%, rgba(44,22,104,${a(0.31)}) 16%, rgba(36,18,88,${a(0.38)}) 28%, rgba(24,12,62,${a(0.52)}) 40%, rgba(14,7,34,${a(0.68)}) 52%, rgba(10,5,24,${(1 - 0.22 * env).toFixed(3)}) 66%, rgba(8,4,18,${(1 - 0.08 * env).toFixed(3)}) 80%, rgba(7,4,15,0.985) 96%)`;
+  };
 
   return (
     <AbsoluteFill style={{ background: VOID, overflow: 'hidden' }}>
@@ -250,8 +265,8 @@ export const GlowWakeSleepPanel: React.FC = () => {
           )}
           {/* 光头眩光：贴着顶边的亮团 */}
           <div style={{
-            position: 'absolute', left: sx - 210, top: -90, width: 420, height: 180,
-            background: 'radial-gradient(ellipse, rgba(240,214,255,0.95), rgba(180,110,250,0.32) 45%, rgba(0,0,0,0) 72%)',
+            position: 'absolute', left: sx - 150, top: -60, width: 300, height: 120,
+            background: 'radial-gradient(ellipse, rgba(214,180,255,0.7), rgba(150,90,245,0.3) 45%, rgba(0,0,0,0) 72%)',
             filter: 'blur(12px)', opacity: env * 0.95, mixBlendMode: 'screen',
           }} />
         </div>
