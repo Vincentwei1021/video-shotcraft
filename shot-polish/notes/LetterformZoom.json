@@ -8,6 +8,7 @@
   ],
   "changes": [
     "look 改为 ember：暖黑章节字卡挖出 560px Black 字重「SHIFT」，洞里是熔金渐变的虚构发布页（Kiln 4.0），字形成了画面里最亮的东西",
+    "字卡 hold 期洞里只透出暖色渐变与柔光形（页面文字层隐去，不与「SHIFT」两层字互相抢），主推中段 64–90f 页面内容由 18px 失焦淡入合焦，接管时已清晰可读",
     "字缘加一圈只画在盖板上的模糊橙色描边（光从字洞漏出来）+ 1.5px 暖白切口边，配眉题「CHAPTER 02」字距收拢与 44px 副标",
     "推进锚点改到「I」竖笔中心（实测 1029,515），30^u 慢起陡收 + 2% 后吸预备；快速段四层半透明残影叠成径向变焦拖尾 + 按 scale 补偿的模糊",
     "两层视差：盖板 ×30、后景页面只推 1.08（交接处速度连续）并向左漂 28px，洞里内容在动，读作真实纵深；接管瞬间页面曝光 +12% 一闪",
@@ -22,6 +23,7 @@
   ],
   "changesEn": [
     "Look switched to ember: a warm-black chapter card with a 560px Black 'SHIFT' cut out, revealing a molten-gold fictional launch page (Kiln 4.0) so the letterforms are the brightest thing on screen",
+    "During the title hold the holes show only warm gradient and soft glow shapes (the page's type layer is hidden so it doesn't compete with 'SHIFT'); in the middle of the push (64–90f) the page content fades in from an 18px defocus and is sharp by takeover",
     "A blurred orange stroke drawn only on the plate makes light leak out of the holes, plus a 1.5px warm cut edge; eyebrow 'CHAPTER 02' tracks in and a 44px subline rises",
     "Push anchored at the centre of the 'I' stem (measured 1029,515), 30^u slow-in/steep curve with a 2% anticipation pull-back; four translucent lagged plates form a radial zoom trail plus scale-compensated blur",
     "Two-layer parallax: plate goes ×30 while the page behind only pushes to 1.08 (velocity-continuous hand-off) and drifts 28px, so the holes show real depth; a +12% exposure pop at takeover",

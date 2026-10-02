@@ -4,7 +4,9 @@
 // 第二轮重设计（余烬 · 熔炉之门）：
 // - look = ember。盖板是暖黑章节字卡（顶光 + 字后余烬光），560px Black 字重的「SHIFT」挖空成洞；
 //   洞里透出的是一张熔金色的发布页（橙 → 金渐变 + 一枚太阳光斑），所以字形本身就是画面里最亮的东西，
-//   "洞里有东西"第一帧就读得出。字缘一圈熔光外溢到盖板上（模糊描边、只画在盖板区域内）——光从洞里漏出来。
+//   "洞里有东西"第一帧就读得出。hold 期页面的文字/卡片层完全隐去，洞里只有暖色渐变与柔光形（读作图像，
+//   不和「SHIFT」两层字互相抢）；主推中段 64–90f 内容由 18px 失焦淡入合焦，接管时已清晰。
+//   字缘一圈熔光外溢到盖板上（模糊描边、只画在盖板区域内）——光从洞里漏出来。
 // - 空间：盖板在前、页面在后。推进时盖板 ×30 而页面只 ×1.08，两层视差读作真实纵深；
 //   快速段给盖板叠两层更小倍率的半透明残影（径向"变焦拖影"），代替整屏实时模糊。
 // - 锚点 = 「I」竖笔中心（洞），竖笔 ≈106px 宽 ×30 ≈ 3200px > 画宽，推到底真正是洞撑满全屏。
@@ -14,7 +16,8 @@
 // 时间表（30fps，共 150f）：
 //   0–26    建立：字卡在场（第 0 帧即有画面），眉题/副标升起，盖板极缓前推 1→1.03（蓄势）
 //   26–34   预备：后吸 2%（anticip）
-//   34–86   主推：scale = 30^u，u 走 bezier(0.6,0,0.85,0.5) 慢起陡收（52f）；u>0.55 起残影 + 模糊
+//   34–86   主推：scale = 30^u，u 走 bezier(0.6,0,0.85,0.5) 慢起陡收（52f）；u>0.35 起残影 + 模糊
+//   64–90   页面内容失焦淡入 → 合焦（18px→0，EASE.out）
 //   76–86   接管：scale 14→26 盖板淡出；页面曝光 +12% 一闪回落
 //   86–116  落定：页面继续前推到 1.08，速度与主推末端连续（quint-out）
 //   96–132  余波：计数 0→32、延迟条错峰填满、LIVE 标签弹出
@@ -73,7 +76,14 @@ const REGIONS = [
 ];
 const INK = '#1c0a02'; // 熔金底上的墨色（带暖色相的近黑）
 
+// 页面内容"失焦 → 合焦"：字卡 hold 期内容层完全隐去，字洞里只透出暖色渐变与光斑（读作图像/质感，
+// 不与「SHIFT」抢字）；主推中段 64–90f 内容由 18px 失焦淡入并合焦，接管时已清晰可读。
+const REVEAL0 = 64;
+const REVEAL_DUR = 26;
+
 const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
+  const reveal = ramp(frame, REVEAL0, REVEAL_DUR, EASE.out);
+  const defocus = 18 * (1 - reveal);
   const count = Math.round(32 * ramp(frame, 96, 30, EASE.snappy));
   const live = springAt(frame, 124, { damping: 15, stiffness: 240 });
   return (
@@ -82,7 +92,16 @@ const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
       <AbsoluteFill style={{ background: 'linear-gradient(128deg, #ffcf5a 0%, #ff9a3c 34%, #ff6b2c 62%, #c2370e 100%)' }} />
       <AbsoluteFill style={{ background: 'radial-gradient(circle 520px at 1450px 540px, rgba(255,236,170,0.75) 0%, rgba(255,200,110,0.25) 45%, rgba(255,160,80,0) 72%)' }} />
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse 70% 60% at 20% 100%, rgba(120,20,0,0.35) 0%, rgba(120,20,0,0) 70%)' }} />
+      {/* 失焦期的光形：部署卡位置一团奶白柔光、标题区一抹暗赤——字洞里只看得到"有光有形"，看不到字 */}
+      <AbsoluteFill style={{
+        opacity: 1 - reveal,
+        background: 'radial-gradient(ellipse 380px 340px at 1390px 580px, rgba(255,246,228,0.55) 0%, rgba(255,240,220,0) 100%), ' +
+          'radial-gradient(ellipse 520px 260px at 560px 500px, rgba(110,25,0,0.22) 0%, rgba(110,25,0,0) 100%)',
+      }} />
 
+      {/* 内容层：hold 期隐去，主推中段失焦淡入 → 合焦 */}
+      {reveal > 0 && (
+      <AbsoluteFill style={{ opacity: reveal, filter: defocus > 0.05 ? `blur(${defocus.toFixed(2)}px)` : undefined }}>
       {/* 导航 */}
       <div style={{ position: 'absolute', left: 200, right: 230, top: 122, display: 'flex', alignItems: 'center', color: INK }}>
         <div style={{ width: 46, height: 46, borderRadius: 13, background: INK, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -152,6 +171,8 @@ const NextPage: React.FC<{ frame: number }> = ({ frame }) => {
           })}
         </div>
       </div>
+      </AbsoluteFill>
+      )}
       <Grain opacity={0.05} />
     </AbsoluteFill>
   );
