@@ -1,32 +1,31 @@
 {
   "stem": "AxisRescaleShockV2",
   "issues": [
-    "画面上方是调试占位标题 \"AXIS RESCALE SHOCK V2\"，爆表段冲出去插进的是卡名",
-    "卡片 2px 灰边 + 单层淡影、2px 灰网格、3px 灰色上沿条，线框稿质感",
-    "冲顶用 in-cubic 以最高速硬停，卡片震动是等幅正弦；粗细 10→6 一帧跳变",
-    "重标时四个刻度同帧换、加密网格同帧出现，像切图而不是“哗”地重排",
-    "端点标记 / $340k 标签是平涂色块，没有落座感和增幅信息"
+    "图表缩在一张 1060px 的白卡片里，刻度和月份 18–21px，1080p 下读不清",
+    "浅灰底 + 白卡 + 琥珀线，和库里其他亮场 dashboard 镜头长得一样，没有设计语言",
+    "爆表段冲出卡片后只是一根线停在空中，天花板没有被\"撞破\"的反馈",
+    "重标后的收尾画面主次弱：真值标签 32px、年度合计和标题区没有联动"
   ],
   "changes": [
-    "调试标题换成页面级标题区：左 Revenue overview，右 FY total KPI——爆表段正好冲进 KPI 数字，重标完成时合计从 $493k 滚到 $833k",
-    "卡片发丝线 + 内高光 + 两层软影、柔光背景 + 颗粒；1px 发丝网格、虚线天花板在顶破前一拍连同 $100k 刻度转琥珀",
-    "折线下加淡面积渐变、画线期笔尖带头灯；冲顶用越冲越快再 8% 过冲的贝塞尔，冲出段带柔光，粗细 10→6 平滑收回；震动改阻尼正弦（±8px，约 10f 收敛）",
-    "重标：刻度自上而下错峰 2f 换位并带瞬时纵向虚化，加密网格错峰从左向右展开",
-    "端点标记 overshoot 落座 + 一圈涟漪；真值标签改渐变胶囊 + 指向角 + “▲ 372% vs Nov” 副行；补导出 AXIS_RESCALE_SHOCK_V2_DURATION = 150"
+    "look 换 sand 沙色纸：整张画面做成瑞士网格财务海报，124px 粗黑体标题 + 同字号右上 KPI，满版 1532×540 绘图区，刻度/月份 32px",
+    "历史面积改 45° 印刷排线，3px 墨黑基线与天花板粗规线，刻度改成压在规线上方的左对齐标签",
+    "爆表段越冲越快顶破天花板：规线在穿透点裂开、三片碎屑弹飞、图表阻尼震 10px，线头一路扎进右上 KPI 数字并把它撞得一颤",
+    "时间表 168f：规线画出 → 42f 写入 → 12f 预警（规线转赤陶 + Nov 脉冲）→ 14f 爆表 → 悬停 18f → 14f 重标 → 标签/KPI 落定 → hold 42f",
+    "重标后弹出 76px 赤陶真值块「$340k ▲ 372% vs Nov」，KPI 滚到 $833k 并转赤陶，全程 1.8% 极缓推镜"
   ],
   "issuesEn": [
-    "A debug title \"AXIS RESCALE SHOCK V2\" sat above the chart, so the spike pierced the card name",
-    "2px grey card border with a faint single shadow, 2px grey gridlines and a 3px grey top bar read as a wireframe",
-    "The spike used in-cubic and stopped dead at full speed; the card shake was an undamped sine; stroke width jumped 10→6 in one frame",
-    "All four ticks swapped and the dense gridlines appeared on the same frame, like a cut rather than a rescale",
-    "The end marker and $340k label were flat blocks with no settle and no growth context"
+    "The chart sat inside a small 1060px white card with 18–21px ticks and months that were unreadable at 1080p",
+    "Light grey stage, white card and amber line looked like every other light dashboard shot, with no design language",
+    "After breaking out, the spike was just a line hanging in the air; the ceiling gave no sense of being smashed",
+    "The end frame lacked hierarchy: a 32px value label, with no link between the yearly total and the header"
   ],
   "changesEn": [
-    "Replaced the debug title with a page header: Revenue overview on the left and an FY total KPI on the right that the spike punches through; the total rolls from $493k to $833k when the rescale lands",
-    "Hairline card with inner highlight and two-layer shadow on a soft-light backdrop with grain; 1px gridlines and a dashed ceiling that turns amber (with the $100k tick) just before it breaks",
-    "Soft area fill and a pen-tip highlight while drawing; the spike accelerates then overshoots ~8% with a glow, stroke eases 10→6, and the shake is a damped sine (±8px, ~10f)",
-    "Rescale ticks swap top-down with a 2f stagger and brief vertical blur; dense gridlines wipe in left to right with stagger",
-    "End marker settles with overshoot plus one ripple; value label is a gradient pill with pointer and a ▲ 372% vs Nov sub-line; exported AXIS_RESCALE_SHOCK_V2_DURATION = 150"
+    "Sand paper look: the whole frame is a Swiss-grid finance poster with a 124px heavy headline, a same-size KPI top right, a full-bleed 1532×540 plot and 32px ticks and months",
+    "History area uses 45° print hatching, 3px ink baseline and ceiling rules, and ticks become left-aligned labels sitting on their rules",
+    "The spike accelerates through the ceiling: the rule cracks at the pierce point, three shards fly off, the chart gets a 10px damped shake, and the line drives into the KPI number, jolting it",
+    "168f timeline: rules draw, 42f write, 12f warning (ceiling turns terracotta, Nov pulses), 14f breakout, 18f hang, 14f rescale, label and KPI land, 42f hold",
+    "After the rescale a 76px terracotta value block '$340k ▲ 372% vs Nov' pops in, the KPI rolls to $833k in terracotta, with a 1.8% slow push throughout"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }

@@ -1,410 +1,299 @@
-// axis-rescale-shock-v2 —— 轴爆表重标 v2（批次 6 "改改再看" 重做）
-// 相对 v1 的加码：爆表点冲出卡片顶 80→220px（真的冲进标题字区域）、冲出段折线
-// 加粗 10px 且变琥珀；重标瞬间"哗"——旧刻度数字向下飞出淡出、新刻度从上滑入，
-// 网格 4→8 根同帧加密；真图表语境：真标题 "Monthly revenue"、真轴刻度
-// $25k/$50k/$75k/$100k → $100k/$200k/$300k/$400k、真月份 x 轴、端点弹真值
-// 标签 "$340k"；卡片震动 3→8px。收尾 f110 后真静止 40f。
-// 帧确定性：数据硬编码，全部 frame 派生，无 Math.random / Date.now。
+// axis-rescale-shock-v2 —— 轴爆表重标：折线正常爬升，新值顶破图表上沿冲进标题区，
+// 停半拍，y 轴"哗"地重标（旧刻度飞出 / 新刻度滑入 / 网格加密 / 旧线压扁成地平线），新值落回 + 弹真值标签。
 //
-// 质感升级：调试标题换成页面级标题区（爆表段真的插进这行字里）；卡片走发丝线 + 内高光 + 两层软影，
-// 柔光背景 + 颗粒；1px 发丝网格、虚线"天花板"在顶破前一拍转琥珀；折线下加淡面积渐变、写入点带头灯；
-// 冲顶用"越来越快再轻微过冲"的曲线 + 冲出段柔光，粗细 10→6 平滑收回；卡片震动改为阻尼正弦；
-// 刻度/加密网格错峰 2f 入场；端点标记 overshoot 落座 + 一圈涟漪，真值标签带增幅副行。
+// 第二轮重设计（沙色瑞士海报 · 财务月报）：
+// - look = sand（米色纸 + 墨黑 + 赤陶）。不再是"卡片里的小图表"，而是整张画面就是一页瑞士网格财务海报：
+//   左上 120px 粗黑体标题「Monthly revenue」、右上同字号年度合计 KPI，下面是满版图表（1540×540 绘图区），
+//   3px 墨黑基线 + 3px "天花板"粗规线 + 发丝网格，历史面积用 45° 斜线排线（印刷感），月份/刻度 32px。
+// - 主角是赤陶色爆表段：Dec 新值从 Nov 起跳，越冲越快顶破天花板规线（规线在穿透点裂开、两片碎屑弹飞），
+//   一路冲进右上角的 KPI 数字里（KPI 被撞得一颤），悬停半拍带柔光——"装不下"字面化。
+// - 重标：14f 内旧刻度 $25k–$100k 向下飞出、新刻度 $100k–$400k 从上滑入，网格 4→8 根从左展开，
+//   旧折线与斜线面积被压扁成地平线；爆表点落回 $340k，弹出赤陶真值标签，KPI 滚到 $833k。
+//
+// 时间表（30fps，共 168f）：
+//   0–20    规线从左画出、标题逐词升起、刻度/月份淡入（第 1 帧已有纸面与规线起点）
+//   14–56   历史段 Jan→Nov 写入（42f，不对称 in-out），笔尖带墨点
+//   50–62   预警：天花板规线与 $100k 刻度转赤陶，Nov 点一圈脉冲（预备）
+//   62–76   爆表 14f：越冲越快（ease-in 主导）顶破规线（~69f 穿透：裂口 + 碎屑 + 图表震 10px）→ 冲进 KPI
+//   76–94   悬停 18f：笔尖亮头 + 柔光，KPI 被撞后阻尼回位
+//   94–108  重标 14f（expo-out）：刻度换、网格密、旧线压扁、端点落回
+//   106–126 端点标记 overshoot 落座 + 真值标签弹出；KPI $493k → $833k
+//   126–168 hold 42f：只有极缓推镜（1 → 1.018）
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, FONT, Grain, bezier, mix, ramp, softShadow, tracking } from '../../_fixtures/Polish';
+import { EASE, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 
-export const AXIS_RESCALE_SHOCK_V2_DURATION = 150;
+export const AXIS_RESCALE_SHOCK_V2_DURATION = 168;
 
-const AMBER = '#d97706'; // 强调色（事件 / 主角）
-const AMBER_DEEP = '#b45309';
+const L = LOOKS.sand;
+const ACC = L.accent; // 赤陶：只给爆表段 / 事件
+const INK = L.ink;
 
-const CARD_W = 1060;
-const CARD_H = 600;
-const CX = (1920 - CARD_W) / 2;
-const CY = (1080 - CARD_H) / 2 + 60;
-const PAD = 52;
-const AXIS_W = 96; // 左侧 $ 刻度位
-const PLOT_W = CARD_W - PAD * 2 - AXIS_W;
-const PLOT_H = 360;
-const PLOT_X = PAD + AXIS_W;
-const PLOT_Y = 140;
+// 版式网格
+const M = 96;
+const X0 = 268; // 绘图区左
+const X1 = 1800; // 绘图区右（Dec）
+const PW = X1 - X0;
+const CEIL = 362; // 天花板规线
+const BASE = 902; // 基线
+const PH = BASE - CEIL;
+const SHOCK_TOP = CEIL - 226; // 冲出天花板 226px，扎进标题行
 
-// 历史数据（$k，0–100 量程内温和爬升），最后一点爆表 340
 const DATA = [22, 30, 26, 38, 35, 47, 44, 58, 55, 66, 72, 340];
 const N = DATA.length;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const IN_END = 14; // f0–14：卡片浮入
-const HOLD = 12;
-const DRAW_END = HOLD + 34; // f46：历史段画完
-const SHOCK_END = DRAW_END + 16; // f62：爆表点冲顶
-const BEAT = SHOCK_END + 16; // f78：停半拍（悬在标题区）
-const RESCALE_END = BEAT + 12; // f90：重标完成
-const MARK_END = RESCALE_END + 8; // f98：端点标记弹出
-const VAL_END = MARK_END + 10; // f108：真值标签弹出
+const DRAW0 = 14;
+const DRAW1 = 56;
+const WARN = 50;
+const SHOCK0 = 62;
+const SHOCK1 = 76;
+const BEAT = 94;
+const RESCALE1 = 108;
+const MARK = 106;
 
-// 冲顶曲线：起步慢、越冲越快，到顶轻微过冲后收住（不是匀速、也不是硬停）
-const easeShock = bezier(0.62, 0, 0.32, 1.08);
+// 冲顶：起步慢、越冲越快，到顶微过冲
+const easeShock = bezier(0.7, 0, 0.36, 1.06);
+
+const xOf = (i: number) => X0 + (i / (N - 1)) * PW;
 
 export const AxisRescaleShockV2: React.FC = () => {
   const frame = useCurrentFrame();
 
-  // 量程：0–100 → 0–400，重标 12f
-  const rescaleP = ramp(frame, BEAT, RESCALE_END - BEAT, EASE.snappy);
+  const rescaleP = ramp(frame, BEAT, RESCALE1 - BEAT, EASE.snappy);
   const range = mix(100, 400, rescaleP);
-  const yOf = (v: number): number => PLOT_H - (v / range) * PLOT_H;
-  const xOf = (i: number): number => (i / (N - 1)) * PLOT_W;
+  const yOf = (v: number) => BASE - (v / range) * PH;
 
-  const drawT = ramp(frame, HOLD, DRAW_END - HOLD, EASE.swift) * (N - 2);
-  const shockT = ramp(frame, DRAW_END + 2, SHOCK_END - DRAW_END - 2, easeShock);
-
-  // 冲顶停位：卡片上沿之上 220px（相对绘图区顶 -(PLOT_Y+220)），真冲进标题字区
-  const SHOCK_Y = -(PLOT_Y + 220);
-
-  // 历史段点集
+  // 历史段写入
+  const drawT = ramp(frame, DRAW0, DRAW1 - DRAW0, EASE.swift) * (N - 2);
   const pts: Array<[number, number]> = [];
-  const upto = Math.min(drawT, N - 2);
-  for (let i = 0; i <= Math.floor(upto); i++) pts.push([xOf(i), yOf(DATA[i])]);
-  if (upto < N - 2 && upto > Math.floor(upto)) {
-    const i = Math.floor(upto);
-    const f = upto - i;
+  for (let i = 0; i <= Math.floor(drawT); i++) pts.push([xOf(i), yOf(DATA[i])]);
+  if (drawT < N - 2 && drawT > Math.floor(drawT)) {
+    const i = Math.floor(drawT);
+    const f = drawT - i;
     pts.push([mix(xOf(i), xOf(i + 1), f), mix(yOf(DATA[i]), yOf(DATA[i + 1]), f)]);
   }
-  const line = pts.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
-  const area = pts.length > 1 ? `M0,${PLOT_H} L${line.replace(/ /g, ' L')} L${pts[pts.length - 1][0].toFixed(2)},${PLOT_H} Z` : '';
+  const lineD = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ');
 
-  // 爆表段单独一根（琥珀 + 加粗），起点 = 历史最后一点
-  let [headX, headY] = pts.length ? pts[pts.length - 1] : [0, PLOT_H];
-  let shockSeg = '';
-  if (shockT > 0) {
-    const x0 = xOf(N - 2);
-    const y0 = yOf(DATA[N - 2]);
-    const x = mix(x0, xOf(N - 1), Math.min(1, shockT));
-    const yEnd = mix(SHOCK_Y, yOf(DATA[N - 1]), rescaleP);
-    const y = mix(y0, yEnd, shockT);
-    shockSeg = `${x0.toFixed(2)},${y0.toFixed(2)} ${x.toFixed(2)},${y.toFixed(2)}`;
-    headX = x;
-    headY = y;
+  // 爆表段
+  const shockT = ramp(frame, SHOCK0, SHOCK1 - SHOCK0, easeShock);
+  const nx = xOf(N - 2);
+  const ny = yOf(DATA[N - 2]);
+  const topY = mix(SHOCK_TOP, yOf(DATA[N - 1]), rescaleP);
+  const hx = mix(nx, X1, Math.min(1, shockT));
+  const hy = mix(ny, topY, shockT);
+  const shockOn = frame >= SHOCK0;
+
+  // 面积（含爆表段）
+  const all: Array<[number, number]> = shockOn ? [...pts, [hx, hy]] : pts;
+  const areaD = all.length > 1
+    ? `M${all[0][0]},${BASE} ` + all.map(([x, y]) => `L${x.toFixed(2)},${y.toFixed(2)}`).join(' ') + ` L${all[all.length - 1][0].toFixed(2)},${BASE} Z`
+    : '';
+
+  // 穿透天花板：线段与 y=CEIL 的交点
+  const crossX = nx + ((ny - CEIL) / (ny - SHOCK_TOP)) * (X1 - nx);
+  const pierced = shockOn && hy <= CEIL + 0.5 && rescaleP < 0.02;
+  // 穿透帧（求一次）：shockT 使 hy 过 CEIL 的帧
+  let PIERCE = SHOCK1;
+  for (let f = SHOCK0; f <= SHOCK1; f += 0.25) {
+    if (mix(ny, SHOCK_TOP, ramp(f, SHOCK0, SHOCK1 - SHOCK0, easeShock)) <= CEIL) { PIERCE = f; break; }
   }
-  const shockW = mix(10, 6, ramp(frame, BEAT + 2, 14, EASE.out)); // 冲出期 10px，重标后平滑收回 6px
-  const shockGlow = shockT > 0 ? 1 - ramp(frame, BEAT, 16, EASE.out) : 0; // 冲出段柔光，只在悬停期
+  const sinceP = frame - PIERCE;
+  const crack = sinceP >= 0 ? ramp(frame, PIERCE, 8, EASE.snappy) * (1 - ramp(frame, BEAT, 14, EASE.smooth)) : 0;
 
-  // 天花板预警：冲顶前 8f 起虚线上沿 + $100k 刻度转琥珀，重标后回归中性
-  const warn = ramp(frame, DRAW_END - 2, 10, EASE.out) * (1 - ramp(frame, BEAT, 10, EASE.out));
+  // 图表震：阻尼正弦，穿透帧起 12f
+  const kick = sinceP >= 0 && sinceP < 14 ? 10 * Math.exp(-sinceP / 3.4) * Math.sin(sinceP * 1.8) : 0;
+  // KPI 被撞：冲到顶（SHOCK1）时向上一颤
+  const sinceTop = frame - (SHOCK1 - 2);
+  const kpiKick = sinceTop >= 0 && sinceTop < 16 ? -14 * Math.exp(-sinceTop / 3.8) * Math.cos(sinceTop * 1.5) : 0;
 
-  // 重标"哗"：旧刻度向下飞出淡出、新刻度从上滑入，逐个错峰 2f
-  const OLD_TICKS = ['$25k', '$50k', '$75k', '$100k'];
-  const NEW_TICKS = ['$100k', '$200k', '$300k', '$400k'];
+  const warn = ramp(frame, WARN, 10, EASE.out) * (1 - ramp(frame, BEAT, 12, EASE.out));
+  const hang = shockOn ? ramp(frame, SHOCK1 - 4, 8, EASE.out) * (1 - ramp(frame, BEAT, 14, EASE.out)) : 0;
+  const shockW = mix(12, 7, ramp(frame, BEAT, 16, EASE.out));
 
-  const markS = ramp(frame, RESCALE_END, MARK_END - RESCALE_END + 2, EASE.overshoot);
-  const ripple = ramp(frame, RESCALE_END + 2, 18, EASE.out);
-  const valS = ramp(frame, MARK_END, VAL_END - MARK_END + 2, EASE.overshoot);
-  const valSub = ramp(frame, MARK_END + 4, 10, EASE.out);
+  const markS = ramp(frame, MARK, 12, EASE.overshoot);
+  const ripple = ramp(frame, MARK + 2, 20, EASE.out);
+  const valS = ramp(frame, MARK + 4, 14, EASE.overshoot);
+  const totalP = ramp(frame, MARK + 2, 20, EASE.snappy);
 
-  // 顶破瞬间卡片震：阻尼正弦（±8px，10f 收敛），只走 y 轴
-  const kf = frame - (SHOCK_END - 3);
-  const kick = kf >= 0 && kf < 12 ? 8 * Math.exp(-kf / 3.2) * Math.sin(kf * 1.9) : 0;
+  const rule = (d: number) => ramp(frame, d, 20, EASE.snappy);
+  const cam = mix(1, 1.018, ramp(frame, 0, AXIS_RESCALE_SHOCK_V2_DURATION, EASE.smooth));
 
-  // 卡片 / 标题入场
-  const inP = ramp(frame, 0, IN_END, EASE.snappy);
-  const headIn = ramp(frame, 2, 14, EASE.out);
-  const totalP = ramp(frame, RESCALE_END - 4, 18, EASE.snappy); // 年度合计滚动
+  const OLD = ['$25k', '$50k', '$75k', '$100k'];
+  const NEW = ['$100k', '$200k', '$300k', '$400k'];
+  const tickY = (i: number) => BASE - ((i + 1) / 4) * PH;
+
+  // 碎屑（两片规线残段从穿透点弹飞）
+  const shard = (k: number) => {
+    if (sinceP < 0 || sinceP > 32) return null;
+    const t = sinceP / 32;
+    const dir = k % 2 === 0 ? -1 : 1;
+    const sp = [1, 0.75, 0.55][k];
+    const x = crossX + dir * (18 + 190 * sp * EASE.out(t));
+    const y = CEIL - (170 - k * 40) * EASE.out(t) + 300 * t * t;
+    const w = [40, 30, 18][k];
+    return (
+      <rect key={k} x={x - w / 2} y={y - 2} width={w} height={4} fill={ACC} opacity={1 - EASE.exit(t)}
+        transform={`rotate(${dir * (240 - k * 50) * t} ${x} ${y})`} />
+    );
+  };
 
   return (
-    <AbsoluteFill style={{ background: G.bg, overflow: 'hidden', fontFamily: FONT.sans }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.08 }} />
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.0 }} fill={{ x: 0.95, y: 0.95 }} />
 
-      {/* 页面标题区：爆表段会冲进这一行 */}
-      <div style={{ position: 'absolute', left: CX + 4, top: 96, opacity: headIn, transform: `translateY(${mix(10, 0, headIn)}px)` }}>
-        <div style={{ fontSize: 20, fontWeight: 600, color: G.ink3, letterSpacing: tracking(20, true), textTransform: 'uppercase' }}>
-          Finance · FY2026
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${cam})`, transformOrigin: '60% 45%' }}>
+        {/* 标题行 */}
+        <div style={{ position: 'absolute', left: M, top: 92, ...type(32, 650, { caps: true }), color: L.ink2, opacity: ramp(frame, 0, 12, EASE.out) }}>
+          Ostro <span style={{ color: L.ink3 }}>·</span> Finance <span style={{ color: L.ink3 }}>· FY2026</span>
         </div>
-        <div style={{ marginTop: 8, fontSize: 64, fontWeight: 700, color: G.ink1, letterSpacing: tracking(64), lineHeight: 1.05 }}>
-          Revenue overview
+        <div style={{ position: 'absolute', left: M - 6, top: 140, ...type(124, 850), color: INK }}>
+          <TextReveal text="Monthly revenue" by="word" variant="rise" start={2} each={18} gap={5} />
         </div>
-      </div>
 
-      {/* 右侧 KPI：爆表段正好冲进这里；重标完成时年度合计从 $493k 翻到 $833k */}
-      <div
-        style={{
-          position: 'absolute',
-          right: 1920 - CX - CARD_W - 4,
-          top: 96,
-          textAlign: 'right',
-          opacity: headIn,
-          transform: `translateY(${mix(10, 0, headIn)}px)`,
-        }}
-      >
-        <div style={{ fontSize: 20, fontWeight: 600, color: G.ink3, letterSpacing: tracking(20, true), textTransform: 'uppercase' }}>
-          FY total
+        {/* 右上 KPI：爆表段会冲进这里 */}
+        <div style={{ position: 'absolute', right: 1920 - 1824, top: 92, textAlign: 'right', opacity: ramp(frame, 6, 14, EASE.out) }}>
+          <div style={{ ...type(32, 650, { caps: true }), color: totalP > 0.5 ? ACC : L.ink2 }}>FY total</div>
         </div>
-        <div
-          style={{
-            marginTop: 8,
-            fontSize: 64,
-            fontWeight: 650,
-            lineHeight: 1.05,
-            letterSpacing: tracking(64),
-            fontVariantNumeric: 'tabular-nums',
-            color: totalP > 0.5 ? AMBER_DEEP : G.ink2,
-          }}
-        >
+        <div style={{
+          position: 'absolute', right: 1920 - 1824, top: 140, ...type(124, 850), textAlign: 'right',
+          color: totalP > 0.5 ? ACC : INK, transform: `translateY(${kpiKick.toFixed(2)}px)`, opacity: ramp(frame, 8, 14, EASE.out),
+        }}>
           ${Math.round(mix(493, 833, totalP))}k
         </div>
-      </div>
 
-      <div
-        style={{
-          position: 'absolute',
-          left: CX,
-          top: CY,
-          width: CARD_W,
-          height: CARD_H,
-          background: 'linear-gradient(180deg, #ffffff, #fcfcfb)',
-          border: `1px solid ${G.hairline}`,
-          borderRadius: 20,
-          boxSizing: 'border-box',
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.9), ${softShadow(mix(4, 18, inP) + Math.abs(kick))}`,
-          transform: `translateY(${(mix(24, 0, inP) + kick).toFixed(2)}px)`,
-          opacity: inP,
-          overflow: 'visible', // 让爆表段真的越出卡片
-        }}
-      >
-        {/* 真卡头 */}
-        <div style={{ position: 'absolute', left: PAD, top: 38 }}>
-          <div style={{ fontSize: 30, fontWeight: 650, color: G.ink1, letterSpacing: tracking(30) }}>Monthly revenue</div>
-          <div style={{ fontSize: 19, fontWeight: 500, color: G.ink3, marginTop: 7 }}>All products · USD</div>
-        </div>
-        <div
-          style={{
-            position: 'absolute',
-            right: PAD,
-            top: 42,
-            display: 'flex',
-            gap: 4,
-            padding: 4,
-            borderRadius: 11,
-            background: G.fill,
-            border: `1px solid ${G.hairline}`,
-          }}
-        >
-          {['6M', '12M', 'YTD'].map((s, i) => (
-            <div
-              key={s}
-              style={{
-                padding: '6px 14px',
-                borderRadius: 8,
-                fontSize: 17,
-                fontWeight: 600,
-                color: i === 1 ? G.ink1 : G.ink3,
-                background: i === 1 ? '#ffffff' : 'transparent',
-                boxShadow: i === 1 ? '0 1px 2px rgba(16,18,26,0.08), 0 0 0 1px rgba(16,18,26,0.05)' : 'none',
-              }}
-            >
-              {s}
-            </div>
-          ))}
-        </div>
-
-        <div style={{ position: 'absolute', left: PLOT_X, top: PLOT_Y, width: PLOT_W, height: PLOT_H }}>
-          {/* 基础网格 4 根 + 重标同帧加密出的 4 根（错峰 2f 从左向右展开） */}
-          {[1, 2, 3].map((i) => (
-            <div key={`g${i}`} style={{ position: 'absolute', left: 0, right: 0, top: (PLOT_H / 4) * i, height: 1, background: G.hairline }} />
-          ))}
-          {[1, 3, 5, 7].map((i, k) => {
-            const d = ramp(frame, BEAT + 1 + k * 2, 10, EASE.snappy);
-            return (
-              <div
-                key={`gd${i}`}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  width: `${d * 100}%`,
-                  top: (PLOT_H / 8) * i,
-                  height: 1,
-                  background: 'rgba(20,22,28,0.05)',
-                }}
-              />
-            );
-          })}
-          {/* 基线 */}
-          <div style={{ position: 'absolute', left: 0, right: 0, top: PLOT_H, height: 1, background: G.hairlineStrong }} />
-          {/* 图表上沿：虚线"天花板"，顶破前转琥珀 */}
-          <svg width={PLOT_W} height={4} style={{ position: 'absolute', left: 0, top: -1.5, overflow: 'visible' }}>
-            <line
-              x1={0}
-              x2={PLOT_W}
-              y1={1.5}
-              y2={1.5}
-              stroke={warn > 0.01 ? AMBER : 'rgba(20,22,28,0.22)'}
-              strokeOpacity={warn > 0.01 ? 0.35 + warn * 0.6 : 1}
-              strokeWidth={1.5 + warn}
-              strokeDasharray="6 7"
-            />
-          </svg>
-
-          {/* 刻度：同一格位，旧值下飞淡出 / 新值上方滑入（自上而下错峰 2f） */}
-          {OLD_TICKS.map((v, i) => {
-            const y = (PLOT_H / 4) * (3 - i);
-            const sw = ramp(frame, BEAT + (3 - i) * 2, 10, EASE.snappy);
-            const tickStyle: React.CSSProperties = {
-              position: 'absolute',
-              inset: 0,
-              fontWeight: 500,
-              fontSize: 21,
-              textAlign: 'right',
-              fontVariantNumeric: 'tabular-nums',
-              letterSpacing: '-0.005em',
-            };
+        {/* 图表组（震动只作用在这里） */}
+        <div style={{ position: 'absolute', inset: 0, transform: `translateY(${kick.toFixed(2)}px)` }}>
+          {/* 刻度 */}
+          <div style={{ position: 'absolute', left: M, top: BASE - 48, width: 200, ...type(32, 500), color: L.ink2, opacity: rule(4) }}>$0</div>
+          {OLD.map((v, i) => {
+            const sw = ramp(frame, BEAT + (3 - i) * 2, 12, EASE.snappy);
             const top = i === 3;
             return (
-              <div key={`t${i}`} style={{ position: 'absolute', left: -AXIS_W, top: y - 13, width: AXIS_W - 18, height: 26, overflow: 'visible' }}>
-                <div
-                  style={{
-                    ...tickStyle,
-                    color: top && warn > 0.01 ? AMBER_DEEP : G.ink3,
-                    fontWeight: top ? mix(500, 650, warn) : 500,
-                    opacity: 1 - sw,
-                    transform: `translateY(${(sw * 30).toFixed(2)}px)`,
-                    filter: sw > 0.02 && sw < 0.98 ? `blur(${(Math.sin(Math.PI * sw) * 1.5).toFixed(2)}px)` : undefined,
-                  }}
-                >
-                  {v}
-                </div>
-                <div
-                  style={{
-                    ...tickStyle,
-                    color: G.ink2,
-                    opacity: sw,
-                    transform: `translateY(${((sw - 1) * 30).toFixed(2)}px)`,
-                    filter: sw > 0.02 && sw < 0.98 ? `blur(${(Math.sin(Math.PI * sw) * 1.5).toFixed(2)}px)` : undefined,
-                  }}
-                >
-                  {NEW_TICKS[i]}
-                </div>
+              <div key={i} style={{ position: 'absolute', left: M, top: tickY(i) - 48, width: 200, height: 40, opacity: rule(4 + i * 2) }}>
+                <div style={{
+                  position: 'absolute', inset: 0, ...type(32, top ? mix(500, 750, warn) : 500),
+                  color: top && warn > 0.02 ? ACC : L.ink2, opacity: 1 - sw, transform: `translateY(${(sw * 46).toFixed(2)}px)`,
+                  filter: sw > 0.02 && sw < 0.98 ? `blur(${(Math.sin(Math.PI * sw) * 3).toFixed(2)}px)` : undefined,
+                }}>{v}</div>
+                <div style={{
+                  position: 'absolute', inset: 0, ...type(32, 500), color: L.ink2,
+                  opacity: sw, transform: `translateY(${((sw - 1) * 46).toFixed(2)}px)`,
+                  filter: sw > 0.02 && sw < 0.98 ? `blur(${(Math.sin(Math.PI * sw) * 3).toFixed(2)}px)` : undefined,
+                }}>{NEW[i]}</div>
               </div>
             );
           })}
-          <div style={{ position: 'absolute', left: -AXIS_W, top: PLOT_H - 13, width: AXIS_W - 18, fontWeight: 500, fontSize: 21, color: G.ink3, textAlign: 'right' }}>
-            $0
-          </div>
 
-          <svg width={PLOT_W} height={PLOT_H} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+          {/* 月份 */}
+          {MONTHS.map((m, i) => (
+            <div key={m} style={{
+              position: 'absolute', left: xOf(i) - 50, top: BASE + 22, width: 100, textAlign: 'center',
+              ...type(32, i === N - 1 && shockOn ? 750 : 500), color: i === N - 1 && shockOn ? ACC : L.ink2,
+              opacity: ramp(frame, 6 + i, 12, EASE.out),
+            }}>{m}</div>
+          ))}
+
+          <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
             <defs>
-              <linearGradient id="arsArea" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor={G.ink1} stopOpacity={0.09} />
-                <stop offset="1" stopColor={G.ink1} stopOpacity={0} />
-              </linearGradient>
+              <pattern id="arsHatch" width={12} height={12} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1={0} y1={0} x2={0} y2={12} stroke={INK} strokeOpacity={0.16} strokeWidth={2} />
+              </pattern>
               <filter id="arsGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="9" />
+                <feGaussianBlur stdDeviation="10" />
               </filter>
             </defs>
-            {/* 面积渐变（随重标一起被压扁） */}
-            {area && <path d={area} fill="url(#arsArea)" />}
-            {/* 历史段 */}
-            <polyline points={line} fill="none" stroke={G.ink1} strokeWidth={4.5} strokeLinejoin="round" strokeLinecap="round" />
-            {/* 写入点头灯：画线期跟着笔尖走 */}
-            {frame >= HOLD && frame < DRAW_END + 2 && pts.length > 0 && (
+
+            {/* 网格：基础 3 根 + 重标加密 4 根 */}
+            {[0, 1, 2].map((i) => (
+              <line key={`g${i}`} x1={M} x2={mix(M, 1824, rule(2 + i * 2))} y1={tickY(i)} y2={tickY(i)} stroke={INK} strokeOpacity={0.14} strokeWidth={1.5} />
+            ))}
+            {[0, 1, 2, 3].map((k) => {
+              const d = ramp(frame, BEAT + 1 + k * 2, 12, EASE.snappy);
+              const y = BASE - ((2 * k + 1) / 8) * PH;
+              return d > 0 ? <line key={`d${k}`} x1={M} x2={mix(M, 1824, d)} y1={y} y2={y} stroke={INK} strokeOpacity={0.08} strokeWidth={1.5} strokeDasharray="2 8" /> : null;
+            })}
+
+            {/* 面积：45° 排线 */}
+            {areaD && <path d={areaD} fill="url(#arsHatch)" />}
+
+            {/* 基线 */}
+            <line x1={M} x2={mix(M, 1824, rule(0))} y1={BASE} y2={BASE} stroke={INK} strokeWidth={3} />
+
+            {/* 天花板规线：预警转赤陶，被穿透处裂开 */}
+            {(() => {
+              const c = warn > 0.02 ? ACC : INK;
+              const xr = mix(M, 1824, rule(2));
+              const gap = 26 * crack;
+              const op = 0.85 + 0.15 * warn;
+              if (crack <= 0.001) return <line x1={M} x2={xr} y1={CEIL} y2={CEIL} stroke={c} strokeOpacity={op} strokeWidth={3} />;
+              return (
+                <>
+                  <line x1={M} x2={crossX - gap} y1={CEIL} y2={CEIL} stroke={c} strokeOpacity={op} strokeWidth={3} />
+                  <line x1={crossX + gap} x2={xr} y1={CEIL} y2={CEIL} stroke={c} strokeOpacity={op} strokeWidth={3} />
+                </>
+              );
+            })()}
+            {shard(0)}
+            {shard(1)}
+            {shard(2)}
+
+            {/* 历史折线 */}
+            {lineD && <path d={lineD} fill="none" stroke={INK} strokeWidth={6} strokeLinejoin="round" strokeLinecap="round" />}
+            {/* 历史段数据点 */}
+            {pts.map(([x, y], i) => (i < pts.length - (drawT < N - 2 ? 1 : 0) ? <circle key={i} cx={x} cy={y} r={6} fill={L.bg[0]} stroke={INK} strokeWidth={3.5} /> : null))}
+            {/* 写入笔尖 */}
+            {frame >= DRAW0 && frame < DRAW1 + 1 && pts.length > 0 && (
+              <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r={9} fill={INK} />
+            )}
+            {/* 预警脉冲：Nov 点 */}
+            {frame >= WARN && frame < SHOCK0 + 6 && (() => {
+              const t = ramp(frame, WARN, 16, EASE.out);
+              return <circle cx={nx} cy={ny} r={mix(10, 46, t)} fill="none" stroke={ACC} strokeWidth={3} opacity={0.7 * (1 - t)} />;
+            })()}
+
+            {/* 爆表段 */}
+            {shockOn && (
               <>
-                <circle cx={headX} cy={headY} r={14} fill={G.ink1} opacity={0.08} />
-                <circle cx={headX} cy={headY} r={6.5} fill="#ffffff" stroke={G.ink1} strokeWidth={3} />
+                {hang > 0.01 && <line x1={nx} y1={ny} x2={hx} y2={hy} stroke={ACC} strokeWidth={shockW + 16} strokeLinecap="round" opacity={0.35 * hang} filter="url(#arsGlow)" />}
+                <line x1={nx} y1={ny} x2={hx} y2={hy} stroke={ACC} strokeWidth={shockW} strokeLinecap="round" />
+                {markS <= 0 && <circle cx={hx} cy={hy} r={12} fill={L.bg[0]} stroke={ACC} strokeWidth={5} />}
               </>
             )}
-            {/* 爆表段：琥珀 + 加粗，冲出期带柔光，重标落回后收敛回常规 */}
-            {shockSeg && (
-              <>
-                {shockGlow > 0.01 && (
-                  <polyline points={shockSeg} fill="none" stroke={AMBER} strokeWidth={shockW + 10} strokeLinecap="round" opacity={0.35 * shockGlow} filter="url(#arsGlow)" />
-                )}
-                <polyline points={shockSeg} fill="none" stroke={AMBER} strokeWidth={shockW} strokeLinejoin="round" strokeLinecap="round" />
-              </>
+            {pierced && sinceP < 10 && (
+              <circle cx={crossX} cy={CEIL} r={mix(8, 70, ramp(frame, PIERCE, 10, EASE.out))} fill="none" stroke={ACC} strokeWidth={2.5}
+                opacity={0.8 * (1 - ramp(frame, PIERCE, 10, EASE.out))} />
             )}
-            {/* 冲顶笔尖：悬停期一颗亮头 */}
-            {shockT > 0 && frame < RESCALE_END && (
-              <circle cx={headX} cy={headY} r={9} fill="#ffffff" stroke={AMBER} strokeWidth={4} />
-            )}
-            {/* 端点标记：overshoot 落座 + 一圈涟漪 */}
+
+            {/* 端点标记 */}
             {markS > 0 && (
               <>
-                {ripple < 1 && (
-                  <circle cx={headX} cy={headY} r={mix(14, 46, ripple)} fill="none" stroke={AMBER} strokeWidth={2.5} opacity={0.5 * (1 - ripple)} />
-                )}
-                <circle cx={headX} cy={headY} r={22 * markS} fill={AMBER} opacity={0.14} />
-                <circle cx={headX} cy={headY} r={11 * markS} fill={AMBER} stroke="#ffffff" strokeWidth={3.5 * markS} />
+                {ripple < 1 && <circle cx={hx} cy={hy} r={mix(16, 64, ripple)} fill="none" stroke={ACC} strokeWidth={3} opacity={0.6 * (1 - ripple)} />}
+                <circle cx={hx} cy={hy} r={15 * markS} fill={ACC} stroke={L.bg[0]} strokeWidth={5 * markS} />
               </>
             )}
           </svg>
 
-          {/* 真值标签 "$340k"（端点左侧弹出，带指向小三角与增幅副行） */}
+          {/* 真值标签 */}
           {valS > 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                left: headX - 214,
-                top: headY - 38,
-                width: 180,
-                height: 76,
-                transform: `scale(${valS.toFixed(4)})`,
-                transformOrigin: '100% 50%',
-                opacity: Math.min(1, valS * 1.6),
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: 14,
-                  background: `linear-gradient(180deg, ${AMBER}, ${AMBER_DEEP})`,
-                  boxShadow: `inset 0 1px 0 rgba(255,255,255,0.28), ${softShadow(14, { color: '#5a2a04', strength: 1.2 })}`,
-                  color: '#fff',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 3,
-                }}
-              >
-                <div style={{ fontWeight: 750, fontSize: 32, letterSpacing: tracking(32), fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>$340k</div>
-                <div style={{ fontWeight: 600, fontSize: 16, opacity: 0.85 * valSub, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>▲ 372% vs Nov</div>
+            <div style={{
+              position: 'absolute', left: hx - 40 - 330, top: hy - 70, width: 330, height: 140,
+              transform: `scale(${valS.toFixed(4)})`, transformOrigin: '100% 50%', opacity: Math.min(1, valS * 1.6),
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0, background: ACC, borderRadius: 6, color: L.onAccent,
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: 30,
+                boxShadow: `0 18px 40px -12px ${alpha(L.shadow, 0.45)}`,
+              }}>
+                <div style={{ ...type(76, 850) }}>$340k</div>
+                <div style={{ ...type(32, 600), opacity: 0.9 * ramp(frame, MARK + 10, 10, EASE.out), marginTop: 4 }}>▲ 372% vs Nov</div>
               </div>
-              <div
-                style={{
-                  position: 'absolute',
-                  right: -7,
-                  top: 31,
-                  width: 14,
-                  height: 14,
-                  background: AMBER_DEEP,
-                  transform: 'rotate(45deg)',
-                  borderRadius: 2,
-                }}
-              />
+              <div style={{ position: 'absolute', right: -10, top: 60, width: 20, height: 20, background: ACC, transform: 'rotate(45deg)' }} />
             </div>
           )}
-
-          {/* x 轴真月份 */}
-          {MONTHS.map((m, i) => (
-            <div
-              key={`m${i}`}
-              style={{
-                position: 'absolute',
-                left: xOf(i) - 30,
-                top: PLOT_H + 18,
-                width: 60,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: i === N - 1 ? 650 : 500,
-                color: i === N - 1 && shockT > 0 ? AMBER_DEEP : G.ink3,
-              }}
-            >
-              {m}
-            </div>
-          ))}
         </div>
       </div>
-      <Grain opacity={0.04} />
     </AbsoluteFill>
   );
 };

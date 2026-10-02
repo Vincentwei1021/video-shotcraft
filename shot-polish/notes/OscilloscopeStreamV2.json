@@ -1,30 +1,31 @@
 {
   "stem": "OscilloscopeStreamV2",
   "issues": [
-    "工作台按源码第一个数字猜成 112f，f112 后 48f 的真静止被截掉，镜头停在刹车那一帧",
-    "调试占位标题 \"OSCILLOSCOPE STREAM V2\"；平灰底上白卡 2px 灰边，监控画面没有“活着”的氛围",
-    "尖峰只在经过写入点时读数变色，流走后就是一段普通曲线，事件没有留下痕迹",
-    "曲线左端被硬切，余辉是灰色模糊粗线；刹车起点初速 10.8px/f 高于流速 8，有一下顿挫"
+    "曲线是一根 2px 灰黑线困在浅灰底的小卡片里，没有\"示波器\"的光感",
+    "尖峰是包络乘在原波形上，读起来只是波形大一点，不是一次突发事件",
+    "实时读数 50px、刻度 17px 级小字，读数逐帧乱跳，看不清也读不出事件",
+    "刹停后整屏死静，没有收尾落点"
   ],
   "changes": [
-    "补导出 OSCILLOSCOPE_STREAM_V2_DURATION = 160（112f 流动+刹停 + 48f 真静止）",
-    "改暗场监控语境：带色相深色柔光背景 + 颗粒，深色卡面发丝线 + 内高光 + 深投影；去掉调试标题、卡片居中放大，加 LIVE 呼吸灯（刹停后熄灭）",
-    "曲线下淡靛面积渐变，左 22% 旧数据遮罩渐隐出画；写入端是由暗到亮渐变的磷光余辉 + 带光圈的写入点",
-    "尖峰段整段染琥珀并随流带走，峰顶垂下虚线到底部事件道，钉一枚 “Burst · 2,232 req/s” 标签；读数颜色按尖峰包络平滑过渡",
-    "刹车距离改为 SPEED×12/3，out-cubic 初速与流速相等，减速无跳变"
+    "look 换 midnight 深蓝夜：满版 1728×520 示波屏，主格线 + 中心十字刻度 + 左端渐隐，电光蓝磷光迹线（实线 + 两层泛光 + 最新 280px 高亮段）",
+    "尖峰改为带前兆/余震的高斯脉冲（约 2.2× 常态振幅），整段变珊瑚红并加粗，写完后峰顶钉「BURST 2,453 req/s」标签 + 落线随流左移",
+    "版式：虚构产品 Sonde 眉题 + LIVE 灯、176px 主读数（每 3 帧采样保持）、右上 p99 / 错误率 84px 副读数，三者随尖峰同步变色跳值",
+    "写入头放在 86%：竖向扫描线 + 光斑 + 横向读数参考线，尖峰时光斑转珊瑚色",
+    "时间表 165f：0f 起即在流动 → 46–68f 尖峰 → 104–118f out-cubic 刹停（LIVE→PAUSED）→ 47f hold 中相机 2.5% 缓推对准尖峰"
   ],
   "issuesEn": [
-    "The workbench guessed 112f from the first number in the source, cutting off the 48f hold so the shot ended mid-brake",
-    "Debug title \"OSCILLOSCOPE STREAM V2\" and a white card with a 2px grey border on flat grey; no sense of a live system",
-    "The burst only recoloured the readout as it passed the write head; once it scrolled away it was an ordinary bump with no trace",
-    "The left end of the line was hard-cut, the afterglow was a thick grey blur, and the brake started at 10.8px/f vs the 8px/f stream, causing a hitch"
+    "The trace was a 2px dark line trapped in a small card on a light grey stage, with no oscilloscope glow",
+    "The spike was an envelope multiplied onto the wave, so it read as slightly larger waves rather than a burst event",
+    "The live readout was 50px with ~17px ticks, and it jittered every frame, so neither value nor event was readable",
+    "After the brake the screen went completely dead with no final focus"
   ],
   "changesEn": [
-    "Exported OSCILLOSCOPE_STREAM_V2_DURATION = 160 (112f stream + brake, 48f hold)",
-    "Dark monitoring look: tinted dark soft-light backdrop with grain, dark card with hairline, inner highlight and deep shadow; debug title removed, card centred and enlarged, a breathing LIVE pill that goes dark at the freeze",
-    "Faint indigo area fill under the curve, old data masked to fade out over the left 22%, a dim-to-bright phosphor tail and a haloed write head",
-    "The burst segment stays amber as it scrolls, with a dashed drop line from the peak to a bottom event lane holding a \"Burst · 2,232 req/s\" tag; readout colour follows the burst envelope smoothly",
-    "Brake distance set to SPEED×12/3 so the out-cubic starts at exactly the stream speed, no velocity jump"
+    "Midnight look: a full-bleed 1728×520 scope screen with graticule, centre tick cross and left fade-out; an electric-blue phosphor trace with core line, two glow layers and a bright newest 280px",
+    "The spike is now a Gaussian pulse with precursor and aftershock (~2.2× normal amplitude) that turns coral and thicker, then gets a pinned 'BURST 2,453 req/s' tag with a drop line that flows left",
+    "Layout: fictional product Sonde kicker with a LIVE light, a 176px main readout sampled every 3 frames, and 84px p99 / error-rate readouts that all jump and change colour with the spike",
+    "The write head sits at 86% with a vertical scan line, a bloom and a horizontal value guide; the bloom turns coral during the spike",
+    "165f timeline: streaming from frame 0, spike at 46–68f, out-cubic brake at 104–118f (LIVE becomes PAUSED), then a 47f hold with a 2.5% push toward the spike"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

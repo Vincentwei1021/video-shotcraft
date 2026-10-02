@@ -1,30 +1,31 @@
 {
   "stem": "CycleGlassNodeMorph",
   "issues": [
-    "开场是灰底 + “CONTEXT” 灰条 + 写着 “SUBJECT” 的灰色多边形，纯线框占位，读不出被解释的对象是什么",
-    "收尾时主体压在 SENSE / ACT 两枚节点上，构图拥挤、层级混乱",
-    "“玻璃节点”只是半透明深灰圆 + 单层投影，没有玻璃质感；SYSTEM LOOP 是灰色矩形色块",
-    "对角擦除是两块灰色硬边交界，诊断标记是 CSS 边框三角，字体回退到 Arial"
+    "开场是灰底上的 CONTEXT 灰条和 SUBJECT 灰色多边形，看不出“被解释的对象”是什么",
+    "整套机制图画在 480px 小画布里放大，标签 10px、节点 64px，宽机位下文字几乎读不出",
+    "擦除后的机制场是浅灰底 + 灰圆，节点是灰色按钮，没有光、没有材质，强调色也没有",
+    "循环建立后结构完全静止，最后 1 秒多像冻结的 PPT"
   ],
   "changes": [
-    "开场改为夜景上下文：深色天幕 + 地平光 + 车道虚线 + 深色玻璃 HUD 条（Unit 07 / Route 14 / 2.4 km / ETA 6 min），主体换成原创产品插画（沿用原外轮廓，石墨渐变车身、玻璃舱反光、强调色腰线、顶部传感器、前灯光晕、轮拱与轮毂）",
-    "对角擦除改为遮罩揭走夜景层 + 一条极细亮边，主体仍是同一个对象缩入；机制场为浅色柔光底 + 表盘质感内容圆（径向渐变、发丝外环、虚线刻度环）",
-    "主体终态宽 332→140、落到弧线下方两节点之间，并带随缩放的接触影，不再与节点相叠",
-    "玻璃节点改为深色烟熏玻璃：径向体 + 顶部内高光/底部内暗 + 高光椭圆 + 随升起收紧的两层投影，并配眼/星芒/箭头图标；SYSTEM LOOP 改为发丝线胶囊",
-    "诊断标记换成强调色 SVG 圆角三角 + 柔光；所有帧号节拍、推近曲线与闪现序列保持不变"
+    "look 用自定义「铜绿夜」：青绿色相近黑 + 薄荷青强调（节点 / LED / 雷达环）+ 琥珀点缀（只给诊断标记），开场街景与机制场同一色系、共用一个舞台",
+    "开场改为夜色街景里行驶的原创配送机器人 Rover 12（城市散景、天际线剪影、地平线青光、车道线滚动、街面倒影、HUD 状态条 44/32px），擦除时同一 DOM 缩入系统中心、轮子减速停转",
+    "机制图改原生 1920×1080 坐标排版：点阵蓝图底 + 96 刻度环内容圆、64px 概念标签七帧闪现、弧线描边带箭头，卡片关键帧（62/66/124/127/176/184/208）全部保留",
+    "玻璃节点改 200px 薄荷青发光玻璃（径向体 + 高光椭圆 + 内暗 + 外辉光），从下方 260px overshoot 托起，接管标签并明暗反转；诊断标记为琥珀三角 + 32px 状态字（360° scan / 42 ms plan / Drive OK）",
+    "闭环后一颗信号光点沿环路循环、刻度环极缓转动，hold 段画面仍在“运行”"
   ],
   "issuesEn": [
-    "The opening was grey on grey: a \"CONTEXT\" bar and a grey polygon labelled \"SUBJECT\", pure wireframe placeholders with no recognisable object",
-    "At the end the subject overlapped the SENSE and ACT nodes, crowding the composition and muddling the layering",
-    "The \"glass\" nodes were translucent grey circles with one shadow; SYSTEM LOOP was a grey rectangle",
-    "The diagonal wipe was a hard edge between two greys, markers were CSS border triangles, and text fell back to Arial"
+    "The opening was a grey CONTEXT bar and a grey SUBJECT polygon on a grey stage, so the object being explained was unclear",
+    "The whole diagram was drawn on a 480px canvas and scaled up: 10px labels and 64px nodes that were nearly unreadable in the wide shot",
+    "After the wipe the mechanism field was light grey with a grey disc and grey button-like nodes: no light, no material, no accent",
+    "Once the loop was built everything froze, so the last second felt like a still slide"
   ],
   "changesEn": [
-    "Opening is now a night context: dark sky, horizon glow, lane dashes and a dark glass HUD bar (Unit 07 / Route 14 / 2.4 km / ETA 6 min); the subject is an original product illustration on the same outline with graphite body, glass cabin, accent waistline, roof sensor, headlight glow, wheel arches and wheels",
-    "The wipe masks away the night layer with a hairline bright edge while the same subject shrinks in; the mechanism field is a soft light backdrop with a dial-like disk (radial gradient, hairline rim, dashed tick ring)",
-    "The subject now ends at 140 wide below the arcs between the nodes, with a contact shadow that scales with it, so nothing overlaps",
-    "Glass nodes are smoked dark glass with radial body, top inner highlight and bottom inner shade, a highlight ellipse, two-layer shadows that tighten as they land, plus eye/spark/arrow icons; SYSTEM LOOP is a hairline pill",
-    "Markers are accent-coloured rounded SVG triangles with a soft glow; all frame timings, the push-in curve and the flicker sequence are unchanged"
+    "Custom 'verdigris night' look: teal-tinted near-black with a mint accent (nodes, LEDs, lidar ring) and amber only for diagnostic markers; street scene and mechanism field share one palette and one stage",
+    "The opening is now an original delivery robot, Rover 12, driving through a night street (city bokeh, skyline, horizon glow, scrolling lane marks, ground reflection, 44/32px HUD bar); during the wipe the same DOM shrinks into the system centre and its wheels spin down",
+    "The diagram is laid out in native 1920×1080 coordinates: dotted blueprint field, a disc with a 96-tick ring, 64px concept labels with the seven-frame flicker, arcs with travelling arrowheads; all card keyframes (62/66/124/127/176/184/208) are kept",
+    "Glass nodes are 200px glowing mint glass (radial body, specular ellipse, inner shade, outer glow) that rise 260px with one overshoot and take over the labels with inverted contrast; diagnostics are amber triangles with 32px status text (360° scan / 42 ms plan / Drive OK)",
+    "After the loop closes a signal dot circulates along it and the tick ring turns slowly, so the hold still feels like a running system"
   ],
+  "look": "custom",
   "mdChanged": true
 }
