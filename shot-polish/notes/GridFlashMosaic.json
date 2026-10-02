@@ -1,0 +1,32 @@
+{
+  "stem": "GridFlashMosaic",
+  "issues": [
+    "没有导出时长常量，工作台从源码抓到 14f，只渲染出填墙前的空底，九宫格一格都没亮",
+    "九格里有两格是灰底上放一张小卡的\"灰卡格\"，其余裁切偏移随手取，多数格子切在卡片之间的空隙",
+    "整面墙是亮灰底 + 白格 + 黑描边，九格同一明度，墙面没有节奏",
+    "入格 3f 缩放是线性插值，吞屏时其余格不受影响，中心格放大缺纵深",
+    "吞屏结束后仍是 0.3125x 缩略页经 3.28 倍 transform 放大，作为收尾满屏页面字边不可靠"
+  ],
+  "changes": [
+    "补 GRID_FLASH_MOSAIC_DURATION = 140（铺垫 25f + 填墙 19f + 呼吸 14f + 吞屏 14f + 真静止 68f）；每 2f 一格、h(i) 乱序、1.18→1、3.28x 吞屏全部不变",
+    "八个裁切全部对准真实模块（Active users / Revenue / Sessions 指标卡居中留 35px 边、Quarterly goals、Deploys 热力图、三段列表行），去掉灰卡格",
+    "墙改为带色相的深色 Backdrop + 12px 暗缝，格子亮 / 暗两套皮肤棋盘交错（暗格用 FakeDashboard tone=\"dark\"），描边与缝同色系深墨",
+    "入格缩放改 cubic-bezier(0.16,1,0.3,1)（首帧就砸到位附近）；吞屏时其余格同步压暗 42% 退后、中心格加大投影",
+    "吞屏终帧摘罩：满屏页面按终帧几何（缩略页原点经 3.28 绕屏心放大）用 CSS zoom 直出，网格与描边彻底卸载，叠暗角 + 颗粒"
+  ],
+  "issuesEn": [
+    "No exported duration; the workbench grabbed 14f from the source, so only the empty pre-fill background rendered and no cell ever lit",
+    "Two of the nine cells were 'grey cards' (a small card on grey), and the remaining crop offsets were arbitrary, mostly landing in gaps between cards",
+    "The whole wall was light grey with white cells and black borders, all at one brightness, so it had no rhythm",
+    "The 3f pop-in scale was a linear interpolation, and the other cells ignored the centre zoom, so it had no depth",
+    "After the zoom the final full-screen page was still a 0.3125x thumbnail magnified 3.28x by transform, so text sharpness on the hold was unreliable"
+  ],
+  "changesEn": [
+    "Added GRID_FLASH_MOSAIC_DURATION = 140 (25f lead-in + 19f fill + 14f breath + 14f zoom + 68f true hold); 2f per cell, h(i) shuffle, 1.18→1 pop and the 3.28x zoom unchanged",
+    "All eight crops now frame real modules (Active users / Revenue / Sessions cards centred with 35px margins, Quarterly goals, the Deploys heatmap, three list-row bands); the grey-card cells are gone",
+    "The wall sits on a tinted dark Backdrop with 12px dark gutters, cells alternate light and dark skins in a checkerboard (dark cells use FakeDashboard tone=\"dark\"), and borders use the same dark ink as the gutters",
+    "Pop-in scale uses cubic-bezier(0.16,1,0.3,1) so it lands almost immediately; during the zoom the other cells darken 42% and recede while the centre cell's shadow deepens",
+    "The last zoom frame unmasks to a full-screen page rendered with CSS zoom at the exact end geometry (thumbnail origin scaled 3.28x around centre), dropping the grid and borders, with vignette and grain"
+  ],
+  "mdChanged": false
+}

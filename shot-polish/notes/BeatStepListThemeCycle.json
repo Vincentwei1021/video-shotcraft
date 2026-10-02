@@ -1,0 +1,32 @@
+{
+  "stem": "BeatStepListThemeCycle",
+  "issues": [
+    "没有导出时长常量，工作台按 md 猜成 30f，只剩开拍前的静置铺垫，三拍一拍都没演",
+    "场是纯色平涂，换色只是整屏换一个色块，没有光与空间",
+    "胶囊是平涂色块 + 通用黑阴影，像贴图换色，没有材质",
+    "非选中词统一 34% 白，列表没有远近层次；上方空无一词，构图上半屏空",
+    "字体回退 Helvetica，800 字重 + 固定字距，大字发闷"
+  ],
+  "changes": [
+    "补 BEAT_STEP_LIST_THEME_CYCLE_DURATION = 110（铺垫 30f + 3 拍 × 18f + 末拍后 hold 38f），拍长 18f / 跳变窗 6f / 指数 3.2 不变",
+    "场加胶囊同色相的径向柔光晕 + 暗角 0.42 + 9% soft-light 颗粒，光晕与底色共用同一个 tInBeat 换色，落位瞬间辉光略涨",
+    "胶囊改上亮下暗微渐变 + 顶部 1px 内高光 + 同色辉光阴影；squash 1.12→0.97→1 保留",
+    "列表上下各垫两行词，非选中词按离中心行距做透明度 40%→6% 与字号 −4.5%/行 衰减（滚轮式景深）",
+    "拍头跳变挂按速度计算的竖向运动模糊（SpeedBlur，静置帧不挂滤镜）；字体换系统栈 700 字重 + 随字号负字距"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 30f from the card; only the pre-beat hold rendered and none of the three beats played",
+    "The field was a flat fill, so each theme change just swapped one colour block for another with no light or depth",
+    "The pill was a flat colour with a generic black shadow, reading as a recoloured sticker with no material",
+    "All unselected words sat at a uniform 34% white with no depth, and nothing above the pill left the top half empty",
+    "Font fell back to Helvetica at weight 800 with fixed tracking, making the big words look heavy"
+  ],
+  "changesEn": [
+    "Added BEAT_STEP_LIST_THEME_CYCLE_DURATION = 110 (30f lead-in + 3 beats × 18f + 38f hold); beat length 18f, 6f jump window and exponent 3.2 unchanged",
+    "The field gets a radial glow in the pill's hue, a 0.42 vignette and 9% soft-light grain; glow and background share the same tInBeat clock, and the glow swells briefly on each landing",
+    "Pill now has a top-light / bottom-dark gradient, a 1px inner top highlight and a same-hue glow shadow; the 1.12→0.97→1 squash is kept",
+    "Two extra words pad the list above and below; unselected words fade 40%→6% in opacity and shrink 4.5% per row with distance from centre, like a picker wheel",
+    "The jump at each beat gets velocity-based vertical motion blur (SpeedBlur, no filter on resting frames); type switched to the system stack at weight 700 with size-based negative tracking"
+  ],
+  "mdChanged": true
+}

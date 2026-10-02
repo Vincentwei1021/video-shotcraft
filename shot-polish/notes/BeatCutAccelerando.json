@@ -1,0 +1,32 @@
+{
+  "stem": "BeatCutAccelerando",
+  "issues": [
+    "没有导出时长常量，工作台按卡片 md 猜成 49f，只渲染出建立段，五连切和定格收尾全被截掉",
+    "建立段 49f 完全静止，画面像截图，观众等不到第一刀",
+    "放大视图的焦点落在卡片之间的空隙，1.8x/2.6x 构图对着灰底与半张卡，读不出是哪块内容",
+    "放大走 transform scale，特写段的文字边缘依赖合成期放大",
+    "段内画面全静止，只有切点在加速，画面内部没有逼近感；纯平底色没有镜头质感"
+  ],
+  "changes": [
+    "补 BEAT_CUT_ACCELERANDO_DURATION = 130（49f 建立 + 46f 五连切 + 35f 定格），切点 0/49/65/77/85/91/95 不变",
+    "六个视图重新对焦到真实内容：Top pages+Revenue 两卡、Active users 指标与曲线、列表前两行、Edge cache rollout · Live 单行",
+    "基础倍率改用 CSS zoom 布局级放大（焦点换算 left = 960/s − cx），2.8x 特写字边锐利",
+    "建立段 1→1.02 in-out 极缓推近；五连切每段从 1 起微推，速率 0.0016→0.0048/帧逐段加快，加速感延伸进画面内部",
+    "末刀定格 1→1.06 改 cubic-bezier(0.22,1,0.36,1) 20f 推完后静止；全片叠随倍率加深的暗角（0.12→0.17）+ 4.5% 颗粒"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 49f from the card and only the establishing beat rendered; the five cuts and the closing hold were cut off",
+    "The 49f establishing shot was completely static, reading as a screenshot",
+    "Zoomed views were focused on gaps between cards, so the 1.8x/2.6x frames showed grey canvas and half cards",
+    "Magnification used transform scale, leaving close-up text sharpness to compositor scaling",
+    "Each segment was frozen; only the cut spacing accelerated, and the flat background had no lens character"
+  ],
+  "changesEn": [
+    "Added BEAT_CUT_ACCELERANDO_DURATION = 130 (49f establish + 46f of cuts + 35f hold); cut frames 0/49/65/77/85/91/95 unchanged",
+    "Refocused all six views on real content: Top pages + Revenue, the Active users metric and curve, the first two list rows, and the 'Edge cache rollout · Live' row",
+    "Base magnification now uses CSS zoom (layout-level, focus mapped via left = 960/s − cx) so text stays crisp at 2.8x",
+    "Establishing shot gets a 1→1.02 in-out push; each cut segment drifts forward at a rate that rises 0.0016→0.0048 per frame, so acceleration also happens inside the frame",
+    "Final hold pushes 1→1.06 on cubic-bezier(0.22,1,0.36,1) over 20f then rests; added a vignette that deepens with magnification (0.12→0.17) and 4.5% grain"
+  ],
+  "mdChanged": false
+}

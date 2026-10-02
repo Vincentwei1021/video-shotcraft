@@ -1,0 +1,32 @@
+{
+  "stem": "DominoCascade",
+  "issues": [
+    "没有导出时长常量，工作台从源码抓到 12f，只渲染出开头读布景的静止段，三级动量链完全没出现",
+    "砸落的标题是卡名大写占位 \"CHAIN REACTION\"，像调试标签",
+    "侧边栏是深灰底 + 灰色骨架条，地板是一根 6px 灰实条，背景纯平",
+    "卡片弹起时地面没有任何反馈（无接触影），落地硬停无 squash，读不出重量",
+    "高速下落与横向撞滑没有运动模糊，末卡歪斜是线性插值"
+  ],
+  "changes": [
+    "补 DOMINO_CASCADE_DURATION = 150（36f 读布景 + 64f 三级链 + 50f 真静止），撞击帧 51/78、5f 错峰、12f 抛物线、震幅 10/6px 全部不变",
+    "标题换成眉题 \"Q3 PRODUCT REVIEW\" + 120px 主标题 \"Everything, connected.\"（系统字体 700、随字号负字距）；落地 7f 压扁 0.9→1 带过冲回弹",
+    "侧边栏重做为完整导航（logo、6 项图标导航、选中态、Usage 进度条），右缘投影到画布；地面换成发丝线 + 向下渐隐的地面影 + 柔光背景",
+    "每张卡加地面接触影（离地越高越小越淡），卡片阴影随高度增大，落地 4f squash 0.965",
+    "砸落段竖向、撞滑段横向按速度挂 SpeedBlur（静止帧零滤镜）；末卡歪 3° 改不对称缓动进出"
+  ],
+  "issuesEn": [
+    "No exported duration; the workbench grabbed 12f from the source, so only the static opening rendered and the three-stage chain never appeared",
+    "The falling title was the card name in caps, 'CHAIN REACTION', reading as a debug label",
+    "The sidebar was dark grey with grey skeleton bars, the floor a solid 6px grey bar, and the background flat",
+    "Bouncing cards gave the floor no feedback (no contact shadow) and stopped dead on landing with no squash, so they had no weight",
+    "The fast fall and the sideways slide had no motion blur, and the last card's tilt was a linear interpolation"
+  ],
+  "changesEn": [
+    "Added DOMINO_CASCADE_DURATION = 150 (36f setup + 64f chain + 50f true hold); impact frames 51/78, 5f stagger, 12f parabola and 10/6px shake unchanged",
+    "Title is now an eyebrow 'Q3 PRODUCT REVIEW' plus a 120px headline 'Everything, connected.' (system font 700, size-based negative tracking); it squashes 0.9→1 on landing with an overshoot over 7f",
+    "Sidebar rebuilt as full navigation (logo, six icon items, active state, usage meter) casting a shadow onto the canvas; the floor is now a hairline with a fading ground shadow over a soft-light backdrop",
+    "Each card gets a ground contact shadow that shrinks and fades with height, a card shadow that grows with lift, and a 4f 0.965 squash on landing",
+    "Velocity-driven SpeedBlur on the vertical fall and the horizontal slide (no filter on resting frames); the 3° tilt now eases in and out asymmetrically"
+  ],
+  "mdChanged": false
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "PaparazziFlash",
+  "issues": [
+    "没有导出时长常量，工作台猜成 49f，三闪只演到第二闪前，定格收束完全看不到",
+    "\"84,213\" 是用 TitleBlock 浮在卡片上的大字，与卡片原有内容重叠，像贴上去的标签",
+    "白闪是均匀平铺的纯白场，读作白屏转场而不是闪光灯",
+    "闪后画面立刻恢复正常曝光，没有被闪光照过的余韵",
+    "4x 数字特写走 transform 放大，三张定格没有照片质感（平底、无暗角颗粒）"
+  ],
+  "changes": [
+    "补 PAPARAZZI_FLASH_DURATION = 130（活素材 30f + 三闪 40f + hold 60f），闪点 30/52/70 与 4f 衰减不变",
+    "去掉浮字，三裁切改为 dashboard 自身的 Revenue 卡：全景 1x → 卡片 2.3x → $48.2k ↗+6.3% 数字 4x，焦点按不出画取值",
+    "白闪改为径向闪光灯光型（中心满白、四角保留 14% 画面），0.95→0 走 cubic-bezier(0.22,1,0.36,1)",
+    "每闪后 7f 过曝回落：亮度 +20% / 对比 −12% / 饱和 −20% 收回，叠在原有 1.03→1 + −16px 沉降之上，加 1.2% 出血防露边",
+    "定格裁切用 CSS zoom 栅格化，4x 字边锐利；暗角随裁切加深（0.16→0.28）+ 5% 颗粒；闪前活素材改 in-out 缓推 + 微横移"
+  ],
+  "issuesEn": [
+    "No exported duration, so the workbench guessed 49f and the shot ended before the second flash; the closing hold was never seen",
+    "The '84,213' figure was a TitleBlock floated over a card, overlapping that card's own content like a pasted label",
+    "The flash was a uniform full-white field, reading as a white transition rather than a camera flash",
+    "Exposure snapped back right after each flash, with no sense of having been lit",
+    "The 4x digit close-up relied on transform scaling, and the three stills had no photographic texture (flat, no vignette or grain)"
+  ],
+  "changesEn": [
+    "Added PAPARAZZI_FLASH_DURATION = 130 (30f live + 40f of flashes + 60f hold); flash frames 30/52/70 and the 4f decay unchanged",
+    "Removed the floating figure; the three crops now use the dashboard's own Revenue card: wide 1x → card 2.3x → '$48.2k ↗+6.3%' at 4x, with focus points chosen so nothing leaves the canvas",
+    "Flash is now a radial strobe (full white centre, 14% of the image left at the corners), decaying 0.95→0 on cubic-bezier(0.22,1,0.36,1)",
+    "Each flash leaves a 7f exposure recovery (+20% brightness, −12% contrast, −20% saturation) on top of the 1.03→1 / −16px settle, with 1.2% bleed so edges never show",
+    "Stills are rasterized with CSS zoom so 4x text stays sharp; vignette deepens per crop (0.16→0.28) with 5% grain; the pre-flash live shot uses an in-out push with a slight pan"
+  ],
+  "mdChanged": false
+}

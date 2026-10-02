@@ -1,0 +1,32 @@
+{
+  "stem": "FlipGridReflow",
+  "issues": [
+    "画面左上角打着卡名大写 \"FLIP GRID REFLOW\"，是调试占位标题",
+    "没有导出时长常量，工作台默认 150f，比本意多 5f",
+    "横排放在 y=330 屏心偏上，开场 1 秒下半屏全空，构图失衡",
+    "卡片飞行时阴影不变、无运动模糊，像平面贴图在滑；重排没有界面上的触发理由",
+    "落定后整屏 brightness 0.78 压暗，读作闪屏；背景是平灰"
+  ],
+  "changes": [
+    "补 FLIP_GRID_REFLOW_DURATION = 145（静止 30f + 飞行 27f + 脉冲 + 真静止 81f）；节拍 30、错峰 1.5f、16f inOut cubic、1.28 + 1.02 过冲、网格坐标全部不变",
+    "调试标题换成页面头：\"Projects\" 60px + \"6 active · updated just now\" 32px + Row/Grid 视图切换器，滑块比卡片起飞早 2f 同拍滑到 Grid，给重排一个界面上的因",
+    "横排挪到 y=540 与网格同心，上下两排轨迹对称展开（md 坐标表同步）",
+    "飞行中卡片沿正弦弧抬升：两层软阴影离地 4→34→4px 变大变虚，飞行中的卡置顶；按速度挂方向性 SpeedBlur（封顶 12px）",
+    "收束脉冲只压卡片层、谷值 0.86（md 同步）；背景换柔光 Backdrop + 极淡强调色余光 + 暗角"
+  ],
+  "issuesEn": [
+    "The card name 'FLIP GRID REFLOW' was printed in caps at top left as a debug placeholder title",
+    "No exported duration; the workbench defaulted to 150f, 5f longer than intended",
+    "The row sat at y=330, above centre, leaving the bottom half empty for the first second",
+    "Cards kept the same shadow and had no motion blur in flight, sliding like flat stickers, and nothing in the UI motivated the reflow",
+    "After landing, the whole frame dipped to brightness 0.78, reading as a flicker; the background was flat grey"
+  ],
+  "changesEn": [
+    "Added FLIP_GRID_REFLOW_DURATION = 145 (30f still + 27f flight + pulse + 81f true hold); beat 30, 1.5f stagger, 16f inOut cubic, 1.28 scale with 1.02 overshoot and grid coordinates all unchanged",
+    "Replaced the debug title with a page header: 'Projects' at 60px, '6 active · updated just now' at 32px, and a Row/Grid view switch whose thumb slides to Grid 2f before the cards take off, giving the reflow a cause in the UI",
+    "Moved the row to y=540, concentric with the grid, so the two rows split symmetrically (card coordinate table updated)",
+    "Cards lift along a sine arc in flight: a two-layer soft shadow grows and softens from 4→34→4px, flying cards render on top, and velocity-driven SpeedBlur is applied (capped at 12px)",
+    "The settle pulse now darkens only the card layer, to 0.86 (card updated); the background is a soft-light Backdrop with a faint accent tint and vignette"
+  ],
+  "mdChanged": true
+}
