@@ -2,29 +2,30 @@
   "stem": "RingDiagramAnnotationReveal",
   "issues": [
     "全片是灰阶占位：SUBJECT / CONTENT / 1234 / EXPLANATION / SUPPORTING DETAIL，图解讲不出任何东西",
-    "开场全屏内容场是一块平涂中灰，圆窗收束时没有“沉浸特写”的质感",
-    "分段外环用 7px CSS dashed 边框，段长不均、端头粗糙；箭头 12 支同帧齐长",
-    "右栏三段左缘各不对齐（321 / 310 / 325），注释条用 scaleX 展开会把文字压扁；Arial 回退"
+    "开场全屏内容场是一块平涂中灰，圆窗收束时没有'沉浸特写'的质感",
+    "480×270 设计坐标放大，外环是粗虚线、箭头细小，结构读不清",
+    "右栏标题是四个小色块 + 小字说明，字号远低于可读线，最终帧不成海报"
   ],
   "changes": [
-    "内容换成可读的“反馈回路”图解：主体核 Model、内盘 CONTEXT、四块标题拼 L·O·O·P、注释条 Continuous feedback loop、二级说明 12 live signals retrain the core model every hour.",
-    "开场内容场换成带 6px 点阵与强调色柔光的深色场，主体核为受光渐变 + 辉光的靛蓝球；圆窗、细环、外环、布局让位的帧号与曲线全部保留",
-    "外环改为 SVG 24 等分 dash + 内外 0.25px 发丝导轨，每 6 段一枚强调色段，仍只有外环匀速转 44.2°",
-    "箭头绕环顺时针错峰 0.55f 长出、实心箭头头随线端推进、尾端一枚节点；细线统一为成片 1–2px",
-    "右栏统一左对齐 x=304；注释条改为 clip-path 自左揭出、文字随后淡入；柔光亮场 + 颗粒 + 系统字体栈"
+    "look 换 midnight，讲一件真东西：虚构紧凑型聚变试验堆 Ardent-1 的磁约束——主体是等离子体（白热核心 + 环形等离子带 + 两层反向旋转的 feTurbulence 湍流丝缕）",
+    "开场等离子体 3.6× 铺满整屏，圆窗 1150→230px 收束的同时等离子体 3.6→1 拉远（两层速度不同 → 纵深），落定后圆窗边缘亮起青色轮廓光",
+    "机制三层几何按 1920 原生坐标重做：r290 细环 + 72 道刻度 3.8→1；24 块超导线圈顺时针逐块'咔'入位、内沿被等离子体照亮，整环匀速慢转；12 支向心箭头线端与箭头头同步长出，落定时等离子体被'挤'一下",
+    "让位：整组共用一个 transform 左移 360px、缩到 0.8（swift）；右栏 112px 大标题「Twelve coils. / One star.」四个词块错峰 3f 升起，star. 用白→青→电光蓝渐变",
+    "青色注释条 ARDENT-1 | COMPACT FUSION PILOT 自左裁切揭出，38px 二级说明两行落入；尾段只剩外环慢转，时长 190→200f"
   ],
   "issuesEn": [
-    "Everything was grey placeholders (SUBJECT / CONTENT / 1234 / EXPLANATION / SUPPORTING DETAIL), so the diagram explained nothing",
-    "The full-screen opening field was flat mid-grey with no sense of an immersive close-up as the aperture closed",
-    "The segmented ring was a 7px CSS dashed border with uneven dashes and rough ends; all 12 arrows grew on the same frame",
-    "Right-column blocks had three different left edges (321 / 310 / 325), the note bar used scaleX which squashed its text, and Arial fallback"
+    "The whole shot was gray placeholders — SUBJECT / CONTENT / 1234 / EXPLANATION / SUPPORTING DETAIL — so the diagram explained nothing",
+    "The full-screen opening field was flat mid-gray, so the aperture collapse had no immersive close-up feel",
+    "Scaled up from 480×270 design coordinates: the outer ring was a coarse dashed line and the arrows were tiny, so the structure was hard to read",
+    "The right column was four small color tiles and small captions far below legibility; the final frame was not a poster"
   ],
   "changesEn": [
-    "Real content as a 'feedback loop' diagram: Model core, CONTEXT disc, four title tiles spelling L·O·O·P, note bar Continuous feedback loop, detail line 12 live signals retrain the core model every hour.",
-    "The opening field is a dark scene with a 6px dot grid and accent glow around a lit indigo core; aperture, thin ring, outer ring and layout-yield frames and curves are unchanged",
-    "Outer ring is an SVG circle with 24 even dashes, 0.25px hairline guides and one accent segment every six; still only the outer ring rotates 44.2° at constant speed",
-    "Arrows grow clockwise with a 0.55f stagger, solid heads ride the line tip and each tail has a node; all thin lines render at 1–2px",
-    "Right column aligned to x=304; the note bar reveals left-to-right via clip-path with its text fading in after; soft-lit light backdrop, grain and system font stack"
+    "Look switched to midnight and the diagram explains something real: magnetic confinement in a fictional compact fusion pilot, Ardent-1 — the subject is plasma (white-hot core, toroidal band, two counter-rotating feTurbulence wisps)",
+    "Plasma fills the screen at 3.6× at the open; as the aperture closes 1150→230px the plasma pulls back 3.6→1 at a different speed for depth, and a cyan rim lights up when it settles",
+    "Three mechanism layers rebuilt at native 1920 scale: a r290 ring with 72 ticks scales 3.8→1; 24 superconducting coils click in clockwise with plasma-lit inner rims and rotate slowly as one ring; 12 inward arrows grow with tip and shaft in sync, and the plasma gets squeezed as they land",
+    "Make-way move: the whole group shares one transform, sliding 360px left and scaling to 0.8 (swift); the right column's 112px headline 'Twelve coils. / One star.' rises as four word blocks 3f apart, 'star.' in a white→cyan→electric-blue gradient",
+    "A cyan annotation bar 'ARDENT-1 | COMPACT FUSION PILOT' clip-reveals from the left and a 38px two-line explanation drops in; only the outer ring keeps turning in the tail; 190→200f"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

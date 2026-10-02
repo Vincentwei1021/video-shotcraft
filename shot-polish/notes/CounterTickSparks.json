@@ -1,28 +1,31 @@
 {
   "stem": "CounterTickSparks",
   "issues": [
-    "工作台从源码猜到 78f，正好截在终值帧：终跳 20 颗火星和 1.1x 弹跳从未出镜，也没有尾段静止",
-    "调试标题 COUNTER TICK SPARKS + 灰骨架条 + 2px 灰边白卡，Helvetica 回退",
-    "火星是亮灰底上的琥珀小圆点，辉光在浅底上发脏，几乎看不见",
-    "火星从数字上方 50px 的空白处冒出，与数字没有接触关系；整千 tick 时数字本身毫无反应"
+    "调试标题 COUNTER TICK SPARKS + 灰骨架条 + 2px 灰边白卡，Helvetica 回退，数字只有 168px",
+    "火星沿整行数字顶缘随机散布，看不出是哪一位'跳'了，像装饰撒点",
+    "计数是匀称的 ease-out，tick 节奏没有由密到疏的悬念，终值跳和普通 tick 差别只有数量",
+    "火星直接在半空熄灭，没有落点、没有空间，终值后画面只剩一张卡"
   ],
   "changes": [
-    "导出 COUNTER_TICK_SPARKS_DURATION = 140（计数 78f + 终跳 18f + 44f 静止），计数曲线与 tick 预解析不变",
-    "场景改暗场：深色计数卡（发丝线 + 内高光 + 深阴影），数字白→冷灰渐变字，标签 Teams onboarded · since launch 放到数字下方，火星从数字字面顶缘迸出",
-    "火星升级为热粒子：沿速度方向拉成短流星（长度 = 尺寸 + 速度×1.7）、色温随寿命 白热→琥珀→暗红、screen 叠加辉光",
-    "每个整千 tick 数字被敲一下（上跳 3px 阻尼回落）；快计数段按斜率最多 1.4px 虚化；终跳 4f 顶到 1.1x 再 overshoot 回落，数字后一次暖色柔光"
+    "look 换 graphite：近单色暗场 + 镜面黑台面，300px 拉丝金属数字立在台上，数字与火星都有倒影，台面一道冷光地平线",
+    "内容改为公测候补名单实时计数 42,380 → 60,000（始终 5 位）；千/万位亮金属、百十个位压暗 45% 并按转速虚化，终值一起亮起",
+    "火星有了来源：每破整千，刚跳过的那一位被'敲红'（白热→金属，7f 衰减），8–12 颗火星从该位顶缘扇形喷出，落到台面弹一次（恢复 0.38）再熄灭，色温 白热→金→暗橙",
+    "计数曲线改 power-out 2.3：17 次 tick 由 2–3f 一次逐渐拉开到最后一千用 25f（悬念），终值 64 颗大火星 + 弹簧 pop + 台面冲击光环与暖光池",
+    "LIVE 眉题字距收拢、副标题开场即在，终值后第二句「Doors open Monday.」升起；时长 140→160f，尾段 ≥22f 干净海报"
   ],
   "issuesEn": [
-    "The workbench guessed 78f from the source, cutting exactly at the final value: the 20-spark final burst and 1.1x pop never appeared and there was no tail hold",
-    "Debug title COUNTER TICK SPARKS, grey skeleton bars and a 2px grey-bordered card with Helvetica fallback",
-    "Sparks were small amber dots on a light grey background where the glow turned muddy and nearly invisible",
-    "Sparks spawned in empty space 50px above the digits with no contact, and the number never reacted to a thousand tick"
+    "Debug title COUNTER TICK SPARKS, gray skeleton bars, a 2px gray-bordered white card, Helvetica fallback, and only a 168px number",
+    "Sparks were scattered randomly along the whole top edge, so you couldn't tell which digit ticked — it read as decoration",
+    "An even ease-out count gave no dense-to-sparse suspense; the final tick differed from the others only in spark count",
+    "Sparks died mid-air with no landing or space, and after the final value only a card remained"
   ],
   "changesEn": [
-    "Exported COUNTER_TICK_SPARKS_DURATION = 140 (78f count + 18f final burst + 44f hold); count curve and tick pre-solve unchanged",
-    "Dark scene: dark counter card (hairline, inner highlight, deep shadow), white-to-cool-grey number, the label Teams onboarded · since launch moved below so sparks burst from the glyph tops",
-    "Sparks are hot particles: velocity-aligned streaks (length = size + speed×1.7), colour cooling white-hot→amber→dark red over life, screen-blended glow",
-    "Each thousand tick knocks the number up 3px with a damped return; up to 1.4px roll blur on the fast part of the count; the final jump pops to 1.1x in 4f, settles with overshoot, plus one warm bloom behind the number"
+    "Look switched to graphite: near-monochrome dark stage with a mirror-black floor; 300px brushed-metal digits stand on it, digits and sparks reflected, a cool horizon line on the floor",
+    "Content is now a live public-beta waitlist counting 42,380 → 60,000 (always five digits); thousands/ten-thousands are bright metal, the running tail is dimmed 45% and speed-blurred, then lights up at the end",
+    "Sparks now have a source: on each thousand the digit that just ticked flashes white-hot and cools to metal (7f decay), 8–12 sparks fan out from its top, bounce once on the floor (restitution 0.38) and die, cooling white → gold → dark orange",
+    "Count curve is power-out 2.3: 17 ticks spread from every 2–3f to 25f for the last thousand (suspense); the final value fires 64 large sparks, a spring pop, a floor shock ring and a warm light pool",
+    "LIVE eyebrow tracks in, the caption is present from the start, and a second line 'Doors open Monday.' rises after the final value; 140→160f with ≥22f clean tail"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

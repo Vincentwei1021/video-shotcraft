@@ -3,26 +3,29 @@
   "issues": [
     "调试标题 PARTICLE SAND FILL + 卡内两根灰骨架条，2px 灰边卡片，没有坐标、类目和单位",
     "高柱的雨从卡片外面落进来，颗粒穿过卡片上沿和标题，穿帮",
-    "灰柱里随机混 18% 琥珀颗粒，颗粒中灰 #8f8f8d 又和实体柱浅灰不同色，交接时颜色跳变",
-    "“凝成实体”只是粒子面整体淡出 + 实体柱淡入，读作叠化而非凝结；坠落颗粒是静止方块，看不出加速度"
+    "图表只占画面中间一小块，主角柱是琥珀点混在灰柱里，读不出层级",
+    "颗粒逐层从左到右依次落，像打字机；凝结后数值标签小且贴着柱顶"
   ],
   "changes": [
-    "导出 PARTICLE_SAND_FILL_DURATION = 150；出版级图表卡：New signups by region / Q3 2026 · thousands，100/200/300 网格 + 基线 + North/West/South/East 类目，柔光亮场 + 颗粒",
-    "雨帘裁进卡片并在绘图区上沿 90px 内渐隐出现；坠落、15% 回弹、6f 柱间错峰与闭式落点全部保留",
-    "颗粒与实体柱同色系：灰柱冷灰、主角柱琥珀，逐颗 ±明度微差；坠落中按速度纵向拉长最多 1.75× 读出加速度",
-    "真凝结：堆满后颗粒间隙 2px→0、圆角 2.5→0（9f in-out），再由带受光渐变 + 顶部内高光的实体柱接管；数值标签 overshoot 上浮弹出"
+    "look 换 paper，但做成瑞士网格数据信息图（粗黑体 124px 标题 + 等宽刻度/图例），内容让手法名副其实：四城十月降雨量，每城一支量雨筒",
+    "雨从筒口落下：雨帘遮罩只在筒口上方 70px 内渐显，不再穿过标题；16px 圆角方点、层内列序打乱，下落中按速度拉长成雨滴、触面 15% 回弹",
+    "配色只剩墨 + 朱红：记录城市 Bergen 朱红、其余三城墨色；同一雨势 + 4f 错峰让矮筒先满，Bergen 最后满（~f97），凝结依次推进",
+    "收束分四拍：间隙 2px→0 凝结 → 实体柱接管（带受光渐变）→ 84px 读数在筒口上方对齐成一行弹出 → 点线读数引线画到液面，最后图例 Record 行加粗点亮",
+    "图表铺满画宽（刻度列到 1780px），量雨筒带内壁细刻度与筒口外唇；全程 2% 极缓推镜，尾段 ≥45f 干净海报，时长 150→168f"
   ],
   "issuesEn": [
-    "Debug title PARTICLE SAND FILL, two grey skeleton bars in the card, 2px grey border, and no axis, categories or units",
-    "Rain for the tall bars fell in from outside the card, crossing its top edge and the title",
-    "Grey bars had 18% random amber grains, and the mid-grey grains did not match the light-grey solid bars, so the colour jumped at handoff",
-    "'Condensing into a solid' was just the grain layer fading out under a fading-in bar, reading as a dissolve; falling grains were static squares with no sense of acceleration"
+    "Debug title PARTICLE SAND FILL plus two gray skeleton bars in a 2px gray-bordered card; no axis, categories or units",
+    "Rain for the tall bars fell in from outside the card, crossing the card edge and the title",
+    "The chart was a small block in the middle; the hero bar was amber specks among gray bars, with no clear hierarchy",
+    "Grains landed left-to-right layer by layer like a typewriter; value labels were small and stuck to the bar tops"
   ],
   "changesEn": [
-    "Exported PARTICLE_SAND_FILL_DURATION = 150; publication-grade chart card with New signups by region / Q3 2026 · thousands, 100/200/300 gridlines, baseline and North/West/South/East categories on a soft-lit backdrop with grain",
-    "Rain is clipped to the card and fades in within 90px below the plot top; gravity, 15% bounce, 6f bar stagger and closed-form landing all kept",
-    "Grains share the bar palette (cool grey, amber for the hero bar) with small per-grain lightness variation, and stretch vertically up to 1.75× by fall speed",
-    "Real condensation: once full, grain gaps close 2px→0 and corners square off over 9f, then a lit gradient bar with top highlight takes over; value labels pop up with overshoot"
+    "Look switched to paper but styled as a Swiss-grid data infographic (124px heavy grotesk title, mono ticks and legend); the content makes the technique literal: October rainfall in four cities, one rain gauge each",
+    "Rain enters at the gauge mouth: the mask fades in only within 70px above it, never over the title; 16px rounded grains in shuffled column order stretch into drops by speed and bounce 15% on landing",
+    "Palette is just ink + vermilion: record city Bergen in vermilion, the rest in ink; one shared rain rate plus a 4f stagger fills the short gauges first and Bergen last (~f97), so condensing cascades",
+    "Resolution in four beats: gaps close 2px→0, a lit solid bar takes over, 84px readings pop in on one aligned row above the gauges, dotted leader lines draw down to the fill level, then the legend's Record row turns bold",
+    "Chart spans the frame (axis to 1780px), gauges have inner tick marks and a lip; a 2% slow push throughout and ≥45f clean tail; 150→168f"
   ],
+  "look": "paper",
   "mdChanged": true
 }

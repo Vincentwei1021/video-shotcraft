@@ -1,277 +1,256 @@
-// particle-sand-fill —— 粒子落斗成柱
-// 图表卡内 4 根柱，每根柱上方"下雨"：14px 方点错峰坠落（重力加速），触堆积面即停
-// + 15% 回弹一下，逐层堆高——堆积高度闭式预解析（第 k 层顶面 = 基线 - (k+1)×粒径，
-// 无真碰撞）。各柱错峰 6f 启动；堆满后粒子面凝成实体柱 + 顶部数值标签弹出。
-// 结尾全部粒子条件卸载、只剩实体柱 + 标签，真静止 ≥25f。
-// 帧确定性：sin 散列派生每颗出发帧抖动/起点错高，落地帧由高度差闭式反解。
+// particle-sand-fill —— 粒子落斗成柱（柱不是长高的，是"下雨下出来"的）
 //
-// 质感升级：去掉调试标题与骨架条，图表卡换出版级（发丝线 + 内高光 + 两层阴影 + 标题/单位/坐标/类目），
-// 柔光亮场 + 颗粒；雨帘裁进绘图区并在顶部渐隐出现（不再从卡片外穿帮落下）；粒子与实体柱同色系
-// （灰柱冷灰颗粒、主角柱琥珀颗粒，逐颗 ±明度微差），不再是灰柱里混琥珀噪点；坠落颗粒按速度纵向拉长
-// 读出加速度；"凝成实体"改为真凝结——堆满后颗粒间隙 2px→0、圆角收平，再由带受光渐变的实体柱接管。
+// 第二轮重设计（纸 · 瑞士网格数据信息图 · 雨量筒）：
+// - look = paper（暖白纸 · 墨 · 朱红），但不是衬线编辑风：粗黑体 + 等宽刻度的瑞士网格信息图。
+//   内容让手法"名副其实"：十月降雨量（毫米），四座城市各一支量雨筒——方点雨粒真的从筒口落下、
+//   一颗颗堆出降雨量。记录城市 Bergen 用朱红，其余三城用墨色；左上 120px 大标题、右上图例，
+//   左侧共用 mm 刻度与虚网格线，筒内壁有细刻度（纹理级），筒下城市名 + 国家代码。
+// - 落体：16px 圆角方点，每层 10 颗（层内列序打乱，不是打字机式从左到右）；重力加速坠落（落地帧闭式反解），
+//   下落中按速度纵向拉长成雨滴，触面 15% 单次回弹；各筒错峰 6f 启动，同一出雨速率 → 矮筒先满。
+// - 凝结：堆满 → 颗粒间隙 2px→0、圆角收平（9f, smooth）→ 实体柱接管（墨柱带纸感微渐变、朱红柱带受光渐变）
+//   → 数值从柱顶 overshoot 弹出（数字 72px + mm）。Bergen 最后满，接着图例里的"Record"一行加粗点亮。
+//
+// 时间表（30fps，共 168f）：
+//   0–22    预备：眉题、标题逐行升起；网格线与基线从左向右画出；四支量雨筒自下而上描出（错峰 4f）
+//   16–97   主动作：雨（Porto 先满 ~f85 → Cardiff → Galway → Bergen 最后 ~f97）；落点闭式预解析
+//   满后    +2f 凝结 9f → +11f 实体柱交接 8f → +12f 数值弹出 → +16f 读数引线画到液面
+//   113–123 余波：Bergen 读数落定后图例「Wettest October on record」加粗点亮
+//   123–168 hold：干净信息图海报（全程 2% 极缓推镜）
 import React from 'react';
-import { useCurrentFrame, interpolate, interpolateColors } from 'remotion';
-import { G } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, FONT, Grain, innerHighlight, mix, ramp, softShadow, tracking } from '../../_fixtures/Polish';
+import { AbsoluteFill, interpolateColors, useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const PARTICLE_SAND_FILL_DURATION = 150; // 雨 ~95f + 凝结/标签 ~25f + 静止，5s @30fps
+export const PARTICLE_SAND_FILL_DURATION = 168; // 雨 ~80f + 凝结/数值 ~26f + hold ≥45f
 
-const AMBER = '#b45309';
+const L = LOOKS.paper;
 const frac = (x: number) => x - Math.floor(x);
 const rnd = (i: number, salt: number) => frac(Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453);
 
-const CARD = { x: 460, y: 180, w: 1000, h: 720 };
-const PLOT_BOTTOM = CARD.y + CARD.h - 96; // 堆积地面（卡内基线）
-const PLOT_TOP = CARD.y + 150; // 绘图区上沿：雨帘在此之下渐隐出现
-const GRAIN = 14; // 方点边长（宁大勿小：4px 在 1080p 卡内不可感，加码到 14）
-const PER_LAYER = 9; // 每层 9 颗 → 柱宽 126px
+// ───── 版式 ─────
+const TYPE_H1 = 124; // 大标题
+const BASE_Y = 900; // 基线（筒底）
+const PX_PER_MM = 1.3;
+const AXIS_X = 150; // 刻度列
+const PLOT_R = 1780;
+const GRAIN = 16; // 方点边长
+const PER_LAYER = 10; // 每层 10 颗 → 柱宽 160
 const BAR_W = GRAIN * PER_LAYER;
-const DROP_FROM = 230; // 距各自落点上方 ~230px 起落
-const GRAV = 1.6; // px/f²
-const STAGGER = 6; // 各柱错峰启动
-const RATE = 0.28; // 颗间出发间隔（帧）——最高柱 216 颗需 ~60f 发完，全局 f120 内收束
+const TUBE_PAD = 10; // 筒壁与雨柱的间隙
+const TUBE_MM = 360; // 筒高（mm）
+const TUBE_TOP = BASE_Y - TUBE_MM * PX_PER_MM;
+const GRAV = 1.7; // px/f²
+const RATE = 4; // 每帧出雨颗数（同一雨势 → 矮筒先满：Porto ~f85 → Cardiff → Galway → Bergen ~f97，依次凝结）
+const STAGGER = 4; // 各筒错峰启动（左→右）
 
-const BARS = [
-  { cx: CARD.x + 200, h: 238, label: '238', name: 'North' },
-  { cx: CARD.x + 400, h: 336, label: '336', name: 'West' },
-  { cx: CARD.x + 600, h: 182, label: '182', name: 'South' },
-  { cx: CARD.x + 800, h: 294, label: '294', name: 'East' },
-].map((b) => ({ ...b, layers: Math.round(b.h / GRAIN), n: Math.round(b.h / GRAIN) * PER_LAYER }));
+const CITIES = [
+  { name: 'Bergen', code: 'NO', mm: 336, cx: 520, hero: true },
+  { name: 'Galway', code: 'IE', mm: 294, cx: 860, hero: false },
+  { name: 'Cardiff', code: 'GB', mm: 238, cx: 1200, hero: false },
+  { name: 'Porto', code: 'PT', mm: 182, cx: 1540, hero: false },
+].map((c, b) => {
+  const layers = Math.round((c.mm * PX_PER_MM) / GRAIN);
+  const n = layers * PER_LAYER;
+  const start = 16 + b * STAGGER;
+  return { ...c, b, layers, n, start, h: layers * GRAIN };
+});
 
-// 色系：灰柱 = 冷灰，主角柱（West）= 琥珀；颗粒在本色上 ±明度微差
-const isHero = (b: number) => b === 1;
-const grainTone = (b: number, i: number) => {
-  const k = rnd(i, b * 13 + 7);
-  return isHero(b)
-    ? interpolateColors(k, [0, 0.5, 1], ['#a3470a', '#bd5a0d', '#cf6d18'])
-    : interpolateColors(k, [0, 0.5, 1], ['#b4b8c1', '#c3c6ce', '#d2d5db']);
+// 层内列序打乱（每层一个固定置换），避免"从左到右打字"的机械感
+const colOrder = (b: number, layer: number) => {
+  const idx = Array.from({ length: PER_LAYER }, (_, i) => i);
+  return idx.sort((p, q) => rnd(p, b * 97 + layer * 13 + 1) - rnd(q, b * 97 + layer * 13 + 1));
 };
+const ORDERS = CITIES.map((c) => Array.from({ length: c.layers }, (_, k) => colOrder(c.b, k)));
 
 const fallTime = (dist: number) => Math.sqrt((2 * dist) / GRAV);
-const departOf = (bar: number, i: number) => 8 + bar * STAGGER + i * RATE + rnd(i, bar * 7 + 1) * 1.5;
+const departOf = (b: number, i: number) => CITIES[b].start + i / RATE + rnd(i, b * 7 + 1) * 1.2;
+const startTopOf = (b: number, i: number) => TUBE_TOP - 40 - rnd(i, b * 13 + 3) * 80;
+const landOf = (b: number, i: number) => {
+  const layer = Math.floor(i / PER_LAYER);
+  const targetTop = BASE_Y - (layer + 1) * GRAIN;
+  return departOf(b, i) + fallTime(targetTop - startTopOf(b, i));
+};
+// 每筒"满"的帧 = 最后落地的那颗
+const FULL_AT = CITIES.map((c) => {
+  let m = 0;
+  for (let i = 0; i < c.n; i++) m = Math.max(m, landOf(c.b, i));
+  return m;
+});
 
-// 雨帘遮罩：绘图区上沿往下 90px 内渐显（相对卡片坐标）
-const RAIN_MASK = `linear-gradient(180deg, transparent ${PLOT_TOP - CARD.y - 40}px, #000 ${PLOT_TOP - CARD.y + 50}px)`;
+const grainTone = (hero: boolean, b: number, i: number) => {
+  const k = rnd(i, b * 13 + 7);
+  return hero
+    ? interpolateColors(k, [0, 0.5, 1], ['#c8341f', '#e5432d', '#f0614a'])
+    : interpolateColors(k, [0, 0.5, 1], ['#120f0c', '#2a241e', '#3d362e']);
+};
+
+// 雨帘只在筒口附近出现：筒口上方 70px 起渐显，筒口下 10px 全显（不会飘到标题和图例上）
+const RAIN_MASK = `linear-gradient(180deg, transparent ${TUBE_TOP - 70}px, #000 ${TUBE_TOP + 10}px)`;
 
 export const ParticleSandFill: React.FC = () => {
   const frame = useCurrentFrame();
-  const cardIn = ramp(frame, 0, 14, EASE.out);
-  const headIn = ramp(frame, 3, 16, EASE.out);
-  const axisIn = ramp(frame, 4, 18, EASE.snappy);
+  const gridK = ramp(frame, 2, 24, EASE.snappy);
+  const heroDone = FULL_AT[0];
+  const recordOn = ramp(frame, heroDone + 16, 10, EASE.out);
 
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', fontFamily: FONT.sans }}>
-      <Backdrop tone="light" light={{ x: 0.4, y: 0.16 }} vignette={0.16} grain={0} />
+    <AbsoluteFill style={{ overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.3, y: 0.05 }} fill={null} vignette={0.14} />
+      {/* 相机：全程 1→1.02 极缓推（以图表中心为焦点），hold 段画面不死 */}
+      <AbsoluteFill style={{ transform: `scale(${(1 + 0.02 * ramp(frame, 0, PARTICLE_SAND_FILL_DURATION, EASE.smooth)).toFixed(4)})`, transformOrigin: '50% 62%' }}>
 
-      {/* 图表卡 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: CARD.x,
-          top: CARD.y,
-          width: CARD.w,
-          height: CARD.h,
-          boxSizing: 'border-box',
-          borderRadius: 22,
-          background: 'linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%)',
-          border: `1px solid ${G.hairline}`,
-          boxShadow: `${innerHighlight(0.9)}, ${softShadow(mix(20, 6, cardIn))}`,
-          opacity: cardIn,
-          transform: `translateY(${mix(16, 0, cardIn).toFixed(2)}px)`,
-          padding: '40px 48px',
-        }}
-      >
-        <div style={{ opacity: headIn, transform: `translateY(${mix(6, 0, headIn).toFixed(2)}px)` }}>
-          <div style={{ fontSize: 40, fontWeight: 680, color: G.ink1, letterSpacing: tracking(40) }}>New signups by region</div>
-          <div style={{ marginTop: 6, fontSize: 32, fontWeight: 500, color: G.ink3, letterSpacing: tracking(32) }}>
-            Q3 2026 · thousands
+      {/* ── 页眉：眉题 + 大标题（左）、图例（右） ── */}
+      <div style={{ position: 'absolute', left: AXIS_X, top: 92 }}>
+        <TextReveal text="BROLLY  ·  RAINFALL REPORT  ·  OCTOBER 2026" by="char" variant="track" start={0} each={16} gap={0.35}
+          style={{ ...type(26, 600, { mono: true }), letterSpacing: '0.12em', color: L.ink3 }} />
+        <div style={{ marginTop: 26 }}>
+          <TextReveal text={'Rain, measured.'} by="word" variant="rise" start={3} each={20} gap={5}
+            style={{ ...type(TYPE_H1, 820), letterSpacing: '-0.045em', color: L.ink }} />
+        </div>
+      </div>
+      <div style={{ position: 'absolute', right: 1920 - PLOT_R, top: 86, width: 520, opacity: ramp(frame, 10, 16, EASE.out) }}>
+        <div style={{ ...type(34, 500), color: L.ink2, lineHeight: 1.3 }}>
+          Total rainfall, 1–31 October.<br />One station per city.
+        </div>
+        <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 22, height: 22, background: L.accent, borderRadius: 3, transform: `scale(${(1 + 0.25 * Math.sin(recordOn * Math.PI)).toFixed(3)})` }} />
+            <span style={{ ...type(32, recordOn > 0.5 ? 720 : 500), color: interpolateColors(recordOn, [0, 1], [L.ink2, L.ink]) }}>Wettest October on record</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 22, height: 22, background: L.ink, borderRadius: 3 }} />
+            <span style={{ ...type(32, 500), color: L.ink2 }}>Within normal range</span>
           </div>
         </div>
       </div>
 
-      {/* 网格线 100/200/300 + 基线 */}
-      {[100, 200, 300].map((v) => (
-        <React.Fragment key={v}>
-          <div
-            style={{
-              position: 'absolute',
-              left: CARD.x + 96,
-              width: (CARD.w - 144) * axisIn,
-              top: PLOT_BOTTOM - v,
-              height: 1,
-              background: 'rgba(20,22,28,0.06)',
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              left: CARD.x + 40,
-              width: 44,
-              textAlign: 'right',
-              top: PLOT_BOTTOM - v - 12,
-              fontSize: 22,
-              fontWeight: 500,
-              color: '#b0b3ba',
-              fontVariantNumeric: 'tabular-nums',
-              opacity: axisIn,
-            }}
-          >
-            {v}
-          </div>
-        </React.Fragment>
-      ))}
-      <div
-        style={{
-          position: 'absolute',
-          left: CARD.x + 96,
-          top: PLOT_BOTTOM,
-          width: (CARD.w - 144) * axisIn,
-          height: 2,
-          background: 'rgba(20,22,28,0.16)',
-          borderRadius: 1,
-        }}
-      />
-
-      {/* 粒子层：裁进卡片，顶部渐隐 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: CARD.x,
-          top: CARD.y,
-          width: CARD.w,
-          height: PLOT_BOTTOM - CARD.y,
-          overflow: 'hidden',
-          WebkitMaskImage: RAIN_MASK,
-          maskImage: RAIN_MASK,
-        }}
-      >
-        {BARS.map((bar, b) => {
-          const left = bar.cx - BAR_W / 2 - CARD.x;
-          const lastLand = departOf(b, bar.n - 1) + fallTime(DROP_FROM);
-          const doneAt = lastLand + 7;
-          const solidOp = ramp(frame, doneAt + 4, 8, EASE.out);
-          if (solidOp >= 1) return null; // 交接完成 → 粒子整体卸载
-          // 凝结：堆满后颗粒间隙 2px→0、圆角收平
-          const fuse = ramp(frame, lastLand + 2, 9, EASE.smooth);
-          const gap = mix(2, 0, fuse);
-          return (
-            <React.Fragment key={b}>
-              {Array.from({ length: bar.n }).map((_, i) => {
-                const depart = departOf(b, i);
-                const age = frame - depart;
-                if (age <= 0) return null;
-                const layer = Math.floor(i / PER_LAYER);
-                const col = i % PER_LAYER;
-                const targetTop = PLOT_BOTTOM - CARD.y - (layer + 1) * GRAIN; // 闭式堆积面
-                const startTop = targetTop - DROP_FROM - rnd(i, b * 13 + 3) * 70;
-                const dist = targetTop - startTop;
-                const tLand = fallTime(dist);
-                let top: number;
-                let stretch = 1;
-                if (age < tLand) {
-                  top = startTop + 0.5 * GRAV * age * age;
-                  // 坠落速度 → 纵向拉长（底边对齐，像带拖影的雨滴）
-                  stretch = 1 + Math.min(0.75, (GRAV * age) / 42);
-                } else {
-                  const ba = age - tLand;
-                  const bounce = ba < 6 ? Math.sin((ba / 6) * Math.PI) * GRAIN * 2 * 0.15 * (1 + rnd(i, b * 13 + 9)) : 0;
-                  top = targetTop - bounce;
-                }
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      position: 'absolute',
-                      left: left + col * GRAIN + gap / 2,
-                      top: top + gap / 2,
-                      width: GRAIN - gap,
-                      height: GRAIN - gap,
-                      background: grainTone(b, i),
-                      borderRadius: mix(2.5, 0, fuse),
-                      transformOrigin: '50% 100%',
-                      transform: stretch > 1.001 ? `scaleY(${stretch.toFixed(3)})` : undefined,
-                      opacity: age < tLand ? 0.92 : 1,
-                    }}
-                  />
-                );
-              })}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* 实体柱 + 数值标签 + 类目 */}
-      {BARS.map((bar, b) => {
-        const left = bar.cx - BAR_W / 2;
-        // 末颗落地帧（闭式）：末颗落点在堆顶，坠距仍 ≈DROP_FROM
-        const lastLand = departOf(b, bar.n - 1) + fallTime(DROP_FROM);
-        const doneAt = lastLand + 7; // 回弹收完 → 开始交接
-        const solidOp = ramp(frame, doneAt, 10, EASE.out);
-        const lab = ramp(frame, doneAt + 6, 14, EASE.overshoot);
-        const labOp = ramp(frame, doneAt + 6, 6, EASE.out);
-        const hero = isHero(b);
+      {/* ── 刻度与网格：100 / 200 / 300 mm 虚线 ── */}
+      {[100, 200, 300].map((v) => {
+        const y = BASE_Y - v * PX_PER_MM;
         return (
-          <React.Fragment key={b}>
-            {solidOp > 0 && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left,
-                  top: PLOT_BOTTOM - bar.h,
-                  width: BAR_W,
-                  height: bar.h,
-                  borderRadius: '8px 8px 0 0',
-                  background: hero
-                    ? 'linear-gradient(180deg, #cc6a17 0%, #b45309 55%, #9f4608 100%)'
-                    : 'linear-gradient(180deg, #d0d3d9 0%, #c3c6ce 60%, #b9bcc4 100%)',
-                  boxShadow: hero
-                    ? 'inset 0 1px 0 rgba(255,220,180,0.45), 0 10px 24px -10px rgba(180,83,9,0.45)'
-                    : 'inset 0 1px 0 rgba(255,255,255,0.6)',
-                  opacity: solidOp,
-                }}
-              />
-            )}
-            {labOp > 0 && (
-              <div
-                style={{
-                  position: 'absolute',
-                  left: bar.cx - 80,
-                  top: PLOT_BOTTOM - bar.h - 64,
-                  width: 160,
-                  textAlign: 'center',
-                  fontWeight: 720,
-                  fontSize: 46,
-                  letterSpacing: tracking(46),
-                  fontVariantNumeric: 'tabular-nums',
-                  color: hero ? AMBER : G.ink1,
-                  opacity: labOp,
-                  transformOrigin: '50% 100%',
-                  transform: `translateY(${mix(10, 0, lab).toFixed(2)}px) scale(${mix(0.7, 1, lab).toFixed(4)})`,
-                }}
-              >
-                {bar.label}
-              </div>
-            )}
-            <div
-              style={{
-                position: 'absolute',
-                left: bar.cx - 90,
-                width: 180,
-                top: PLOT_BOTTOM + 22,
-                textAlign: 'center',
-                fontSize: 32,
-                fontWeight: hero ? 650 : 500,
-                color: hero ? G.ink1 : G.ink2,
-                letterSpacing: tracking(32),
-                opacity: axisIn,
-              }}
-            >
-              {bar.name}
+          <React.Fragment key={v}>
+            <div style={{
+              position: 'absolute', left: AXIS_X + 90, top: y, width: (PLOT_R - AXIS_X - 90) * gridK, height: 0,
+              borderTop: `2px dashed ${alpha(L.ink, 0.12)}`,
+            }} />
+            <div style={{ position: 'absolute', left: AXIS_X, top: y - 16, width: 76, textAlign: 'right', ...type(26, 500, { mono: true }), color: L.ink3, opacity: gridK }}>
+              {v}
             </div>
           </React.Fragment>
         );
       })}
-      <Grain opacity={0.05} />
-    </div>
+      <div style={{ position: 'absolute', left: AXIS_X, top: BASE_Y - TUBE_MM * PX_PER_MM - 44, width: 76, textAlign: 'right', ...type(24, 600, { mono: true }), color: L.ink3, opacity: gridK }}>mm</div>
+      {/* 基线 */}
+      <div style={{ position: 'absolute', left: AXIS_X + 90, top: BASE_Y, width: (PLOT_R - AXIS_X - 90) * gridK, height: 3, background: L.ink }} />
+
+      {/* ── 量雨筒（细墨线，自下而上描出）+ 筒壁内刻度 ── */}
+      {CITIES.map((c) => {
+        const draw = ramp(frame, 4 + c.b * 4, 20, EASE.snappy);
+        const w = BAR_W + TUBE_PAD * 2;
+        const hTube = BASE_Y - TUBE_TOP;
+        return (
+          <div key={c.name} style={{ position: 'absolute', left: c.cx - w / 2, top: BASE_Y - hTube * draw, width: w, height: hTube * draw }}>
+            <div style={{
+              position: 'absolute', inset: 0, borderLeft: `2px solid ${alpha(L.ink, 0.55)}`, borderRight: `2px solid ${alpha(L.ink, 0.55)}`,
+              borderBottom: `2px solid ${alpha(L.ink, 0.55)}`, borderRadius: '0 0 12px 12px',
+              background: `linear-gradient(90deg, ${alpha('#ffffff', 0.5)} 0%, ${alpha('#ffffff', 0.12)} 30%, ${alpha('#ffffff', 0)} 60%, ${alpha(L.ink, 0.03)} 100%)`,
+            }} />
+            {/* 筒口外翻的唇 */}
+            <div style={{ position: 'absolute', left: -8, right: -8, top: 0, height: 2, background: alpha(L.ink, 0.55), opacity: draw > 0.98 ? 1 : 0 }} />
+            {/* 内壁刻度：每 20mm 一格，纹理级 */}
+            {Array.from({ length: Math.floor(TUBE_MM / 20) }).map((_, k) => {
+              const y = hTube - (k + 1) * 20 * PX_PER_MM;
+              if (y < 0) return null;
+              return <div key={k} style={{ position: 'absolute', left: 2, top: y, width: (k + 1) % 5 === 0 ? 18 : 9, height: 1.5, background: alpha(L.ink, 0.25) }} />;
+            })}
+          </div>
+        );
+      })}
+
+      {/* ── 雨粒层（筒口上方渐隐出现） ── */}
+      <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: BASE_Y, overflow: 'hidden', WebkitMaskImage: RAIN_MASK, maskImage: RAIN_MASK }}>
+        {CITIES.map((c) => {
+          const full = FULL_AT[c.b];
+          const solidOp = ramp(frame, full + 11, 8, EASE.out);
+          if (solidOp >= 1) return null; // 交接完成 → 粒子整体卸载
+          const fuse = ramp(frame, full + 2, 9, EASE.smooth); // 凝结：间隙 2→0、圆角收平
+          const gap = mix(2, 0, fuse);
+          const left0 = c.cx - BAR_W / 2;
+          const nodes: React.ReactNode[] = [];
+          for (let i = 0; i < c.n; i++) {
+            const age = frame - departOf(c.b, i);
+            if (age <= 0) continue;
+            const layer = Math.floor(i / PER_LAYER);
+            const col = ORDERS[c.b][layer][i % PER_LAYER];
+            const targetTop = BASE_Y - (layer + 1) * GRAIN;
+            const startTop = startTopOf(c.b, i);
+            const tLand = fallTime(targetTop - startTop);
+            let top: number;
+            let stretch = 1;
+            if (age < tLand) {
+              top = startTop + 0.5 * GRAV * age * age;
+              stretch = 1 + Math.min(1.3, (GRAV * age) / 30); // 坠落速度 → 纵向拉长（雨滴）
+            } else {
+              const ba = age - tLand;
+              top = targetTop - (ba < 6 ? Math.sin((ba / 6) * Math.PI) * GRAIN * 0.15 * (1 + rnd(i, c.b * 13 + 9)) : 0);
+            }
+            nodes.push(
+              <div key={i} style={{
+                position: 'absolute', left: left0 + col * GRAIN + gap / 2, top: top + gap / 2,
+                width: GRAIN - gap, height: GRAIN - gap, background: grainTone(c.hero, c.b, i),
+                borderRadius: mix(3.5, 0, fuse), transformOrigin: '50% 100%',
+                transform: stretch > 1.001 ? `scaleY(${stretch.toFixed(3)})` : undefined,
+                opacity: age < tLand ? 0.9 : 1,
+              }} />,
+            );
+          }
+          return <React.Fragment key={c.name}>{nodes}</React.Fragment>;
+        })}
+      </div>
+
+      {/* ── 实体柱 + 数值 ── */}
+      {CITIES.map((c) => {
+        const full = FULL_AT[c.b];
+        const solidOp = ramp(frame, full + 11, 8, EASE.out);
+        const pop = frame < full + 12 ? 0 : springAt(frame, full + 12, { damping: 14, stiffness: 230 });
+        const top = BASE_Y - c.h;
+        const lead = ramp(frame, full + 16, 10, EASE.snappy); // 读数引线：从读数向下画到液面
+        return (
+          <React.Fragment key={c.name}>
+            {solidOp > 0 && (
+              <div style={{
+                position: 'absolute', left: c.cx - BAR_W / 2, top, width: BAR_W, height: c.h, opacity: solidOp,
+                background: c.hero
+                  ? `linear-gradient(90deg, #d93a24 0%, ${L.accent} 40%, #c9301c 100%)`
+                  : `linear-gradient(90deg, #221d18 0%, ${L.ink} 45%, #0c0a08 100%)`,
+              }}>
+                <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 3, background: alpha('#ffffff', c.hero ? 0.35 : 0.16) }} />
+              </div>
+            )}
+            <div style={{
+              // 数值统一落在筒口上方一行（瑞士网格：读数对齐成表头，不被筒壁切）
+              position: 'absolute', left: c.cx - 160, width: 320, top: TUBE_TOP - 112, textAlign: 'center',
+              opacity: Math.min(1, pop * 1.6), transform: `translateY(${((1 - pop) * 26).toFixed(1)}px) scale(${(0.7 + 0.3 * pop).toFixed(3)})`, transformOrigin: '50% 100%',
+            }}>
+              <span style={{ ...type(84, 820), letterSpacing: '-0.04em', color: c.hero ? L.accent : L.ink }}>{c.mm}</span>
+              <span style={{ ...type(30, 600, { mono: true }), color: L.ink3, marginLeft: 8 }}>mm</span>
+            </div>
+            {lead > 0 && (
+              <div style={{
+                position: 'absolute', left: c.cx - 1, top: TUBE_TOP - 8, width: 0, height: Math.max(0, top - (TUBE_TOP - 8) - 6) * lead,
+                borderLeft: `2px dotted ${alpha(c.hero ? L.accent : L.ink, 0.45)}`,
+              }} />
+            )}
+            {/* 城市名 */}
+            <div style={{ position: 'absolute', left: c.cx - 160, width: 320, top: BASE_Y + 26, textAlign: 'center', opacity: ramp(frame, 8 + c.b * 4, 14, EASE.out) }}>
+              <span style={{ ...type(42, 700), color: L.ink }}>{c.name}</span>
+              <span style={{ ...type(24, 600, { mono: true }), color: L.ink3, marginLeft: 12 }}>{c.code}</span>
+            </div>
+          </React.Fragment>
+        );
+      })}
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };
+

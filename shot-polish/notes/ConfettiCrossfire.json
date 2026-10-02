@@ -1,32 +1,31 @@
 {
   "stem": "ConfettiCrossfire",
   "issues": [
-    "画面上方打着调试标题 CONFETTI CROSSFIRE，KPI 卡是 2px 灰边 + 两根灰骨架条 + Helvetica 回退",
-    "彩屑是同一平面的扁平色块，rotateX 没有透视读不出翻转，也没有前后景深",
-    "出膛 70–95px/f 的高速段每帧跳一大截，没有任何拖影，读作闪烁的碎点",
-    "下落段彩屑直线坠落，没有纸片的左右飘摆；揭晓帧卡片本身毫无反应",
-    "平灰底无层次，没有导出时长常量（工作台按默认 150f 猜）"
+    "画面上方打着调试标题 CONFETTI CROSSFIRE，主体是一张 640px 白卡里的 168px 数字，构图空、主体没分量",
+    "浅灰柔光底 + 琥珀/灰阶彩屑，配色与画面无关，读不出品牌也读不出庆祝",
+    "彩屑全是同一种矩形色块，翻转只靠 scaleY 压扁，没有彩带、没有形状变化",
+    "揭晓与开炮同帧、数字只是缩放落座，没有'抢半拍'的节奏，尾段只剩一张静止白卡"
   ],
   "changes": [
-    "导出 CONFETTI_CROSSFIRE_DURATION = 150；KPI 卡换出版级：发丝线 + 内高光 + 随抬升收紧的两层阴影，Customer satisfaction / 98.5% / ▲ 2.1 pts · 4,812 responses 真实文案",
-    "卡片 0.86→1 overshoot 落座 + 上浮 28px，揭晓帧受冲 1→1.018 阻尼回落，炮口一记 12f 柔光 puff",
-    "彩屑升级为真纸片：scaleY=|cos| 翻转、背面压暗 72%、过顶点后 10–32px 左右飘摆；保留原闭式弹道、初速与灰阶+1/3 琥珀配色",
-    "高速段按每帧速度沿运动方向拉伸最多 2.4×（<20px/f 复原），读作拖影而非跳点",
-    "三层景深：30% 远景 0.6× 压暗微虚、在卡片后方；18% 近景 1.5× 虚焦 1.8px、从卡片前掠过；柔光亮场 + 颗粒"
+    "look 换 sand（米色纸感舞台 · 赤陶 · 靛蓝点缀），做成宾客评分海报：眉题 → 380px 巨型 4.97 + 弱化 /5 → 五颗星 → 副标题",
+    "节奏改为抢半拍：4·.·9·7 逐字从线下升起（错峰 4f），f22 左炮、f24 右炮在最后一位还在升起时开火，数字受冲 1→1.03→1",
+    "纸屑升级：每炮 72 颗（长条/方片/圆点三形）+ 2 条按弧长截断的蛇形彩带，perspective rotate3d 真翻转、背面压暗、出膛沿速度拉伸、过顶点飘摆",
+    "三层景深：远景小而虚在数字后，近景 1.85× 虚焦从镜头前掠过；配色严格取自同一 look（赤陶为主、奶白纸、墨、少量靛蓝）",
+    "余波段星星逐颗 overshoot 点亮（最后一颗只填 97%）、副标题逐词升起；纸屑 ~f132 清场后 ≥44f 干净海报 + 全程 1.5% 极缓推镜，时长 150→176f"
   ],
   "issuesEn": [
-    "A debug title CONFETTI CROSSFIRE sat on screen; the KPI card had a 2px grey border, two skeleton bars and Helvetica fallback",
-    "Confetti were flat chips on one plane; rotateX without perspective did not read as flipping, and there was no depth",
-    "During the 70–95px/f launch the pieces jumped huge distances per frame with no trail, reading as flickering dots",
-    "Pieces fell in straight lines with no paper flutter, and the card did not react at the reveal frame",
-    "Flat grey background and no exported duration constant (the workbench guessed 150f)"
+    "A debug title CONFETTI CROSSFIRE sat on top; the subject was a 168px number inside a 640px white card, leaving the frame empty and weightless",
+    "Pale gray backdrop with amber/gray confetti — the palette had nothing to do with the picture and read as neither brand nor celebration",
+    "Every piece was the same rectangle, flipping only by squashing scaleY; no streamers, no shape variety",
+    "Reveal and cannon fire landed on the same frame, the number merely scaled in, and the tail was a static white card"
   ],
   "changesEn": [
-    "Exported CONFETTI_CROSSFIRE_DURATION = 150; the KPI card is publication grade: hairline, inner highlight, two-layer shadow that tightens on landing, real copy Customer satisfaction / 98.5% / ▲ 2.1 pts · 4,812 responses",
-    "Card lands 0.86→1 with overshoot and a 28px rise, takes a damped 1→1.018 kick at the reveal, and each cannon gets a 12f soft muzzle puff",
-    "Confetti behave like paper: scaleY=|cos| flipping, back face darkened to 72%, 10–32px sway after the apex; original closed-form ballistics, speeds and grey + 1/3 amber palette kept",
-    "Fast pieces stretch up to 2.4× along their velocity (resetting below 20px/f), reading as a motion trail instead of jumping dots",
-    "Three depth layers: 30% far pieces at 0.6×, dimmed and soft behind the card; 18% near pieces at 1.5× with 1.8px defocus crossing in front; soft-lit light backdrop and grain"
+    "Look switched to sand (warm paper stage, terracotta, indigo accent) and rebuilt as a guest-rating poster: eyebrow, a 380px 4.97 with a muted /5, five stars, a subtitle",
+    "Rhythm now fires ahead of the beat: 4 · . · 9 · 7 rise from a mask 4f apart, left cannon at f22 and right at f24 while the last digit is still rising; the number takes a 1→1.03→1 kick",
+    "Confetti upgraded: 72 pieces per cannon in three shapes (strips, squares, dots) plus 2 arc-length-capped serpentine streamers; true perspective rotate3d flips with darker backs, velocity stretch at launch, flutter after apex",
+    "Three depth layers: small blurred pieces behind the number, 1.85× defocused pieces sweeping past the lens; colors come strictly from the same look",
+    "Follow-through: stars pop in one by one (the last fills only 97%), subtitle rises word by word; confetti clears by ~f132, then ≥44f of clean poster with a 1.5% slow push; 150→176f"
   ],
+  "look": "sand",
   "mdChanged": true
 }
