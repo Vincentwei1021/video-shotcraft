@@ -1,32 +1,31 @@
 {
   "stem": "LineUnfoldPanel",
   "issues": [
-    "画面上方打着调试标题 LINE UNFOLD PANEL（Helvetica 800 灰字）",
-    "暗场里撑开的是一张纯白骨架卡，2px 灰边 + 白色外发光，和 FUI 暗场语言脱节",
-    "面板靠 scaleY 压扁/撑开，圆角和边框跟着变形，内容被拉扁",
-    "线阶段只是一根白条，没有电光感；撑开、关机都没有边沿/末点的能量变化",
-    "背景是 #1c1c1b 死平灰；没有导出时长，工作台按 150f 默认渲染，尾段 55f 空黑"
+    "面板内容是通用灰色占位卡（几条灰条），撑开之后没有可看的东西",
+    "画面上方打着调试标题「LINE UNFOLD PANEL」",
+    "面板只占画面 1/4 左右，构图空，主体没有分量",
+    "撑开节奏是 5f/9f 但线体与面板之间缺少过渡亮度，关机后直接黑场收尾"
   ],
   "changes": [
-    "删掉调试标题；面板换深色出版级 Card（tone=dark，Revenue 指标 + 柱图），两层深色阴影 + 发丝线 + 冷色微辉光",
-    "撑开/压扁改为真实宽高 + overflow 揭示，内容固定居中，圆角与 1px 边全程不变形不闪",
-    "线阶段做成白芯 + 冷色（150,176,255）辉光；抽线时两端亮点火花，撑开时线分裂成上下两条发光边推到面板边沿、随内容点亮淡去，退场反向汇拢",
-    "线缩成点时末点有一次径向小闪再熄灭（CRT 关机余辉）",
-    "背景换暗色 Backdrop（带色相 + 强调色余光）+ 中心点阵台面 + 暗角 + 颗粒；补导出 LINE_UNFOLD_PANEL_DURATION = 120（md 3–4s），时间表不变"
+    "look = ember 改琥珀荧光：暖黑底 + 单色琥珀，整个镜头只有一种发光色，像一台单色 CRT 遥测终端；面板叠 3px 扫描线、文字带荧光余辉",
+    "主体换成为镜头设计的地面站遥测面板「Cairn Orbital」（1180×620，占画宽 61%）：168px 高度读数计数到 412.6 km、速度 / 信号 46px 数据、星下点轨迹描出与卫星点缓行、过境进度条",
+    "入场：中心光点预热 → 6f expo-out 抽线（两端火花）→ 12f out-cubic 撑面，上下发光边全程白热、四角 FUI 角标过冲咬合 → 扫描带自上而下逐行点亮内容（过曝回落）",
+    "关机：整屏琥珀 screen 过曝一拍 → 7f ease-in 压扁成线（重新白热）→ 6f poly4-in 缩点 → 十字星芒闪灭 + 横向荧光残影衰减",
+    "结尾不留死黑：熄灭处浮出一行 32px 等宽字「END OF PASS · 14:22:07 UTC」作尾帧海报；时长 120f → 126f，hold 段卫星点、LIVE 点、进度条与 1.5% 推近让画面持续活着"
   ],
   "issuesEn": [
-    "A debug title, LINE UNFOLD PANEL, sat at the top of the frame in grey Helvetica 800",
-    "The panel that unfolded in the dark scene was a plain white skeleton card with a 2px grey border and white glow, at odds with the dark FUI language",
-    "The panel scaled in Y to open and close, so corners and borders distorted and the content was squashed",
-    "The line phase was just a white bar with no electric quality; neither the unfold nor the shutdown had any edge or end-point energy",
-    "The background was a dead flat #1c1c1b; no duration was exported, so the workbench rendered 150f with 55 frames of empty black"
+    "The panel content was a generic grey placeholder card (a few grey bars), so there was nothing to see once it opened",
+    "A debug title, 'LINE UNFOLD PANEL', was printed at the top of the frame",
+    "The panel filled only about a quarter of the frame; the composition was empty and the subject had no weight",
+    "The 5f/9f rhythm existed but brightness never carried from the line into the panel, and the shot ended on a dead black frame after power-off"
   ],
   "changesEn": [
-    "Debug title removed; the panel is a dark publication-grade Card (tone=dark, Revenue metric and bar chart) with two-layer dark shadow, hairline and faint cool glow",
-    "Unfold/collapse now animate true width/height with overflow reveal; content stays centred, so corners and 1px borders never distort or shimmer",
-    "The line is a white core with cool (150,176,255) glow; sparks ride both ends while it extends, and on unfold the line splits into two glowing edges that push out to the panel edges and fade as the content lights, converging again on exit",
-    "When the line shrinks to a point it gives one small radial flare before going out (CRT afterglow)",
-    "Dark Backdrop with hue and accent bloom, a centred dot-grid surface, vignette and grain; LINE_UNFOLD_PANEL_DURATION = 120 exported (md says 3–4s), timetable unchanged"
+    "Look = ember tuned to amber phosphor: warm black with one amber glow colour, like a monochrome CRT telemetry terminal; 3px scanlines over the panel and phosphor afterglow on text",
+    "The subject is a shot-designed ground-station telemetry panel, 'Cairn Orbital' (1180×620, 61% of frame width): a 168px altitude readout counting to 412.6 km, 46px velocity and signal values, a ground track that draws on with a slowly moving satellite, and a pass progress bar",
+    "Entry: centre dot warms up → 6f expo-out line pull with sparks at both ends → 12f out-cubic unfold with white-hot edges, FUI corner brackets biting in with overshoot → a scan band lights the content top to bottom (overexposed, then settling)",
+    "Power-off: one-beat amber screen overexposure → 7f ease-in collapse to a line (white-hot again) → 6f poly4-in shrink to a dot → star flare and a decaying horizontal phosphor ghost",
+    "No dead black ending: a 32px mono line, 'END OF PASS · 14:22:07 UTC', rises where the dot died as the end poster; 120f → 126f, with the satellite, LIVE dot, progress bar and a 1.5% push keeping the hold alive"
   ],
-  "mdChanged": false
+  "look": "ember",
+  "mdChanged": true
 }

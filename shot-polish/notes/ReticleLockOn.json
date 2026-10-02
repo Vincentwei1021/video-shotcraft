@@ -1,32 +1,31 @@
 {
   "stem": "ReticleLockOn",
   "issues": [
-    "没有导出时长，工作台从源码猜成 24f，改版前视频只演到角标飞入一半，咬合与标签从未出现",
-    "目标框高度写成 425，比 fixture 卡片 454 短 29px，角标咬不住卡片下沿",
-    "角标是 10px 实心黑块，粗笨且在浅色 UI 上像贴纸",
-    "收缩用三段 inOut 关键帧，每个关键点速度归零，咬合读作'一顿一顿'；飞入无运动模糊",
-    "标签 TARGET · CARD_02 是调试文案，Helvetica 粗体黑底方块；咬合微亮是整块白板盖住卡片"
+    "目标是灰阶占位 dashboard 里一张静止的空白卡，「运动中捕获」完全没有体现",
+    "全画面浅灰底 + 灰条，没有配色和光，像线框稿",
+    "标签只有一行小字胶囊，咬合后没有任何信息兑现",
+    "飞入后角标只是收缩贴卡，画面其余部分静止，锁定后没有后续"
   ],
   "changes": [
-    "补导出 RETICLE_LOCK_ON_DURATION = 90（md 2–3s）：飞入 f14、咬合 f46、标签 f58 落定，之后静止 ≥1s",
-    "目标几何对齐 fixture 卡片 524×454；角标改 5px 圆头强调色笔画 + 2px 白色衬底与轻投影，飞行中带中心十字刻度、锁定后淡出",
-    "收缩与飞入尾段重叠 4f，2.2→0.94 用 swift 不对称缓动冲过头、0.94→1 ease-out 回弹；飞入按速度做斜向 SpeedBlur；咬合帧角标再收紧 6px 的'咔'脉冲",
-    "微亮改为裁进圆角的顶亮渐变（0.55→0.28 节拍不变）+ 1.5px 强调色描边与色光阴影，目标外轻压暗 0.10 聚焦",
-    "标签换出版级深色胶囊：状态点 + 'Top pages' 30px + 等宽 'LOCK 02'，放到左上角标正上方的顶栏空白处；全程相机 smooth 缓推 1→1.035 指向目标"
+    "look = sand：为镜头设计的暖沙纸质城市地图（圆角街区随机分地块、斜穿主干道、河与公园，路名只当纹理），强调色赤陶只给取景框、被锁定骑手与路线",
+    "目标改为一位正在行驶的配送骑手（同城配送「Juniper」）：地图相机缓移、其他骑手照常行驶，取景框飞入时要追着打中，咬合后逐帧跟随——真正的运动中捕获",
+    "角标改为 6px 圆头赤陶笔画 + 奶白衬底；飞入 12f out-cubic 行程 1150×640 带速度斜向模糊；收缩 2.5×→0.9×→1 与飞入重叠 6f；咬合帧角标收紧 8px 弹回 + 光环扩散 + 周围暖色柔光压淡",
+    "锁定后兑现信息：标签卡（32px 人名 + 64px「3 min away」+ LOCKED）带引线弹簧弹出，送达路线从骑手沿街画向终点、地址图钉弹出，相机 smooth 推近 7%",
+    "时长 90f → 120f：0–14 预备（地图已在动）→ 14–46 飞入收缩咬合 → 48–76 标签 / 路线 / 图钉 → 76–120 跟随 hold，尾帧是完整的地图海报"
   ],
   "issuesEn": [
-    "No duration was exported; the workbench guessed 24f from the source, so the old video stopped halfway through the fly-in and never showed the lock or label",
-    "Target height was hard-coded as 425, 29px shorter than the 454 fixture card, so the brackets missed the bottom edge",
-    "Corners were 10px solid black slabs, clumsy and sticker-like on the light UI",
-    "The shrink used three in-out keyframe segments with zero velocity at every key, so the lock stuttered; the fly-in had no motion blur",
-    "The label TARGET · CARD_02 was debug copy in a bold Helvetica black box, and the lock highlight was a flat white slab over the card"
+    "The target was a static blank card in a grey placeholder dashboard, so 'capture in motion' never showed",
+    "A light grey frame of grey bars with no colour or light, reading like a wireframe",
+    "The label was a single small pill of text; nothing paid off after the lock",
+    "After flying in, the corners just shrank onto the card while the rest of the frame stood still, with nothing after the lock"
   ],
   "changesEn": [
-    "RETICLE_LOCK_ON_DURATION = 90 exported (md says 2–3s): fly-in at f14, lock at f46, label settled by f58, then ≥1s still",
-    "Target geometry matches the 524×454 fixture card; corners are 5px round-capped accent strokes on a 2px white underlay with soft shadow, plus a centre crosshair while flying that fades on lock",
-    "Shrink overlaps the fly-in tail by 4f: 2.2→0.94 on an asymmetric swift ease overshooting, 0.94→1 easing out; the fly-in gets diagonal SpeedBlur from velocity, and the lock frame adds a 6px 'bite' pulse",
-    "Highlight is now a top-lit gradient clipped to the card radius (same 0.55→0.28 beat) with a 1.5px accent ring and tinted shadow, while everything else dims 0.10 for focus",
-    "Label rebuilt as a dark publication-grade pill (status dot, 30px 'Top pages', mono 'LOCK 02') placed above the top-left bracket in empty top-bar space; the camera eases in 1→1.035 toward the target throughout"
+    "Look = sand: a shot-designed warm paper city map (rounded blocks split into lots, a diagonal avenue, a river and parks, street names as texture); terracotta accent only on the reticle, the locked courier and the route",
+    "The target is now a courier riding through the map (fictional delivery app Juniper): the camera drifts and other couriers keep moving, so the reticle has to catch a moving target and keeps tracking it after the lock — real capture in motion",
+    "Corners are 6px round-capped terracotta strokes on a cream underlay; a 12f out-cubic fly-in over 1150×640 with diagonal velocity blur; shrink 2.5×→0.9×→1 overlapping the flight by 6f; on lock the corners bite in 8px and spring back, a ring pulses out and a warm wash softens the surroundings",
+    "The lock pays off: a label card (32px name, 64px '3 min away', LOCKED) springs out on a leader line, the delivery route draws along the streets to the destination, an address pin pops in, and the camera pushes in 7%",
+    "Duration 90f → 120f: 0–14 anticipation (the map is already moving) → 14–46 fly-in, shrink, lock → 48–76 card, route, pin → 76–120 tracking hold, ending on a complete map poster"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }
