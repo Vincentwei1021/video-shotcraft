@@ -1,110 +1,104 @@
 // timeline-travel —— 时间轴横移（《反恐王国》式）
+// 镜头沿水平刻度轴加速横移，v1.0/v2.0/v3.0/Today 四个刻度依次掠过，
+// 每过刻度对应卡片从刻度线 spring 过冲弹立 + 短停，镜头不停；
+// 末刻度 4f 急停 + 推近 1.28×。世界层只动 translateX/scale。
+// f0–12 初始静置；f114 起真静止 46f（160f 总长）。
 //
-// 第二轮重设计（余烬地平线 · 时间旅行）：
-// - look = ember（暖黑 · 橙）。画面下 1/3 是一条发光的时间轴（地平线光带压在轴上），密排的次刻度是速度参照物；
-//   远景是 380px 的渐变填色大年份（2019 / 2021 / 2023 / 2026），以 0.35× 视差慢移、按距离淡入淡出；
-//   近景几颗失焦光斑以 1.6× 视差掠过 —— 三层速度差让"旅行"有纵深。
-// - 镜头沿轴缓起 → 冲刺 → 末段急刹（速度曲线是连续的：smoothstep 起步、巡航、末 18% 平方律刹停，
-//   不再是分段 inOut 在断点处速度归零的"顿挫"）；冲刺段按相机速度给世界层横向运动模糊。
-// - 相机到达刻度前 6f，对应里程碑卡以底边为轴弹簧立起（damping 11，明显过冲），节点同拍点亮。
-//   卡片是出版级内容（版本 / 年份 / 52px 标题 / 说明 / 指标），末两张在掠过时可读。
-// - 急刹后 14f 推近 1→1.28 到「Today」：Ferro Agents 卡强调色描边 + 背后泛光 + 轴上光带加亮。
-//
-// 时间表（30fps，共 160f）：
-//   0–12    静置：首卡 v1.0 在 f2 起弹，页眉就位
-//   12–104  旅行：0–30% 起步加速 → 巡航 → 末 18% 急刹；途经 v2.0 / v3.0 / Today 三次弹立
-//   104     急停帧
-//   104–118 推近 1→1.28（snappy），Today 卡点亮
-//   118–160 hold（42f）：推近余量 1.28→1.3 极缓，光带呼吸
+// 质感升级：补导出时长（工作台原推断 104f，正好截在急停帧，Today 卡与推近从未出镜）；去掉调试标题，
+// 换成固定页眉；灰骨架 Card 换成出版级里程碑卡（版本 chip / 年份 / 标题 / 说明 / 指标，Today 卡强调色）；
+// 6px 墨色竖杠刻度换成带光晕的节点 + 版本/年份两级标签，卡片与节点间一根发丝连杆；冲刺段按相机速度给
+// 横向 SpeedBlur（静止/慢段为 0）；背景层大号年份以 0.35× 速度视差平移、随距离交叉淡入淡出，给"旅行"一个远景参照；柔光亮场 + 颗粒。
 import React from 'react';
-import { useCurrentFrame } from 'remotion';
-import { EASE, FONT, SpeedBlur, ramp } from '../../_fixtures/Polish';
-import { LOOKS, Stage, alpha, springAt, type } from '../../_fixtures/Look';
+import { useCurrentFrame, interpolate, Easing, spring } from 'remotion';
+import { G } from '../../_fixtures/Fixtures';
+import { Backdrop, FONT, Grain, SpeedBlur, innerHighlight, softShadow, tracking } from '../../_fixtures/Polish';
 
 export const TIMELINE_TRAVEL_DURATION = 160;
 
-const L = LOOKS.ember;
 const W = 1920;
-const AXIS_Y = 760;
+const AXIS_Y = 700;
 const TICK_GAP = 1400; // 刻度间距（世界坐标）
 const TICKS = [
-  { label: 'v1.0', year: '2019', when: 'Mar 2019', title: 'First public build', desc: 'A keyboard-first editor for teams.', metric: '1.2k teams' },
-  { label: 'v2.0', year: '2021', when: 'Jun 2021', title: 'Multiplayer', desc: 'Live cursors in every shared doc.', metric: '9k teams' },
-  { label: 'v3.0', year: '2023', when: 'Sep 2023', title: 'Automations', desc: 'Rules that run your busywork.', metric: '24k teams' },
-  { label: 'Today', year: '2026', when: 'Shipping now', title: 'Ferro Agents', desc: 'Agents that triage, draft and ship.', metric: '61k teams' },
-].map((t, i) => ({ ...t, x: 960 + TICK_GAP * i }));
-const WORLD_W = 960 + TICK_GAP * 3 + 1400;
+  { label: 'v1.0', year: '2021', x: 960, title: 'Public launch', desc: 'Issues, projects and a keyboard-first editor.', metric: '1.2k teams' },
+  { label: 'v2.0', year: '2023', x: 960 + TICK_GAP, title: 'Cycles & roadmaps', desc: 'Plan sprints and ship on a steady cadence.', metric: '9k teams' },
+  { label: 'v3.0', year: '2024', x: 960 + TICK_GAP * 2, title: 'Insights', desc: 'Live analytics across every team and project.', metric: '24k teams' },
+  { label: 'Today', year: '2026', x: 960 + TICK_GAP * 3, title: 'AI agents', desc: 'Agents triage, draft and ship alongside you.', metric: '61k teams' },
+];
+const WORLD_W = 960 + TICK_GAP * 3 + 960;
 
 const TRAVEL_START = 12;
 const TRAVEL_END = 104; // 急停帧
-const ZOOM_END = 118;
+const ZOOM_END = 114;
 
-// 速度剖面：0–0.3 smoothstep 起步 → 巡航 → 0.82–1 平方律急刹；数值积分成位置表（确定性、速度连续）
-const PROFILE = (() => {
-  const n = 600;
-  const vel = (u: number) => {
-    if (u < 0.3) { const k = u / 0.3; return k * k * (3 - 2 * k); }
-    if (u < 0.82) return 1;
-    const k = (u - 0.82) / 0.18;
-    return (1 - k) * (1 - k);
-  };
-  const acc = [0];
-  for (let i = 1; i <= n; i++) acc.push(acc[i - 1] + vel((i - 0.5) / n));
-  return acc.map((a) => a / acc[n]);
-})();
-const travelAt = (u: number) => {
-  const x = Math.min(1, Math.max(0, u)) * (PROFILE.length - 1);
-  const i = Math.floor(x);
-  return i >= PROFILE.length - 1 ? 1 : PROFILE[i] + (PROFILE[i + 1] - PROFILE[i]) * (x - i);
+// 相机 X：in-out 但前段慢后段快（poly(3) in 为主，末端 out 急收）
+// 用两段拼：0–0.82 加速段（Easing.in(poly(2.2))），0.82–1 急刹段
+const camXAt = (f: number): number => {
+  const total = TICKS[3].x - 960; // 需要位移的世界距离
+  const t = interpolate(f, [TRAVEL_START, TRAVEL_END], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  // 加速→巡航→急刹：分段缓动，前 15% 缓起，中段近匀加速冲刺，末 12% 急收
+  const eased = interpolate(t, [0, 0.15, 0.88, 1], [0, 0.055, 0.9, 1], {
+    easing: Easing.inOut(Easing.quad),
+  });
+  return eased * total;
 };
-const camXAt = (f: number) => travelAt((f - TRAVEL_START) / (TRAVEL_END - TRAVEL_START)) * TICK_GAP * 3;
 
-// 每张卡的弹立帧：相机中心到达该刻度前 6f（由 camXAt 反查）
-const arriveFrame = (i: number) => {
-  if (i === 0) return 8;
-  for (let f = TRAVEL_START; f <= TRAVEL_END; f++) if (camXAt(f) >= TICK_GAP * i - 60) return f; // 视觉到达（长尾刹车的最后 60px 不算）
+// 每张卡的弹立帧：相机中心扫过该刻度的时刻（数值上预先求好，避免逐帧求逆）
+// 通过 camXAt 反查：找到 camX == tick.x - 960 的帧
+const popFrameOf = (tickX: number): number => {
+  for (let f = TRAVEL_START; f <= TRAVEL_END; f++) {
+    if (camXAt(f) >= tickX - 960) return f;
+  }
   return TRAVEL_END;
 };
-const POP = TICKS.map((_, i) => arriveFrame(i) - 6);
 
-const CARD_W = 620;
-const CARD_H = 300;
-const STEM = 52;
+const CARD_W = 360;
+const CARD_H = 240;
+const STEM = 36; // 卡底到轴的连杆长度
 
-const MilestoneCard: React.FC<{ i: number; hot: number }> = ({ i, hot }) => {
+const MilestoneCard: React.FC<{ i: number }> = ({ i }) => {
   const t = TICKS[i];
   const hero = i === TICKS.length - 1;
   return (
     <div
       style={{
-        width: CARD_W, height: CARD_H, boxSizing: 'border-box', borderRadius: 26, padding: '34px 40px', position: 'relative',
-        display: 'flex', flexDirection: 'column', overflow: 'hidden',
-        background: hero ? `linear-gradient(180deg, #2a1810 0%, ${L.surface} 100%)` : `linear-gradient(180deg, #221712 0%, ${L.surface} 100%)`,
-        border: `1px solid ${hero ? alpha(L.accent, 0.25 + 0.6 * hot) : L.line}`,
-        boxShadow:
-          `inset 0 1px 0 ${alpha('#ffd9bf', hero ? 0.16 : 0.08)}, 0 2px 4px ${alpha(L.shadow, 0.6)}, 0 30px 60px -24px ${alpha(L.shadow, 0.95)}` +
-          (hero ? `, 0 0 ${(70 * hot).toFixed(1)}px ${alpha(L.accent, 0.28 * hot)}` : ''),
+        width: CARD_W,
+        height: CARD_H,
+        boxSizing: 'border-box',
+        borderRadius: 18,
+        padding: '24px 26px',
+        background: hero ? 'linear-gradient(180deg, #ffffff 0%, #f7f7ff 100%)' : '#ffffff',
+        border: hero ? '1px solid rgba(91,99,211,0.35)' : `1px solid ${G.hairline}`,
+        boxShadow: `${innerHighlight(0.9)}, ${softShadow(hero ? 18 : 8, { strength: hero ? 1.3 : 1 })}`,
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: FONT.sans,
       }}
     >
-      {hero && (
-        <div style={{ position: 'absolute', inset: 0, opacity: hot, background: `radial-gradient(ellipse 80% 70% at 20% 0%, ${alpha(L.accent, 0.16)} 0%, ${alpha(L.accent, 0)} 70%)` }} />
-      )}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, position: 'relative' }}>
-        <div style={{
-          padding: '6px 14px', borderRadius: 10, fontFamily: FONT.mono, fontSize: 26, fontWeight: 650,
-          background: hero ? L.accent : alpha('#ffffff', 0.06), color: hero ? L.onAccent : L.ink2,
-        }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            height: 30,
+            padding: '0 12px',
+            borderRadius: 8,
+            background: hero ? G.accent : G.fill,
+            color: hero ? '#fff' : G.ink2,
+            fontFamily: FONT.mono,
+            fontSize: 18,
+            fontWeight: 650,
+            lineHeight: '30px',
+          }}
+        >
           {hero ? 'v4.0' : t.label}
         </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10, ...type(28, hero ? 600 : 500), color: hero ? L.ink : L.ink3 }}>
-          {hero && <div style={{ width: 10, height: 10, borderRadius: 5, background: L.accent2, boxShadow: `0 0 12px ${alpha(L.accent2, 0.8)}` }} />}
-          {t.when}
-        </div>
+        <div style={{ marginLeft: 'auto', fontSize: 20, color: G.ink3, fontVariantNumeric: 'tabular-nums' }}>{t.year}</div>
       </div>
-      <div style={{ ...type(54, 750), color: L.ink, marginTop: 30, whiteSpace: 'nowrap', position: 'relative' }}>{t.title}</div>
-      <div style={{ ...type(32, 400), color: L.ink2, marginTop: 12, lineHeight: 1.3, position: 'relative' }}>{t.desc}</div>
-      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 12, position: 'relative', ...type(30, 600), color: hero ? L.accent : L.ink3 }}>
-        <div style={{ width: 10, height: 10, borderRadius: 5, background: hero ? L.accent : L.ink3 }} />
+      <div style={{ marginTop: 18, fontSize: 32, fontWeight: 700, letterSpacing: tracking(32), color: G.ink1 }}>{t.title}</div>
+      <div style={{ marginTop: 8, fontSize: 23, lineHeight: 1.3, color: G.ink2 }}>{t.desc}</div>
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 8, fontSize: 20, fontWeight: 600, color: hero ? G.accent : G.ink3 }}>
+        <div style={{ width: 8, height: 8, borderRadius: 4, background: hero ? G.accent : '#c4c6cc' }} />
         {t.metric}
       </div>
     </div>
@@ -114,40 +108,74 @@ const MilestoneCard: React.FC<{ i: number; hot: number }> = ({ i, hot }) => {
 const TickStop: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
   const tick = TICKS[i];
   const hero = i === TICKS.length - 1;
-  const pop = POP[i];
-  const s = frame < pop ? 0 : springAt(frame, pop, { damping: 11, stiffness: 160, mass: 0.9 }); // 明显过冲
-  const lit = ramp(frame, pop, 6, EASE.out);
-  const hot = ramp(frame, TRAVEL_END, 14, EASE.out) * (hero ? 1 : 0);
+  const pop = popFrameOf(tick.x) - 6; // 提前 6f 起弹，掠过时正好立起
+  const s = spring({
+    frame: frame - pop,
+    fps: 30,
+    config: { damping: 11, stiffness: 160, mass: 0.9 }, // 明显过冲
+    durationInFrames: 26,
+  });
+  const appeared = frame >= pop;
+  // 节点被"点亮"：卡片起弹同拍从空心灰变实心
+  const lit = interpolate(frame, [pop, pop + 6], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+
   return (
     <div style={{ position: 'absolute', left: tick.x, top: 0 }}>
-      {/* 节点：光晕 + 实心芯 */}
-      <div style={{
-        position: 'absolute', left: -40, top: AXIS_Y - 40, width: 80, height: 80, borderRadius: 40,
-        background: `radial-gradient(circle, ${alpha(L.accent, (hero ? 0.55 : 0.32) * lit)} 0%, ${alpha(L.accent, 0)} 70%)`,
-        transform: `scale(${(0.5 + 0.5 * lit + 0.4 * hot).toFixed(3)})`,
-      }} />
-      <div style={{
-        position: 'absolute', left: -11, top: AXIS_Y - 11, width: 22, height: 22, borderRadius: 11, boxSizing: 'border-box',
-        border: `3px solid ${lit > 0 ? L.accent : L.ink3}`, background: lit > 0.5 ? (hero ? L.accent2 : L.accent) : L.bg[1],
-      }} />
+      {/* 刻度节点：外圈光晕 + 实心芯 */}
+      <div
+        style={{
+          position: 'absolute',
+          left: -16,
+          top: AXIS_Y - 16,
+          width: 32,
+          height: 32,
+          borderRadius: 16,
+          background: hero ? 'rgba(91,99,211,0.16)' : 'rgba(20,22,28,0.06)',
+          transform: `scale(${(0.6 + 0.4 * lit).toFixed(3)})`,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: -8,
+          top: AXIS_Y - 8,
+          width: 16,
+          height: 16,
+          borderRadius: 8,
+          boxSizing: 'border-box',
+          border: `3px solid ${hero ? G.accent : G.ink1}`,
+          background: lit > 0.5 ? (hero ? G.accent : G.ink1) : '#f4f4f2',
+        }}
+      />
       {/* 刻度标签：版本 + 年份 */}
-      <div style={{ position: 'absolute', left: -160, top: AXIS_Y + 40, width: 320, textAlign: 'center' }}>
-        <div style={{ ...type(46, 750), color: hero ? L.accent : L.ink }}>{tick.label}</div>
-        {!hero && <div style={{ ...type(30, 500), color: L.ink3, marginTop: 6 }}>{tick.year}</div>}
+      <div style={{ position: 'absolute', left: -110, top: AXIS_Y + 34, width: 220, textAlign: 'center', fontFamily: FONT.sans }}>
+        <div style={{ fontWeight: 720, fontSize: 40, letterSpacing: tracking(40), color: hero ? G.accent : G.ink1 }}>{tick.label}</div>
+        <div style={{ marginTop: 2, fontSize: 28, fontWeight: 500, color: G.ink3, fontVariantNumeric: 'tabular-nums' }}>{tick.year}</div>
       </div>
-      {/* 卡片从刻度线弹立：底边为轴 scaleY（带过冲），连杆同步长出 */}
-      {frame >= pop && (
+      {/* 卡片从刻度线弹立：以底边为轴 scaleY 0→1（带过冲），伴随轻微横向收拢 */}
+      {appeared && (
         <>
-          <div style={{
-            position: 'absolute', left: -1, top: AXIS_Y - 14 - STEM * Math.min(1, s), width: 2, height: STEM * Math.min(1, s),
-            background: `linear-gradient(180deg, ${alpha(L.accent, 0.1)}, ${alpha(L.accent, 0.7)})`,
-          }} />
-          <div style={{
-            position: 'absolute', left: -CARD_W / 2, top: AXIS_Y - 14 - STEM - CARD_H,
-            transform: `scaleY(${s.toFixed(4)}) scaleX(${(0.88 + 0.12 * s).toFixed(4)})`, transformOrigin: '50% 100%',
-            opacity: Math.min(1, s * 2.2),
-          }}>
-            <MilestoneCard i={i} hot={hot} />
+          <div
+            style={{
+              position: 'absolute',
+              left: -0.5,
+              top: AXIS_Y - 8 - STEM * Math.min(1, s),
+              width: 1,
+              height: STEM * Math.min(1, s),
+              background: hero ? 'rgba(91,99,211,0.5)' : 'rgba(20,22,28,0.22)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              left: -CARD_W / 2,
+              top: AXIS_Y - 8 - STEM - CARD_H,
+              transform: `scaleY(${s}) scaleX(${0.85 + 0.15 * s})`,
+              transformOrigin: '50% 100%',
+              opacity: Math.min(1, s * 2),
+            }}
+          >
+            <MilestoneCard i={i} />
           </div>
         </>
       )}
@@ -155,87 +183,105 @@ const TickStop: React.FC<{ i: number; frame: number }> = ({ i, frame }) => {
   );
 };
 
-// 近景失焦光斑（1.6× 视差，预模糊径向渐变，不用 filter）
-const BOKEH = Array.from({ length: 12 }, (_, i) => {
-  const h = (n: number) => { const x = Math.sin(n * 91.3 + 7.7) * 43758.5453; return x - Math.floor(x); };
-  return { x: h(i) * 7800, y: 160 + h(i + 20) * 820, r: 40 + h(i + 40) * 90, a: 0.05 + h(i + 60) * 0.1 };
-});
-
 export const TimelineTravel: React.FC = () => {
   const frame = useCurrentFrame();
   const camX = camXAt(frame);
-  const vx = -(camXAt(frame + 0.5) - camXAt(frame - 0.5)); // 世界层屏幕速度（px/f）
-  const zoom = 1 + 0.28 * ramp(frame, TRAVEL_END, ZOOM_END - TRAVEL_END, EASE.snappy) + 0.02 * ramp(frame, ZOOM_END, 42, EASE.smooth);
-  const hot = ramp(frame, TRAVEL_END, 14, EASE.out);
-  const headIn = ramp(frame, 0, 16, EASE.snappy);
-  const ORIGIN = '50% 56%';
+  const vx = -(camXAt(frame + 0.5) - camXAt(frame - 0.5)); // 世界层屏幕速度（px/f，向左为负）
+
+  // 急停后推近末刻度：scale 1 → 1.28，中心对准 Today 刻度
+  const zoom = interpolate(frame, [TRAVEL_END, ZOOM_END], [1, 1.28], {
+    easing: Easing.out(Easing.cubic),
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const headIn = interpolate(frame, [0, 14], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) });
 
   return (
-    <div style={{ width: W, height: 1080, overflow: 'hidden', position: 'relative', fontFamily: FONT.sans, background: L.bg[2] }}>
-      <Stage look={L} keyLight={{ x: 0.5, y: 0.25 }} fill={{ x: 0.5, y: 1.05 }} horizon={AXIS_Y / 1080} intensity={0.85 + 0.25 * hot} breathe={0.5}>
-        {/* 远景：描边大年份，0.35× 视差、按距离淡入淡出；只推近 0.35 倍幅度 */}
-        <div style={{ position: 'absolute', inset: 0, transform: `scale(${(1 + (zoom - 1) * 0.35).toFixed(4)})`, transformOrigin: ORIGIN }}>
-          {TICKS.map((t, i) => {
-            const d = Math.abs(camX - i * TICK_GAP) / TICK_GAP;
-            const op = Math.max(0, 1 - d / 0.7);
-            if (op <= 0) return null;
-            return (
-              <div key={i} style={{
-                position: 'absolute', left: 960 + (i * TICK_GAP - camX) * 0.35 - 700, width: 1400, top: 120, textAlign: 'center',
-                ...type(380, 850), letterSpacing: '-0.04em', color: 'transparent',
-                backgroundImage: `linear-gradient(180deg, ${alpha(L.accent2, (i === 3 ? 0.2 : 0.13) * op)} 0%, ${alpha(L.accent, 0.05 * op)} 55%, ${alpha(L.accent, 0)} 85%)`,
-                WebkitBackgroundClip: 'text', backgroundClip: 'text',
-              }}>
-                {t.year}
-              </div>
-            );
-          })}
-        </div>
-      </Stage>
-
-      {/* 推近层：以末刻度落点为原点 */}
-      <div style={{ position: 'absolute', inset: 0, transform: `scale(${zoom.toFixed(5)})`, transformOrigin: ORIGIN }}>
-        <SpeedBlur vx={vx} amount={0.11} max={8}>
-          <div style={{ position: 'absolute', left: 0, top: 0, width: WORLD_W, height: 1080, transform: `translateX(${(-camX).toFixed(2)}px)` }}>
-            {/* 主轴：发光细线 */}
-            <div style={{
-              position: 'absolute', left: 300, top: AXIS_Y - 1.5, width: WORLD_W - 900, height: 3, borderRadius: 2,
-              background: `linear-gradient(90deg, ${alpha(L.accent, 0)} 0%, ${alpha(L.accent, 0.75)} 6%, ${alpha(L.accent2, 0.9)} 82%, ${alpha(L.accent, 0)} 100%)`,
-              boxShadow: `0 0 18px ${alpha(L.accent, 0.5)}`,
-            }} />
-            {/* 次刻度：每 140px 一根，速度参照物 */}
-            {Array.from({ length: 34 }, (_, k) =>
-              k % 10 === 0 ? null : (
-                <div key={k} style={{
-                  position: 'absolute', left: 960 + k * 140 - 1, top: AXIS_Y - (k % 5 === 0 ? 20 : 12), width: 2,
-                  height: k % 5 === 0 ? 40 : 24, borderRadius: 1, background: alpha(L.ink2, k % 5 === 0 ? 0.45 : 0.25),
-                }} />
-              ),
-            )}
-            {TICKS.map((_, i) => <TickStop key={i} i={i} frame={frame} />)}
-          </div>
-        </SpeedBlur>
-      </div>
-
-      {/* 近景光斑：1.6× 视差掠过 */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-        {BOKEH.map((b, i) => {
-          const x = (((b.x - camX * 1.6) % 7800) + 7800) % 7800 - 400;
-          if (x < -300 || x > 2200) return null;
+    <div style={{ width: W, height: 1080, overflow: 'hidden', position: 'relative', fontFamily: FONT.sans }}>
+      <Backdrop tone="light" light={{ x: 0.5, y: 0.22 }} accent={G.accent} vignette={0.16} grain={0} />
+      {/* 远景视差：大号年份以 0.35× 速度平移、只推近 0.35 倍幅度（远景在推近层之外）；
+          按与镜头中心的距离淡入淡出，同一时刻只读到当前年份 */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transform: `scale(${(1 + (zoom - 1) * 0.35).toFixed(4)})`,
+          transformOrigin: '50% 62%',
+        }}
+      >
+        {TICKS.map((t, i) => {
+          const d = Math.abs(camX - i * TICK_GAP) / TICK_GAP; // 0 = 该年份刻度正对镜头
+          const op = Math.max(0, 1 - d / 0.62);
+          if (op <= 0) return null;
           return (
-            <div key={i} style={{
-              position: 'absolute', left: x - b.r, top: b.y - b.r, width: b.r * 2, height: b.r * 2, borderRadius: '50%',
-              background: `radial-gradient(circle, ${alpha(L.accent2, b.a)} 0%, ${alpha(L.accent, b.a * 0.4)} 45%, ${alpha(L.accent, 0)} 70%)`,
-            }} />
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                left: 960 + i * TICK_GAP * 0.35 - camX * 0.35 - 500,
+                width: 1000,
+                top: 210,
+                textAlign: 'center',
+                fontSize: 280,
+                lineHeight: 1,
+                fontWeight: 800,
+                letterSpacing: '-0.05em',
+                color: `rgba(20,22,28,${(0.04 * op).toFixed(4)})`,
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {t.year}
+            </div>
           );
         })}
       </div>
-
-      {/* 固定页眉 */}
-      <div style={{ position: 'absolute', left: 120, top: 96, opacity: headIn * (1 - hot), transform: `translateY(${((1 - headIn) * 14).toFixed(2)}px)` }}>
-        <div style={{ ...type(26, 700, { caps: true }), letterSpacing: '0.18em', color: L.accent }}>Ferro · Release history</div>
-        <div style={{ ...type(64, 750), color: L.ink, marginTop: 14 }}>Seven years of shipping</div>
+      {/* 推近层：以画面中央偏下（末刻度落点）为原点放大 */}
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${zoom})`, transformOrigin: '50% 62%' }}>
+        {/* 世界层：唯一横移的容器；冲刺段横向运动模糊 */}
+        <SpeedBlur vx={vx} amount={0.16} max={9}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: WORLD_W, height: 1080, transform: `translateX(${(-camX).toFixed(2)}px)` }}>
+            {/* 主轴线 */}
+            <div
+              style={{
+                position: 'absolute',
+                left: 200,
+                top: AXIS_Y - 1,
+                width: WORLD_W - 400,
+                height: 2,
+                background: 'linear-gradient(90deg, rgba(20,22,28,0) 0%, rgba(20,22,28,0.22) 4%, rgba(20,22,28,0.22) 96%, rgba(20,22,28,0) 100%)',
+              }}
+            />
+            {/* 次刻度（细短杠，速度参照物） */}
+            {Array.from({ length: 22 }).map((_, i) =>
+              i % 5 === 0 ? null : (
+                <div
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    left: 960 + i * (TICK_GAP / 5) - 1,
+                    top: AXIS_Y - 9,
+                    width: 2,
+                    height: 18,
+                    background: 'rgba(20,22,28,0.2)',
+                    borderRadius: 1,
+                  }}
+                />
+              ),
+            )}
+            {TICKS.map((_, i) => (
+              <TickStop key={i} i={i} frame={frame} />
+            ))}
+          </div>
+        </SpeedBlur>
       </div>
+      {/* 固定页眉 */}
+      <div style={{ position: 'absolute', left: 120, top: 96, opacity: headIn, transform: `translateY(${((1 - headIn) * 8).toFixed(2)}px)` }}>
+        <div style={{ fontSize: 30, fontWeight: 650, letterSpacing: tracking(30, true), textTransform: 'uppercase', color: G.accent }}>
+          Release history
+        </div>
+        <div style={{ marginTop: 6, fontSize: 56, fontWeight: 720, letterSpacing: tracking(56), color: G.ink1 }}>Five years of shipping</div>
+      </div>
+      <Grain opacity={0.05} />
     </div>
   );
 };

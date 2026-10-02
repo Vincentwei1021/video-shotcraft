@@ -1,81 +1,78 @@
-// text-column-converge —— 双词对峙合拢（手法源自 raycast-teams 28–36s：左词左缘、右词右缘钉死在等屏边距两侧，
-// 右词硬切轮换、全程零收缩；换到最后一词才唯一一次 ease-in-out 合拢到居中咬合成短语，随后小字近乎硬切浮现）。
+// text-column-converge —— raycast-teams（实测素材 28–36s 段）重做版：
+// 原片测量（1280 宽）：NEW 左缘钉死 x=412，特性词右缘钉死 x=867，
+// 两词到左右屏边距相等（412 vs 413），轮换期间间距完全不收缩；
+// 词换到 RAYCAST 后才发生唯一一次合拢——约 1.2s ease-in-out 连续滑动
+// （左缘 412→554 / 右缘 867→725），"NEW RAYCAST" 以屏幕中线居中定格；
+// 定格后约 0.6s，斜体 "COMING 2026" 在下方近乎硬切浮现。
 //
-// 第二轮重设计（纸 · 瑞士网格发布说明页）：
-// - look = paper（暖白纸 · 墨 · 朱红）。整屏是一页瑞士网格的 release notes：四角是页眉页脚信息
-//   （Release notes / Vol. 4 — 2026 / 品牌字标 / 01–09 序号随每次硬切翻页），正中一行 120px/850 粗黑体大写，
-//   上下各一条发丝横线把这一行框成"目录条"。左词 NEW 是朱红，右词是墨色特性名。
-// - 钉死：轮换期 NEW 左缘、特性词右缘一像素不动，左右屏边距相等（144px）；上下横线也钉在两缘之间。
-// - 唯一一次合拢：末词（虚构品牌 KESTREL）停稳 10f 后 36f ease-in-out cubic 相向滑动，按速度水平运动模糊；
-//   上下横线与两词同步收拢到短语宽度——观众这才发现"目录条"其实框住的是一句话。合拢终点用实测字宽计算，
-//   两词恰好一个词距咬合。
-// - 定格 18f 后副标题 4f 近乎硬切浮现（零位移），与整行同左缘；之后极缓推近 1→1.025 保持画面活着。
-// - 硬切换词那一帧新词是朱红（1f），之后回到墨色——原片的打字机换行感，只给 1f。
-//
-// 时间表（30fps，共 195f）：
-//   0–10    预备：纸面、四角页眉页脚淡入，上下横线由中心向两缘画出
-//   10–97   轮换：8 个特性词硬切，停留 18/13/10/8/7/8/10/13f（先慢后快再放慢，机器节奏带人味）
-//   97–107  末词 KESTREL 停稳（观众意识到"这词不换了"）
-//   107–143 唯一一次合拢（36f ease-in-out cubic）
-//   161–165 副标题近乎硬切浮现
-//   143–195 hold：极缓推近
-import React, { useLayoutEffect, useRef, useState } from 'react';
+// 质感升级（节拍/钉死/唯一合拢全部不动）：
+// - 暗场不再是 #050506 死黑：带冷色相的深底 + 中线上方极淡顶光 + 暗角 + soft-light 颗粒。
+// - 词换瞬间 1 帧提亮（原片的打字机换行感，>1f 读作故障所以只给 1f）。
+// - NEW 轮换期是次级灰（像目录页标签），合拢过程中随进度提亮到与特性词同色——两半变成一句话。
+// - 合拢滑动按真实速度给水平方向运动模糊（两词方向相反），静止为 0；落定后背后柔光微微亮起。
+// - 斜体小字降为三级色，层级清楚；补导出时长常量（原工作台按 16f 推断，只剩开头半秒）。
+import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
-import { EASE, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
-import { LOOKS, Stage, type } from '../../_fixtures/Look';
-
-const L = LOOKS.paper;
+import { FONT, Grain, SpeedBlur, Vignette, ramp, EASE } from '../../_fixtures/Polish';
 
 // 词轮换表：停留帧数不均（机器节奏），全程钉在右缘，不做间距收缩
 const STEPS: { word: string; dur: number }[] = [
-  { word: 'SPLIT VIEW', dur: 18 },
-  { word: 'FOCUS MODE', dur: 13 },
-  { word: 'LIVE SYNC', dur: 10 },
-  { word: 'HOTKEYS', dur: 8 },
-  { word: 'AI SEARCH', dur: 7 },
-  { word: 'THEMES', dur: 8 },
-  { word: 'OFFLINE', dur: 10 },
-  { word: 'SHARED SPACES', dur: 13 },
-  { word: 'KESTREL', dur: 999 }, // 最后一词：停稳后触发唯一一次合拢
+  { word: 'LAUNCHER DESIGN', dur: 16 },
+  { word: 'COMPACT MODE', dur: 12 },
+  { word: 'HOTKEY RECORDER', dur: 9 },
+  { word: 'HOTKEY TYPES', dur: 8 },
+  { word: 'VOICE FEATURES', dur: 7 },
+  { word: 'SETTINGS DESIGN', dur: 8 },
+  { word: 'AI CHAT', dur: 10 },
+  { word: 'FILE SEARCH', dur: 12 },
+  { word: 'RAYCAST', dur: 999 }, // 最后一词：停稳后触发唯一一次合拢
 ];
-const BRAND = STEPS[STEPS.length - 1].word;
 
-const START = 10; // 两词首次硬切出现
-const MARGIN = 144; // 左右屏边距（相等）
-const FS = 120;
-const GAP_WORD = 0.26 * FS; // 合拢后两词之间的词距
-const LINE_Y = 540; // 行中线
-const CONVERGE_DUR = 36;
-const CONVERGE_DELAY = 10;
-const SUB_DELAY = 18;
+const START = 8; // 开场黑场立静
 
-const LAST_START = START + STEPS.slice(0, -1).reduce((a, s) => a + s.dur, 0); // 97
-const CV0 = LAST_START + CONVERGE_DELAY; // 107
-// 8f 预备 + 87f 轮换 + 10f 停稳 + 36f 合拢 + 18f 定格 + 4f 小字 + 30f 静置 ≈ 195f（6.5s）
-export const TEXT_COLUMN_CONVERGE_DURATION = 195;
+// 原片 1280 宽 → 1920 宽换算（×1.5）
+const NEW_LEFT_EDGE = 618; // 412×1.5：NEW 左缘（= 左屏边距）
+const WORD_RIGHT_EDGE = 1302; // 868×1.5：特性词右缘（= 右屏边距，1920-1302=618 对称）
 
-const cvAt = (f: number) =>
-  interpolate(f - CV0, [0, CONVERGE_DUR], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.inOut(Easing.cubic) });
+const FS = 42; // 原片字高很小（720p 下 cap ~20px → 1080p ~30px → 字号 ~42）
+const LSP = 3; // letterSpacing
+// 合拢终点按本字体实际步进计算（监视器等宽：0.6em + letterSpacing），
+// 保证 "NEW RAYCAST" 恰好一个空格咬合、整行居中于 960，不会重叠
+const ADV = 0.6 * FS + LSP; // 每字符步进
+const LINE_W = 11 * ADV; // "NEW RAYCAST" 共 11 字符
+const MERGED_LEFT = 960 - LINE_W / 2; // 合拢后 NEW 左缘
+const MERGED_RIGHT = 960 + LINE_W / 2; // 合拢后 RAYCAST 右缘
+const CONVERGE_DUR = 36; // 合拢时长：原片 ~1.2s ≈ 36 帧
+const CONVERGE_DELAY = 10; // RAYCAST 停稳后先静置 10 帧再合拢（原片 32.4→32.7s）
+const SUB_DELAY = 18; // 合拢定格后 ~0.6s 出斜体小字
 
-const WORD_STYLE: React.CSSProperties = { ...type(FS, 850, { caps: true }), letterSpacing: '-0.035em', lineHeight: 1, whiteSpace: 'nowrap' };
+// 8f 黑场 + 82f 轮换 + 10f 停稳 + 36f 合拢 + 18f 定格 + 4f 小字 + 22f 静置 = 180f（6.0s）
+export const TEXT_COLUMN_CONVERGE_DURATION = 180;
+
+const INK = '#eeeef2';
+const INK_NEW = '#8a8c96'; // 轮换期 NEW 的次级灰
+const INK_SUB = '#a3a5ae';
+
+// 合拢进度（以帧为自变量，供求速度）
+const LAST_START = START + STEPS.slice(0, -1).reduce((a, s) => a + s.dur, 0);
+const cvAt = (frame: number) =>
+  interpolate(frame - LAST_START - CONVERGE_DELAY, [0, CONVERGE_DUR], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  });
+
+// 简单 hex 混色（NEW 由次级灰提亮到主色）
+const mixHex = (a: string, b: string, t: number) => {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  return `rgb(${pa.map((v, k) => Math.round(v + (pb[k] - v) * t)).join(',')})`;
+};
 
 export const TextColumnConverge: React.FC = () => {
   const f = useCurrentFrame();
   const t = f - START;
 
-  // 实测 NEW 与品牌词宽度（合拢终点按实测宽度算，保证恰好一个词距咬合）
-  const measRef = useRef<HTMLDivElement>(null);
-  const [w, setW] = useState<[number, number]>([FS * 2.2, FS * 4.6]);
-  useLayoutEffect(() => {
-    const k = measRef.current?.children;
-    if (!k) return;
-    setW([(k[0] as HTMLElement).offsetWidth || FS * 2.2, (k[1] as HTMLElement).offsetWidth || FS * 4.6]);
-  }, []);
-  const lineW = w[0] + GAP_WORD + w[1];
-  const mergedLeft = 960 - lineW / 2;
-  const mergedRight = 960 + lineW / 2;
-
-  // 当前步
+  // 定位当前步
   let acc = 0;
   let idx = 0;
   let stepStart = 0;
@@ -83,83 +80,108 @@ export const TextColumnConverge: React.FC = () => {
     if (t >= acc) { idx = i; stepStart = acc; }
     acc += STEPS[i].dur;
   }
+  const cur = STEPS[idx];
+  const isLast = idx === STEPS.length - 1;
   const local = t - stepStart;
+
+  // 唯一一次合拢：RAYCAST 停稳 CONVERGE_DELAY 帧后，ease-in-out 连续滑动
+  const cvT = isLast ? local - CONVERGE_DELAY : -1;
+  const cv = interpolate(cvT, [0, CONVERGE_DUR], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+    easing: Easing.inOut(Easing.cubic),
+  });
+
+  // NEW 左缘：618 → 831；特性词右缘：1302 → 1088
+  const newLeft = interpolate(cv, [0, 1], [NEW_LEFT_EDGE, MERGED_LEFT]);
+  const wordRight = interpolate(cv, [0, 1], [WORD_RIGHT_EDGE, MERGED_RIGHT]);
+
+  const converged = cv >= 1;
+
+  // 斜体小字：合拢定格后 SUB_DELAY 帧，近乎硬切（4 帧快速淡入，无位移）
+  const subT = converged ? cvT - CONVERGE_DUR - SUB_DELAY : -1;
+  const subOp = interpolate(subT, [0, 4], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+  });
+
   const visible = t >= 0;
 
-  const cv = cvAt(f);
-  const newLeft = mix(MARGIN, mergedLeft, cv);
-  const wordRight = mix(1920 - MARGIN, mergedRight, cv);
-  const span = mergedLeft - MARGIN;
-  const v = (cvAt(f + 0.5) - cvAt(f - 0.5)) * span; // px/帧（两词相向）
+  const font: React.CSSProperties = {
+    fontFamily: FONT.mono,
+    fontWeight: 500,
+    fontSize: FS,
+    letterSpacing: LSP,
+    color: INK,
+    whiteSpace: 'nowrap',
+    lineHeight: 1,
+  };
 
-  // 词换瞬间 1 帧朱红（首词不闪）
-  const cutFlash = visible && local === 0 && idx > 0;
+  // 词换瞬间 1 帧提亮（首词不闪）
+  const flash = local === 0 && idx > 0 ? 1 : 0;
+  const wordColor = flash ? '#ffffff' : INK;
+  const wordGlow = flash ? '0 0 14px rgba(200,210,255,0.35)' : 'none';
 
-  // 上下横线：开场由中心向两缘画出；合拢时与两词同步收拢
-  const draw = ramp(f, 0, 12, EASE.snappy);
-  const ruleL = mix(960, newLeft, draw);
-  const ruleR = mix(960, wordRight, draw);
-
-  // 副标题：合拢定格后 SUB_DELAY 帧，4f 快淡、零位移
-  const subOp = ramp(f, CV0 + CONVERGE_DUR + SUB_DELAY, 4, EASE.linear);
-  // 定格后极缓推近
-  const push = mix(1, 1.025, ramp(f, CV0 + CONVERGE_DUR - 4, TEXT_COLUMN_CONVERGE_DURATION - (CV0 + CONVERGE_DUR - 4), EASE.smooth));
-
-  const meta: React.CSSProperties = { ...type(28, 600), letterSpacing: '-0.005em', color: L.ink2 };
-  const metaIn = ramp(f, 0, 10, EASE.out);
-  const counter = Math.min(STEPS.length, idx + 1);
+  // 合拢速度（px/帧）→ 水平运动模糊；两词相向
+  const span = MERGED_LEFT - NEW_LEFT_EDGE;
+  const v = (cvAt(f + 0.5) - cvAt(f - 0.5)) * span;
+  // 落定后背后柔光
+  const glow = ramp(cvT, CONVERGE_DUR - 6, 24, EASE.out);
 
   return (
-    <AbsoluteFill style={{ overflow: 'hidden' }}>
-      <Stage look={L} keyLight={{ x: 0.3, y: 0.1 }} fill={null} vignette={0.14} />
+    <AbsoluteFill style={{ background: '#08090c', overflow: 'hidden' }}>
+      {/* 冷色深底 + 中线上方极淡顶光 */}
+      <AbsoluteFill
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 55% at 50% 40%, rgba(120,130,170,0.10), rgba(120,130,170,0) 70%), ' +
+            'linear-gradient(180deg, #0d0e12 0%, #08090c 60%, #060709 100%)',
+        }}
+      />
+      {/* 合拢落定后背后柔光微亮 */}
+      <div
+        style={{
+          position: 'absolute', left: 960 - 520, top: 540 - 150, width: 1040, height: 300,
+          background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(170,180,230,0.10), rgba(170,180,230,0) 70%)',
+          opacity: glow,
+        }}
+      />
+      {visible && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          {/* NEW：左缘定位（轮换期间钉死在左屏边距处）；随合拢由次级灰提亮 */}
+          <SpeedBlur vx={v} amount={0.35} max={4}>
+            <div style={{
+              ...font, position: 'absolute',
+              left: newLeft, top: 519,
+              color: mixHex(INK_NEW, INK, ramp(cvT, 0, CONVERGE_DUR * 0.8, EASE.smooth)),
+            }}>
+              NEW
+            </div>
+          </SpeedBlur>
+          {/* 特性词：右缘定位（词换长换短，右缘不动） */}
+          <SpeedBlur vx={-v} amount={0.35} max={4}>
+            <div style={{
+              ...font, position: 'absolute',
+              right: 1920 - wordRight, top: 519,
+              color: wordColor, textShadow: wordGlow,
+            }}>
+              {cur.word}
+            </div>
+          </SpeedBlur>
 
-      {/* 隐藏量宽 */}
-      <div ref={measRef} style={{ position: 'absolute', visibility: 'hidden', left: 0, top: 0 }}>
-        <span style={{ ...WORD_STYLE, display: 'inline-block' }}>NEW</span>
-        <span style={{ ...WORD_STYLE, display: 'inline-block' }}>{BRAND}</span>
-      </div>
-
-      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})` }}>
-        {/* 四角页眉页脚（瑞士网格） */}
-        <div style={{ position: 'absolute', left: MARGIN, top: 96, right: MARGIN, display: 'flex', justifyContent: 'space-between', opacity: metaIn }}>
-          <span style={{ ...meta, color: L.ink, fontWeight: 750 }}>Release notes</span>
-          <span style={meta}>Vol. 4 — 2026</span>
+          {/* 斜体小字：合拢后在整行正下方浮现，与整行同左缘 */}
+          <div style={{
+            ...font,
+            fontStyle: 'italic',
+            color: INK_SUB,
+            position: 'absolute',
+            left: MERGED_LEFT, top: 519 + FS + 14,
+            opacity: subOp,
+          }}>
+            COMING 2026
+          </div>
         </div>
-        <div style={{ position: 'absolute', left: MARGIN, right: MARGIN, top: 146, height: 2, background: L.ink, opacity: metaIn, transformOrigin: 'left', transform: `scaleX(${draw.toFixed(4)})` }} />
-        <div style={{ position: 'absolute', left: MARGIN, bottom: 96, right: MARGIN, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', opacity: metaIn }}>
-          <span style={{ ...type(34, 850), letterSpacing: '-0.03em', color: L.ink }}>
-            Kestrel<span style={{ color: L.accent }}>.</span>
-          </span>
-          <span style={{ ...type(30, 600, { mono: true }), color: L.ink3 }}>
-            <span style={{ color: L.ink }}>{String(counter).padStart(2, '0')}</span> / {String(STEPS.length).padStart(2, '0')}
-          </span>
-        </div>
-
-        {/* 目录条上下发丝横线：钉在两词外缘之间，合拢时同步收拢 */}
-        {[LINE_Y - FS * 0.78, LINE_Y + FS * 0.78].map((y) => (
-          <div key={y} style={{ position: 'absolute', left: ruleL, width: Math.max(0, ruleR - ruleL), top: y, height: 1.5, background: L.line.replace('0.12', '0.5') }} />
-        ))}
-
-        {visible && (
-          <>
-            {/* NEW：左缘定位，轮换期钉死在左屏边距 */}
-            <SpeedBlur vx={v} amount={0.4} max={8}>
-              <div style={{ ...WORD_STYLE, position: 'absolute', left: newLeft, top: LINE_Y - FS * 0.5, color: L.accent }}>NEW</div>
-            </SpeedBlur>
-            {/* 特性词：右缘定位（换长换短右缘不动） */}
-            <SpeedBlur vx={-v} amount={0.4} max={8}>
-              <div style={{ ...WORD_STYLE, position: 'absolute', right: 1920 - wordRight, top: LINE_Y - FS * 0.5, color: cutFlash ? L.accent : L.ink }}>
-                {STEPS[idx].word}
-              </div>
-            </SpeedBlur>
-          </>
-        )}
-
-        {/* 副标题：与整行同左缘，近乎硬切 */}
-        <div style={{ position: 'absolute', left: mergedLeft, top: LINE_Y + FS * 0.78 + 34, opacity: subOp, ...type(44, 500), letterSpacing: '-0.015em', color: L.ink2 }}>
-          Every feature, one app. <span style={{ color: L.ink, fontWeight: 700 }}>Spring 2026</span>
-        </div>
-      </AbsoluteFill>
+      )}
+      <Vignette strength={0.5} inner={0.45} color="#000000" />
+      <Grain opacity={0.07} blend="soft-light" />
     </AbsoluteFill>
   );
 };

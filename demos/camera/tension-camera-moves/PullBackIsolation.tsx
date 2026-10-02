@@ -1,128 +1,100 @@
-// 拉远孤立收束（pull-back-isolation）——pull-back shot：从主卡特写后拉，周围逐层熄灭，孤卡悬在暗场中央。
+// 拉远孤立收束（pull-back-isolation）——pull-back shot。
+// 相机容器 scale 2.2→0.62（0–110f，Easing.out(cubic)）：开场怼在主卡
+// "99.9%" 特写上，缓缓后拉露出周围 8 张兄弟卡。帧 30 起兄弟卡按离主卡
+// 距离由近到远错峰熄灭（每 8f 一张，opacity→0 + brightness 压暗）；
+// 背景 60–110f 从亮场沉入带色相的深场 #111216；主卡白光晕 60–100f 淡入。
+// 帧 110–150 完全静止：暗场中央孤悬一张发光小卡——全片只为这一个数字。
 //
-// 第二轮重设计（graphite · 近单色暗场，白为强调，金色只点一处）：
-// - 世界是一整面"控制室屏幕墙"：44 块深石墨小屏（迷你曲线 / 柱 / 环 / 数字 / 列表，纹理级小字）
-//   排成 8×6 网格，正中 2×2 的位置是主卡「99.999%」。开场 2.4× 怼在主卡上，大数字占满画面。
-// - 后拉：scale 2.4→0.62 / 118f，bezier(0.33,0,0.15,1)——起步柔、主体段快、尾段长长地减速落定。
-//   按 2.4× 布局（CSS zoom）再缩小，开场特写字锐利（Q2）。
-// - 熄灭：28f 起小屏按到主卡的距离由近到远一圈圈熄灭，起点按 EASE.out 错峰（越往外越密 = 塌暗在加速）；
-//   每块先"屏幕内容断电"（6f），再整块沉入暗处（14f，opacity→0 + 下沉 0.96 + 压暗）。
-//   环境光 = 仍亮着的屏幕占比：墙越灭，四周的屏幕光越弱；最后只剩主卡上方一束顶光。
-// - 孤卡：70–112f 白色轮廓光 + 两层冷白光晕升起；落定后屏幕空间的结语逐词升起（56px）——
-//   "Five nines. All year."，最后一帧是一张暗场海报。
-//
-// 时间表（30fps，共 168f）：
-//   0–20    特写：主卡 99.999% 满画面（后拉已开始，起步柔）
-//   0–118   后拉 2.4 → 0.62
-//   28–104  小屏由近到远熄灭（加速塌暗）
-//   70–112  主卡轮廓光 / 光晕；环境光收成顶光
-//   116–140 结语逐词升起
-//   140–168 hold（光晕极缓呼吸）
+// 改版要点：主卡从"白罩压在占位卡上"改为出版级指标卡（标签 + 大数字 +
+// 90 天可用率条带 + 页脚）；相机按 2.2 倍布局（CSS zoom）再缩小，开场特写
+// 文字锐利（审美准则 Q2）；兄弟卡熄灭时轻微下沉（scale 0.97）+ 失焦，而非原地变灰；
+// 背景由柔光亮底交叉沉入深场，光晕带冷色相，卡面受光上沿随暗场浮现。
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
-import { LOOKS, Stage, TextReveal, alpha, stagger, type } from '../../_fixtures/Look';
+import { useCurrentFrame, interpolate, Easing, AbsoluteFill } from 'remotion';
+import { Card, G } from '../../_fixtures/Fixtures';
+import { Backdrop, EASE, FONT, Grain, mix, softShadow } from '../../_fixtures/Polish';
 
-export const PULL_BACK_ISOLATION_DURATION = 168; // 118f 后拉 + 50f 孤悬
+export const PULL_BACK_ISOLATION_DURATION = 150; // 110f 后拉 + 40f 孤悬静止
 
-const L = LOOKS.graphite;
-const Z = 2.4; // 相机布局倍率 = 起始特写倍率
-const PULL = bezier(0.33, 0, 0.15, 1);
-const TILE = { w: 340, h: 220, px: 380, py: 260 };
-const HERO = { w: 720, h: 480 };
+// 8 张兄弟卡：相对主卡中心 (960,540) 的偏移 + 尺寸 + seed
+const SIBS = [
+  { dx: -620, dy: -330, w: 360, h: 240, seed: 3 },
+  { dx: 10, dy: -390, w: 420, h: 220, seed: 4 },
+  { dx: 620, dy: -320, w: 380, h: 260, seed: 5 },
+  { dx: -680, dy: 20, w: 340, h: 230, seed: 6 },
+  { dx: 700, dy: 40, w: 360, h: 250, seed: 7 },
+  { dx: -600, dy: 360, w: 400, h: 240, seed: 8 },
+  { dx: 40, dy: 400, w: 440, h: 220, seed: 9 },
+  { dx: 640, dy: 350, w: 370, h: 250, seed: 10 },
+].map((s) => ({ ...s, dist: Math.hypot(s.dx, s.dy) }));
 
-const hash = (n: number) => {
-  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
-  return x - Math.floor(x);
-};
+// 按离主卡距离排名 → 错峰熄灭顺序（近的先灭）
+const RANKED = SIBS.map((s, i) => i).sort((a, b) => SIBS[a].dist - SIBS[b].dist);
+const FADE_START = RANKED.reduce<number[]>((acc, idx, rank) => {
+  acc[idx] = 30 + rank * 8;
+  return acc;
+}, []);
+const FADE_DUR = 16;
 
-// 8×6 网格，正中 2×2 让给主卡
-const COLS = [-1330, -950, -570, -190, 190, 570, 950, 1330];
-const ROWS = [-650, -390, -130, 130, 390, 650];
-const RAW = COLS.flatMap((x) => ROWS.map((y) => ({ x, y }))).filter((t) => !(Math.abs(t.x) < 300 && Math.abs(t.y) < 200));
-const TILES = RAW.map((t, i) => ({ ...t, kind: Math.floor(hash(i * 3.3 + 1) * 5), seed: i, dist: Math.hypot(t.x, t.y * 1.3) }));
-const ORDER = TILES.map((_, i) => i).sort((a, b) => TILES[a].dist - TILES[b].dist);
-const OFF_AT: number[] = [];
-ORDER.forEach((idx, rank) => {
-  OFF_AT[idx] = 28 + stagger(rank, ORDER.length, 62, EASE.out) + hash(idx * 9.1) * 3;
-});
+const clamp = { extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const };
 
-// 小屏内容（纹理级）
-const Mini: React.FC<{ kind: number; seed: number }> = ({ kind, seed }) => {
-  const r = (k: number) => hash(seed * 17.3 + k);
-  const ink = alpha(L.ink, 0.82);
-  const dim = alpha(L.ink, 0.3);
-  const head = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 8, height: 8, borderRadius: 4, background: dim }} />
-      <div style={{ width: 80 + r(1) * 70, height: 9, borderRadius: 5, background: dim }} />
-    </div>
-  );
-  let body: React.ReactNode = null;
-  if (kind === 0) {
-    const pts = Array.from({ length: 14 }, (_, j) => `${j ? 'L' : 'M'}${(j * 21).toFixed(0)} ${(80 - 20 * Math.sin(j * 0.7 + r(2) * 6) - r(j + 3) * 40).toFixed(1)}`).join(' ');
-    body = <svg width={280} height={110} style={{ marginTop: 18 }}><path d={pts} fill="none" stroke={ink} strokeWidth={3} strokeLinejoin="round" /></svg>;
-  } else if (kind === 1) {
-    body = (
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10, height: 110, marginTop: 18 }}>
-        {Array.from({ length: 9 }, (_, j) => <div key={j} style={{ width: 20, height: 20 + r(j + 5) * 88, borderRadius: 4, background: j === 6 ? ink : dim }} />)}
-      </div>
-    );
-  } else if (kind === 2) {
-    const p = 0.35 + r(4) * 0.55;
-    body = (
-      <svg width={120} height={120} viewBox="0 0 120 120" style={{ marginTop: 12 }}>
-        <circle cx={60} cy={60} r={46} fill="none" stroke={dim} strokeWidth={12} />
-        <circle cx={60} cy={60} r={46} fill="none" stroke={ink} strokeWidth={12} strokeDasharray={`${(p * 289).toFixed(1)} 289`} transform="rotate(-90 60 60)" strokeLinecap="round" />
-      </svg>
-    );
-  } else if (kind === 3) {
-    body = (
-      <div style={{ marginTop: 22 }}>
-        <div style={{ ...type(72, 700), color: ink }}>{(1 + r(6) * 98).toFixed(1)}{r(7) > 0.5 ? 'k' : '%'}</div>
-        <div style={{ width: 150, height: 9, borderRadius: 5, background: dim, marginTop: 16 }} />
-      </div>
-    );
-  } else {
-    body = (
-      <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {[0, 1, 2, 3].map((j) => (
-          <div key={j} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <div style={{ width: 12, height: 12, borderRadius: 3, background: j === 0 ? ink : dim }} />
-            <div style={{ width: 120 + r(j + 9) * 110, height: 8, borderRadius: 4, background: dim }} />
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return <div style={{ padding: '22px 24px' }}>{head}{body}</div>;
-};
+// 相机布局倍率 = 起始特写倍率：按 2.2 倍栅格化，之后只做缩小
+const Z = 2.2;
 
-// 52 周可用率条：全亮，只有一周带一点金（"那次 26 秒的抖动"）
-const WEEKS = Array.from({ length: 52 }, (_, i) => (i === 31 ? 1 : 0));
+// 90 天可用率条带：确定性，89 天全绿、2 天降级（让 99.9% 可信）
+const DAYS = Array.from({ length: 45 }, (_, i) => (i === 17 ? 1 : i === 33 ? 2 : 0));
 
 const HeroCard: React.FC<{ rim: number }> = ({ rim }) => (
-  <div style={{
-    position: 'absolute', inset: 0, borderRadius: 30, boxSizing: 'border-box', padding: '40px 48px', overflow: 'hidden',
-    background: `linear-gradient(180deg, #202226 0%, ${L.surface} 100%)`,
-    border: `1.5px solid ${alpha('#ffffff', 0.1 + rim * 0.22)}`,
-    boxShadow: `inset 0 1.5px 0 ${alpha('#ffffff', 0.12 + rim * 0.2)}`,
-    display: 'flex', flexDirection: 'column', fontFamily: FONT.sans,
-  }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-      <div style={{ width: 12, height: 12, borderRadius: 6, background: L.accent2, boxShadow: `0 0 12px ${alpha(L.accent2, 0.8)}` }} />
-      <div style={{ ...type(24, 650, { caps: true }), letterSpacing: '0.2em', color: L.ink2 }}>Uptime · last 365 days</div>
+  <div
+    style={{
+      position: 'absolute',
+      inset: 0,
+      borderRadius: 18,
+      background: 'linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%)',
+      border: '1px solid rgba(20,22,28,0.08)',
+      boxSizing: 'border-box',
+      padding: '30px 34px 26px',
+      display: 'flex',
+      flexDirection: 'column',
+      fontFamily: FONT.sans,
+      overflow: 'hidden',
+      boxShadow: `inset 0 1px 0 rgba(255,255,255,${0.9 + rim * 0.1})`,
+    }}
+  >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ width: 9, height: 9, borderRadius: 5, background: '#2fa36b', boxShadow: '0 0 0 4px rgba(47,163,107,0.14)' }} />
+      <div style={{ fontSize: 17, fontWeight: 600, color: G.ink1, letterSpacing: '-0.01em' }}>API uptime</div>
+      <div style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 550, color: G.ink2, padding: '3px 9px', borderRadius: 7, background: G.fill, boxShadow: `inset 0 0 0 1px ${G.hairline}` }}>
+        90 days
+      </div>
     </div>
-    <div style={{ marginTop: 30, display: 'flex', alignItems: 'baseline', ...type(170, 700), letterSpacing: '-0.05em', color: L.ink }}>
-      99.999<span style={{ fontSize: '0.42em', fontWeight: 500, color: L.ink2, marginLeft: '0.06em', letterSpacing: '-0.02em' }}>%</span>
+    <div
+      style={{
+        marginTop: 18,
+        fontSize: 128,
+        fontWeight: 700,
+        lineHeight: 0.96,
+        letterSpacing: '-0.045em',
+        color: G.ink1,
+        fontVariantNumeric: 'tabular-nums',
+      }}
+    >
+      99.9<span style={{ fontSize: '0.56em', fontWeight: 600, color: G.ink2, marginLeft: '0.04em' }}>%</span>
     </div>
-    <div style={{ marginTop: 'auto', display: 'flex', gap: 4, height: 44, alignItems: 'stretch' }}>
-      {WEEKS.map((d, i) => (
-        <div key={i} style={{ flex: 1, borderRadius: 3, background: d ? L.accent2 : alpha(L.ink, 0.78) }} />
+    <div style={{ marginTop: 'auto', display: 'flex', gap: 3, height: 30, alignItems: 'stretch' }}>
+      {DAYS.map((d, i) => (
+        <div
+          key={i}
+          style={{
+            flex: 1,
+            borderRadius: 2,
+            background: d === 0 ? 'rgba(47,163,107,0.78)' : d === 1 ? '#e2a23b' : 'rgba(47,163,107,0.4)',
+          }}
+        />
       ))}
     </div>
-    <div style={{ marginTop: 14, display: 'flex', ...type(22, 500), color: L.ink3 }}>
-      <span>Oct 2025</span>
+    <div style={{ marginTop: 10, display: 'flex', fontSize: 13, color: G.ink3, fontVariantNumeric: 'tabular-nums' }}>
+      <span>90 days ago</span>
       <span style={{ marginLeft: 'auto' }}>Today</span>
     </div>
   </div>
@@ -131,78 +103,82 @@ const HeroCard: React.FC<{ rim: number }> = ({ rim }) => (
 export const PullBackIsolation: React.FC = () => {
   const frame = useCurrentFrame();
 
-  const scale = mix(Z, 0.62, PULL(Math.min(1, frame / 118)));
-  // 仍亮着的屏幕占比 → 环境光
-  let lit = 0;
-  const states = TILES.map((_, i) => {
-    const content = ramp(frame, OFF_AT[i], 6, EASE.out);
-    const body = ramp(frame, OFF_AT[i] + 3, 14, EASE.swift);
-    lit += 1 - body;
-    return { content, body };
+  // 相机后拉：2.2（怼脸特写）→ 0.62（大远景孤悬）
+  const scale = interpolate(frame, [0, 110], [2.2, 0.62], {
+    easing: Easing.out(Easing.cubic),
+    ...clamp,
   });
-  const litFrac = lit / TILES.length;
-  const rim = ramp(frame, 70, 42, EASE.smooth);
-  const breathe = 1 + 0.06 * Math.sin(frame / 22) * ramp(frame, 120, 20, EASE.smooth);
+
+  // 背景沉入黑暗（60–110f）：亮柔光底 → 带色相深场，交叉淡化
+  const bgT = interpolate(frame, [60, 110], [0, 1], { easing: Easing.inOut(Easing.quad), ...clamp });
+
+  // 主卡光晕淡入（60–100f）
+  const glow = interpolate(frame, [60, 100], [0, 1], { easing: Easing.inOut(Easing.quad), ...clamp });
 
   return (
-    <AbsoluteFill style={{ overflow: 'hidden', fontFamily: FONT.sans }}>
-      <Stage look={L} keyLight={{ x: 0.5, y: 0.0 }} fill={null} intensity={mix(0.6, 0.35, rim)}>
-        {/* 屏幕墙的环境光：随亮屏占比衰减 */}
-        <AbsoluteFill style={{
-          background: `radial-gradient(ellipse 80% 75% at 50% 50%, ${alpha('#c8d0e0', 0.16 * litFrac)} 0%, ${alpha('#c8d0e0', 0)} 75%)`,
-        }} />
-        {/* 孤卡的顶光：一束收窄的光锥落在主卡上（随轮廓光一起亮起） */}
-        <AbsoluteFill style={{
-          opacity: rim,
-          background:
-            `radial-gradient(ellipse 22% 34% at 50% 50%, ${alpha('#dfe4ee', 0.2)} 0%, ${alpha('#dfe4ee', 0)} 100%),` +
-            `linear-gradient(180deg, ${alpha('#dfe4ee', 0.1)} 0%, ${alpha('#dfe4ee', 0)} 46%)`,
-          WebkitMaskImage: 'radial-gradient(ellipse 30% 70% at 50% 20%, #000 0%, transparent 100%)',
-          maskImage: 'radial-gradient(ellipse 30% 70% at 50% 20%, #000 0%, transparent 100%)',
-        }} />
-      </Stage>
+    <AbsoluteFill style={{ background: G.dark, overflow: 'hidden' }}>
+      <Backdrop tone="light" light={{ x: 0.5, y: 0.3 }} grain={0} />
+      <AbsoluteFill style={{ opacity: bgT }}>
+        <Backdrop tone="dark" light={{ x: 0.5, y: 0.5 }} accent="#5b63d3" grain={0} vignette={0.6} />
+      </AbsoluteFill>
 
-      {/* 相机：按 Z 倍布局，以主卡中心（画面中心）为原点 scale(scale/Z) */}
-      <div style={{
-        position: 'absolute', left: 0, top: 0, width: 1920 * Z, height: 1080 * Z,
-        transformOrigin: `${960 * Z}px ${540 * Z}px`,
-        transform: `translate(${960 - 960 * Z}px, ${540 - 540 * Z}px) scale(${(scale / Z).toFixed(5)})`,
-      }}>
+      {/* 相机容器：按 Z 倍布局，再以主卡中心（画面中心）为原点 scale(scale/Z) */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: 1920 * Z,
+          height: 1080 * Z,
+          transformOrigin: `${960 * Z}px ${540 * Z}px`,
+          transform: `translate(${960 - 960 * Z}px, ${540 - 540 * Z}px) scale(${scale / Z})`,
+        }}
+      >
         <div style={{ position: 'relative', width: 1920, height: 1080, zoom: Z }}>
-          {TILES.map((t, i) => {
-            const { content, body } = states[i];
-            if (body >= 1) return null;
+          {/* 兄弟卡：由近到远错峰熄灭，熄灭时轻微下沉 */}
+          {SIBS.map((s, i) => {
+            const t0 = FADE_START[i];
+            const k = interpolate(frame, [t0, t0 + FADE_DUR], [0, 1], clamp);
+            // 透明度先走（ease-out），压暗后走（k²）：熄灭过程不会在亮底上停成一块灰板
+            const op = 1 - EASE.out(k);
+            const dk = k * k;
             return (
-              <div key={i} style={{
-                position: 'absolute', left: 960 + t.x - TILE.w / 2, top: 540 + t.y - TILE.h / 2, width: TILE.w, height: TILE.h,
-                borderRadius: 20, overflow: 'hidden', boxSizing: 'border-box',
-                background: `linear-gradient(180deg, ${L.surface2} 0%, ${L.surface} 100%)`,
-                border: `1px solid ${alpha('#ffffff', 0.08)}`,
-                opacity: 1 - body,
-                transform: `translateY(${(body * 10).toFixed(2)}px) scale(${mix(1, 0.96, body).toFixed(4)})`,
-                filter: body > 0.001 ? `brightness(${mix(1, 0.35, body).toFixed(3)})` : undefined,
-              }}>
-                <div style={{ opacity: 1 - content * 0.85 }}><Mini kind={t.kind} seed={t.seed} /></div>
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  left: 960 + s.dx - s.w / 2,
+                  top: 540 + s.dy - s.h / 2,
+                  opacity: op,
+                  // 压暗 + 轻微失焦：像沉进暗处
+                  filter: k > 0.001 ? `brightness(${mix(1, 0.3, dk).toFixed(3)}) blur(${(k * 5).toFixed(2)}px)` : undefined,
+                  transform: `scale(${mix(1, 0.97, k)})`,
+                }}
+              >
+                <Card w={s.w} h={s.h} seed={s.seed} />
               </div>
             );
           })}
 
-          {/* 主卡：光晕在卡外层，轮廓光在卡内 */}
-          <div style={{
-            position: 'absolute', left: 960 - HERO.w / 2, top: 540 - HERO.h / 2, width: HERO.w, height: HERO.h, borderRadius: 30,
-            boxShadow:
-              `0 30px 80px -20px rgba(0,0,0,0.7), ` +
-              `0 0 ${(60 * breathe).toFixed(1)}px ${alpha('#e8ecf5', 0.22 * rim)}, 0 0 ${(200 * breathe).toFixed(1)}px ${alpha('#aab4cc', 0.16 * rim)}`,
-          }}>
-            <HeroCard rim={rim} />
+          {/* 主卡：520×340 居中；落入暗场后外圈冷白光晕 */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 960 - 260,
+              top: 540 - 170,
+              width: 520,
+              height: 340,
+              borderRadius: 18,
+              boxShadow:
+                `${softShadow(18, { strength: 1 - glow * 0.6 })}, ` +
+                `0 0 70px rgba(214,222,255,${(glow * 0.32).toFixed(3)}), 0 0 180px rgba(150,162,240,${(glow * 0.2).toFixed(3)})`,
+            }}
+          >
+            <HeroCard rim={glow} />
           </div>
         </div>
       </div>
-
-      {/* 结语：屏幕空间，不随相机缩放 */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: 772, textAlign: 'center', ...type(56, 650), color: L.ink }}>
-        <TextReveal text="Five nines. All year." by="word" variant="blur" start={116} each={18} gap={4} />
-      </div>
+      <Grain opacity={mix(0.05, 0.09, bgT)} blend={bgT > 0.5 ? 'soft-light' : 'overlay'} />
     </AbsoluteFill>
   );
 };

@@ -1,181 +1,175 @@
-// row-embed —— 内容行从空中降下、rotateX 收平、嵌入瞬间底边亮一道强调色的缝。
-// "结构化数据长进页面"的详情页/列表镜头。飞行体 = 整页截图 backgroundImage 负偏移裁片（Q1：裁片不重绘内容）。
-//
-// 第二轮重设计（暖黑舞台 · 3D 俯拍升降 · 真高度落位）：
-// - look = ember（暖黑 + 橙）：截图页面的强调色本就是赤橙（「研究问题」页签），舞台用同色系暖黑，
-//   嵌入缝的橙光在两边都对得上。页面不再是铺满全屏的平面贴图，而是一张放在暖黑舞台上的"纸"——
-//   顶部受光、远端压暗、底下一层大软影，开场就看得出它是个物体。
-// - 机位：开场低角度斜俯（rotateX 44°、rotateZ −7°、页面 0.92 倍），行从页面上方 ~250px 的真实
-//   3D 高度落下（translateZ，而不是 2D 平移），影子投在页面上、随高度降低收紧变实；
-//   全程一条 crane：边落边把机位摇正、推近到正视（rotateX 0、1.6 倍、页面铺满画框）——
-//   最后一行嵌入时恰好变成可读的正视列表（Q6：信息密集镜头落定为正视）。
-// - 落位：行以底边为铰链、顶边抬起 16° 的姿态下落（铰链先着地、顶边再"合上"），
-//   末段仍带速度砸进槽位 + 3f press 回弹；槽位先是页面真实底色补丁 + 虚线框占位，落地即消失（Q9）。
-// - 嵌入缝：底边 3px 橙缝从中心 6f 向两侧展开 + 一层极淡的橙色行底光，10f 内收掉（每行一次、只在底边、裁在行宽内）。
-// - 渲染清晰度（Q2）：页面平面按目标倍率直接布局（宽 = 1920·Z，背景图按同倍率铺），3D 只做旋转不做放大。
-//
-// 时间表（30fps，共 112f）：
-//   0–12    预备：斜俯机位已在缓慢升起；五个空槽虚线框，首槽提亮
-//   12–62   行雨：cue 12/24/34/42/49（间隔 12→7 递减，越落越快），每行 13f 飞行，落地 25/37/47/55/62
-//   62–72   末行嵌入缝收尾
-//   0–90    crane：rotateX 44→0、rotateZ −7→0、Z 0.92→1.6（不对称 in-out，后半程很软）
-//   90–112  hold：正视列表，极缓推近 1.5%
+// row-embed —— 内容行从空中降下、rotateX 收平、嵌入瞬间底边亮强调色缝
+// "结构化数据长进页面"的详情页/列表镜头。参考实现从 template SceneDetail 剥离：
+// 行按节拍逐条从上空飞入（perspective translateY(−120·air) + rotateX(16°·air) +
+// scale 略过冲后 press 回弹），行位先盖页面底色补丁占位、落地后消失让纹理透出，
+// 嵌入瞬间行底边 2px 强调色缝从中心向两侧展开后淡出，相机同时缓缓下摇。
+// 节拍（质感改版）：cue = 12/22/31/39/46（间隔 10→7 递减，行雨越落越快），飞行 12f，
+// 末行 58f 落地、强调色缝 66f 收尾 ≤ 镜头 68f 预算。
+// 飞行体 = 整页截图 backgroundImage 负偏移裁片（Q1：裁片不重绘内容）。
+// 质感改版要点：
+// - 空槽补丁取页面真实底色 #f9f6f1（原 #fdfcfa 偏白，五个槽位读成一整块白板），并画一道
+//   极淡的槽位虚线框——观众看得见"这里有个空位在等"，落地就是"扣进去"（Q9）；
+// - 下落改为"加速砸进槽位"（末段仍有速度）+ press 回弹，飞行段按速度加纵向运动模糊；
+// - 槽位接触影随行接近而收紧变实（近地小而实），离地时是大而虚的环境影；
+// - 相机取景改为全程被页面铺满（原起点露出页顶外空白、终点露出页底外 160px 空白）。
 import React from 'react';
-import { AbsoluteFill, staticFile, useCurrentFrame } from 'remotion';
-import { EASE, bezier, mix, ramp } from '../../_fixtures/Polish';
-import { Dust, LOOKS, Stage, alpha } from '../../_fixtures/Look';
+import { AbsoluteFill, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
+import { PageCam2D, CamKey2D } from '../../_fixtures/PageCam2D';
+import { Grain, Vignette } from '../../_fixtures/Polish';
 import layout from '../../_textures/live-layout.json';
 
-export const ROW_EMBED_DURATION = 112;
+export const ROW_EMBED_DURATION = 68;
 
-const L = LOOKS.ember;
-const PAGE_W = 1920;
-const PAGE_H = layout.detail.pageH;
+const DETAIL_H = layout.detail.pageH;
 const rows = layout.detail.rows;
 const PAGE_BG = '#f9f6f1'; // 截图里内容区的真实底色（逐像素采样）
-const SEAM = '#e8642a'; // 页面自身的赤橙
-const SRC = staticFile('textures/live/detail-full.png');
 
-const CUES = [12, 24, 34, 42, 49];
-const FLY = 13;
-const LIFT = 250; // 起落高度（页面 px）
-const TILT = 16; // 空中姿态：顶边抬起角度
-// 下落：起步慢、末段仍带速度砸进槽位（终点斜率 >1），由 press 回弹吸收冲击
-const FLY_EASE = bezier(0.5, 0, 0.8, 0.72);
-const CRANE = bezier(0.55, 0, 0.25, 1);
+// 起点 cy=500@1.12：页顶刚好出画；终点 cy=740@1.25：边下摇边微推近，页底贴住画框下沿，
+// 画框上沿落在「编辑元数据」分隔线与「项目资料」之间（不切半行字）
+const DETAIL_CAM: CamKey2D[] = [
+  { frame: 0, cx: 960, cy: 500, zoom: 1.12 },
+  { frame: 68, cx: 960, cy: 740, zoom: 1.25 },
+];
 
-// 页面里只取「研究问题」这一节做主体面板（页签 + 筛选 + 表格，真实截图裁片）
-const PANEL = { x: 390, y: 520, w: 1140, h: 640 };
-const Z_END = 1.38; // 正视落定倍率：面板 1573×883，四周留暖黑舞台
+const CUES = [12, 22, 31, 39, 46];
+const FLY = 12;
+// 下落：起步慢、末段仍带速度砸进槽位（终点斜率≈1.25），由 press 回弹吸收冲击
+const FLY_EASE = Easing.bezier(0.5, 0, 0.8, 0.75);
+const detailSrc = staticFile('textures/live/detail-full.png');
+const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
-// 机位：开场斜俯 → 正视。焦点始终是面板中心
-const camAt = (f: number) => {
-  const t = CRANE(Math.min(1, Math.max(0, f / 86)));
-  const hold = ramp(f, 86, 26, EASE.swift);
-  return {
-    rx: mix(40, 0, t),
-    rz: mix(-6, 0, t),
-    Z: mix(1.12, Z_END, t) * (1 + 0.015 * hold),
-    cx: PANEL.x + PANEL.w / 2,
-    cy: PANEL.y + PANEL.h / 2,
-    lift: mix(40, 0, t),
-  };
-};
-
-const airOf = (f: number, cue: number) => 1 - FLY_EASE(Math.min(1, Math.max(0, (f - cue) / FLY)));
+const airOf = (frame: number, cue: number) => 1 - interpolate(frame, [cue, cue + FLY], [0, 1], { ...clamp, easing: FLY_EASE });
 
 export const RowEmbed: React.FC = () => {
-  const f = useCurrentFrame();
-  const cam = camAt(f);
-  const Z = cam.Z;
-  const crop = (r: { x: number; y: number }): React.CSSProperties => ({
-    backgroundImage: `url(${SRC})`,
-    backgroundSize: `${PAGE_W * Z}px ${PAGE_H * Z}px`,
-    backgroundPosition: `${-r.x * Z}px ${-r.y * Z}px`,
-  });
+  const frame = useCurrentFrame();
 
   return (
-    <AbsoluteFill style={{ background: L.bg[2] }}>
-      <Stage look={L} keyLight={{ x: 0.5, y: 0.14 }} fill={{ x: 0.9, y: 0.96 }} intensity={0.85} breathe={0.3}>
-        <Dust look={L} count={26} seed={7} drift={0.18} opacity={0.35} />
-      </Stage>
+    <AbsoluteFill>
+      <PageCam2D src="textures/live/detail-full.png" pageH={DETAIL_H} keys={DETAIL_CAM} bg={PAGE_BG}>
+        {rows.map((r, i) => {
+          const cue = CUES[i];
+          const land = cue + FLY;
 
-      {/* 3D 世界：原点在画面中心，页面焦点 (cx, cy) 落在原点 */}
-      <AbsoluteFill style={{ perspective: 2200, perspectiveOrigin: '960px 380px' }}>
-        <div style={{
-          position: 'absolute', left: 960, top: 540 + cam.lift, width: 0, height: 0, transformStyle: 'preserve-3d',
-          transform: `rotateX(${cam.rx.toFixed(3)}deg) rotateZ(${cam.rz.toFixed(3)}deg)`,
-        }}>
-          {/* 面板平面：一个 0×0 的 preserve-3d 容器，页面坐标 (px, py) → (px−cx, py−cy)·Z；
-              按 Z 倍率直接布局（不做 3D 放大，字形按目标尺寸栅格化） */}
-          <div style={{ position: 'absolute', left: -cam.cx * Z, top: -cam.cy * Z, width: PAGE_W * Z, height: PAGE_H * Z, transformStyle: 'preserve-3d' }}>
-            {/* 面板：真实截图裁片 + 圆角 + 两层大软影 + 发丝边 */}
-            <div style={{
-              position: 'absolute', left: PANEL.x * Z, top: PANEL.y * Z, width: PANEL.w * Z, height: PANEL.h * Z, borderRadius: 22 * Z, overflow: 'hidden',
-              backgroundColor: PAGE_BG, ...crop(PANEL),
-              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.9), 0 ${6 * Z}px ${16 * Z}px rgba(0,0,0,0.45), 0 ${50 * Z}px ${130 * Z}px ${-14 * Z}px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,220,190,0.14), 0 0 ${90 * Z}px ${alpha(L.light, 0.12)}`,
-            }}>
-              {/* 纸面受光：远端（上）压暗、近端暖光——斜俯时读作一张受光的纸，摇正后收成极淡的顶光 */}
-              <div style={{
-                position: 'absolute', inset: 0, pointerEvents: 'none',
-                background: `linear-gradient(180deg, rgba(50,22,8,${(0.06 + 0.26 * cam.rx / 40).toFixed(3)}) 0%, rgba(50,22,8,0) 45%), ` +
-                  `radial-gradient(80% 60% at 50% 0%, rgba(255,240,222,0.18), rgba(255,240,222,0) 70%)`,
-              }} />
-            </div>
-            {rows.map((r, i) => {
-              const cue = CUES[i];
-              const land = cue + FLY;
-              const x = r.x * Z, y = r.y * Z, w = r.w * Z, h = r.h * Z;
-              const patch = 1 - ramp(f, land, 2, EASE.linear);
-              const hint = ramp(f, cue - 8, 10, EASE.out); // 槽位在行飞来前提亮（"这里"）
-              const air = airOf(f, cue);
-              const flying = f >= cue && f < land + 4;
-              // press 回弹：落地后 4f 0.992→1
-              const press = f >= land ? mix(0.992, 1, ramp(f, land, 4, EASE.out)) : 1;
-              const scale = f < land ? 1 + 0.04 * air : press;
-              const appear = ramp(f, cue, 3, EASE.linear);
-              // 纵向速度 → 运动模糊（落地为 0）
-              const v = LIFT * Z * (airOf(f - 0.5, cue) - airOf(f + 0.5, cue));
-              const mb = f < land ? Math.min(5, v * 0.06) : 0;
-              // 嵌入缝
-              const spread = ramp(f, land, 6, EASE.snappy);
-              const seamOp = f < land ? 0 : 1 - ramp(f, land + 3, 8, EASE.linear);
-              return (
-                <React.Fragment key={i}>
-                  {patch > 0 && (
-                    <div style={{ position: 'absolute', left: x - 8 * Z, top: y - 4 * Z, width: w + 24 * Z, height: h + 8 * Z, background: PAGE_BG, opacity: patch }}>
-                      <div style={{
-                        position: 'absolute', left: 8 * Z, top: 10 * Z, width: w, height: h - 12 * Z, borderRadius: 10 * Z, boxSizing: 'border-box',
-                        border: `${Math.max(1.5, 1.6 * Z).toFixed(2)}px dashed rgba(170,90,40,${(0.28 + 0.3 * hint).toFixed(3)})`,
-                        background: `rgba(232,100,42,${(0.025 + 0.05 * hint * (f < land ? 1 : 0)).toFixed(3)})`,
-                      }} />
-                    </div>
-                  )}
-                  {/* 投影：行越低越小越实，偏向近端（主光在后上方） */}
-                  {flying && (
-                    <div style={{
-                      position: 'absolute', left: x + 14 * Z, top: y + (8 + 60 * air) * Z, width: w - 28 * Z, height: h - 8 * Z, borderRadius: 12 * Z,
-                      background: `rgba(70,35,12,${(0.32 * (1 - 0.65 * air) * (f < land ? 1 : 1 - ramp(f, land, 3))).toFixed(3)})`,
-                      filter: `blur(${((4 + 36 * air) * Z).toFixed(1)}px)`,
-                    }} />
-                  )}
-                  {flying && (
-                    <div style={{
-                      position: 'absolute', left: x, top: y, width: w, height: h, opacity: appear,
-                      transformOrigin: '50% 100%',
-                      transform: `translateZ(${(LIFT * air * Z).toFixed(2)}px) rotateX(${(-TILT * air).toFixed(3)}deg) scale(${scale.toFixed(4)})`,
-                      filter: mb > 0.3 ? `blur(${(mb * 0.5).toFixed(2)}px)` : undefined,
-                    }}>
-                      <div style={{
-                        position: 'absolute', inset: 0, borderRadius: 10 * Z, overflow: 'hidden', backgroundColor: PAGE_BG, ...crop(r),
-                        boxShadow: `inset 0 1px 0 rgba(255,255,255,${(0.9 * air).toFixed(3)}), 0 0 0 1px rgba(90,50,20,${(0.1 * air).toFixed(3)})`,
-                      }}>
-                        {/* 空中时行面带一点顶光，落地后与页面融为一体 */}
-                        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, rgba(255,255,255,${(0.35 * air).toFixed(3)}), rgba(255,255,255,0) 60%)` }} />
-                      </div>
-                    </div>
-                  )}
-                  {/* 嵌入缝 + 行底光：落地瞬间从中心向两侧展开，裁在行宽内 */}
-                  {seamOp > 0 && (
-                    <>
-                      <div style={{
-                        position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 10 * Z, overflow: 'hidden', opacity: seamOp * 0.9,
-                        background: `radial-gradient(60% 120% at 50% 100%, ${alpha(SEAM, 0.14)}, ${alpha(SEAM, 0)} 70%)`,
-                      }} />
-                      <div style={{
-                        position: 'absolute', left: x + (w * (1 - spread)) / 2, top: y + h - 2 * Z, width: w * spread, height: 3 * Z, borderRadius: 2 * Z,
-                        opacity: seamOp,
-                        background: `linear-gradient(90deg, ${alpha(SEAM, 0)} 0%, ${SEAM} 16%, #ff9a52 50%, ${SEAM} 84%, ${alpha(SEAM, 0)} 100%)`,
-                        boxShadow: `0 0 ${10 * Z}px ${alpha(SEAM, 0.55)}`,
-                      }} />
-                    </>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-      </AbsoluteFill>
+          // 空槽补丁（真实底色）+ 虚线槽位框，落地后 2f 消失
+          const patchOpacity = interpolate(frame, [land, land + 2], [1, 0], clamp);
+          // 槽位框在行飞来时略微提亮（"这里"），落地即随补丁消失
+          const slotHint = interpolate(frame, [cue - 6, cue + 4], [0.55, 1], clamp);
+
+          // flying row: texture-crop dropping in from the air
+          let flyer: React.ReactNode = null;
+          let contact: React.ReactNode = null;
+          if (frame >= cue && frame < land + 4) {
+            const air = airOf(frame, cue);
+            const p = 1 - air;
+            const appear = interpolate(frame, [cue, cue + 3], [0, 1], clamp);
+            const scale =
+              frame < land
+                ? 1.06 - 0.065 * p
+                : interpolate(frame, [land, land + 4], [0.995, 1], { ...clamp, easing: Easing.out(Easing.quad) });
+            // 纵向速度（页面 px/帧）→ 运动模糊，落地为 0
+            const vy = 120 * (airOf(frame - 0.5, cue) - airOf(frame + 0.5, cue));
+            const mb = frame < land ? Math.min(3.2, vy * 0.22) : 0;
+            flyer = (
+              <div
+                key={`row-${i}`}
+                style={{
+                  position: 'absolute', left: r.x, top: r.y, width: r.w, height: r.h,
+                  opacity: appear, zIndex: 3, pointerEvents: 'none',
+                  transform: `perspective(900px) translateY(${(-120 * air).toFixed(2)}px) rotateX(${(16 * air).toFixed(3)}deg) scale(${scale.toFixed(4)})`,
+                  filter: mb > 0.25 ? `url(#row-mb-${i})` : undefined,
+                }}
+              >
+                {mb > 0.25 && (
+                  <svg width={0} height={0} style={{ position: 'absolute' }} aria-hidden>
+                    <filter id={`row-mb-${i}`} x="-5%" y="-30%" width="110%" height="160%">
+                      <feGaussianBlur stdDeviation={`0 ${mb.toFixed(2)}`} />
+                    </filter>
+                  </svg>
+                )}
+                <div
+                  style={{
+                    position: 'absolute', inset: 0, borderRadius: 8, overflow: 'hidden', backgroundColor: '#fff',
+                    backgroundImage: `url(${detailSrc})`,
+                    backgroundSize: `1920px ${DETAIL_H}px`,
+                    backgroundPosition: `-${r.x}px -${r.y}px`,
+                    // 两层影：离地时大而虚的环境影 + 随高度变淡的近地影；顶部 1px 受光
+                    boxShadow:
+                      `inset 0 1px 0 rgba(255,255,255,${(0.9 * air).toFixed(3)}), ` +
+                      `0 0 0 1px rgba(60,45,25,${(0.07 * air).toFixed(3)}), ` +
+                      `0 ${(34 * air).toFixed(1)}px ${(64 * air).toFixed(1)}px -${(10 * air).toFixed(1)}px rgba(40,30,18,${(0.24 * air).toFixed(3)}), ` +
+                      `0 ${(6 * air).toFixed(1)}px ${(14 * air).toFixed(1)}px rgba(40,30,18,${(0.1 * air).toFixed(3)})`,
+                  }}
+                />
+              </div>
+            );
+            // 槽位接触影：行越近越实越小（落地前 4f 最浓），落地后 3f 淡掉
+            const near = interpolate(air, [0, 0.5], [1, 0], clamp);
+            const contactOp = frame < land ? near * 0.5 : interpolate(frame, [land, land + 3], [0.5, 0], clamp);
+            contact = (
+              <div
+                key={`contact-${i}`}
+                style={{
+                  position: 'absolute', left: r.x + 10, top: r.y + 6, width: r.w - 20, height: r.h - 6, borderRadius: 10,
+                  boxShadow: `0 ${(2 + 6 * air).toFixed(1)}px ${(6 + 18 * air).toFixed(1)}px rgba(60,42,20,${(0.22 * contactOp).toFixed(3)})`,
+                  zIndex: 2, pointerEvents: 'none',
+                }}
+              />
+            );
+          }
+
+          // embed flash: 2px amber seam at the row's bottom edge, expanding from
+          // the center on touchdown, then fading out（两端羽化，裁在行宽内）
+          let seam: React.ReactNode = null;
+          if (frame >= land && frame < land + 8) {
+            const spread = interpolate(frame, [land, land + 5], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+            const seamOpacity = interpolate(frame, [land, land + 2, land + 8], [1, 1, 0], clamp);
+            const seamW = r.w * spread;
+            seam = (
+              <div
+                key={`seam-${i}`}
+                style={{
+                  position: 'absolute',
+                  left: r.x + (r.w - seamW) / 2,
+                  top: r.y + r.h - 2,
+                  width: seamW, height: 2, borderRadius: 1,
+                  background:
+                    'linear-gradient(90deg, rgba(196,120,40,0) 0%, oklch(60% 0.14 62) 18%, oklch(66% 0.15 66) 50%, oklch(60% 0.14 62) 82%, rgba(196,120,40,0) 100%)',
+                  boxShadow: '0 0 7px rgba(200,128,52,0.38)',
+                  opacity: seamOpacity, zIndex: 4, pointerEvents: 'none',
+                }}
+              />
+            );
+          }
+
+          return (
+            <React.Fragment key={i}>
+              {patchOpacity > 0 ? (
+                <div
+                  key={`patch-${i}`}
+                  style={{
+                    position: 'absolute', left: r.x - 8, top: r.y - 4,
+                    width: r.w + 24, height: r.h + 8, background: PAGE_BG,
+                    opacity: patchOpacity, zIndex: 1, pointerEvents: 'none',
+                  }}
+                >
+                  <div
+                    style={{
+                      position: 'absolute', left: 8, top: 10, width: r.w, height: r.h - 12, borderRadius: 8,
+                      border: '1px dashed rgba(120,96,64,0.20)', boxSizing: 'border-box', opacity: slotHint,
+                      background: 'rgba(120,96,64,0.018)',
+                    }}
+                  />
+                </div>
+              ) : null}
+              {contact}
+              {flyer}
+              {seam}
+            </React.Fragment>
+          );
+        })}
+      </PageCam2D>
+      <Vignette strength={0.1} color="#3a2c1c" inner={0.55} />
+      <Grain opacity={0.035} />
     </AbsoluteFill>
   );
 };

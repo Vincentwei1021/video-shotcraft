@@ -1,111 +1,105 @@
-// doc-park-left-pill-deal —— 文档靠左驻留 + 结论慢发牌（第二轮重设计 · 瓷白 SaaS）
-// 手法不变：文档读完后不淡出，而是滑向左侧只露一截并微缩到 0.92、全程极缓慢自动滚动（"仍在被读"）；
-// 右侧按旁白节奏慢速发三张结论药丸，每张落定后它下方的说明逐词加深，下一张到来前整句淡出。
-//
-// 设计决定
-// - look = porcelain（冷白 + 钴蓝 + 一点青绿）。原生 1920 排版，不再走 480 设计坐标放大：
-//   文档是一张出版级"客户档案"白纸（标题 52px / 正文 30px），药丸放大成 128px 高的结论条（名称 54px），
-//   说明句 44px——每个要读的字都过 Q11。
-// - 因果更直观：每张药丸先在文档里"找到依据"——依据句被钴蓝荧光笔自左向右划出——
-//   然后药丸从这句话的位置飞出、带一次过冲落进右栏槽位，再由一条钴蓝细线把依据句尾和药丸连起来。
-//   结论确实是从文档里"长出来"的。
-// - 开场：文档居中，一道钴蓝扫描光带自上而下扫过（"正在读"），眉题 ANALYZING 计数源；扫完即驻留。
-// - 节奏：发牌间隔 38f（一句短旁白的长度），每张药丸内部是"快—慢"两条曲线（透明度 6f 先到、位移 14f 过冲后到）。
-//   末句说明留到最后（尾帧是一张三条结论 + 一句理由的完整海报）。
-//
-// 时间表（30fps，共 180f）
-//   0–30    扫描：光带扫过整页，眉题"ANALYZING · 12 SOURCES"
-//   18–46   驻留：文档 translateX → 只露约 40%，scale 1→0.92（smooth in-out 28f）；右栏眉题淡入
-//   全程    自动滚动：连续匀速 1.4px/f（不取模，不回跳）
-//   T0=46 / 84 / 122  每张：依据句荧光笔 T0−6→T0+6；药丸 T0→T0+14 从依据句飞到槽位（overshoot）；
-//           连线 T0+8→T0+20 draw-on；说明 T0+12 起逐词加深（~20f），下一张 T0−8 前淡出（末张不淡出）
-//   150–180 hold 30f：三条结论 + 末句说明，极缓推近 1%
+// doc-park-left-pill-deal — Doc Park 文档靠左 + 结论慢发牌（motion-lab 定稿转原生 Remotion）
+// 扫描结束文档不淡出，而是向左滑出只露约 35% 宽并微缩到 0.92；右侧按旁白节奏
+// 慢速发牌三张白底描边药丸（outBack 弹入），每张落定后其下方走逐词加深字幕、
+// 下一张到来前整句淡出；左侧文档全程做极缓慢自动滚动保持"正在被读"。
+// 设计坐标 480×270（DesignStage 等比放大），440×240 定尺画布居中排版。
+// 质感层（改版）：文档从骨架条换成出版级"客户档案"正文（标题 / 元信息 / 分节正文）；
+// 自动滚动改为连续匀速（原取模写法每 1/3 片长整页回跳 40px）；每张药丸落定时，文档里对应的
+// 依据句被荧光笔划出，并有一条强调色细线从该句连到药丸（"结论从文档里长出来"），随字幕退场；
+// 药丸换成受光白面 + 发丝线 + 两层软阴影 + 强调色图标底；柔光浅底 + 颗粒。
 import React from 'react';
-import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { EASE, FONT, mix, ramp, softShadow } from '../../_fixtures/Polish';
-import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
+import { AbsoluteFill } from 'remotion';
+import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
+import { Backdrop, EASE, FONT, softShadow } from '../../_fixtures/Polish';
 
-export const DOC_PARK_LEFT_PILL_DEAL_DURATION = 180;
+export const DOC_PARK_LEFT_PILL_DEAL_DURATION = 174; // 5800ms @30fps
 
-const L = LOOKS.porcelain;
+// ---- 本卡共享量（浅灰瑞士极简系配色，与 Phase 0 fixture 令牌协调） ----
+const SANS = FONT.sans;
+const TXT = '#17181c'; // 正文近黑（带冷调）
+const DIM = '#c4c6cc'; // 浅灰占位字
+const INK2 = '#5d5f66';
+const INK3 = '#9b9da3';
+const LINE = 'rgba(20,22,28,0.09)'; // 发丝描边
+const ACCENT = '#5b63d3';
+
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const h2r = (h: string) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-const mixColor = (p: number, a: string, b: string) => {
+// 颜色插值：mix(p,'#C9C9CE','#111')
+const mix = (p: number, a: string, b: string) => {
   const A = h2r(a), B = h2r(b), q = clamp01(p);
   return `rgb(${Math.round(A[0] + (B[0] - A[0]) * q)},${Math.round(A[1] + (B[1] - A[1]) * q)},${Math.round(A[2] + (B[2] - A[2]) * q)})`;
 };
 
-// ───────────── 文档（内容坐标：宽 DW；窗口高 DH；内容比窗口长，供连续滚动） ─────────────
-const DW = 1000, DH = 880;
-const DOC_X = 460, DOC_Y = 100; // 居中时的位置
-const PAD = 64;
-const PARK_X = -1010; // 驻留：左移量（scale 0.92 以左缘为锚 → 右缘落在 x≈370，露约 40%）
-const SCROLL_V = 1.4; // px/帧
-
-type Line = { kind: 'title' | 'meta' | 'h' | 'p'; text: string; mark?: number };
-const RAW: Line[] = [
-  { kind: 'title', text: 'Account review — Northwind Studio' },
-  { kind: 'meta', text: 'Prepared by Customer Ops · Oct 2 · 12 sources' },
-  { kind: 'h', text: 'PROFILE' },
-  { kind: 'p', text: 'Design agency, 14 seats, onboarded in March via partners.' },
-  { kind: 'p', text: 'Two admins; most members join from shared invite links.' },
-  { kind: 'h', text: 'PREFERENCES' },
-  { kind: 'p', text: 'Asked twice for a guided setup instead of blank projects.', mark: 0 },
-  { kind: 'p', text: 'Opens the onboarding checklist within the first minutes.' },
-  { kind: 'h', text: 'USAGE' },
-  { kind: 'p', text: 'Most sessions land on weekdays between 9 and 11 am local.', mark: 1 },
-  { kind: 'p', text: 'Weekend activity under 4%; mobile share steady at 18%.' },
-  { kind: 'h', text: 'ORDERS' },
-  { kind: 'p', text: 'The starter kit is their most repeated item, nine orders.', mark: 2 },
-  { kind: 'p', text: 'Average basket of 3.2 items; reorders every 24 days.' },
-  { kind: 'h', text: 'NOTES' },
-  { kind: 'p', text: 'Champion is the studio lead; finance signs annual plans.' },
-  { kind: 'p', text: 'Wants a bundle once the team grows past twenty seats.' },
-  { kind: 'p', text: 'Next check-in after the quarterly planning cycle ends.' },
-];
-// 排版：逐行累计 y（内容坐标，行中线）
-const DOC: (Line & { y: number; size: number; h: number })[] = (() => {
-  let y = PAD;
-  return RAW.map((l) => {
-    const size = l.kind === 'title' ? 52 : l.kind === 'meta' ? 26 : l.kind === 'h' ? 22 : 30;
-    const before = l.kind === 'h' ? 40 : l.kind === 'meta' ? 14 : 0;
-    const h = l.kind === 'title' ? 64 : l.kind === 'meta' ? 40 : l.kind === 'h' ? 44 : 52;
-    y += before;
-    const out = { ...l, y: y + h / 2, size, h };
-    y += h;
-    return out;
-  });
-})();
-
-// ───────────── 右栏结论 ─────────────
-const ITEMS: { n: string; ic: 'spark' | 'calendar' | 'box'; pct: string; cap: string }[] = [
-  { n: 'Guided quick start', ic: 'spark', pct: '92%', cap: 'They asked for guided setup, twice.' },
-  { n: 'Weekday team plan', ic: 'calendar', pct: '88%', cap: 'Usage peaks 9–11 am on weekdays.' },
-  { n: 'Starter kit refill', ic: 'box', pct: '95%', cap: 'Their most reordered item, nine times.' },
-];
-const PX = 600, PW = 1000, PH = 128;
-const PY = [196, 436, 676];
-const T0 = [46, 84, 122];
-
-const Icon: React.FC<{ k: 'spark' | 'calendar' | 'box'; size: number; color: string }> = ({ k, size, color }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
-    {k === 'spark' && (<><path d="M12 3v4M12 17v4M3 12h4M17 12h4" /><path d="M12 8.5l1.2 2.3 2.3 1.2-2.3 1.2L12 15.5l-1.2-2.3L8.5 12l2.3-1.2z" /></>)}
-    {k === 'calendar' && (<><rect x={3.5} y={5} width={17} height={15} rx={3} /><path d="M3.5 10h17M8 3v4M16 3v4" /><path d="M8 14h3" /></>)}
-    {k === 'box' && (<><path d="M3.5 8 12 3.5 20.5 8v8L12 20.5 3.5 16z" /><path d="M3.5 8 12 12.5 20.5 8M12 12.5v8" /></>)}
+// 简易线性占位图标（纯 SVG，零依赖），强调色描边
+const Icon: React.FC<{ k: 'leaf' | 'bowl' | 'wrap'; size: number }> = ({ k, size }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke={ACCENT} strokeWidth={1.35} strokeLinecap="round" strokeLinejoin="round">
+    {k === 'leaf' && (
+      <>
+        <path d="M3 13c0-6 5-10 10-10 0 6-4 10-10 10Z" />
+        <path d="M3 13 13 3" />
+      </>
+    )}
+    {k === 'bowl' && (
+      <>
+        <path d="M2 7h12c0 4-2.6 6-6 6S2 11 2 7Z" />
+        <path d="M6 4.5V2M9.5 4.5V2" />
+      </>
+    )}
+    {k === 'wrap' && (
+      <>
+        <circle cx={8} cy={8} r={5.6} />
+        <path d="M4.4 6.2h7.2M4.4 9.8h7.2" />
+      </>
+    )}
   </svg>
 );
 
-// 逐词加深说明句：ink3 → ink 逐词，出场整句淡出
-const Caption: React.FC<{ text: string; innP: number; outP: number; style: React.CSSProperties }> = ({ text, innP, outP, style }) => {
+// 逐词加深字幕（本系列统一语法）：浅灰占位 → 逐词加深到黑 → 逐词淡回浅灰 → 整行归零
+// innP: 入场加深进度；outP: 出场进度（>0 时覆盖颜色与整行透明）；showV: 行基础透明
+const Caption: React.FC<{
+  text: string;
+  left: number;
+  top: number;
+  size: number;
+  showV: number;
+  innP: number;
+  outP: number;
+}> = ({ text, left, top, size, showV, innP, outP }) => {
   const words = text.split(' ');
   const n = words.length;
-  const st = 0.75 / n, win = st * 1.6;
+  const st = 0.78 / n, win = st * 1.5; // 入场逐词交错
+  const stw = 0.55 / n;                // 出场逐词交错
+  const rowOpacity = outP > 0 ? clamp01(1 - (outP - 0.7) / 0.3) : showV;
   return (
-    <div style={{ position: 'absolute', whiteSpace: 'nowrap', opacity: clamp01(innP * 6) * (1 - outP), transform: `translateY(${(-10 * outP).toFixed(2)}px)`, ...style }}>
+    <div
+      style={{
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'baseline',
+        whiteSpace: 'nowrap',
+        left,
+        top,
+        opacity: rowOpacity,
+      }}
+    >
       {words.map((w, i) => {
         const q = clamp01((innP - i * st) / win);
+        let color = mix(q, DIM, TXT);
+        if (outP > 0) {
+          const p = clamp01((outP - i * stw) / (stw * 1.4));
+          color = mix(1 - p, DIM, TXT);
+        }
         return (
-          <span key={i} style={{ color: mixColor(q, '#c3cad8', L.ink), display: 'inline-block', transform: `translateY(${((1 - EASE.out(q)) * 8).toFixed(2)}px)`, marginRight: '0.26em' }}>
+          <span
+            key={i}
+            style={{
+              font: `600 ${size}px/1.25 ${SANS}`,
+              color,
+              letterSpacing: (-0.03 * (1 - q)).toFixed(4) + 'em',
+              marginRight: i === n - 1 ? 0 : 4.5,
+            }}
+          >
             {w}
           </span>
         );
@@ -114,170 +108,241 @@ const Caption: React.FC<{ text: string; innP: number; outP: number; style: React
   );
 };
 
-export const DocParkLeftPillDeal: React.FC = () => {
-  const frame = useCurrentFrame();
+// ---- 文档：出版级客户档案（内容坐标，宽 DW；只露右侧约 35%，行尾要铺满） ----
+const DW = 250, DH = 190;
+type Line = { y: number; kind: 'title' | 'meta' | 'h' | 'p'; text: string; mark?: number };
+const DOC: Line[] = [
+  { y: 17, kind: 'title', text: 'Account review · Northwind Studio' },
+  { y: 30, kind: 'meta', text: 'Prepared by Customer Ops  ·  Oct 2  ·  12 sources' },
+  { y: 53, kind: 'h', text: 'PROFILE' },
+  { y: 63, kind: 'p', text: 'Design agency, 14 seats, onboarded in March via a partner referral.' },
+  { y: 73, kind: 'p', text: 'Two admins; most members join from shared invite links each week.' },
+  { y: 83, kind: 'p', text: 'Health score trending up for six consecutive weeks of activity.' },
+  { y: 97, kind: 'h', text: 'PREFERENCES' },
+  { y: 107, kind: 'p', text: 'Prefers a guided quick start over manual workspace setup.', mark: 0 },
+  { y: 117, kind: 'p', text: 'Asked twice for templates instead of blank projects in support.' },
+  { y: 127, kind: 'p', text: 'Opens the onboarding checklist within the first five minutes.' },
+  { y: 141, kind: 'h', text: 'USAGE' },
+  { y: 151, kind: 'p', text: 'Most sessions land on weekdays between 9 and 11 am local time.', mark: 1 },
+  { y: 161, kind: 'p', text: 'Weekend activity under 4%; mobile share steady at about 18%.' },
+  { y: 171, kind: 'p', text: 'Peak concurrency of 11 seats on Tuesday review meetings.' },
+  { y: 185, kind: 'h', text: 'ORDERS' },
+  { y: 195, kind: 'p', text: 'The starter kit is their most repeated item across 9 orders.', mark: 2 },
+  { y: 205, kind: 'p', text: 'Average basket of 3.2 items; reorders every 24 days on average.' },
+  { y: 215, kind: 'p', text: 'No refunds or disputes recorded in the last two billing cycles.' },
+  { y: 229, kind: 'h', text: 'NOTES' },
+  { y: 239, kind: 'p', text: 'Champion is the studio lead; finance approves annual upgrades.' },
+  { y: 249, kind: 'p', text: 'Interested in a bundle once the team grows past twenty seats.' },
+  { y: 259, kind: 'p', text: 'Next check-in scheduled after the quarterly planning cycle.' },
+  { y: 273, kind: 'h', text: 'NEXT STEPS' },
+  { y: 283, kind: 'p', text: 'Offer quick start, a weekday bundle plan and a starter kit refill.' },
+  { y: 293, kind: 'p', text: 'Share the recommendation summary with the account owner.' },
+  { y: 303, kind: 'p', text: 'Review outcomes in the next monthly account health digest.' },
+];
+// 自动滚动总行程（设计 px）：等于原 3 周期 × 40 的速度（≈0.7px/f），改为连续匀速、不回跳
+const SCROLL = 120;
+// 文档内容坐标 → 画布坐标（与文档窗格 transform 同一套：left 34 / top 25 / origin 左缘中点）
+const DOC_LEFT = 34, DOC_TOP = (240 - DH) / 2;
 
-  // 驻留
-  const park = ramp(frame, 18, 28, EASE.smooth);
-  const tx = mix(0, PARK_X, park);
-  const sc = mix(1, 0.92, park);
-  const scrollY = -frame * SCROLL_V;
-  // 文档内容坐标 → 屏幕坐标（窗口 transform-origin：左缘中点）
-  const toScreen = (xd: number, yd: number) => ({
-    x: DOC_X + tx + sc * xd,
-    y: DOC_Y + DH / 2 + sc * (yd + scrollY - DH / 2),
+const ITEMS: { n: string; ic: 'leaf' | 'bowl' | 'wrap'; cap: string }[] = [
+  { n: 'Quick Start', ic: 'leaf', cap: 'Start matches their preference' },
+  { n: 'Bundle Plan', ic: 'bowl', cap: 'Plan fits their weekday usage' },
+  { n: 'Starter Kit', ic: 'wrap', cap: 'Kit is their top repeat item' },
+];
+const PX = 214, PY = 54, PH = 34, PG = 14;
+const T0 = [0.26, 0.48, 0.70]; // 三张药丸的发牌起点
+
+export const DocParkLeftPillDeal: React.FC = () => {
+  const t = useT();
+  // 文档靠左驻留：滑出只露约 35% 宽 + 微缩 0.92
+  const park = seg(t, 0.06, 0.24, E.inOutCubic);
+  const tx = lerp(park, 0, -0.55 * DW);
+  const sc = lerp(park, 1, 0.92);
+  // 极缓慢自动滚动：连续匀速（不取模，避免整页回跳）
+  const scrollY = -t * SCROLL;
+  const toCanvas = (xd: number, yd: number) => ({
+    x: DOC_LEFT + tx + sc * xd,
+    y: DOC_TOP + DH / 2 + sc * (yd - DH / 2),
   });
 
-  // 扫描光带：0–30 自上而下
-  const scan = ramp(frame, 2, 28, EASE.swift);
-  const scanOp = clamp01(frame / 4) * (1 - ramp(frame, 26, 6, EASE.out));
-  const kickA = ramp(frame, 0, 10, EASE.out) * (1 - ramp(frame, 18, 10, EASE.out));
-  const kickB = ramp(frame, 36, 14, EASE.out);
-
-  // 整体极缓推近（hold 段让画面活着）
-  const push = 1 + 0.01 * ramp(frame, 120, 60, EASE.smooth);
-
   return (
-    <AbsoluteFill style={{ fontFamily: FONT.sans, overflow: 'hidden' }}>
-      <Stage look={L} keyLight={{ x: 0.62, y: 0.12 }} fill={{ x: 0.1, y: 0.9 }} />
-
-      <AbsoluteFill style={{ transform: `scale(${push.toFixed(5)})`, transformOrigin: '1100px 540px' }}>
-        {/* ── 文档窗格：驻留 + 微缩，origin 钉在左缘中点 ── */}
+    <AbsoluteFill>
+      <Backdrop tone="light" light={{ x: 0.6, y: 0.24 }} accent={ACCENT} grain={0.05} vignette={0.12} />
+      <DesignStage bg="transparent">
+        {/* 页面 + 440×240 定尺画布（居中） */}
         <div
           style={{
-            position: 'absolute', left: DOC_X, top: DOC_Y, width: DW, height: DH, transformOrigin: '0% 50%',
-            transform: `translateX(${tx.toFixed(2)}px) scale(${sc.toFixed(4)})`,
+            position: 'absolute',
+            inset: 0,
+            overflow: 'hidden',
+            fontFamily: SANS,
+            WebkitFontSmoothing: 'antialiased',
           }}
         >
-          <div
-            style={{
-              position: 'absolute', inset: 0, borderRadius: 28, overflow: 'hidden', background: L.surface,
-              border: `1px solid ${L.line}`,
-              boxShadow: `inset 0 1px 0 #ffffff, ${softShadow(28, { color: L.shadow, strength: 1.1 })}`,
-            }}
-          >
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, transform: `translateY(${scrollY.toFixed(2)}px)` }}>
-              {DOC.map((l, i) => {
-                const mk = l.mark !== undefined ? ramp(frame, T0[l.mark] - 6, 12, EASE.out) : 0;
-                const st: React.CSSProperties =
-                  l.kind === 'title' ? { ...type(52, 720), color: L.ink }
-                  : l.kind === 'meta' ? { ...type(26, 500), color: L.ink3 }
-                  : l.kind === 'h' ? { ...type(22, 700, { caps: true }), letterSpacing: '0.16em', color: L.ink3 }
-                  : { ...type(30, 450), letterSpacing: '-0.01em', color: L.ink2 };
-                return (
-                  <div key={i} style={{ position: 'absolute', left: PAD, width: DW - 2 * PAD, top: l.y - l.h / 2, height: l.h, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-                    {mk > 0 && (
-                      <div style={{ position: 'absolute', left: -10, top: 6, bottom: 6, width: `calc(${(mk * 100).toFixed(1)}% + 20px)`, borderRadius: 8, background: alpha(L.accent, 0.12), borderLeft: `4px solid ${alpha(L.accent, 0.8)}` }} />
-                    )}
-                    <span style={{ position: 'relative', ...st, ...(mk > 0 ? { color: mixColor(mk, '#4c566e', '#1b3fd1'), fontWeight: 550 } : null) }}>{l.text}</span>
-                    {l.kind === 'meta' && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -12, height: 1, background: L.line }} />}
-                  </div>
-                );
-              })}
-            </div>
-            {/* 扫描光带（裁在纸面圆角内） */}
-            {scanOp > 0.001 && (
-              <div style={{ position: 'absolute', left: 0, right: 0, top: scan * (DH + 120) - 120, height: 120, opacity: scanOp, pointerEvents: 'none' }}>
-                <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(180deg, ${alpha(L.accent, 0)} 0%, ${alpha(L.accent, 0.1)} 85%, ${alpha(L.accent, 0.0)} 100%)` }} />
-                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 14, height: 2, background: `linear-gradient(90deg, transparent, ${alpha(L.accent, 0.55)} 20%, ${alpha(L.accent, 0.55)} 80%, transparent)`, boxShadow: `0 0 18px ${alpha(L.accent, 0.4)}` }} />
-              </div>
-            )}
-            {/* 纸面上下渐隐：滚动的内容从边缘柔和进出 */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `linear-gradient(180deg, ${L.surface} 0%, ${alpha(L.surface, 0)} 7%, ${alpha(L.surface, 0)} 90%, ${L.surface} 100%)` }} />
-          </div>
-        </div>
-
-        {/* 开场眉题（文档上方，驻留时退场） */}
-        <div style={{ position: 'absolute', left: DOC_X, top: 44, display: 'flex', alignItems: 'center', gap: 14, opacity: kickA, ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.ink2 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 5, background: L.accent, boxShadow: `0 0 0 5px ${alpha(L.accent, 0.15)}` }} />
-          ANALYZING · 12 SOURCES
-        </div>
-
-        {/* 右栏眉题 */}
-        <div style={{ position: 'absolute', left: PX + 8, top: 108, display: 'flex', alignItems: 'center', gap: 14, opacity: kickB, transform: `translateY(${((1 - kickB) * 12).toFixed(2)}px)`, ...type(24, 600, { mono: true }), letterSpacing: '0.16em', color: L.ink3 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 5, background: L.accent2 }} />
-          RECOMMENDED FOR NORTHWIND
-        </div>
-
-        {/* 依据连线：依据句尾（文档可见右缘内）→ 药丸左缘 */}
-        <svg width={1920} height={1080} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', pointerEvents: 'none' }}>
-          {ITEMS.map((_, k) => {
-            const f = T0[k];
-            const draw = ramp(frame, f + 8, 12, EASE.out);
-            const fade = k < 2 ? 1 - ramp(frame, T0[k + 1] - 10, 8, EASE.out) : 1;
-            if (draw <= 0 || fade <= 0) return null;
-            const line = DOC.find((l) => l.mark === k)!;
-            const a = toScreen(DW - 40, line.y);
-            const b = { x: PX - 6, y: PY[k] + PH / 2 };
-            const mx = (a.x + b.x) / 2;
-            return (
-              <g key={k} opacity={fade}>
-                <path d={`M${a.x.toFixed(1)},${a.y.toFixed(1)} C${mx.toFixed(1)},${a.y.toFixed(1)} ${mx.toFixed(1)},${b.y.toFixed(1)} ${b.x.toFixed(1)},${b.y.toFixed(1)}`}
-                  fill="none" stroke={L.accent} strokeWidth={3} strokeLinecap="round" pathLength={1} strokeDasharray="1 1" strokeDashoffset={(1 - draw).toFixed(4)} />
-                <circle cx={a.x} cy={a.y} r={7} fill={L.surface} stroke={L.accent} strokeWidth={3} opacity={clamp01(draw * 3)} />
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* 右栏：三张结论药丸 + 说明句 */}
-        {ITEMS.map((it, k) => {
-          const f = T0[k];
-          const o = ramp(frame, f, 6, EASE.out);
-          const b = ramp(frame, f, 14, EASE.overshoot);
-          // 起点：依据句在屏幕上的位置附近（左侧、偏向那一行）
-          const line = DOC.find((l) => l.mark === k)!;
-          const src = toScreen(DW - 120, line.y);
-          const ox = mix(src.x - PX - 200, 0, b);
-          const oy = mix(src.y - (PY[k] + PH / 2), 0, b);
-          const s = mix(0.72, 1, b);
-          const lift = mix(30, 6, clamp01(b));
-          // 速度 → 横向运动模糊
-          const spd = Math.abs(ramp(frame + 0.5, f, 14, EASE.overshoot) - ramp(frame - 0.5, f, 14, EASE.overshoot)) * Math.hypot(src.x - PX - 200, src.y - PY[k]);
-          const landed = ramp(frame, f + 10, 10, EASE.out);
-          const capIn = ramp(frame, f + 12, 22, EASE.linear);
-          const capOut = k < 2 ? ramp(frame, T0[k + 1] - 8, 8, EASE.exit) : 0;
-          if (o <= 0) return null;
-          return (
-            <React.Fragment key={k}>
+          <div style={{ position: 'absolute', left: '50%', top: '50%', width: 440, height: 240, margin: '-120px 0 0 -220px' }}>
+            {/* 左侧文档窗格：靠左驻留 + 微缩，origin 钉在左缘中点 */}
+            <div
+              style={{
+                position: 'absolute',
+                left: DOC_LEFT,
+                top: DOC_TOP,
+                width: DW,
+                height: DH,
+                transformOrigin: '0% 50%',
+                transform: `translateX(${tx.toFixed(2)}px) scale(${sc.toFixed(4)})`,
+              }}
+            >
+              {/* 文档卡：白面 + 发丝线 + 内高光 + 两层软阴影 */}
               <div
                 style={{
-                  position: 'absolute', left: PX, top: PY[k], width: PW, height: PH, borderRadius: PH / 2,
-                  background: `linear-gradient(180deg, #ffffff 0%, ${L.surface2} 100%)`,
-                  border: `1px solid ${L.line}`, boxSizing: 'border-box',
-                  boxShadow: `inset 0 1px 0 #ffffff, ${softShadow(lift, { color: L.shadow, strength: 1 })}`,
-                  display: 'flex', alignItems: 'center', gap: 30, padding: '0 22px 0 22px',
-                  opacity: o, transform: `translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px) scale(${s.toFixed(4)})`, transformOrigin: '0% 50%',
-                  filter: spd > 2 ? `blur(${Math.min(8, spd * 0.06).toFixed(2)}px)` : undefined,
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  width: DW,
+                  height: DH,
+                  background: '#fff',
+                  border: `0.5px solid ${LINE}`,
+                  borderRadius: 10,
+                  boxShadow: `inset 0 0.5px 0 rgba(255,255,255,1), ${softShadow(6, { strength: 0.7 })}`,
+                  overflow: 'hidden',
                 }}
               >
-                <div
-                  style={{
-                    width: 84, height: 84, borderRadius: 42, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: `linear-gradient(150deg, #4f78ff 0%, ${L.accent} 70%)`,
-                    boxShadow: `inset 0 1px 0 rgba(255,255,255,0.35), 0 8px 20px ${alpha(L.accent, 0.35)}`,
-                  }}
-                >
-                  <Icon k={it.ic} size={44} color="#ffffff" />
-                </div>
-                <div style={{ ...type(54, 680), color: L.ink }}>{it.n}</div>
-                <div style={{ flex: 1 }} />
-                <div
-                  style={{
-                    height: 64, padding: '0 24px', borderRadius: 32, display: 'flex', alignItems: 'center', gap: 10,
-                    background: alpha(L.accent2, 0.1), color: '#007a69', ...type(30, 650, { mono: true }),
-                    opacity: landed, transform: `scale(${mix(0.85, 1, landed).toFixed(3)})`,
-                  }}
-                >
-                  <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#00a08a" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.2 4.2L19 7" /></svg>
-                  {it.pct}
+                <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: 330, transform: `translateY(${scrollY.toFixed(2)}px)` }}>
+                  <div style={{ position: 'absolute', left: 14, right: 14, top: 41.5, height: 0.5, background: LINE }} />
+                  {DOC.map((l, i) => {
+                    const st: React.CSSProperties =
+                      l.kind === 'title'
+                        ? { fontSize: 8.6, fontWeight: 650, color: TXT, letterSpacing: '-0.015em' }
+                        : l.kind === 'meta'
+                          ? { fontSize: 5.4, fontWeight: 500, color: INK3, letterSpacing: '0.01em' }
+                          : l.kind === 'h'
+                            ? { fontSize: 5, fontWeight: 650, color: INK3, letterSpacing: '0.1em' }
+                            : { fontSize: 6.3, fontWeight: 450, color: INK2, letterSpacing: '0' };
+                    // 依据句荧光笔：对应药丸落定后自左向右划出
+                    const mk = l.mark !== undefined ? seg(t, T0[l.mark] + 0.06, T0[l.mark] + 0.13, EASE.out) : 0;
+                    return (
+                      <div key={i} style={{ position: 'absolute', left: 14, width: DW - 28, top: l.y - 5, height: 10, lineHeight: '10px', whiteSpace: 'nowrap', ...st }}>
+                        {mk > 0 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              left: -2,
+                              top: 1.2,
+                              height: 7.6,
+                              width: `calc(${(mk * 100).toFixed(1)}% + 4px)`,
+                              borderRadius: 2,
+                              background: 'rgba(91,99,211,0.14)',
+                            }}
+                          />
+                        )}
+                        <span style={{ position: 'relative', color: mk > 0 ? mix(mk, '#5d5f66', '#2c3190') : undefined }}>{l.text}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-              <Caption text={it.cap} innP={capIn} outP={capOut} style={{ left: PX + 36, top: PY[k] + PH + 22, ...type(44, 560), letterSpacing: '-0.02em' }} />
-            </React.Fragment>
-          );
-        })}
-      </AbsoluteFill>
+            </div>
+
+            {/* 依据连线：文档依据句右端 → 药丸左缘，药丸落定后 draw-on，随字幕退场淡出 */}
+            <svg width={440} height={240} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
+              {ITEMS.map((_, k) => {
+                const f = T0[k];
+                const ce = k < 2 ? T0[k + 1] - 0.03 : 0.98;
+                const draw = seg(t, f + 0.04, f + 0.11, EASE.out);
+                const fade = 1 - seg(t, ce - 0.06, ce - 0.01, EASE.out);
+                if (draw <= 0 || fade <= 0) return null;
+                const line = DOC.find((l) => l.mark === k)!;
+                const a = toCanvas(DW - 6, line.y + scrollY);
+                const b = { x: PX - 3, y: PY + k * (PH + PG) + PH / 2 };
+                const mx = (a.x + b.x) / 2;
+                return (
+                  <g key={k} opacity={(0.9 * fade).toFixed(3)}>
+                    <path
+                      d={`M${a.x.toFixed(2)},${a.y.toFixed(2)} C${mx.toFixed(2)},${a.y.toFixed(2)} ${mx.toFixed(2)},${b.y.toFixed(2)} ${b.x.toFixed(2)},${b.y.toFixed(2)}`}
+                      fill="none"
+                      stroke={ACCENT}
+                      strokeWidth={0.75}
+                      strokeLinecap="round"
+                      pathLength={1}
+                      strokeDasharray="1 1"
+                      strokeDashoffset={(1 - draw).toFixed(4)}
+                    />
+                    <circle cx={a.x} cy={a.y} r={1.6} fill={ACCENT} opacity={Math.min(1, draw * 3)} />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* 右侧三张药丸 + 逐词字幕，按 T0 节奏慢发牌 */}
+            {ITEMS.map((it, k) => {
+              const f = T0[k];
+              const o = seg(t, f, f + 0.035, E.outQuad);
+              const b = seg(t, f, f + 0.062, E.outBack);
+              // 字幕：落定 +3 帧起加深，下一张入场前淡出
+              const cs = f + 0.05, ce = k < 2 ? T0[k + 1] - 0.03 : 0.98;
+              const showV = seg(t, cs, cs + 0.02);
+              const innP = seg(t, cs, cs + (ce - cs) * 0.7);
+              const outP = seg(t, ce - 0.05, ce, E.outQuad);
+              // 落定前阴影更高更虚（飞入感），落定后收成静置阴影
+              const lift = lerp(clamp01(b), 14, 4);
+              return (
+                <React.Fragment key={k}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: PX,
+                      top: PY + k * (PH + PG),
+                      width: 172,
+                      height: PH,
+                      borderRadius: PH / 2,
+                      background: 'linear-gradient(180deg, #ffffff 0%, #fbfbfa 100%)',
+                      border: `0.5px solid ${LINE}`,
+                      boxSizing: 'border-box',
+                      boxShadow: `inset 0 0.5px 0 rgba(255,255,255,1), ${softShadow(lift, { strength: 0.75 })}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '0 12px 0 7px',
+                      opacity: o,
+                      transform: `translateY(${lerp(b, 14, 0).toFixed(2)}px) scale(${lerp(b, 0.94, 1).toFixed(4)})`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 21,
+                        height: 21,
+                        borderRadius: 11,
+                        background: 'rgba(91,99,211,0.10)',
+                        border: '0.5px solid rgba(91,99,211,0.16)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flex: 'none',
+                      }}
+                    >
+                      <Icon k={it.ic} size={12} />
+                    </div>
+                    <div style={{ font: `600 12.5px/1 ${SANS}`, color: TXT, letterSpacing: '-.012em' }}>{it.n}</div>
+                    <div style={{ flex: 1 }} />
+                    <div style={{ font: `500 8px/1 ${SANS}`, color: INK3, letterSpacing: '0.02em', fontVariantNumeric: 'tabular-nums' }}>
+                      {['92%', '88%', '95%'][k]}
+                    </div>
+                  </div>
+                  <Caption
+                    text={it.cap}
+                    left={PX + 4}
+                    top={PY + k * (PH + PG) + PH + 7}
+                    size={11}
+                    showV={showV}
+                    innP={innP}
+                    outP={outP}
+                  />
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+      </DesignStage>
     </AbsoluteFill>
   );
 };

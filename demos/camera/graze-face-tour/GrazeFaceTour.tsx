@@ -1,280 +1,540 @@
-// graze-face-tour｜大倾角贴面游走特写（第二轮重设计）
-// 手法不变：镜头贴着 UI 表面低飞掠过（侧栏树 / 任务列表 / 标题区当地形），页面文字初始悬浮在
-// 界面上空、向界面投同形软影，镜头经过时先后加速贴落回界面，影子随高度收敛消失。
-//
-// 设计决定
-// - look：sand（米色 · 赤陶）。整张 UI 是一片被低角度暖阳斜照的"地形"：掠射光让悬浮的文字投出
-//   长长的、方向一致的影子（低角度光从左侧来，影朝右拖）——影子越长越说明它飞得高，空间关系一眼成立。
-// - 一镜到底：旧版三段交叉淡化接力 → 一条真正连续的上行长镜。相机焦点沿一条曲线从侧栏下部
-//   （SPACES 树）飞向右上的任务列表和大标题，航向 −10°→−20° 边飞边右转，俯角 64°→54° 末段略抬，
-//   落在大标题「Launch plan」上——尾帧就是一张有纵深的海报。
-// - 真 3D 悬浮：文字 / 图标 / 徽标按 translateZ 沿界面法线抬起（不是 2D 假位移），影子画在界面上
-//   （z≈0），偏移 = 高度 × 0.75 沿光的方位角，高处大而虚而淡、贴近时收紧变实，落地时与本体重合消失。
-// - 错峰贴落：每个元素的落地时刻 = 相机焦点"前方距离"降到阈值的那一帧（预先按相机路径扫出来），
-//   所以先经过的先落、下落过程彼此重叠并行；下落曲线加速 + 软着陆（easeFall，无回弹）。
-// - 景深：远端用暖色空气雾 + backdrop 模糊带（只一层全屏 backdrop，不重复渲染整页）。
-//
-// 时间表（30fps，共 165f）
-//   0–12    开场：近处侧栏的几行已在半空（第 1 帧就有悬浮 + 长影），相机已在飞（缓起）
-//   0–132   连续上行：前 25% 缓起、中段匀速巡航、末 30% 缓落（无刹停）；沿途 ~60 个元素依次贴落
-//   110–138 末段：大标题与副标题最后落地（标题 h=220，最重的一下）
-//   138–165 hold：相机余速 → 0、光的呼吸，尾帧海报
+// graze-face-tour v3 —— 源片 clickup-30.mp4 约 28.5–33s：
+// 相机大倾角贴着 UI 表面游走特写，三段接力：侧栏树 → 顶部 tab 条 → 列表行。
+// v2（用户意见）：页面文字初始悬浮在界面上空（3D 抬高），空中时在 UI 面上
+// 投模糊同形软影；随镜头推进先后落贴回界面，影子随高度收敛消失。
+// v3 质感升级：
+// - 灰阶骨架 UI（Helvetica 回退、5px 粗边框图标、CSS 三角）→ 出版级浅色产品 UI：系统字体栈、
+//   字重层级、统一线性 SVG 图标、3px 发丝线（界面按 ~2.7x 排版，等效 1px）、单一靛紫强调色
+//   （选中行 / List 视图 / 徽标），与霓虹缘光同色系。品牌名换成虚构的 "Orbit"。
+// - 运镜不再"段段刹停"：中段匀速巡航、首段缓起、末段缓落，交叉淡化窗口里相机继续外推
+//   （旧版淡化期 t 被钳住 = 每次接力都有 7f 静止），并带 ±1° 的缓慢滚转，持续"低飞"。
+// - 同形软影改纯色压暗（不再是灰字重影），落地瞬间收成贴地接触影；背景霓虹框改发光描边、
+//   随相机反向视差漂移；暗角改带色相的深色，不再把亮面 UI 压成脏灰；加暗场颗粒。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { LOOKS, alpha, type } from '../../_fixtures/Look';
-import { EASE, FONT, Grain, Vignette, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { FONT, Grain, Vignette, bezier } from '../../_fixtures/Polish';
 
-export const GRAZE_FACE_TOUR_DURATION = 165;
+export const GRAZE_FACE_TOUR_DURATION = 150; // 三段 × 50f
 
-const L = LOOKS.sand;
-const CW = 3800; // 画布（界面）尺寸
-const CH = 3600;
-const SIDE_W = 900;
-const ACC = L.accent;
+const INK = '#17181c';
+const INK2 = '#5d6068';
+const INK3 = '#9a9ca5';
+const LINE = 'rgba(20,22,28,0.085)';
+const SURF = '#f8f8f9';
+const SIDE = '#f2f2f4';
+const ACC = '#7457f5';
+const ACC_SOFT = 'rgba(116,87,245,0.11)';
+const SANS = FONT.sans;
 
 const easeFall = bezier(0.5, 0.05, 0.6, 1); // 加速下落、末端软着陆
-const FALL = 22; // 每个元素的下落时长（帧）
-const LAND_AHEAD = 120; // 焦点前方这个距离内的元素必须已落地（画布 px）——落地点在画面中部的清晰带里
-const SUN = { x: 0.9, y: 0.43 }; // 影子方向（画布坐标单位向量 ≈ 低角度光从左侧来，影朝右拖）
-const SHADOW_K = 0.75; // 影长 = 高度 × SHADOW_K（光的仰角 ≈ 53°）
 
-// ───────────── 相机 ─────────────
-// 焦点（画面锚点所看的画布坐标）沿三次贝塞尔曲线移动；cruise 给出"缓起—巡航—缓落"的行程
-const P0 = { x: 780, y: 2420 }, P1 = { x: 820, y: 1800 }, P2 = { x: 1300, y: 1250 }, P3 = { x: 1500, y: 880 };
-const bez = (a: number, b: number, c: number, d: number, u: number) =>
-  (1 - u) ** 3 * a + 3 * (1 - u) ** 2 * u * b + 3 * (1 - u) * u * u * c + u ** 3 * d;
-const MOVE_END = 140;
-const cruise = (f: number) => {
-  const u = Math.min(1, Math.max(0, f / MOVE_END));
-  const A = 0.25, B = 0.3; // 缓起 / 缓落占比
-  const v = 1 / (1 - A / 2 - B / 2); // 巡航速度（归一化）
-  if (u < A) return (v * u * u) / (2 * A);
-  if (u > 1 - B) return 1 - (v * (1 - u) ** 2) / (2 * B);
-  return v * (u - A / 2);
-};
-type Cam = { fx: number; fy: number; rz: number; rx: number; s: number };
-const camAt = (f: number): Cam => {
-  const u = cruise(f);
-  return {
-    fx: bez(P0.x, P1.x, P2.x, P3.x, u),
-    fy: bez(P0.y, P1.y, P2.y, P3.y, u),
-    rz: mix(-10, -20, EASE.smooth(u)),
-    rx: mix(64, 54, EASE.smooth(Math.max(0, (u - 0.55) / 0.45))),
-    s: mix(1, 1.06, EASE.smooth(u)),
-  };
-};
-// 焦点前方距离：元素在相机前进方向上领先焦点多少（画布 px）
-const aheadOf = (c: Cam, x: number, y: number) => {
-  const t = (-c.rz * Math.PI) / 180; // 前进方向 = 画布"向上"顺时针转 t
-  return (x - c.fx) * Math.sin(t) + (y - c.fy) * -Math.cos(t);
-};
-// 预先扫描：每个锚点第一次进入"必须已落地"区的帧
-const landFrame = (x: number, y: number) => {
-  for (let f = 0; f <= MOVE_END; f++) if (aheadOf(camAt(f), x, y) < LAND_AHEAD) return f;
-  return MOVE_END;
-};
-
-// ───────────── 悬浮单元 ─────────────
-// x,y = 画布左上；ax/ay = 锚点（用于算落地时刻，默认左上 + 偏移）；H = 起始高度
-type FloatSpec = { x: number; y: number; w: number; h: number; H?: number; key: string; node: React.ReactNode };
-
-const Float: React.FC<{ spec: FloatSpec; frame: number; order: number }> = ({ spec, frame, order }) => {
-  const H = spec.H ?? 150;
-  // 落地帧：按相机路径扫出，最早 10f（开场先让观众看见悬浮 + 长影），最晚 MOVE_END
-  const land = Math.max(10 + (order % 5) * 1.5, landFrame(spec.x + spec.w * 0.3, spec.y + spec.h * 0.5));
-  const q = ramp(frame, land - FALL, FALL, easeFall);
-  const z = H * (1 - q);
-  const box: React.CSSProperties = { position: 'absolute', left: spec.x, top: spec.y, width: spec.w, height: spec.h };
-  return (
-    <>
-      {z > 1 && (
-        <div style={{
-          ...box, transform: `translate3d(${(SUN.x * z * SHADOW_K).toFixed(1)}px, ${(SUN.y * z * SHADOW_K).toFixed(1)}px, 0.5px)`,
-          // 高处影大而虚而淡，贴近时收紧变实（接触影），落地瞬间与本体重合消失
-          filter: `brightness(0) blur(${(2 + z * 0.12).toFixed(1)}px)`, opacity: 0.24 * (1 - 0.7 * Math.min(1, z / H)) * Math.min(1, z / 6),
-        }}>{spec.node}</div>
-      )}
-      <div style={{ ...box, transform: `translateZ(${z.toFixed(2)}px)` }}>{spec.node}</div>
-    </>
-  );
-};
-
-// ───────────── 界面内容（画布坐标） ─────────────
-const T = (s: number, w: number, c: string, extra: React.CSSProperties = {}): React.CSSProperties => ({
-  ...type(s, w), color: c, whiteSpace: 'nowrap', ...extra,
-});
-const Ico: React.FC<{ d: string; c?: string; s?: number }> = ({ d, c = L.ink3, s = 60 }) => (
-  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ flex: 'none' }}>
-    <path d={d} />
-  </svg>
-);
-const IC = {
-  home: 'M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5',
-  inbox: 'M4 13.5l2.5-8h11l2.5 8v5H4zM4 13.5h4.5l1.2 2h4.6l1.2-2H20',
-  check: 'M5 12.5l4.5 4.5L19 7.5',
-  target: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z',
-  chevR: 'M9.5 6l6 6-6 6',
-  chevD: 'M6 9.5l6 6 6-6',
-  doc: 'M7 3h7l4 4v14H7zM14 3v4h4',
-};
-
-const row = (gap = 32): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap, height: '100%' });
-
-const buildFloats = (): FloatSpec[] => {
-  const out: FloatSpec[] = [];
-  // 侧栏：品牌 + 导航
-  out.push({ key: 'logo', x: 90, y: 110, w: 700, h: 120, H: 170, node: (
-    <div style={row(28)}>
-      <div style={{ width: 92, height: 92, borderRadius: 26, background: `linear-gradient(140deg, #d8744a, ${ACC})`, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3)' }} />
-      <div style={T(84, 780, L.ink)}>Orchard</div>
-    </div>) });
-  [['home', 'Home', ''], ['inbox', 'Inbox', ''], ['check', 'My tasks', ''], ['target', 'Goals', '']].forEach(([ic, n, c], i) => {
-    out.push({ key: `nav${i}`, x: 110, y: 330 + i * 140, w: 700, h: 110, node: (
-      <div style={row(34)}>
-        <Ico d={IC[ic as keyof typeof IC]} c={L.ink2} />
-        <div style={T(64, 560, L.ink2)}>{n}</div>
-        {c && <div style={{ marginLeft: 'auto', marginRight: 30, ...T(48, 650, L.ink3) }}>{c}</div>}
-      </div>) });
-  });
-  out.push({ key: 'spaces', x: 120, y: 960, w: 600, h: 70, H: 120, node: <div style={T(46, 700, L.ink3, { letterSpacing: '0.16em' })}>SPACES</div> });
-  const tree: [number, string, 'r' | 'd' | 'doc', string?][] = [
-    [0, 'Product', 'r', '#6f8f72'], [0, 'Design', 'd', '#c4552d'], [1, 'Design system', 'doc'], [1, 'Brand refresh', 'doc'],
-    [1, 'Launch plan', 'doc'], [1, 'Research', 'doc'], [0, 'Growth', 'r', '#3d5a80'], [0, 'Support', 'r', '#b48a3c'],
-    [0, 'Hiring', 'r', '#8a6fa8'], [0, 'Archive', 'r', '#9c8f80'],
-  ];
-  tree.forEach(([dep, n, kind, hue], i) => {
-    const sel = n === 'Launch plan';
-    out.push({ key: `tree${i}`, x: 100 + dep * 110, y: 1080 + i * 150, w: 760 - dep * 110, h: 120, node: (
-      <div style={row(30)}>
-        {kind === 'r' && <Ico d={IC.chevR} c={L.ink3} s={50} />}
-        {kind === 'd' && <Ico d={IC.chevD} c={L.ink2} s={50} />}
-        {kind === 'doc' && <Ico d={IC.doc} c={sel ? ACC : L.ink3} s={56} />}
-        {hue && <div style={{ width: 64, height: 64, borderRadius: 18, background: hue, ...T(36, 750, '#fff8f0'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n[0]}</div>}
-        <div style={T(62, sel ? 700 : 560, sel ? ACC : L.ink)}>{n}</div>
-      </div>) });
-  });
-  out.push({ key: 'me', x: 110, y: 2700, w: 740, h: 130, H: 160, node: (
-    <div style={row(30)}>
-      <div style={{ width: 104, height: 104, borderRadius: 52, background: 'linear-gradient(140deg, #e3a27f, #a8573a)', border: `6px solid ${L.surface}` }} />
-      <div><div style={T(58, 650, L.ink)}>Mira Chen</div><div style={T(44, 500, L.ink3)}>Product lead</div></div>
-    </div>) });
-  // 顶栏：面包屑 + 标签
-  out.push({ key: 'crumb', x: SIDE_W + 110, y: 60, w: 1400, h: 90, node: (
-    <div style={row(24)}><div style={T(54, 550, L.ink3)}>Design</div><Ico d={IC.chevR} c={L.ink3} s={44} /><div style={T(54, 650, L.ink)}>Launch plan</div></div>) });
-  ['Overview', 'Board', 'Timeline', 'Docs'].forEach((n, i) => {
-    out.push({ key: `tab${i}`, x: SIDE_W + 110 + [0, 360, 640, 1010][i], y: 190, w: 320, h: 90, node: (
-      <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-        <div style={T(56, i === 0 ? 700 : 550, i === 0 ? L.ink : L.ink3)}>{n}</div>
-        {i === 0 && <div style={{ position: 'absolute', left: 0, width: 250, bottom: -8, height: 7, borderRadius: 4, background: ACC }} />}
-      </div>) });
-  });
-  out.push({ key: 'share', x: 3080, y: 150, w: 520, h: 130, H: 180, node: (
-    <div style={row(22)}>
-      {['#c4552d', '#3d5a80', '#6f8f72'].map((c, i) => <div key={c} style={{ width: 84, height: 84, borderRadius: 42, background: c, border: `6px solid ${L.surface}`, marginLeft: i ? -34 : 0 }} />)}
-      <div style={{ marginLeft: 24, padding: '22px 48px', borderRadius: 999, background: L.ink, ...T(50, 650, L.surface) }}>Share</div>
-    </div>) });
-  // 标题区
-  out.push({ key: 'title', x: SIDE_W + 110, y: 380, w: 2000, h: 240, H: 230, node: <div style={T(220, 800, L.ink, { letterSpacing: '-0.045em', lineHeight: 1 })}>Launch plan</div> });
-  out.push({ key: 'sub', x: SIDE_W + 120, y: 650, w: 2000, h: 90, H: 180, node: (
-    <div style={row(30)}>
-      <div style={{ padding: '10px 28px', borderRadius: 999, background: alpha(ACC, 0.12), ...T(48, 700, ACC) }}>Q4 launch</div>
-      <div style={T(56, 500, L.ink2)}>12 tasks · 7 done · Due Nov 12</div>
-    </div>) });
-  // 任务列表
-  out.push({ key: 'head', x: SIDE_W + 120, y: 960, w: 2700, h: 70, H: 120, node: (
-    <div style={{ ...row(0), ...T(40, 700, L.ink3, { letterSpacing: '0.14em' }) }}>
-      <div style={{ width: 1360 }}>TASK</div><div style={{ width: 420 }}>OWNER</div><div style={{ width: 560 }}>STATUS</div><div>DUE</div>
-    </div>) });
-  const TASKS: [string, string, 'Done' | 'In review' | 'In progress' | 'Todo', string][] = [
-    ['Finalize pricing page', '#c4552d', 'Done', 'Oct 28'],
-    ['Record the launch film', '#3d5a80', 'In review', 'Nov 2'],
-    ['Write press kit', '#6f8f72', 'In progress', 'Nov 4'],
-    ['Send beta invites', '#b48a3c', 'Done', 'Nov 5'],
-    ['Changelog 3.0', '#8a6fa8', 'In progress', 'Nov 6'],
-    ['Support macros', '#3d5a80', 'Todo', 'Nov 8'],
-    ['Partner briefing', '#c4552d', 'Todo', 'Nov 10'],
-    ['Launch day runbook', '#6f8f72', 'Todo', 'Nov 12'],
-  ];
-  TASKS.forEach(([n, who, st, due], i) => {
-    const y = 1080 + i * 220;
-    const pill: Record<string, [string, string]> = {
-      Done: [alpha(L.accent2, 0.14), L.accent2], 'In review': [ACC, '#fff8f0'], 'In progress': [alpha(ACC, 0.12), ACC], Todo: [alpha(L.ink, 0.06), L.ink2],
-    };
-    out.push({ key: `tn${i}`, x: SIDE_W + 120, y: y + 50, w: 1300, h: 110, node: (
-      <div style={row(36)}>
-        <div style={{ width: 62, height: 62, borderRadius: 18, border: `6px solid ${st === 'Done' ? L.accent2 : alpha(L.ink, 0.25)}`, background: st === 'Done' ? L.accent2 : 'transparent', boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {st === 'Done' && <Ico d={IC.check} c="#fff8f0" s={40} />}
-        </div>
-        <div style={T(72, 600, st === 'Done' ? L.ink3 : L.ink, st === 'Done' ? { textDecoration: 'line-through', textDecorationThickness: 4 } : {})}>{n}</div>
-      </div>) });
-    out.push({ key: `tw${i}`, x: SIDE_W + 1480, y: y + 50, w: 380, h: 110, node: (
-      <div style={row(22)}><div style={{ width: 88, height: 88, borderRadius: 44, background: who, border: `6px solid ${L.surface}` }} /></div>) });
-    out.push({ key: `ts${i}`, x: SIDE_W + 1900, y: y + 60, w: 520, h: 96, node: (
-      <div style={{ display: 'inline-flex', alignItems: 'center', height: '100%', padding: '0 40px', borderRadius: 999, background: pill[st][0], ...T(48, 700, pill[st][1]) }}>{st}</div>) });
-    out.push({ key: `td${i}`, x: SIDE_W + 2460, y: y + 60, w: 340, h: 96, node: <div style={{ ...row(0), ...T(56, 600, due === 'Nov 12' ? ACC : L.ink2) }}>{due}</div> });
-  });
-  return out;
-};
-const FLOATS = buildFloats();
-
-// 界面底面（不悬浮）：侧栏底、行分隔线、选中行底色、进度条
-const Surface: React.FC = () => (
-  <div style={{ position: 'absolute', left: 0, top: 0, width: CW, height: CH, background: L.surface, borderRadius: 60, overflow: 'hidden' }}>
-    <div style={{ position: 'absolute', left: 0, top: 0, width: SIDE_W, height: CH, background: L.surface2, borderRight: `4px solid ${L.line}` }} />
-    <div style={{ position: 'absolute', left: SIDE_W, top: 300, right: 0, height: 4, background: L.line }} />
-    {/* 选中树行底色：Launch plan */}
-    <div style={{ position: 'absolute', left: 150, top: 1080 + 4 * 150 - 6, width: 700, height: 132, borderRadius: 28, background: alpha(ACC, 0.1) }} />
-    {/* 进度条 */}
-    <div style={{ position: 'absolute', left: SIDE_W + 120, top: 800, width: 2600, height: 22, borderRadius: 11, background: alpha(L.ink, 0.07) }}>
-      <div style={{ width: '58%', height: '100%', borderRadius: 11, background: `linear-gradient(90deg, ${alpha(ACC, 0.7)}, ${ACC})` }} />
-    </div>
-    {Array.from({ length: 9 }, (_, i) => (
-      <div key={i} style={{ position: 'absolute', left: SIDE_W + 120, top: 1060 + i * 220, width: 2680, height: 4, background: L.line }} />
-    ))}
-    {/* 受光：暖阳从左上斜照，画布上一层大面积明暗过渡 */}
-    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(125deg, ${alpha('#fff3df', 0.55)} 0%, ${alpha('#fff3df', 0)} 45%, ${alpha(L.shadow, 0.06)} 100%)` }} />
+/* ---------- 悬浮 + 同形软影 ----------
+ * h=悬浮高度(px)。文字整体向上（屏幕上-左）抬起，原位置留一份纯色压暗的同形投影：
+ * 高处影大、糊、淡、偏移远；h→0 时收成贴地接触影并消失。 */
+const FloatWrap: React.FC<{ h: number; children: React.ReactNode }> = ({ h, children }) => (
+  <div style={{ position: 'relative' }}>
+    {h > 1.5 && (
+      <div style={{
+        position: 'absolute', inset: 0,
+        transform: `translate(${h * 0.22}px, ${h * 0.42}px) scale(${1 + h * 0.0011})`,
+        filter: `brightness(0) blur(${2 + h * 0.09}px)`,
+        opacity: Math.min(0.22, 0.08 + h * 0.0026),
+        pointerEvents: 'none',
+      }}>{children}</div>
+    )}
+    <div style={{ transform: `translate(${-h * 0.34}px, ${-h * 0.78}px)` }}>{children}</div>
   </div>
 );
 
-export const GrazeFaceTour: React.FC = () => {
-  const frame = useCurrentFrame();
-  const c = camAt(frame);
+/* 每行的悬浮高度：land = 该行贴回完成的段内时刻(0..1)，之前从 H 高度加速落下 */
+const liftOf = (t: number, land: number, H = 120) => {
+  const FALL = 0.34;
+  const p = Math.min(1, Math.max(0, (t - (land - FALL)) / FALL));
+  return (1 - easeFall(p)) * H;
+};
+
+/* ---------- 线性图标（24 视框，界面按 ~2.7x 排版，描边 1.7 ≈ 屏幕 4px） ---------- */
+type IconName = 'doc' | 'folder' | 'more' | 'chevR' | 'chevD' | 'home' | 'inbox' | 'building' | 'users'
+  | 'target' | 'search' | 'list' | 'grid' | 'square' | 'dot';
+const PATHS: Record<IconName, string> = {
+  doc: 'M7 3h7l4 4v14H7zM14 3v4h4M9.5 12h6M9.5 15.5h6',
+  folder: 'M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z',
+  more: 'M6 12h.01M12 12h.01M18 12h.01',
+  chevR: 'M9.5 6l6 6-6 6',
+  chevD: 'M6 9.5l6 6 6-6',
+  home: 'M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5',
+  inbox: 'M4 13.5l2.5-8h11l2.5 8v5H4zM4 13.5h4.5l1.2 2h4.6l1.2-2H20',
+  building: 'M5 20V5.5h9V20M14 9.5h5V20M8 9h3M8 12.5h3M8 16h3M3.5 20h17',
+  users: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.5 19a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.5M17.5 14a5 5 0 0 1 3 5',
+  target: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01',
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',
+  list: 'M8.5 6.5h11M8.5 12h11M8.5 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01',
+  grid: 'M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z',
+  square: 'M5 5h14v14H5z',
+  dot: 'M12 12h.01',
+};
+const Icon: React.FC<{ name: IconName; size?: number; color?: string; sw?: number; dashed?: boolean }> = ({
+  name, size = 50, color = INK3, sw = 1.7, dashed,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={name === 'more' || name === 'dot' ? 3.2 : sw}
+    strokeLinecap="round" strokeLinejoin="round" strokeDasharray={dashed ? '2.6 2.4' : undefined} style={{ flex: 'none' }}>
+    <path d={PATHS[name]} />
+  </svg>
+);
+
+/* 空间徽标：低饱和色块 + 字母 */
+const SpaceChip: React.FC<{ letter: string; hue: string }> = ({ letter, hue }) => (
+  <div style={{
+    width: 60, height: 60, borderRadius: 16, background: hue, flex: 'none',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontFamily: SANS, fontWeight: 700, fontSize: 32, color: '#fff', letterSpacing: '-0.02em',
+    boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.25)',
+  }}>{letter}</div>
+);
+
+type RowIcon = 'tri' | 'triOpen' | 'doc' | 'folder' | 'dash' | undefined;
+
+const TreeRow: React.FC<{
+  depth: number; label: string; icon?: RowIcon; chip?: string; count?: string; size?: number;
+}> = ({ depth, label, icon, chip, count, size = 56 }) => (
+  <div style={{
+    display: 'flex', alignItems: 'center', gap: 26, paddingLeft: 40 + depth * 90,
+    height: size * 2.1,
+  }}>
+    {icon === 'tri' && <Icon name="chevR" size={44} color={INK3} />}
+    {icon === 'triOpen' && <Icon name="chevD" size={44} color={INK2} />}
+    {icon === 'doc' && <Icon name="doc" color={INK3} />}
+    {icon === 'folder' && <Icon name="folder" color={INK3} />}
+    {icon === 'dash' && <Icon name="square" color={INK3} dashed />}
+    {chip && <SpaceChip letter={chip} hue={{ E: '#8a7cf0', P: '#4fb39a', D: '#e39a5b' }[chip] ?? '#9a9ca5'} />}
+    <div style={{ fontFamily: SANS, fontSize: size, color: INK, fontWeight: 500, letterSpacing: '-0.012em' }}>{label}</div>
+    {count && (
+      <div style={{
+        marginLeft: 'auto', marginRight: 80, fontFamily: SANS, fontSize: size * 0.78, color: INK3, fontWeight: 500,
+        fontVariantNumeric: 'tabular-nums',
+      }}>{count}</div>
+    )}
+  </div>
+);
+
+const RecentCard: React.FC<{ title: string; sub: string; meta: string; w?: number }> = ({ title, sub, meta, w = 880 }) => (
+  <div style={{
+    width: w, border: `3px solid ${LINE}`, borderRadius: 26, padding: '34px 42px',
+    display: 'flex', flexDirection: 'column', gap: 14, background: '#fff', boxSizing: 'border-box',
+    boxShadow: '0 3px 6px rgba(16,18,24,0.04), 0 18px 40px -14px rgba(16,18,24,0.12)',
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+      <Icon name="doc" size={52} color={INK2} />
+      <div style={{ fontFamily: SANS, fontSize: 50, color: INK, fontWeight: 650, letterSpacing: '-0.02em' }}>{title}</div>
+    </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18, paddingLeft: 74, fontFamily: SANS, fontSize: 38, color: INK3 }}>
+      <span style={{ color: INK2 }}>{sub}</span>
+      <span>·</span>
+      <span>{meta}</span>
+    </div>
+  </div>
+);
+
+const Tabs: React.FC<{ items: string[]; size: number }> = ({ items, size }) => (
+  <div style={{ display: 'flex', gap: 80, fontFamily: SANS, fontSize: size, letterSpacing: '-0.012em' }}>
+    {items.map((it, i) => (
+      <div key={it} style={{ position: 'relative', color: i === 0 ? INK : INK3, fontWeight: i === 0 ? 650 : 500 }}>
+        {it}
+        {i === 0 && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -22, height: 5, borderRadius: 3, background: ACC }} />}
+      </div>
+    ))}
+  </div>
+);
+
+const ViewSwitch: React.FC<{ size: number }> = ({ size }) => (
+  <div style={{ display: 'flex', gap: 30, alignItems: 'center' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 16, padding: '20px 40px', background: ACC_SOFT, borderRadius: 18,
+      border: '3px solid rgba(116,87,245,0.22)', fontFamily: SANS, fontSize: size, color: ACC, fontWeight: 650,
+    }}><Icon name="list" size={size * 0.95} color={ACC} />List</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontFamily: SANS, fontSize: size, color: INK3, fontWeight: 500 }}>
+      <Icon name="grid" size={size * 0.95} color={INK3} />Gallery
+    </div>
+  </div>
+);
+
+/* 场景 A：侧栏 SPACES 树 + 右侧 Recent 卡
+ * 树行/卡片按镜头行进方向（自上而下）先后从空中落贴回界面 */
+const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
+  const L = (i: number, n = 14) => liftOf(t, 0.22 + (i / n) * 0.62, 130);
+  const rows: [number, string, RowIcon, string | undefined, string | undefined][] = [
+    [0, 'People & Teams', 'doc', undefined, undefined],
+    [0, 'Goals', 'doc', undefined, undefined],
+    [0, 'Docs', 'doc', undefined, undefined],
+    [0, 'More', 'dash', undefined, undefined],
+    [0, 'EPD', 'tri', 'E', undefined],
+    [0, 'Product roadmap', 'tri', 'P', undefined],
+    [0, 'Design', 'triOpen', 'D', undefined],
+    [1, 'Designer handbook', 'doc', undefined, undefined],
+    [1, '3.0', 'folder', undefined, undefined],
+    [1, 'Design system', 'folder', undefined, undefined],
+    [2, 'Design system', 'doc', undefined, undefined],
+    [2, 'Components', 'dash', undefined, '56'],
+    [2, 'Patterns', 'dash', undefined, '8'],
+    [2, 'Tokens', 'dash', undefined, '256'],
+  ];
   return (
-    <AbsoluteFill style={{ overflow: 'hidden', background: `linear-gradient(180deg, ${L.bg[0]} 0%, ${L.bg[1]} 60%, ${L.bg[2]} 100%)` }}>
-      <AbsoluteFill style={{ perspective: 1150, perspectiveOrigin: '50% 30%' }}>
+    <div style={{ width: 2900, height: 2400, background: SURF, display: 'flex' }}>
+      <div style={{ width: 1500, borderRight: `3px solid ${LINE}`, paddingTop: 60, background: SIDE }}>
+        {rows.slice(0, 4).map((r, i) => (
+          <FloatWrap key={r[1] + i} h={L(i)}>
+            <TreeRow depth={r[0]} label={r[1]} icon={r[2]} chip={r[3]} count={r[4]} />
+          </FloatWrap>
+        ))}
+        <div style={{ height: 90 }} />
+        <FloatWrap h={L(4)}>
+          <div style={{ paddingLeft: 48, fontFamily: SANS, fontSize: 40, letterSpacing: '0.14em', color: INK3, fontWeight: 650 }}>SPACES</div>
+        </FloatWrap>
+        <div style={{ height: 30 }} />
+        {rows.slice(4).map((r, i) => (
+          <FloatWrap key={r[1] + i} h={L(i + 4.6)}>
+            <TreeRow depth={r[0]} label={r[1]} icon={r[2]} chip={r[3]} count={r[4]} />
+          </FloatWrap>
+        ))}
+      </div>
+      <div style={{ flex: 1, paddingTop: 100, paddingLeft: 110 }}>
+        <FloatWrap h={liftOf(t, 0.3, 150)}>
+          <Tabs items={['Recent', 'Favorites']} size={52} />
+        </FloatWrap>
+        <div style={{ height: 70 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
+          <FloatWrap h={liftOf(t, 0.42, 170)}>
+            <RecentCard title="Logo" sub="Brand refresh" meta="Edited 2h ago" />
+          </FloatWrap>
+          <FloatWrap h={liftOf(t, 0.55, 170)}>
+            <RecentCard title="Access request · Oleg" sub="Team credentials" meta="Yesterday" />
+          </FloatWrap>
+        </div>
+        <div style={{ height: 110 }} />
+        <FloatWrap h={liftOf(t, 0.68, 150)}>
+          <Tabs items={['Todo', 'Comments', 'Done']} size={50} />
+        </FloatWrap>
+        <div style={{ height: 60 }} />
+        <FloatWrap h={liftOf(t, 0.8, 150)}>
+          <ViewSwitch size={46} />
+        </FloatWrap>
+      </div>
+    </div>
+  );
+};
+
+/* 场景 B：顶部 tab 条 + 左上侧栏导航
+ * tab 条、logo、Home 行、侧栏项先后从空中贴落 */
+const NAV: [IconName, string][] = [['inbox', 'Inbox'], ['building', 'Company'], ['users', 'People & Teams'], ['target', 'Goals'], ['doc', 'Docs']];
+const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
+  <div style={{ width: 3000, height: 2100, background: SURF, borderRadius: 48 }}>
+    <div style={{
+      height: 150, borderBottom: `3px solid ${LINE}`, display: 'flex', alignItems: 'center',
+      gap: 110, paddingLeft: 90, fontFamily: SANS, fontSize: 52, color: INK, background: SIDE, borderRadius: '48px 48px 0 0',
+    }}>
+      {['Product analytics', 'Orbit 3.0', 'Widget brainstorm', 'Design system'].map((tb, i) => (
+        <FloatWrap key={tb} h={liftOf(t, 0.2 + i * 0.1, 140)}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 22, fontWeight: i === 1 ? 650 : 500, color: i === 1 ? INK : INK2,
+            letterSpacing: '-0.012em', opacity: i > 1 ? 0.8 : 1,
+            ...(i === 1 ? { background: '#fff', padding: '18px 34px', borderRadius: 18, border: `3px solid ${LINE}`, boxShadow: '0 6px 16px -8px rgba(16,18,24,0.18)' } : {}),
+          }}>
+            {i === 1
+              ? <div style={{ width: 36, height: 36, borderRadius: 11, background: `linear-gradient(135deg, #9b84ff, ${ACC})` }} />
+              : <Icon name="doc" size={44} color={INK3} />}
+            {tb}
+          </div>
+        </FloatWrap>
+      ))}
+    </div>
+    <div style={{ display: 'flex' }}>
+      <div style={{ width: 1250, padding: '70px 70px 0', background: SIDE, height: 1950, boxSizing: 'border-box', borderBottomLeftRadius: 48 }}>
+        <FloatWrap h={liftOf(t, 0.34, 150)}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            <div style={{ width: 76, height: 76, borderRadius: 22, background: `linear-gradient(135deg, #9b84ff, ${ACC})`, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3)' }} />
+            <div style={{ fontFamily: SANS, fontSize: 64, fontWeight: 750, color: INK, letterSpacing: '-0.03em' }}>Orbit</div>
+            <div style={{
+              marginLeft: 'auto', width: 120, height: 84, border: `3px solid ${LINE}`, borderRadius: 22, background: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><Icon name="search" size={44} color={INK2} /></div>
+          </div>
+        </FloatWrap>
+        <div style={{ height: 60 }} />
+        <FloatWrap h={liftOf(t, 0.46, 160)}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 30, background: ACC_SOFT,
+            border: '3px solid rgba(116,87,245,0.2)', borderRadius: 24, padding: '28px 40px',
+          }}>
+            <Icon name="home" size={54} color={ACC} sw={1.9} />
+            <div style={{ fontFamily: SANS, fontSize: 54, color: INK, fontWeight: 650, letterSpacing: '-0.015em' }}>Home</div>
+            <div style={{
+              marginLeft: 'auto', minWidth: 62, height: 62, borderRadius: 31, background: ACC,
+              color: '#fff', fontFamily: SANS, fontSize: 36, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>3</div>
+          </div>
+        </FloatWrap>
+        {NAV.map(([ic, tb], i) => (
+          <FloatWrap key={tb} h={liftOf(t, 0.55 + i * 0.08, 140)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 30, height: 128, paddingLeft: 40 }}>
+              <Icon name={ic} size={52} color={INK3} />
+              <div style={{ fontFamily: SANS, fontSize: 52, color: INK2, fontWeight: 500, letterSpacing: '-0.012em' }}>{tb}</div>
+            </div>
+          </FloatWrap>
+        ))}
+      </div>
+      <div style={{ flex: 1, borderLeft: `3px solid ${LINE}`, padding: '70px 90px 0' }}>
+        <FloatWrap h={liftOf(t, 0.4, 150)}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 30, color: INK3, fontFamily: SANS, fontSize: 48 }}>
+            <Icon name="chevR" size={44} color={INK3} />
+            <Icon name="home" size={46} color={INK3} />
+            <div style={{ color: INK2, fontWeight: 500 }}>Home</div>
+          </div>
+        </FloatWrap>
+        <div style={{ height: 80 }} />
+        <FloatWrap h={liftOf(t, 0.58, 180)}>
+          <div style={{ fontFamily: SANS, fontSize: 128, fontWeight: 750, color: INK, letterSpacing: '-0.04em', lineHeight: 1 }}>Home</div>
+        </FloatWrap>
+        <div style={{ height: 80 }} />
+        <FloatWrap h={liftOf(t, 0.74, 160)}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 30, border: `3px solid ${LINE}`,
+            borderRadius: 26, padding: '32px 44px', background: '#fff', width: 1100, boxSizing: 'border-box',
+            boxShadow: '0 3px 6px rgba(16,18,24,0.04), 0 18px 40px -14px rgba(16,18,24,0.14)',
+          }}>
+            <Icon name="search" size={50} color={INK3} />
+            <div style={{ fontFamily: SANS, fontSize: 46, color: INK3 }}>Search by app, filetype…</div>
+            <div style={{
+              marginLeft: 'auto', padding: '8px 18px', borderRadius: 12, border: `3px solid ${LINE}`,
+              fontFamily: FONT.mono, fontSize: 34, color: INK3,
+            }}>⌘K</div>
+          </div>
+        </FloatWrap>
+      </div>
+    </div>
+  </div>
+);
+
+/* 场景 C：列表行（TODAY / TASK NAME 区）——Todo 头/TODAY 徽章/任务行自上而下先后贴落 */
+const TASKS = [
+  { n: 'New Bugs Per Week', who: '#8a7cf0', due: 'Today', p: 0.72 },
+  { n: 'Designer handbook', who: '#4fb39a', due: 'Today', p: 0.45 },
+  { n: 'Mobile screens', who: '#e39a5b', due: 'Tomorrow', p: 0.3 },
+  { n: 'Product roadmap', who: '#6aa6e8', due: 'Fri', p: 0.86 },
+];
+const SceneListRows: React.FC<{ t?: number }> = ({ t = 1 }) => (
+  <div style={{ width: 2900, height: 2200, background: SURF, paddingTop: 60 }}>
+    <FloatWrap h={liftOf(t, 0.22, 150)}>
+      <div style={{ paddingLeft: 120 }}><Tabs items={['Todo', 'Comments', 'Done', 'Delegated']} size={52} /></div>
+    </FloatWrap>
+    <div style={{ height: 66 }} />
+    <FloatWrap h={liftOf(t, 0.32, 150)}>
+      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 120 }}>
+        <ViewSwitch size={48} />
+        <div style={{ marginLeft: 500, display: 'flex', gap: 70, color: INK3, fontFamily: SANS, fontSize: 44, fontWeight: 500 }}>
+          <div>Filter</div><div>Group</div><div>Sort</div>
+        </div>
+      </div>
+    </FloatWrap>
+    <div style={{ height: 40, borderBottom: `3px solid ${LINE}`, marginLeft: 120, marginRight: 120 }} />
+    <div style={{ height: 60 }} />
+    <FloatWrap h={liftOf(t, 0.44, 160)}>
+      <div style={{
+        marginLeft: 120, display: 'inline-flex', alignItems: 'center', gap: 16, padding: '18px 40px', background: ACC_SOFT,
+        borderRadius: 16, fontFamily: SANS, fontSize: 40, letterSpacing: '0.12em', color: ACC, fontWeight: 700,
+      }}><Icon name="chevD" size={38} color={ACC} sw={2.2} />TODAY</div>
+    </FloatWrap>
+    <div style={{ height: 60 }} />
+    <FloatWrap h={liftOf(t, 0.54, 150)}>
+      <div style={{ display: 'flex', paddingLeft: 120, paddingRight: 120, fontFamily: SANS, fontSize: 38, letterSpacing: '0.12em', color: INK3, fontWeight: 600 }}>
+        <div>TASK NAME</div>
+        <div style={{ marginLeft: 'auto', width: 520 }}>PROGRESS</div>
+        <div style={{ width: 260, textAlign: 'right' }}>DUE</div>
+      </div>
+    </FloatWrap>
+    <div style={{ height: 30 }} />
+    {TASKS.map((tk, i) => (
+      <FloatWrap key={tk.n} h={liftOf(t, 0.62 + i * 0.09, 160)}>
         <div style={{
-          position: 'absolute', left: 960, top: 640, width: 0, height: 0, transformStyle: 'preserve-3d',
-          transform: `scale(${c.s}) rotateX(${c.rx}deg) rotateZ(${c.rz}deg) translate(${-c.fx}px, ${-c.fy}px)`,
+          display: 'flex', alignItems: 'center', gap: 40, height: 170, marginLeft: 120, marginRight: 120,
+          borderBottom: `3px solid ${LINE}`,
         }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, width: CW, height: CH, transformStyle: 'preserve-3d', fontFamily: FONT.sans }}>
-            <Surface />
-            {FLOATS.map((s, i) => <Float key={s.key} spec={s} frame={frame} order={i} />)}
+          <div style={{ width: 42, height: 42, borderRadius: 13, border: `4px solid ${i === 0 ? ACC : 'rgba(20,22,28,0.22)'}`, background: i === 0 ? ACC_SOFT : 'transparent', boxSizing: 'border-box' }} />
+          <div style={{ fontFamily: SANS, fontSize: 56, color: INK, fontWeight: 550, letterSpacing: '-0.015em' }}>{tk.n}</div>
+          <div style={{ marginLeft: 'auto', width: 64, height: 64, borderRadius: 32, background: tk.who, border: '5px solid #fff', boxShadow: '0 0 0 3px rgba(20,22,28,0.06)' }} />
+          <div style={{ width: 400, height: 16, borderRadius: 8, background: 'rgba(20,22,28,0.07)', overflow: 'hidden' }}>
+            <div style={{ width: `${tk.p * 100}%`, height: '100%', borderRadius: 8, background: i === 0 ? ACC : 'rgba(20,22,28,0.28)' }} />
+          </div>
+          <div style={{ width: 220, textAlign: 'right', fontFamily: SANS, fontSize: 44, color: tk.due === 'Today' ? ACC : INK3, fontWeight: 550 }}>{tk.due}</div>
+          <Icon name="more" size={50} color={INK3} />
+        </div>
+      </FloatWrap>
+    ))}
+  </div>
+);
+
+/* ---------- 3D 摄影 ---------- */
+
+type Cam = {
+  rx: number; ry: number; rz: number; scale: number;
+  x: [number, number]; y: [number, number];
+};
+
+// 巡航曲线：首段缓起（前 30% 二次加速接匀速）、末段缓落、中段匀速；u 超出 [0,1]（交叉淡化
+// 窗口）时按端点斜率线性外推，相机在淡化里继续飞，接力处不再刹停
+const cruise = (u: number, first: boolean, last: boolean) => {
+  const A = 0.3;
+  const k = 1 / (1 - (first ? A / 2 : 0) - (last ? A / 2 : 0));
+  const inPart = (x: number) => (x < A ? (x * x) / (2 * A) : x - A / 2);
+  if (first && u <= A) return k * inPart(Math.max(0, u));
+  if (last && u >= 1 - A) return 1 - k * inPart(Math.max(0, 1 - u));
+  return first ? k * inPart(u) : k * u;
+};
+
+const Plane: React.FC<{
+  cam: Cam; p: number; edge?: 'left' | 'top'; children: React.ReactNode;
+}> = ({ cam, p, edge = 'left', children }) => {
+  const x = cam.x[0] + (cam.x[1] - cam.x[0]) * p;
+  const y = cam.y[0] + (cam.y[1] - cam.y[0]) * p;
+  const roll = cam.rz + (p - 0.5) * 2; // ±1° 缓慢滚转
+  return (
+    <AbsoluteFill style={{ perspective: 1050, perspectiveOrigin: '50% 46%' }}>
+      <div style={{
+        position: 'absolute', left: '50%', top: '50%', width: 0, height: 0,
+        transformStyle: 'preserve-3d',
+        transform: `scale(${cam.scale}) rotateX(${cam.rx}deg) rotateY(${cam.ry}deg) rotateZ(${roll}deg)`,
+      }}>
+        <div style={{ position: 'absolute', transform: `translate3d(${x}px, ${y}px, 0)` }}>
+          <div style={{ position: 'relative', transform: 'translate(-50%, -50%)' }}>
+            {/* 屏幕边缘霓虹缘光：外晕 + 贴边细亮线 */}
+            {edge === 'left' ? (
+              <>
+                <div style={{
+                  position: 'absolute', left: -80, top: -40, width: 120, height: '104%',
+                  background: 'linear-gradient(185deg, #ff7ab8, #a46cff 55%, #6a4dff)',
+                  filter: 'blur(70px)', opacity: 0.85,
+                }} />
+                <div style={{
+                  position: 'absolute', left: -7, top: 0, width: 6, height: '100%', borderRadius: 3,
+                  background: 'linear-gradient(180deg, #ffc2de, #b99bff)', filter: 'blur(2px)', opacity: 0.95,
+                }} />
+              </>
+            ) : (
+              <>
+                <div style={{
+                  position: 'absolute', left: -40, top: -80, width: '104%', height: 120,
+                  background: 'linear-gradient(90deg, #ff7ab8, #a46cff 55%, #6a4dff)',
+                  filter: 'blur(70px)', opacity: 0.8,
+                }} />
+                <div style={{
+                  position: 'absolute', left: 48, top: -7, width: 'calc(100% - 96px)', height: 6, borderRadius: 3,
+                  background: 'linear-gradient(90deg, #ffc2de, #b99bff)', filter: 'blur(2px)', opacity: 0.9,
+                }} />
+              </>
+            )}
+            {children}
+            {/* 远端压暗：贴面透视里远处渐暗（比 v2 轻，亮面不发脏） */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: edge === 'left'
+                ? 'linear-gradient(105deg, rgba(8,6,18,0) 34%, rgba(8,6,18,0.22) 75%, rgba(8,6,18,0.5) 100%)'
+                : 'linear-gradient(175deg, rgba(8,6,18,0) 38%, rgba(8,6,18,0.2) 80%, rgba(8,6,18,0.45) 100%)',
+              pointerEvents: 'none',
+            }} />
           </div>
         </div>
-      </AbsoluteFill>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
-      {/* 景深：远端（画面上部）一条 backdrop 模糊带 + 暖色空气雾；近端底边轻微虚化 */}
-      <div style={{
-        position: 'absolute', left: 0, right: 0, top: 0, height: 520, pointerEvents: 'none',
-        backdropFilter: 'blur(9px)', WebkitBackdropFilter: 'blur(9px)',
-        WebkitMaskImage: 'linear-gradient(180deg, #000 0%, #000 30%, transparent 100%)', maskImage: 'linear-gradient(180deg, #000 0%, #000 30%, transparent 100%)',
-      }} />
-      <div style={{
-        position: 'absolute', left: 0, right: 0, bottom: 0, height: 260, pointerEvents: 'none',
-        backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)',
-        WebkitMaskImage: 'linear-gradient(0deg, #000 0%, transparent 100%)', maskImage: 'linear-gradient(0deg, #000 0%, transparent 100%)',
-      }} />
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none',
-        background: `linear-gradient(180deg, ${alpha(L.bg[0], 0.85)} 0%, ${alpha(L.bg[0], 0.45)} 16%, ${alpha(L.bg[0], 0)} 40%)`,
-      }} />
-      {/* 低角度暖阳：左上一团光晕 */}
-      <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', mixBlendMode: 'soft-light',
-        background: `radial-gradient(ellipse 60% 55% at 12% 6%, ${alpha('#ffd9a8', 0.55 + 0.08 * Math.sin(frame / 30))} 0%, ${alpha('#ffd9a8', 0)} 70%)`,
-      }} />
-      <Vignette strength={0.22} inner={0.45} color={L.shadow} />
-      <Grain opacity={0.05} />
+/* 背景霓虹框（暗场道具）：发光细描边，随镜头行进反向视差漂移 */
+const NeonRects: React.FC<{ drift: number }> = ({ drift }) => {
+  const box = (c: string, a: number): React.CSSProperties => ({
+    position: 'absolute', borderRadius: 32, border: `3px solid ${c}`, opacity: a,
+    boxShadow: `0 0 24px ${c}, inset 0 0 18px ${c}`, filter: 'blur(3px)',
+  });
+  return (
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <div style={{ ...box('#b04dff', 0.42), left: -140 + drift * 60, top: 240, width: 620, height: 380 }} />
+      <div style={{ ...box('#ff4da8', 0.32), left: 60 + drift * 36, top: 700, width: 420, height: 260 }} />
+      <div style={{ ...box('#7b4dff', 0.3), right: -180 - drift * 44, top: -80, width: 560, height: 340 }} />
+    </AbsoluteFill>
+  );
+};
+
+// 平移目标以内容坐标 (cx,cy) 给出：translate = (W/2-cx, H/2-cy)
+const SEGS: { cam: Cam; edge: 'left' | 'top'; render: (t: number) => React.ReactNode }[] = [
+  {
+    // 侧栏树：从树顶（SPACES 附近）贴面滑到树底（Components/Patterns/Tokens）
+    cam: { rx: 12, ry: 30, rz: -6, scale: 0.95, x: [1450 - 950, 1450 - 880], y: [1200 - 1050, 1200 - 1850] },
+    edge: 'left', render: (t) => <SceneTree t={t} />,
+  },
+  {
+    // 顶栏 tab 条 → 右区 Home 大标题
+    cam: { rx: 20, ry: -20, rz: 6, scale: 0.95, x: [1500 - 800, 1500 - 2000], y: [1050 - 350, 1050 - 800] },
+    edge: 'top', render: (t) => <SceneTopNav t={t} />,
+  },
+  {
+    // 列表行：沿 TASK NAME 行右扫
+    cam: { rx: 14, ry: 28, rz: -5, scale: 1.05, x: [1450 - 900, 1450 - 680], y: [1100 - 620, 1100 - 1240] },
+    edge: 'left', render: (t) => <SceneListRows t={t} />,
+  },
+];
+
+const SEG_LEN = 50; // 每段 50 帧，总 150
+const FADE = 7;
+
+const Stage: React.FC = () => {
+  const frame = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ background: '#07060c' }}>
+      {SEGS.map((s, i) => {
+        const start = i * SEG_LEN;
+        const local = frame - start;
+        if (local < -FADE || local > SEG_LEN + FADE) return null;
+        const u = local / SEG_LEN; // 不钳：淡化窗口里相机继续外推
+        const t = Math.min(1, Math.max(0, u)); // 内容（贴落进度）照旧钳位
+        const p = cruise(u, i === 0, i === SEGS.length - 1);
+        // 相邻段交叉淡化：后段在边界前 [-FADE,0] 淡入、前段在 [SEG_LEN-FADE, SEG_LEN] 淡出，边界帧无纯黑
+        const fadeIn = i === 0 ? 1 : Math.min(1, Math.max(0, (local + FADE) / FADE));
+        const fadeOut = i === SEGS.length - 1 ? 1 : Math.min(1, Math.max(0, (SEG_LEN - local) / FADE));
+        return (
+          <AbsoluteFill key={i} style={{ opacity: Math.min(fadeIn, fadeOut) }}>
+            <NeonRects drift={p} />
+            <Plane cam={s.cam} p={p} edge={s.edge}>{s.render(t)}</Plane>
+          </AbsoluteFill>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
+
+export const GrazeFaceTour: React.FC = () => {
+  const frame = useCurrentFrame();
+  // 浅景深焦点带：焦点椭圆随段落平滑移动（段间 10f 过渡，不跳）
+  const FX = [44, 40, 46];
+  const FY = [46, 40, 50];
+  const k1 = Math.min(1, Math.max(0, (frame - SEG_LEN + 5) / 10));
+  const k2 = Math.min(1, Math.max(0, (frame - 2 * SEG_LEN + 5) / 10));
+  const kk = k1 + k2; // 0→1→2：段 A→B→C 的焦点
+  const lerpArr = (a: number[]) => (kk <= 1 ? a[0] + (a[1] - a[0]) * kk : a[1] + (a[2] - a[1]) * (kk - 1));
+  const focusX = lerpArr(FX);
+  const focusY = lerpArr(FY);
+  return (
+    <AbsoluteFill style={{ background: '#07060c' }}>
+      <Stage />
+      {/* 屏幕空间浅景深：焦点带外整体模糊 */}
+      <AbsoluteFill style={{
+        filter: 'blur(15px)',
+        WebkitMaskImage: `radial-gradient(ellipse 58% 52% at ${focusX}% ${focusY}%, transparent 34%, rgba(0,0,0,0.85) 72%, black 92%)`,
+        maskImage: `radial-gradient(ellipse 58% 52% at ${focusX}% ${focusY}%, transparent 34%, rgba(0,0,0,0.85) 72%, black 92%)`,
+      }}>
+        <Stage />
+      </AbsoluteFill>
+      {/* 带色相的暗角（不再把亮面压成灰）+ 暗场颗粒 */}
+      <Vignette strength={0.62} inner={0.42} color="#06040e" cx={focusX / 100} cy={focusY / 100} />
+      <Grain opacity={0.06} blend="soft-light" />
     </AbsoluteFill>
   );
 };

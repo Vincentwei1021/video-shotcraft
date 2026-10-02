@@ -19,15 +19,10 @@ name: page-waterfall-wall
 - lib 组件 `assets/lib/VerticalTicker.tsx`：父层 perspective(1000px)
   rotateX(20°) scale(1.2) 后仰成墙；每列 [...items,...items] 翻倍 +
   progress 取模 translateY 0→-50% 无缝循环；上下渐变遮罩收边
-- demo 改用文件内局部列实现（为了开场"冲入"）：每列按卡片真实宽高比算出单副本周期 P，
-  滚动距离 d(f) = v·f + boost·v·τ·(1−e^(−f/τ))，translateY = −(d mod P)——开场 ~4 倍巡航速度冲进来、
-  指数衰减到巡航，快速段按速度加竖向运动模糊，巡航时为 0
-- 差速反向是视差命门：3 列巡航速度 1.9 / −1.35 / 2.5 px/帧（中列反向）——
+- 差速反向是视差命门：3 列 loop 时长错开（如 12/9/14s），中列反向——
   等速同向读作一张大图在滚，差速反向才读出"独立的列"
-- 镜头寄生在外层：translateZ 0→110 缓推 + rotateY −33°→−28° 极缓转角（smooth 全镜），
-  墙自身循环、镜头单向，两个运动源方向不同不打架
-- 构图：墙斜置在画面右侧 ~65%（rotateY 后退 + rotateX 16° 后仰 + rotateZ 5°）朝右上远去，
-  远端渐隐进底色雾（空气透视）；左侧留给大标题组，暂停即海报（demo：paper 暖纸底与卡片截图同色温）
+- 镜头缓推寄生在外层（scale 1→1.06 线性铺满全镜），墙自身循环、
+  镜头单向，两个运动源方向不同不打架
 - 素材：真实页面截图切片（Q1 脱敏后），卡片级切块比整页长图好——
   整页切片滚动时观众来不及读，卡片块有完整轮廓可辨识
 
@@ -35,13 +30,12 @@ name: page-waterfall-wall
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
 | 列数 | 3（1080p）/ 4（超宽） | 2 列读不出"墙"，5 列单列过窄纹理糊 |
-| 巡航速度 | 相邻列差 ≥25%（1.9 / −1.35 / 2.5 px/帧，列宽 420） | 差速太小视差读不出；>3 px/帧开始读作"刷屏" |
-| 冲入 | boost 3（开场 4 倍速）、τ=11f | 无冲入=开场平；τ>20f 标题落定时墙还在狂奔、抢戏 |
+| loop 时长 | 相邻列差 ≥25%（12/9/14s） | 差速太小视差读不出；最快列 <7s 开始读作"刷屏" |
 | 方向 | 中列反向（-1,1,-1 或交替） | 全同向=一张大图；反向列是"独立列"的最强证据 |
-| 倾角/透视 | lib：rotateX 20° / perspective 1000px；demo：rotateY −33°、rotateX 16°、perspective 1700 | rotateX >25° 顶部行文字透视压糊（Q2）；<12° 读不出墙面后仰 |
-| scale | lib：1.2 基础 + 缓推至 ~1.26；demo：translateZ 缓推 0→110 | 1.2 是补透视收缩的底值，低于它四角露底 |
-| 遮罩 | 墙两端 mask 羽化（顶 16% / 底 17%） | 太硬行硬进硬出；太长可视区剩不下 2 行 |
-| 循环周期 | 位移取模必须恰等于单副本周期（Σ 卡高 + n·gap） | lib 已用 marginBottom 保证；自写实现用 flex gap 会差 gap/2 跳帧 |
+| 倾角/透视 | rotateX 20° / perspective 1000px | >25° 顶部行文字透视压糊（Q2）；<12° 读不出墙面后仰 |
+| scale | 1.2 基础 + 缓推至 ~1.26 | 1.2 是补透视收缩的底值，低于它四角露底；demo 把放大与缓推放到外层 CSS zoom（布局级缩放），切片文字不被放大发软（Q2） |
+| 遮罩高度 | 200px | 太矮行硬进硬出；太高可视区剩不下 2 行 |
+| 循环周期 | -50% 位移必须恰等于单副本周期（内容高+n·gap） | lib 已用 marginBottom 保证；自写实现用 flex gap 会差 gap/2 跳帧 |
 
 ## 已知坑
 - **参数借鉴自外部实现（remotion-3d-ticker），非实战定稿；
@@ -55,4 +49,4 @@ name: page-waterfall-wall
 
 ## 参考实现
 assets/lib/VerticalTicker.tsx（核心组件）；
-demo 见 demos/ui-entrance/page-waterfall-wall/（PageWaterfallWall.tsx 用文件内带冲入的列实现；VerticalTicker.tsx 为 lib 同款副本）。
+demo 见 demos/ui-entrance/page-waterfall-wall/（PageWaterfallWall.tsx / VerticalTicker.tsx）。
