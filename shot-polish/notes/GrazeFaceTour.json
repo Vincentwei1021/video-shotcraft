@@ -1,30 +1,33 @@
 {
   "stem": "GrazeFaceTour",
   "issues": [
-    "UI 是灰阶骨架：Helvetica 回退字体、5–6px 粗边框方块图标、CSS 三角箭头、4px 灰边，整体像线框稿",
-    "每段相机 easeIO 起止都刹停，且交叉淡化窗口里 t 被钳住——每次接力都有 7f 画面冻结",
-    "悬浮元素的影子是灰色重影字，读成“文字重复”而不是投影；全屏暗角把亮面 UI 压成脏灰",
-    "背景霓虹框是整块模糊的粗描边，焦点带在段间突然跳位；没有导出时长常量"
+    "三段交叉淡化接力，每段 50f 各自起落，读作三条拼起来的镜头而不是一次连续飞行",
+    "浅灰界面压在近黑底上，整屏 blur 复制层 + 重暗角把亮面压成脏灰，画面发闷",
+    "悬浮靠 2D 位移假装抬高，影子是贴在原位的灰色重影，高度感和光的方向都不成立",
+    "灰阶占位式 UI（ClickUp 原片的侧栏树/列表照搬），没有层级与强调色，字读不出主次"
   ],
   "changes": [
-    "UI 重做为出版级浅色产品界面：系统字体栈 + 字重层级、统一线性 SVG 图标、3px 发丝线（界面约 2.7x 排版，等效 1px）、单一靛紫强调色（选中 Home 行 / List 视图 / TODAY 徽章 / 当前 tab 下划线），任务行补头像、进度条、到期日；品牌名换成虚构的 Orbit",
-    "运镜改巡航曲线：首段二次缓起、末段缓落、中段匀速，交叉淡化窗口内相机按端点斜率继续外推，接力处不再冻结；每段带 ±1° 缓慢滚转",
-    "同形软影改 brightness(0) 纯色压暗 + 随高度变大变虚变淡（≤0.22），落地收成接触影消失",
-    "暗角改带色相的 #06040e 且跟随焦点，远端压暗减轻，加暗场颗粒；焦点带段间 10f 平滑移动；霓虹框改发光细描边并随相机反向视差漂移",
-    "补导出 GRAZE_FACE_TOUR_DURATION = 150"
+    "look 换成 sand（米色 · 赤陶）：整张 UI 是一片被低角度暖阳斜照的地形，远端暖色空气雾 + backdrop 模糊带做景深，左上一团暖光",
+    "改成一镜到底的连续上行长镜：焦点沿三次贝塞尔曲线从侧栏树飞向任务列表、落在 220px 大标题「Launch plan」上，缓起 25% / 巡航 / 缓落 30%，航向 −10°→−20° 边飞边右转、末段俯角 64°→54° 略抬",
+    "真 3D 悬浮：约 60 个文字/图标/徽标单元 translateZ 沿界面法线抬起 120–230px，影子画在界面上、偏移 0.75h 沿光的方位角，高处大而虚而淡、贴近时收紧变实",
+    "落地时刻按相机路径预扫：焦点前方距离降到 120px 的那一帧落地，先经过的先落、22f easeFall 加速下落并行重叠，标题最后最重地落下",
+    "为镜头重做虚构产品「Orchard」：品牌、导航、SPACES 树、8 行任务（状态药丸 / 头像 / 日期）全部 56–84px 大字，赤陶只给选中项、In review 与进度条",
+    "165f：140f 内飞完，尾段 25f 停在标题海报上"
   ],
   "issuesEn": [
-    "The UI is a greyscale skeleton: Helvetica fallback, 5–6px thick-bordered square icons, CSS triangle arrows and 4px grey borders, like a wireframe",
-    "Each segment's camera brakes to a stop with easeIO, and t is clamped during the crossfade, so every hand-off has a 7-frame freeze",
-    "Floating elements cast grey duplicate text that reads as 'repeated words' rather than shadow, and the full-screen vignette muddies the light UI to grey",
-    "Background neon frames are thick fully blurred strokes, the focus band jumps between segments, and no duration constant was exported"
+    "Three 50f segments joined by crossfades, each starting and stopping on its own, so it read as three spliced shots rather than one continuous flight",
+    "A pale grey UI on near-black, with a full-screen blur duplicate and a heavy vignette turning the bright surface muddy grey",
+    "Floating was faked with 2D offsets and the shadow was a grey ghost stuck in place, so neither height nor light direction made sense",
+    "Placeholder grey UI copied from the reference (sidebar tree, list) with no hierarchy or accent; nothing told you what to read first"
   ],
   "changesEn": [
-    "The UI is rebuilt as a publication-grade light product interface: system font stack with weight hierarchy, a unified line SVG icon set, 3px hairlines (the UI is laid out at ~2.7x, so ≈1px), and a single indigo-violet accent (selected Home row, List view, TODAY badge, active tab underline); task rows gain avatars, progress bars and due dates; the brand is a fictional 'Orbit'",
-    "The camera follows a cruise curve: quadratic ease-in on the first segment, ease-out on the last, constant speed in between; during crossfades it keeps extrapolating along the end slope, so hand-offs never freeze; each segment has a slow ±1° roll",
-    "The same-shape shadow is now a solid brightness(0) darkening that grows larger, softer and fainter with height (≤0.22) and collapses into a contact shadow on landing",
-    "The vignette uses a hued #06040e and follows the focus point, far-side darkening is lighter, dark-scene grain is added, the focus band moves smoothly over 10 frames between segments, and neon frames are thin glowing strokes drifting with counter-parallax",
-    "Exported GRAZE_FACE_TOUR_DURATION = 150"
+    "Sand look (beige, terracotta): the UI becomes terrain lit by a low warm sun, with warm aerial haze, a backdrop-blur band for depth of field and a warm glow top left",
+    "One continuous rising take: the focus follows a cubic Bezier from the sidebar tree across the task list to the 220px 'Launch plan' title, with ease-in 25% / cruise / ease-out 30%, heading −10° to −20° and pitch 64° to 54° at the end",
+    "Real 3D floating: about 60 text, icon and badge units lift 120–230px along the surface normal; shadows sit on the surface offset 0.75×height along the light direction, large and soft when high, tight when close",
+    "Landing times come from the camera path: each element lands when the focus gets within 120px, so the first passed lands first, 22f accelerating falls overlap, and the title lands last and heaviest",
+    "A purpose-built fictional product 'Orchard': brand, nav, SPACES tree and eight task rows with status pills, avatars and dates, all at 56–84px; terracotta only for the selection, 'In review' and progress",
+    "165f: the flight ends by 140f and the last 25f hold on the title poster"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }

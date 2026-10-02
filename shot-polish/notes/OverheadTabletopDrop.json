@@ -1,32 +1,31 @@
 {
   "stem": "OverheadTabletopDrop",
   "issues": [
-    "工作台按源码第一个数字把时长猜成 55f，只渲到横滑结束，扎入与落版整段缺失",
-    "扎入段 out-cubic 从横滑的静止瞬间满速起跳，三通道过冲关键帧各自重新加速，速度多处突变",
-    "桌面是 2px 灰线网格平铺 + 平灰背景，远端露出“桌子尽头”的硬边，没有光与材质",
-    "页面卡是 2px 灰边 + 单层硬阴影，扎入满屏时卡内容是 1x 栅格化后放大 2 倍，文字发糊（Q2）",
-    "“巡视一圈，就选这张”的选择没有任何表态，目标卡与其它卡完全同等"
+    "浅灰桌面 + 三张灰色占位 dashboard，平躺时只是一排灰块，看不出是三张不同的页面",
+    "横滑后直接扎入，没有\"选中这张\"的那一拍，扎入的目标读起来是随机的",
+    "落版满屏是通用小字 dashboard，字只有 10–20px，尾帧不是海报",
+    "落版后 47f 完全静止，死帧"
   ],
   "changes": [
-    "补导出 OVERHEAD_TABLETOP_DROP_DURATION = 140（93f 动作 + 47f 真静止），完整演完横滑→扎入→落版",
-    "扎入改零速起步的不对称曲线 bezier(0.36,0,0.12,1)，scale 通道带 ~5% 预备回缩（先抬机位再扎），f85 过冲顶点速度归零后 smooth 回落到 0° / 2.0",
-    "卡片按落版尺寸 1992×1120 布局（内容 zoom 1.037）再平面内 scale(0.5) 摆上桌，满屏时文字是原生分辨率；边框改 1px 发丝线，阴影改随离桌高度变化的两层软影",
-    "桌面改暖中性哑光台面 + 80/400 两级发丝网格 + 世界内顶灯光池，铺到地平线附近；屏幕空间远端薄雾随俯角收起 + 暗角 + 颗粒",
-    "目标卡在横滑将停时（44–58f）离桌 14px、影子变大变虚，扎入后半程落回槽位，落版严丝合缝"
+    "look 换成 graphite：深石墨哑光台面 + 发丝网格，三盏顶灯各打一个光池和一束体积光，暗桌白稿的反差撑起层次",
+    "三张样稿重做为虚构产品「Fieldwork」官网的定价 / 首页 / 更新日志，每张下方一枚印刷标签（01 PRICING / 02 HOME / 03 CHANGELOG），横滑时也是相机运动参照",
+    "时间表加一拍「选定」：50f 横滑停住后 8f 内目标稿离桌 16px、它的顶灯更亮、左右两盏暗到 35%、标签编号转金，然后 58–86f 三通道同跑扎入",
+    "落版尾帧是 150px 两行大标题「Plan the work. / Not the meeting.」（无衬线粗体 + 衬线斜体）+ 右侧日程产品图，安全边距 ≥120px",
+    "落版后页面内一个小动作：金色「Launch review」日程块滑入周三空槽、一次过冲落座，同列两块让位；hold 段极缓推近 1.2%"
   ],
   "issuesEn": [
-    "The workbench guessed 55f from the first number in the source, so only the pan rendered and the dive and landing were missing",
-    "The dive's out-cubic jumps to full speed from the pan's rest, and each overshoot keyframe re-accelerates, breaking velocity in several places",
-    "The table is a tiled 2px grey grid on flat grey, with a hard 'end of table' edge in the distance and no light or material",
-    "Page cards have 2px grey borders and a single hard shadow, and at full screen their content is a 1x raster magnified 2x, so text blurs (Q2)",
-    "The 'look around, pick this one' choice is never expressed: the target card is treated exactly like the others"
+    "A pale grey desk with three grey placeholder dashboards: lying flat they were just a row of grey blocks, not three different pages",
+    "The pan went straight into the dive with no 'this one' beat, so the target felt random",
+    "The full-screen landing was a generic small-text dashboard (10–20px type), so the last frame was not a poster",
+    "47 completely static frames after landing"
   ],
   "changesEn": [
-    "Exported OVERHEAD_TABLETOP_DROP_DURATION = 140 (93f of motion + 47f true hold), so pan, dive and landing all play",
-    "The dive uses a zero-velocity-start asymmetric curve bezier(0.36,0,0.12,1); the scale channel has a ~5% anticipation dip (camera lifts before plunging), and after reaching the overshoot at f85 with zero velocity it eases smoothly back to 0° / 2.0",
-    "Cards are laid out at the landing size 1992×1120 (content zoom 1.037), then scaled 0.5 in-plane onto the table, so full-screen text is native resolution; borders are 1px hairlines and shadows are two-layer, varying with height above the table",
-    "The table is a warm-neutral matte surface with an 80/400 two-level hairline grid and an in-world overhead light pool, extended to near the horizon; screen-space far haze fades with the tilt, plus vignette and grain",
-    "As the pan settles (44–58f) the target lifts 14px with a larger, softer shadow, then drops back into its slot during the second half of the dive, so the landing lines up exactly"
+    "Graphite look: a dark matte slate desk with hairline grid, three overhead lamps each casting a light pool and a soft beam; white prints on a dark desk give the depth",
+    "The three prints are now the pricing, home and changelog pages of a fictional product 'Fieldwork', each with a printed desk tag (01 PRICING / 02 HOME / 03 CHANGELOG) that also shows the camera moving",
+    "A new selection beat: after the 50f pan stops, within 8f the target lifts 16px, its lamp brightens, the other two dim to 35% and its tag number turns gold; then all three channels dive together from 58f to 86f",
+    "The landed frame is a poster: a 150px two-line headline 'Plan the work. / Not the meeting.' (heavy sans plus serif italic) with a weekly planner product shot, margins of at least 120px",
+    "One small in-page action after landing: a gold 'Launch review' block slides into Wednesday's empty slot with one overshoot while the column below makes room; a 1.2% push-in keeps the hold alive"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

@@ -1,32 +1,31 @@
 {
   "stem": "ExplodedView",
   "issues": [
-    "侧栏/顶栏是手绘灰条骨架，和卡片质感不一致",
-    "远层用 brightness 压暗，把白卡压成脏灰色",
-    "底板 2px 灰边、背景死平灰，炸开后底板空无一物",
-    "悬停 30 帧机位完全静止，层间深度只能靠大小猜",
-    "顶栏炸开后出画，构图偏右"
+    "正面微倾（rotateX 18° / rotateY −12°）下层只是往前浮了一点，读作\"卡片浮起\"而不是爆炸图",
+    "八层都是同一张灰色占位 dashboard 的切块，没有\"这层是什么\"的信息，拆开也讲不出产品由什么组成",
+    "炸开后层被冷色遮罩压暗，白卡发灰发脏",
+    "合体用 2f 抖屏收口，和产品片\"镜头要稳\"的口径冲突"
   ],
   "changes": [
-    "八层都改为同一张 FakeDashboard 的真实切块（按原网格坐标裁切），合体时严丝合缝拼回原页",
-    "底板露出各构件的虚线插槽，整页加 14px 厚度板 + 56 级软阴影；每层浮起后带厚度边、顶沿受光与发丝线",
-    "深度压暗改为冷色相遮罩（≤28%，不再脏灰），底板压暗同样带色相",
-    "机位：开场 34f 缓带入倾角，悬停期慢摇 rotateY 再 -6°、俯角收 2.5° 读出层间视差，合体前摇回；悬停时略拉远并下移，近层不出画",
-    "背景换 Backdrop 柔光底 + 一抹靛色余光 + 颗粒；补导出 EXPLODED_VIEW_DURATION=150"
+    "look 换成 porcelain（冷白 · 钴蓝），机位改成 3/4 轴测（rotateX 54° + rotateZ −34°），页面平躺、层沿法线向上叠起，悬停期环绕 +10°，炸开时机位拉远给层堆留画面",
+    "为镜头重做虚构客服工作台「Relay」五层：侧栏 / 会话量图表 / AI 助手 / 指标卡 / 命令栏，底板露出各构件的虚线插槽；越靠页面远端的层升得越高，互不遮挡",
+    "加发布会式编号标注：锚点按 3D 投影实时算出、跟着环绕走，左右两栏引线描出后标题 44px + 说明 30px 升起，错峰 6f",
+    "节奏：弹簧错峰 5f 炸开（一次可见过冲）→ 悬停 hold → 标注先撤 → 逆序 ease-in 砸回 → 整组 8px 下沉回弹 + 接触影一紧代替抖屏，合体后一道扫光",
+    "收尾机位右移，左上角逐词升起「Built in layers.」+ 副标题，尾帧是海报；总长 150→170f"
   ],
   "issuesEn": [
-    "Sidebar and topbar were hand-drawn grey skeleton bars that didn't match the cards",
-    "Far layers were darkened with brightness(), turning white cards a dirty grey",
-    "2px grey border on the base, a flat grey background, and an empty base once exploded",
-    "The camera sat dead still through the 30f hover, so depth could only be guessed from size",
-    "The topbar left the frame when exploded, and the composition leaned right"
+    "With a slight front tilt (rotateX 18°, rotateY −12°) the layers just floated forward a little; it read as 'cards lifting', not an exploded view",
+    "All eight layers were slices of the same grey placeholder dashboard with no sense of what each layer was, so taking it apart said nothing about the product",
+    "Once exploded, the layers were darkened by a cool overlay and the white cards looked grey and dirty",
+    "The reassembly ended with a 2f screen shake, against the 'keep the camera steady' rule for product films"
   ],
   "changesEn": [
-    "All eight layers are real slices of one FakeDashboard cut at the original grid coordinates, so they reassemble seamlessly",
-    "The base shows dashed sockets for each part; the page gets a 14px thickness slab with an elevation-56 soft shadow; lifted layers get an edge, a lit top rim and a hairline",
-    "Depth darkening is now a cool-tinted overlay (≤28%, no muddy grey); the base dim is tinted too",
-    "Camera eases into the tilt over 34f, then drifts rotateY another -6° and pitch -2.5° during the hover for parallax, returning before assembly; it pulls back and drops slightly so near layers stay in frame",
-    "Backdrop soft light with a faint indigo tint and grain; exported EXPLODED_VIEW_DURATION=150"
+    "Porcelain look (cool white, cobalt) with a three-quarter axonometric camera (rotateX 54°, rotateZ −34°): the page lies flat and layers stack up along its normal, the camera orbits +10° during the hover and pulls back to make room for the stack",
+    "A purpose-built five-layer support desk 'Relay': sidebar, volume chart, AI assistant, metric cards and command bar, with dashed slots left on the base plate; layers further back on the page rise higher so none hides another",
+    "Keynote-style numbered callouts: anchors are 3D-projected every frame and follow the orbit; in two columns, leader lines draw then a 44px title and 30px note rise, staggered 6f",
+    "Rhythm: a spring explode staggered 5f (one visible overshoot), a hover hold, callouts out, a reverse ease-in slam, then an 8px sink-and-rebound with a tightening contact shadow instead of a shake, and one light sweep",
+    "At the end the camera slides right and 'Built in layers.' rises word by word top left with a subtitle, so the last frame is a poster; length 150f to 170f"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

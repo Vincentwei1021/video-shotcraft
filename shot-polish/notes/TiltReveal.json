@@ -1,30 +1,31 @@
 {
   "stem": "TiltReveal",
   "issues": [
-    "transform scale(3.2) 按 1x 栅格化再放大，开场透视窄带里的字与行全是锯齿碎块（Q2）",
-    "抬头三段关键帧各自 out-cubic，每段起点都是最大速度：f25 从静止瞬间满速起跳、f68/f72 两处速度突变",
-    "背景是死平的 G.bg 灰，平躺与回正时页面受光完全一样，没有纸面材质与空间感",
-    "开场 25f 俯角定格完全静止，没有导出时长常量（工作台按 150f 猜）"
+    "浅灰底 + 灰色占位 dashboard，开场的透视窄带只是一条灰线，没有悬念也没有光",
+    "页面最后正好铺满画面，舞台和空间感全无，尾帧就是一张平铺的界面截图",
+    "动作 76f 结束后 69f 真静止，超过 2 秒的死帧",
+    "抬头只靠页面自己转，背景不动，读不出是\"机位抬头\""
   ],
   "changes": [
-    "放大改走 CSS zoom 布局栅格化，并把 scale(s)·rotateX(r) 等价换算为 rotateX(r′)·scaleY(k)（tan r′=tan r/s），投影与原式一致而字是原生分辨率",
-    "平躺时按纵向压缩比做只竖向的高斯预滤波（σ≈0.55/压缩比×1.6，抬到可读前自动关），消除窄带锯齿闪烁",
-    "主抬升改单条 EASE.swift（零速起步、中段快）到 f68 正好停在 +2.6° 过冲顶点，再 smooth 8f 回 0°；定格段加 -80°→-77° 极缓 creep",
-    "Backdrop 柔光背景 + 暗角 + 颗粒替代平灰；纸面随俯角受光（平躺压暗、远端薄雾），图纸带随高度变化的两层软影；抬头最快段给竖向 SpeedBlur",
-    "补导出 TILT_REVEAL_DURATION = 145（76f 动作 + 69f 真静止）"
+    "look 换成 midnight（深蓝夜 · 电光蓝）：开场是黑夜里一道发光的\"地平线\"——平躺页面远端上缘的亮线 + 宽幅蓝色泛光，第 1 帧就有",
+    "主体为镜头重做：暗场分析页「Meridian」，120px 大标题「Revenue is up 38%」、横贯全宽的发光面积图、三格 76px 大数字 KPI；落定 0.84 倍留边，四周见舞台光与脚下蓝色反光",
+    "几何改成绕下沿铰链、正面朝上平躺（rotateX 86°），视点在页面上方——窄带里的字是正的；40f 不对称 in-out 抬正、过冲 −2.2° 再 10f 软回",
+    "背景光池与浮尘随俯仰反向视差下移 150px，读作相机抬头；最快几帧给竖向运动模糊",
+    "落定后有事可看：38–82f 面积图折线带发光笔头描出、80f 终点光点弹出，hold 段极缓推近 1.8%；总长 145→120f"
   ],
   "issuesEn": [
-    "transform scale(3.2) rasterises at 1x then magnifies, so text and rows in the opening perspective strip are jagged fragments (Q2)",
-    "The three tilt keyframe segments each use out-cubic, so every segment starts at full speed: a jump from rest at f25 and velocity breaks at f68/f72",
-    "The background is a dead flat G.bg grey, and the page is lit identically lying flat and upright, with no paper material or sense of space",
-    "The 25-frame opening hold is completely static, and no duration constant was exported (the workbench guessed 150f)"
+    "A pale grey stage with a grey placeholder dashboard; the opening perspective strip was just a grey line with no suspense and no light",
+    "The page ended exactly full-frame, so there was no stage or space and the last frame was a flat screenshot",
+    "69 truly static frames after the 76f move: over two seconds of dead air",
+    "Only the page rotated while the background stayed put, so it never read as the camera tilting up"
   ],
   "changesEn": [
-    "Magnification now uses CSS zoom layout rasterisation, with scale(s)·rotateX(r) rewritten as the equivalent rotateX(r′)·scaleY(k) (tan r′ = tan r/s): identical projection, native-resolution text",
-    "While lying flat, a vertical-only Gaussian prefilter scaled to the vertical compression (σ≈0.55/compression×1.6, off before the text becomes readable) removes strip aliasing and shimmer",
-    "The main tilt is one EASE.swift curve (zero-velocity start, fast middle) that stops exactly at the +2.6° overshoot at f68, then an 8-frame smooth return to 0°; the hold gets a gentle -80°→-77° creep",
-    "A Backdrop with soft light, vignette and grain replaces the flat grey; the page's lighting follows the tilt (darker when flat, haze at the far edge), it casts a height-dependent two-layer soft shadow, and the fastest frames get vertical SpeedBlur",
-    "Exported TILT_REVEAL_DURATION = 145 (76f of motion + 69f true hold)"
+    "Midnight look (deep navy, electric blue): the opening is a glowing 'horizon' in the dark, a bright line on the far edge of the flat page plus a wide blue bloom, visible from frame 1",
+    "A purpose-built subject: the dark analytics page 'Meridian' with a 120px headline 'Revenue is up 38%', a full-width glowing area chart and three 76px KPI figures; it lands at 0.84× with the stage light and a blue floor glow around it",
+    "The page now hinges on its bottom edge and lies face up (rotateX 86°) with the eye above it, so the type in the strip reads the right way up; a 40f asymmetric in-out lift overshoots to −2.2° and settles in 10f",
+    "The background light pool and dust shift down 150px against the tilt so it reads as the camera tilting up, with vertical motion blur on the fastest frames",
+    "Something happens after landing: the chart line draws with a glowing pen tip (38–82f), the end dot pops at 80f, and a 1.8% push-in keeps the hold alive; length 145f to 120f"
   ],
+  "look": "midnight",
   "mdChanged": true
 }

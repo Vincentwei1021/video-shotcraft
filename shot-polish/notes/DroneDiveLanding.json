@@ -1,32 +1,31 @@
 {
   "stem": "DroneDiveLanding",
   "issues": [
-    "工作台按 inline 猜成 45f，渲染在俯冲半途截断，气垫减速和落定根本没出现",
-    "页面悬在纯色平底上，没有地面参照，俯冲时读不出速度与高度",
-    "地面软影是一团带明显色环的径向渐变，离页面很远，和页面关系脱节",
-    "终点 1.35 倍特写靠 transform 放大位图，文字发糊",
-    "俯冲前无预备、落定后无停留，动作一结束就切"
+    "浅灰底上一张灰色 dashboard，全景里看不出要降落在哪张卡上",
+    "全景时页面是一块悬在空白里的薄片，地面点阵太淡，俯冲时缺少速度参照",
+    "落地后 hero 卡只是周边轻压暗，没有\"到了\"的收束动作",
+    "全程 12 采样运动模糊，静止段也在多重渲染，渲染很慢"
   ],
   "changes": [
-    "补导出 DRONE_DIVE_LANDING_DURATION=105：24f 建立 + 25f 俯冲 + 20f 气垫 + 36f（1.2s）落定呼吸",
-    "页面与 48px 点阵地面同处一个 3D 世界：俯冲时点阵向镜头涌来、拉出速度线，落地后点阵淡到 55%",
-    "地面接触影改为页面同形的模糊矩形，随悬停高度 150→0 收紧变实；背景换 Backdrop 柔光底并移出动态模糊（消除多重采样色环）",
-    "页面按 1.35 倍 CSS zoom 布局再 scale(1/1.35) 缩回，终点特写文字锐利（Q2）",
-    "俯冲前 20f 相机上提 2.5% 行程作预备；落定后 hero 卡外圈轻压暗收焦；CameraMotionBlur 采样 9→12 减少文字分层"
+    "look 换成 lime（石墨 · 荧光黄绿）：虚构跑团训练分析「Tempo」暗场 dashboard，全页只有 hero 卡（本周跑量 412 km）用荧光绿，俯瞰一眼就知道目标",
+    "页面悬停在一块\"停机坪\"上：点阵地面 + 以 hero 为圆心的四圈降落环，俯冲时向外涌开；页面下一圈荧光绿气垫光晕，越低越收紧、触地成卡片轮廓光",
+    "运镜加 FPV 航向：一条行程同时驱动俯角 62°→0、缩放 0.46→1.95、平移和 rotateZ −16°→0，边转边降；上提预备 3% → 26f ease-in 俯冲吃 80% → 22f poly5 气垫",
+    "落地收束：周边压暗、目标进度条 0→82% 一笔填满、+18% 徽标一次过冲弹出，hold 段极缓推近",
+    "运动模糊只在机动段开（8 采样），静止段单次渲染；hero 卡按 2× 布局，终点特写文字原生分辨率"
   ],
   "issuesEn": [
-    "The workbench guessed 45f from inline code, so the render cut off mid-dive and the cushion and landing never showed",
-    "The page floated over a flat backdrop with no ground reference, so neither speed nor altitude read",
-    "The ground shadow was a banded radial blob far below the page, visually disconnected from it",
-    "The 1.35x close-up came from transform-scaling a bitmap, so text went soft",
-    "No anticipation before the dive and no hold after landing"
+    "A grey dashboard on a pale grey stage; in the wide shot nothing told you which card the camera would land on",
+    "In the wide shot the page was a thin sheet in empty space and the floor dots were too faint to give any sense of speed during the dive",
+    "After landing the hero card only got a light vignette, with no 'arrived' beat",
+    "12-sample motion blur ran for the whole shot, multi-rendering even the static frames, so renders were slow"
   ],
   "changesEn": [
-    "Exported DRONE_DIVE_LANDING_DURATION=105: 24f establish + 25f dive + 20f cushion + 36f (1.2s) settle",
-    "Page and a 48px dot-grid floor share one 3D world: dots rush toward camera during the dive as speed cues, then fade to 55% on landing",
-    "Contact shadow is now a blurred page-shaped rect that tightens as hover height goes 150→0; backdrop is a soft-light Backdrop rendered outside the motion blur (no sampling bands)",
-    "Page laid out at 1.35x CSS zoom then scaled down by 1/1.35, so the final close-up text is crisp (Q2)",
-    "2.5% pull-up anticipation over 20f before the dive; a gentle focus vignette around the hero card after landing; CameraMotionBlur samples 9→12 to reduce text stepping"
+    "Lime look (graphite, neon yellow-green): a dark dashboard for a fictional running-club analytics product 'Tempo' where only the hero card (412 km this week) uses lime, so the target is obvious from above",
+    "The page hovers over a landing pad: a dot-grid floor with four landing rings centred on the hero that rush outward during the dive, and a lime hover glow under the page that tightens as it drops and becomes the card's rim light on touchdown",
+    "An FPV heading: one travel value drives pitch 62° to 0, scale 0.46 to 1.95, position and rotateZ −16° to 0, banking as it dives; 3% lift, a 26f ease-in dive covering 80%, then a 22f poly5 air-cushion",
+    "A landing payoff: the surroundings dim, the goal bar fills 0 to 82% in one stroke and a +18% badge pops with one overshoot, then a slow push-in",
+    "Motion blur only runs while the camera moves (8 samples) and static frames render once; the page is laid out at 2× so the close-up text is native resolution"
   ],
+  "look": "lime",
   "mdChanged": true
 }
