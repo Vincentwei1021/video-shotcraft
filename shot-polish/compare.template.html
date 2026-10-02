@@ -81,6 +81,9 @@
   .decide button { all: unset; cursor: pointer; font-size: 13px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); color: var(--ink); background: var(--panel2); }
   .decide button:hover { background: #242830; }
   .decide button.on { background: #4ade80; color: #08130b; border-color: transparent; font-weight: 650; }
+  .decide button.drop { margin-left: 8px; color: #f87171; }
+  .decide button.drop.on { background: #f87171; color: #1a0707; }
+  .card.dropped .stage { opacity: 0.35; filter: grayscale(0.8); }
   .decide input.note { all: unset; flex: 1; min-width: 220px; font-size: 13px; padding: 7px 12px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); color: var(--ink); }
   .decide input.note::placeholder { color: var(--dim); }
   .chead .badge { font-size: 11.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #4ade80; color: #08130b; }
@@ -120,7 +123,7 @@
       <div class="spacer"></div>
       <div class="seg" id="dfilter">
         <button data-v="all" class="on" data-i18n="dAll"></button><button data-v="none" data-i18n="dNone"></button>
-        <button data-v="before" data-i18n="before"></button><button data-v="v1" data-i18n="v1"></button><button data-v="after" data-i18n="after"></button>
+        <button data-v="before" data-i18n="before"></button><button data-v="v1" data-i18n="v1"></button><button data-v="after" data-i18n="after"></button><button data-v="drop" data-i18n="drop"></button>
       </div>
       <div class="tools"><span class="savest" id="savest"></span><button id="export" data-i18n="export"></button></div>
       <label class="tog"><input type="checkbox" id="autoplay" checked /> <span data-i18n="autoplay"></span></label>
@@ -134,7 +137,7 @@ const DATA = /*__DATA__*/null;
 const FPS = 30;
 const T = {
   zh: { subtitle: '216 个镜头改版对照', trio: '三方', side: '并排', wipe: '划像', pick: '选用', notePh: '备注（可选，例如想改哪里）',
-        dAll: '全部', dNone: '未决定', decided: '已决定', undecided: '未决定', export: '导出决策 JSON',
+        dAll: '全部', dNone: '未决定', drop: '去掉', decided: '已决定', undecided: '未决定', export: '导出决策 JSON',
         savedFile: '已保存到 shot-polish/decisions.json', savedLocal: '仅保存在浏览器（用 serve.py 启动可写入文件）', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
         all: '全部', before: '原版', v1: '第一版', after: '第二版', issues: '原版的问题', changes: '第二版做了什么', nonotes: '（暂无说明）',
         vsBefore: '对比原版', vsV1: '对比第一版', onlydone: '只看第二版已完成',
@@ -142,7 +145,7 @@ const T = {
         cats: { opening: '开场', camera: '运镜与空间', transition: '转场', typography: '文字排版', 'ui-entrance': 'UI 入场',
                 interaction: '交互演示', data: '数据', effects: '特效', rhythm: '节奏', outro: '收尾' } },
   en: { subtitle: 'redesign comparison for 216 shots', trio: 'All three', side: 'Side by side', wipe: 'Wipe', pick: 'Use', notePh: 'Note (optional, e.g. what to change)',
-        dAll: 'All', dNone: 'Undecided', decided: 'decided', undecided: 'undecided', export: 'Export decisions JSON',
+        dAll: 'All', dNone: 'Undecided', drop: 'Drop', decided: 'decided', undecided: 'undecided', export: 'Export decisions JSON',
         savedFile: 'Saved to shot-polish/decisions.json', savedLocal: 'Saved in browser only (start with serve.py to write the file)', autoplay: 'Autoplay in view', search: 'Search card / component…',
         all: 'All', before: 'Original', v1: 'V1', after: 'V2', issues: 'What was rough', changes: 'What V2 changed', nonotes: '(no notes yet)',
         vsBefore: 'vs original', vsV1: 'vs V1', onlydone: 'V2 done only',
@@ -153,7 +156,8 @@ const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: ''
 // 决策：{ [stem]: { pick: 'before'|'v1'|'after', note, at } }。serve.py 启动时读写 shot-polish/decisions.json，否则落 localStorage
 let decisions = JSON.parse(localStorage.getItem('sp-decisions') || '{}');
 let serverOK = false;
-const PICK_COLOR = { before: '#8b93a1', v1: '#60a5fa', after: '#4ade80' };
+const PICK_COLOR = { before: '#8b93a1', v1: '#60a5fa', after: '#4ade80', drop: '#f87171' };
+const PICKS = ['before', 'v1', 'after', 'drop'];
 const framesOf = (i, k) => k === 'before' ? i.fBefore : k === 'v1' ? i.fV1 : i.fAfter;
 const baseSrc = i => i[state.base];
 const baseFrames = i => state.base === 'v1' ? i.fV1 : i.fBefore;
@@ -168,7 +172,7 @@ function applyI18n() {
   const nd = Object.values(decisions).filter(d => d.pick).length;
   const cnt = k => Object.values(decisions).filter(d => d.pick === k).length;
   document.getElementById('stats').innerHTML = `<b>${DATA.items.length}</b> ${t('shots')} · <b>${nd}</b> ${t('decided')}` +
-    ` <span style="color:var(--dim)">(${t('before')} ${cnt('before')} · ${t('v1')} ${cnt('v1')} · ${t('after')} ${cnt('after')})</span>`;
+    ` <span style="color:var(--dim)">(${t('before')} ${cnt('before')} · ${t('v1')} ${cnt('v1')} · ${t('after')} ${cnt('after')} · ${t('drop')} ${cnt('drop')})</span>`;
   document.getElementById('base').style.display = state.mode === 'trio' ? 'none' : '';
   renderSaveState();
 }
@@ -229,7 +233,7 @@ function renderList() {
     n++;
     const name = zh ? i.name : i.nameEn;
     const sub = zh ? i.nameEn : i.name;
-    html += `<section class="card" data-stem="${i.stem}" id="${i.stem}">
+    html += `<section class="card ${decisions[i.stem]?.pick === 'drop' ? 'dropped' : ''}" data-stem="${i.stem}" id="${i.stem}">
       <div class="chead"><span class="idx">${String(n).padStart(3, '0')}</span><h3>${esc(name)}</h3><span class="en">${esc(sub)}</span>
         ${badgeHtml(i.stem)}<span class="stem"><a href="#${i.stem}">${esc(i.path)}</a></span></div>
       ${(zh ? i.summary : i.summaryEn) ? `<div class="summary">${esc(zh ? i.summary : i.summaryEn)}</div>` : ''}
@@ -237,7 +241,7 @@ function renderList() {
       <div class="ctrl"><button class="pp">${t('pause')}</button><button class="fb">◀ 1f</button><button class="ff">1f ▶</button>
         <input type="range" class="scrub" min="0" max="1000" value="0" /><span class="tc">0 / ${i.fAfter ?? baseFrames(i) ?? '–'}f</span></div>
       <div class="decide"><span class="lbl">${t('pick')}</span>
-        ${['before', 'v1', 'after'].map(k => `<button class="dk ${decisions[i.stem]?.pick === k ? 'on' : ''}" data-k="${k}">${t(k)}</button>`).join('')}
+        ${PICKS.map(k => `<button class="dk ${k === 'drop' ? 'drop' : ''} ${decisions[i.stem]?.pick === k ? 'on' : ''}" data-k="${k}">${t(k)}</button>`).join('')}
         <input class="note" placeholder="${esc(t('notePh'))}" value="${esc(decisions[i.stem]?.note || '')}" /></div>
       <div class="notes"><div class="iss"><h4>${t('issues')}</h4>${list(zh ? i.issues : (i.issuesEn.length ? i.issuesEn : i.issues))}</div>
         <div class="chg"><h4>${t('changes')}</h4>${list(zh ? i.changes : (i.changesEn.length ? i.changesEn : i.changes))}</div></div>
@@ -330,12 +334,13 @@ function setDecision(stem, patch, card, quiet) {
     const vb = card.querySelectorAll('.stage.trio .vbox');
     ['before', 'v1', 'after'].forEach((k, ix) => vb[ix]?.classList.toggle('picked', k === p));
     card.querySelector('.badge').outerHTML = badgeHtml(stem);
+    card.classList.toggle('dropped', p === 'drop');
     applyI18n();
   }
 }
 function exportPayload() {
   const items = DATA.items.map(i => ({ stem: i.stem, path: i.path, name: i.name, pick: decisions[i.stem]?.pick || null, note: decisions[i.stem]?.note || '' }));
-  return { savedAt: new Date().toISOString(), summary: { before: items.filter(x => x.pick === 'before').length, v1: items.filter(x => x.pick === 'v1').length, after: items.filter(x => x.pick === 'after').length, undecided: items.filter(x => !x.pick).length }, decisions: items };
+  return { savedAt: new Date().toISOString(), summary: { before: items.filter(x => x.pick === 'before').length, v1: items.filter(x => x.pick === 'v1').length, after: items.filter(x => x.pick === 'after').length, drop: items.filter(x => x.pick === 'drop').length, undecided: items.filter(x => !x.pick).length }, decisions: items };
 }
 async function saveToServer() {
   try {
