@@ -1,28 +1,35 @@
 {
   "stem": "Terminal3D",
   "issues": [
-    "光标穿帮：未打出的字符用透明度占位，光标悬在行尾空处离文字很远",
-    "Courier 回退等宽字体，输出全是单一灰色",
-    "第三窗末行到最后一帧还没淡入完，尾段没有落定",
-    "窗体扁平、背景只有一层渐变，飞行段没有速度感"
+    "终端窗几乎铺满画面且基本正对，三窗的 3D 散布在画面里读不出来，像三张平面截图轮换",
+    "飞行转场段画面只剩半块出画的窗口和大片暗底，看不到「还有更多窗口」的全貌",
+    "背景是近黑平底 + 点阵，窗口暗灰对暗灰，没有主光、没有地面，空间没有锚点",
+    "命令与输出是通用 git/npm/log 占位，三步之间没有叙事，也没有收尾的结果",
+    "打字匀速、输出慢滑入，节奏像 PPT 而不像真实终端"
   ],
   "changes": [
-    "只排已打出的字符，块状光标紧贴字尾；提示符 $ 常驻",
-    "等宽换系统栈（SF Mono/JetBrains Mono），输出按 git/vite/日志语义着色（分支绿/修改黄/未跟踪红/状态码绿/URL 青）",
-    "时序收紧：STEP 第二段 0.63–0.77、TYPE 0.455/0.79、输出 0.016/行 · 0.03 时长，第三窗 0.963 吐完留落定",
-    "窗体玻璃质感：发丝边与顶沿受光置顶层、渐变机身、聚焦窗靛色环境光；背景加点阵远景（随相机反向视差）+ 暗角 + 颗粒，飞行段按相机屏幕速度加方向性运动模糊"
+    "look 换成 lime（石墨暗场 · 荧光黄绿）：强调色只给提示符、✓ 和最后的 ● LIVE 地址；舞台主光降饱和，背后背光 + 脚下反光把暗色窗体剥离出来",
+    "内容重编成虚构 CLI forge 的三步上线：01 init 脚手架 → 02 test（进度格 + 0→128 计数）→ 03 deploy，收在 ● LIVE orbit.forge.run（全片唯一泛光）",
+    "窗口 1180×620 按真实屏幕尺寸布局，命令 52px / 输出 38px，落定时 1:1 栅格化不糊；每站留 8–10° 侧视角，有体积又读得清",
+    "空间重做：窗口前后错落 + 各自偏转，按相机矩阵逐线投影的 SVG 透视地面，窗后 560px 描边步骤号做视差层；拉远峰值 1250px，三窗同框",
+    "节奏改成真实终端：每字确定性抖动的人手打字、敲完停 2f 回车、输出 6f 快速打印 + braille 小菊花落成 ✓；飞行 30f 不对称 in-out + 按屏速横向模糊",
+    "时长 180f → 246f：三站各留足读秒，尾段 24f 极缓推近落在「已上线」海报"
   ],
   "issuesEn": [
-    "Caret bug: untyped characters held their space at opacity 0, so the caret floated far from the text at the line end",
-    "Courier fallback mono and single-grey output",
-    "The third window's last line was still fading in on the final frame, so the shot never settled",
-    "Flat window chrome, a single-gradient background, and no sense of speed during flights"
+    "The terminal windows nearly filled the frame and faced the camera, so the 3D layout never read: it looked like three flat screenshots taking turns",
+    "During the flights the frame showed half a window sliding off-screen over a large dark void, so the 'there are more windows' overview never landed",
+    "Near-black flat background with a dot grid; dark grey windows on dark grey, no key light and no floor, nothing anchoring the space",
+    "Commands and output were generic git/npm/log placeholders with no story across the three steps and no payoff at the end",
+    "Even-speed typing and slow slide-in output felt like a slide deck rather than a real terminal"
   ],
   "changesEn": [
-    "Only typed characters are laid out, so the block caret hugs the text; the $ prompt is always shown",
-    "System mono stack (SF Mono/JetBrains Mono); output is colored by meaning (branch green, modified amber, untracked red, status codes green, URLs cyan)",
-    "Tightened timing: second flight 0.63–0.77, TYPE 0.455/0.79, output 0.016 per line with 0.03 duration; the third window finishes at 0.963 and holds",
-    "Glass chrome: hairline and lit top rim on the top layer, gradient body, an indigo ambient glow on the focused window; a dot-grid far layer with counter-parallax, vignette and grain; directional motion blur during flights from the camera's screen velocity"
+    "Lime look (graphite stage, chartreuse accent): the accent is reserved for prompts, check marks and the final LIVE URL; a desaturated key light, a backlight and a floor pool separate the dark windows from the stage",
+    "Content rewritten as a three-step ship with a fictional CLI, forge: 01 init scaffold, 02 test (progress blocks and a 0→128 count), 03 deploy, ending on LIVE orbit.forge.run, the only glow in the shot",
+    "Windows are laid out at true screen size (1180×620, 52px commands, 38px output) and rasterise 1:1 when the camera lands, so text stays sharp; each stop keeps an 8–10° side view for volume without hurting legibility",
+    "Space rebuilt: windows staggered in depth and yaw, an SVG perspective floor projected line by line with the camera matrix, 560px outlined step numbers behind each window for parallax; a 1250px pull-back puts all three in frame",
+    "Real-terminal rhythm: human typing with deterministic jitter, a 2f pause before Enter, 6f snappy line printing and braille spinners resolving to check marks; 30f asymmetric in-out flights with speed-based horizontal blur",
+    "180f → 246f: each stop gets reading time, and a 24f slow push-in settles on the 'it's live' poster"
   ],
+  "look": "lime",
   "mdChanged": true
 }

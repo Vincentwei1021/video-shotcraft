@@ -1,32 +1,31 @@
 {
   "stem": "BubbleSwarmTakeover",
   "issues": [
-    "气泡只有一层径向渐变，像糊开的粉彩色斑，没有镜面高光、反光和薄膜虹彩，读不出「珠光气泡」",
-    "wobble 的 x/y 同频同相（y = x×0.6），整群沿同一条斜线摆动，像贴图在晃",
-    "页面用 sin 做 ±2% 的「呼吸」缩放，来回拉伸，和穿过泡群的方向感无关",
-    "峰值帧白纱与气泡偏透，旧/新页面细节（如 214、头像）隐约透出",
-    "i18n 胶囊是 Helvetica 800 + 2px 白边，在白纱上几乎隐形；洗白层是纯白平涂"
+    "两个场景都是灰色占位 dashboard，转场前后讲不出任何东西，i18n 胶囊和画面内容没有关系",
+    "气泡是均匀的粉紫珠光球，浅灰底上发灰发闷，峰值时整屏是一片模糊的白色色块",
+    "胶囊夹在中层气泡里，峰值时被巨型泡盖成半透明，读不清",
+    "散开直接外推，没有预备，力度平；新场景落定后没有任何揭示动作"
   ],
   "changes": [
-    "补 BUBBLE_SWARM_TAKEOVER_DURATION = 130；气泡改四层：偏 34%/28% 的锐利镜面高光 + 柔高光 + 右下反光 + 中心透外圈染色的珠光体色，再叠 conic 薄膜虹彩环（mask 裁成外缘环带、随帧缓转），体色不透明度提高一档压住峰值透底",
-    "wobble 改 x/y 不同频（0.09 / 0.071）+ 相位差，群体不再同步斜摆；飘入改 quint ease-out、散开改 quart ease-in",
-    "按真实速度做方向性拖影：沿速度方向拉长至多 32%、垂直方向微收，快时额外虚化 ≤4px，静止为 0",
-    "去掉呼吸缩放，改为单向推镜：旧页 1→1.035 越推越快，藏切后新页从 1.05 软落回 1，读作穿过泡群",
-    "胶囊改系统字体 650 + 语言代码小标（DE/ES/IT）+ 发丝线 + 紫调两层软阴影，弹出带一次轻过冲；洗白层改带珠光冷暖的径向白纱，全片加颗粒防色带"
+    "look 换成 porcelain（冷白 · 钴蓝），转场被赋予语义：虚构本地化产品 Verbatim 的英文落地页被「Hallo! / ¡Hola! / こんにちは」漫过，散开后同一页面已是德文版（EN → DE、语言进度全部 100% ✓）",
+    "页面按镜头重做：1600×900 浏览器窗，104px 两行标题 + 36px 说明 + CTA，右栏语言覆盖率卡；德文版标题逐词由虚到实、状态条错峰亮起",
+    "气泡改成真正的肥皂膜：中心近透明、外缘 conic 薄膜虹彩环（钴蓝 / 紫 / 粉 / 青 / 金）、窗格形镜面反光 + 回光、钴蓝发丝外缘；6 颗巨型泡更厚，按网格兜底遮满",
+    "节奏：涨潮 ease-out 68f → 74f 藏切 → 6f 全体向心内收 3%（预备）→ 30f 径向 ease-in 飞散 + 沿速度拉伸；洗白峰值提到 0.95",
+    "胶囊画在最上层、50px 大字 + 钴蓝语言代码，峰值也读得清；时长 130f → 150f，尾段 26f 干净的德文版海报"
   ],
   "issuesEn": [
-    "Bubbles were a single radial gradient — smeared pastel blobs with no specular, bounce light or thin-film iridescence, so they didn't read as pearly bubbles",
-    "Wobble moved x and y at the same frequency and phase (y = x×0.6), so the whole swarm swayed along one diagonal like a jiggling sprite",
-    "The page did a ±2% sin \"breathing\" scale back and forth, unrelated to travelling through the swarm",
-    "At the peak frame the veil and bubbles were too transparent, letting old/new page details (e.g. \"214\", avatars) show through",
-    "The i18n capsules were Helvetica 800 with a 2px white border, nearly invisible on the veil; the whiteout was flat pure white"
+    "Both scenes were grey placeholder dashboards, so the transition said nothing, and the i18n capsules had no link to what was on screen",
+    "Bubbles were uniform pink-purple pearls that looked dull and grey on the light background; at the peak the screen was just a blurry white mass",
+    "Capsules sat inside the middle layer and were half-covered by the giant bubbles at the peak, so they were hard to read",
+    "The dispersal pushed straight out with no anticipation and little force, and nothing was revealed after the new scene landed"
   ],
   "changesEn": [
-    "Added BUBBLE_SWARM_TAKEOVER_DURATION = 130; bubbles now have four layers — a sharp specular at 34%/28%, a soft highlight, bottom-right bounce light and a pearl body that's clear in the middle and tinted at the rim — plus a conic thin-film ring masked to the outer band and slowly rotating; body opacity raised a notch to hide the page at the peak",
-    "Wobble uses different x/y frequencies (0.09 / 0.071) with a phase offset so the swarm no longer sways in sync; float-in is quint ease-out, dispersal quart ease-in",
-    "Velocity-driven directional smear: up to 32% stretch along the motion direction with slight perpendicular squash, plus ≤4px extra blur when fast, zero at rest",
-    "Replaced the breathing scale with a one-way push: the old page goes 1→1.035, accelerating, and after the hidden cut the new page settles from 1.05 to 1 — reading as passing through the swarm",
-    "Capsules use the system font at 650 with a language-code tag (DE/ES/IT), hairline and violet two-layer shadow, popping in with one light overshoot; the whiteout became a pearly warm/cool radial veil, with grain over everything against banding"
+    "Porcelain look (cool white, cobalt) and a transition with meaning: the English landing page of a fictional localisation product, Verbatim, is swamped by 'Hallo! / ¡Hola! / こんにちは', and when the swarm clears the same page is in German (EN → DE, every language at 100% ✓)",
+    "Page rebuilt for the shot: a 1600×900 browser window, a 104px two-line headline, a 36px line and CTA, with a language-coverage card on the right; the German headline resolves word by word from blur and status items light up in sequence",
+    "Bubbles are now real soap film: a nearly clear centre, a conic thin-film iridescent rim (cobalt, violet, pink, cyan, gold), a window-pane specular highlight plus bounce light, and a hairline cobalt edge; the six giant bubbles are denser and grid-placed to guarantee full cover",
+    "Rhythm: 68f ease-out swell → hidden cut at 74f → 6f inward gather of 3% (anticipation) → 30f radial ease-in burst with velocity stretch; the whiteout peak is raised to 0.95",
+    "Capsules draw on top with 50px type and cobalt language codes, legible even at the peak; 130f → 150f with a 26f clean German-page poster at the end"
   ],
-  "mdChanged": false
+  "look": "porcelain",
+  "mdChanged": true
 }

@@ -1,32 +1,31 @@
 {
   "stem": "BottomPushStackWipe",
   "issues": [
-    "没有导出时长常量，工作台按「单次推入 30f」只渲出第一推的前半截，三连推根本没演出来",
-    "三章底色是死平的纯色块，没有受光与层次，像 PPT 色板",
-    "窗口卡标题栏是 2px 灰边 + 灰色骨架条，交通灯偏大，章内装饰只是几根白色半透明胶囊条",
-    "推入初速约 270px/帧却完全没有运动模糊，快进段读作跳帧",
-    "卡片阴影是统一黑色 rgba，压在饱和底色上发脏"
+    "三章底色是 slack 系绿 / 蓝 / 粉，但每章内容只是一张通用小字 dashboard 卡，章节之间没有可读的卖点",
+    "章内标题 46px、页码 22px，大面积色板上主体太小，构图空",
+    "整章完全静止：推入落定后没有任何章内动作，hold 段是死帧",
+    "第 0 章是浅灰中性底，与饱和色章对比弱，开场没有态度"
   ],
   "changes": [
-    "补 BOTTOM_PUSH_STACK_WIPE_DURATION = 140（md 写明的三连推全长），推入曲线/起推帧 18/55/92 与 30f 时长保持不变",
-    "每章底色改为同色相上亮下沉的 172° 渐变 + 左上柔光斑 + 章色暗角 + 颗粒；第 0 章用中性 Backdrop",
-    "窗口卡：发丝线外框 + 顶部内高光 + 按章色调的两层软阴影（elevation 36），标题栏渐变底、13px 交通灯、居中窗口标题，内容换成 Phase 0 出版级 Card",
-    "白色装饰条升级为章节号胶囊 + 46px 章名、受光玻璃圆、右下三格页码（当前章点亮），换章即节拍器",
-    "整摞按推入速度做纵向 SpeedBlur（两章刚性同速，一层模糊管两章，封顶 22px，hold 段为 0）；接缝阴影改两段式近实远虚 + 新章上缘 2px 受光边"
+    "look 改 custom「瑞士海报」：近黑开场章 + 钴蓝 #2d4cff / 朱橙 #ff4d1f / 酸柠 #cdf23a 三块饱和色板，色相拉开 120° 级，换章一眼读作换了个世界",
+    "版式重做：左栏眉题（章号胶囊 + 大写名称）→ 116px 超粗两行标题 → 40px 说明，右栏一张为镜头设计的大字 UI 卡；虚构产品 Tandem，一章一个卖点（Channels / Huddles / Workflows）",
+    "推入保留 md 钉死的重 ease-out，收到 26f，整摞按速度纵向方向性模糊；接缝改用新章的带色相深色 56px 接触影 + 2px 受光边",
+    "章内表演全部错开推入窗口：标题在推入 95% 后从线下升起；hold 里有打字中→消息弹入、声波与发言人交接、自动化三步弹簧打勾",
+    "色板左上受光、右下压暗，与卡片两层带色相软阴影同一光向；时长 170f，尾段 28f 极缓推近落在完整章节海报"
   ],
   "issuesEn": [
-    "No exported duration constant, so the workbench rendered only 30f — half of the first push; the triple push never played",
-    "Chapter backgrounds were dead-flat solid fills with no light or depth, like a slide swatch",
-    "Window title bar used a 2px grey border and skeleton bars, oversized traffic lights; chapter decorations were just a few translucent pills",
-    "Initial push speed is ~270px/frame yet there was no motion blur, so the fast phase read as dropped frames",
-    "Card shadows were a uniform black rgba that looked dirty on saturated backgrounds"
+    "The chapters used Slack-like green, blue and pink, but each one only held a generic small-text dashboard card, so no chapter carried a readable selling point",
+    "A 46px chapter title and 22px page counter left the subject tiny on big colour fields; the composition felt empty",
+    "Every chapter was frozen: nothing moved inside a chapter after it landed, so the holds were dead frames",
+    "Chapter 0 was a light grey neutral that barely contrasted with the saturated chapters; the opening had no attitude"
   ],
   "changesEn": [
-    "Added BOTTOM_PUSH_STACK_WIPE_DURATION = 140 (the full triple push from the md); push curve, start frames 18/55/92 and 30f duration unchanged",
-    "Each chapter colour is now a same-hue 172° gradient (lighter top, deeper bottom) with a top-left soft light, hue-tinted vignette and grain; chapter 0 uses the neutral Backdrop",
-    "Window card: hairline frame, top inner highlight, two-layer soft shadow tinted by the chapter hue (elevation 36), gradient title bar with 13px traffic lights and a centred title, body replaced by the publication-grade Card",
-    "Decorative pills became a chapter-number capsule + 46px chapter title, a lit glass orb and a three-segment pager that lights the current chapter",
-    "The whole stack gets vertical SpeedBlur driven by push velocity (both chapters move rigidly, so one blur layer covers both; capped at 22px, zero during holds); seam shadow is two-stage near-sharp/far-soft plus a 2px lit top edge on the incoming chapter"
+    "Custom 'Swiss poster' look: a near-black opener plus three saturated fields, cobalt #2d4cff, vermilion #ff4d1f and acid lime #cdf23a, about 120° apart in hue so each push reads as a new world",
+    "New layout: left column with a kicker (chapter pill and caps name), a 116px extra-bold two-line title and a 40px line; right column holds a large-type UI card designed for the shot; fictional product Tandem, one selling point per chapter (Channels / Huddles / Workflows)",
+    "The md's heavy ease-out push is kept but tightened to 26f, with vertical speed blur on the whole stack; the seam is now a 56px tinted contact shadow plus a 2px lit edge on the incoming slab",
+    "Chapter-internal motion avoids the push window: titles rise from a mask once the push is 95% done; holds carry a typing indicator into a new message, a live waveform with a speaker hand-off, and three spring-checked workflow steps",
+    "Each field is lit top-left and darkened bottom-right, matching the cards' two-layer tinted shadows; 170f total, ending on a 28f slow push-in over a complete chapter poster"
   ],
-  "mdChanged": false
+  "look": "custom",
+  "mdChanged": true
 }

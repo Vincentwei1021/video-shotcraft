@@ -1,32 +1,31 @@
 {
   "stem": "CardFlockTumble",
   "issues": [
-    "三张页卡内容全是灰色骨架条，只有一个标题字，放大到 1.7 倍后像空壳",
-    "卡片靠 transform scale(1.6–1.74) 放大 560 宽的位图，文字与细线发软（Q2）",
-    "三卡叠成阶梯但前后亮度一样，读不出纵深层次",
-    "STRONGER 巨字只有一层 4.5px 渐变描边 + 整体 drop-shadow，不像霓虹管；0.6→1 的放大偏猛",
-    "没有导出时长常量，工作台按默认 150f 渲染，与 md 的 4.5s 不符；暗场是平涂近黑，没有暗角/颗粒"
+    "背景三行黄 / 品红 / 紫 / 蓝四色彩虹描边字墙抢戏，和粉紫烟雾环、彩虹描边巨字不是一套色",
+    "卡片群重心偏左上，收束点、环心和巨字不在一条视线上",
+    "收束到点后有约 14f 只剩小环的黑场空档，高潮在这里断气",
+    "巨字是细描边霓虹，0.72→1 慢慢放大，读作淡入而不是爆点；收尾只有一个词，没有完整锁版"
   ],
   "changes": [
-    "UiCard 重做为出版级 ClickUp 风页面：带工作区标识与当前页高亮的侧栏导航、头像组 + New 按钮，三页分别是收件箱消息 / 带状态 chip 的任务表 / 首页指标与速度柱图",
-    "卡片按 CARD_ZOOM=1.75 用 CSS zoom 布局级放大、外层 scale(s/1.75) 缩回，按目标尺寸栅格化，文字全程锐利；判例要求的全程零模糊、样条、慢转、10f 收束全部不动",
-    "后两张卡叠 0.16 / 0.08 的深紫压暗层，阶梯有前后景；卡片补 1px 冷紫发丝外框 + 顶部内高光",
-    "巨字改三层霓虹管（SVG 高斯柔辉 + 渐变管身 + 1.4px 白热芯），放大改 0.72→1 的 snappy 曲线，到位后继续极缓长大避免死帧；单环烟雾环原样保留",
-    "补 CARD_FLOCK_TUMBLE_DURATION = 135（md 全段 4.5s），加带紫调暗角 + soft-light 颗粒"
+    "look 换成 aurora：卡片辉光、字墙、烟雾环、巨字统一到紫 → 粉 → 奶桃一条色带；彩虹字墙换成两行 300px 单色淡紫描边「SHIP FASTER」反向缓移，卡后一团极光主光托起卡片群",
+    "构图收拢：卡片群、收束点、环心、巨字共用一个中心（画面中心下移 30px）；卡片 UI 换皮成虚构产品 Pulse，仍按 CARD_ZOOM 布局级放大保证清晰",
+    "补上能量断档：吸入到点同一帧中心一团白热闪核 + 全屏微曝（6f 衰减，只用径向光，不画描边环、不加粒子），烟雾环从闪核里长出",
+    "巨字改成实心白热芯 → 淡紫渐变 + 粉紫双层泛光，收束后 4f 就砸进来（14f snappy 1.22→1 + 字距收拢），之后极缓长大不停",
+    "环心里加「PULSE 3.0」眉题与 44px 标语错峰升起，尾帧是完整发布海报；用户历次裁决全部保留（三卡零模糊、单个湍流环、站定不停转、10f 快收束）"
   ],
   "issuesEn": [
-    "All three page cards were grey skeleton bars with a single title, reading as empty shells once scaled to 1.7×",
-    "Cards were enlarged with transform scale(1.6–1.74) on a 560px-wide bitmap, so text and hairlines went soft (Q2)",
-    "The staircase stack had identical brightness front to back, so no depth read",
-    "The STRONGER title was a single 4.5px gradient stroke plus a blanket drop-shadow — not a neon tube — and its 0.6→1 scale-up was heavy",
-    "No exported duration, so the workbench used the 150f default instead of the md's 4.5s; the dark field was flat near-black with no vignette or grain"
+    "Three rows of yellow, magenta, violet and blue rainbow-outlined words fought for attention and didn't share a palette with the pink-violet smoke ring or the rainbow-outlined headline",
+    "The card cluster sat up and to the left, so the collapse point, ring centre and headline weren't on one line of sight",
+    "After the collapse there were about 14 frames of near-black with only a small ring: the climax ran out of breath right there",
+    "The headline was a thin neon outline that grew slowly from 0.72 to 1, reading as a fade-in rather than a hit; the end had a single word and no full lockup"
   ],
   "changesEn": [
-    "Rebuilt UiCard as publication-grade ClickUp-style pages: sidebar nav with workspace mark and active-page highlight, avatar stack and New button; the three pages are an inbox, a task table with status chips, and a home view with a metric tile and velocity bars",
-    "Cards are laid out at CARD_ZOOM=1.75 via CSS zoom and scaled back with scale(s/1.75), so they rasterise at target size and text stays sharp; the mandated zero-blur, spline flight, slow idle spin and 10f collapse are untouched",
-    "The two rear cards get 0.16 / 0.08 deep-violet dimming so the staircase has depth; cards gain a 1px cool-violet hairline and a top inner highlight",
-    "Title became a three-layer neon tube (SVG Gaussian bloom, gradient tube, 1.4px white-hot core); scale-in is now 0.72→1 on a snappy curve and keeps growing very slowly after landing to avoid a dead hold; the single smoke ring is kept as-is",
-    "Added CARD_FLOCK_TUMBLE_DURATION = 135 (md: 4.5s total) plus a violet-tinted vignette and soft-light grain"
+    "Aurora look: card glow, type wall, smoke ring and headline all sit on one violet → pink → peach band; the rainbow wall became two rows of 300px single-colour lavender outline 'SHIP FASTER' drifting in opposite directions, with an aurora key light lifting the cards",
+    "Tighter composition: cards, collapse point, ring centre and headline share one centre (30px below frame centre); the card UI is reskinned as a fictional product, Pulse, still rasterised at layout zoom for sharpness",
+    "The energy gap is filled: on the collapse frame a white-hot core flash plus a light full-frame lift decays over 6f (radial light only, no outline ring, no particles) and the smoke ring grows out of it",
+    "The headline is now solid, a white-hot core fading to lavender with a two-layer pink-violet glow; it slams in 4f after the collapse (14f snappy 1.22→1 with tracking tightening) and then keeps growing very slowly",
+    "A 'PULSE 3.0' kicker and a 44px tagline rise inside the ring for a full launch-poster end frame; every earlier user ruling is kept (no blur on the cards, one turbulent ring, continuous slow spin, a fast 10f collapse)"
   ],
-  "mdChanged": false
+  "look": "aurora",
+  "mdChanged": true
 }
