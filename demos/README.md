@@ -28,14 +28,17 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
   （page-waterfall-wall 也已统一读 `textures/live/`，不再有例外）。
 
 个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
-`npm i @remotion/motion-blur`。名单（8 个文件 / 6 张卡）：
+`npm i @remotion/motion-blur`。名单（6 个文件 / 6 张卡）：
 
-- `camera/crash-zoom-punch/CrashZoomReal.tsx`、`CrashImpactReal.tsx`
 - `camera/space-camera-moves/DroneDiveLanding.tsx`
+- `ui-entrance/deck-deal-flyin/DeckDealFlyin.tsx`
+- `opening/crane-rise-reveal/CraneRiseReveal.tsx`
+- `opening/fracture/Fracture.tsx`
 - `opening/magician-card-flourish/MagicianCardFlourish.tsx`
-- `rhythm/speed-ramp-freeze/SpeedRampReal.tsx`
-- `transition/shot-transitions/WhipPanReal.tsx`、`WhipBrakeReal.tsx`
 - `transition/transition-hidden-cut/InvisibleCut.tsx`
+
+（crash-zoom-punch / speed-ramp-freeze / whip 两卡已改为按速度量自算的方向模糊——
+CameraMotionBlur 在近静止帧会把画面整体染灰/染黄。）
 
 ## Motion 系 demo（2026-08 并入的 48 张卡）
 
@@ -63,8 +66,9 @@ import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
 pill-chip-slot-cycle-handled）：挂载时用 useLayoutEffect 实测一次文字宽度
 （之后恒定，单次渲染内仍逐帧确定），因此其布局随渲染环境的字体而变——
 跨平台若字体回退不同，宽度会整体漂移；组件内已备兜底估算值，介意的话
-可把实测值写死。每个组件都经过与原样片 mp4 的全帧 SSIM 比对验收
- （mean≥0.97 / min≥0.93 或有注释说明的编码噪声豁免）。
+可把实测值写死。这批组件入库时经过与原样片 mp4 的全帧 SSIM 比对验收
+（mean≥0.97 / min≥0.93）；2026-10 质感升级后已在保留节拍与参数的前提下重绘画面，
+不再与原样片逐帧一致。
 
 ## 真实视频素材（ClipCard，assets/lib/ClipCard.tsx）
 
