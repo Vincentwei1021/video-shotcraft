@@ -1,28 +1,31 @@
 {
   "stem": "GlowWakeSleepPanel",
   "issues": [
-    "斜置面板是灰阶骨架条（灰色圆角条当文字、灰方块当图标），光照亮的是一张线框图",
-    "显影罩是单段线性衰减，光池中心以外整圈被照成灰雾，没有\"照到 / 照不到\"的明确界线",
-    "logo 描光是一个套住整块区域的 150×66 大矩形发光框，不贴着任何具体形状",
-    "没有导出时长（默认 150f），大面积暗场渐变没有颗粒，有色带"
+    "看板界面字号 13–18px，斜置后整块面板读不出任何一个字",
+    "光池中心白得发灰，聚光像手电照在一张白纸上，光与内容没有关系",
+    "面板倾斜角度过大（rotateZ −17°）又被裁出画，构图失衡",
+    "结尾整屏沉黑，只剩一条右缘残光，尾帧没有可看的东西"
   ],
   "changes": [
-    "面板换成可信的看板界面：Northwind 工作区 logo、带图标与未读徽标的导航、Spaces 色块、In review / Shipped 两列各 4 张白底任务卡（标题 / 标签 / 到期或已发布 / 头像）+ New task 虚线位",
-    "显影罩改为\"中心 ~22% 平台亮区 + S 形衰减\"的多停靠点光池，暗部带一点紫调，光照到的地方干净发白、边缘利落沉黑",
-    "logo 描光改为贴着工作区图标的 1.5px 圆角描边 + 两层紫色辉光，经过时才亮",
-    "补导出 GLOW_WAKE_SLEEP_PANEL_DURATION = 140（扫过 → 沉回黑暗 → 右缘残光收尾）；加暗角与颗粒；匀速扫光、贴边光线几何与醒睡包络不变"
+    "look = aurora：面板换成音频工作站「Cadenza」混音页，104px 曲名「Midnight Signal」、满宽 120 根波形、四轨电平、一颗 accent 播放键，斜置后大字仍可读",
+    "核心巧思：光心 = 播放头——光扫到的波形柱点亮成紫粉渐变并泛光，播放头细线与时间码跟光走，走过的波形留暗紫\"已播放\"，分轨电平随光跳一下",
+    "光头 sx 全程 linear（6–128f）不动命门；贴顶边四层辉光同行，经过 logo 描光，接近右缘点亮竖直残光；光身后紫雾 + 浮尘给空气感",
+    "构图收敛：倾斜改为 rotateX18/Y−12/Z−10 并 translateZ 后退，面板完整入画，后层重影面板给厚度",
+    "睡的段落有落点：100–134f 沉回黑暗，右缘残光转蓝紫，播放键自发光留到尾帧——暗场里唯一还醒着的东西"
   ],
   "issuesEn": [
-    "The tilted panel was grey skeleton bars (rounded grey bars for text, grey squares for icons), so the light revealed a wireframe",
-    "The reveal mask used a single linear falloff, washing everything outside the centre in grey haze with no clear lit/unlit boundary",
-    "The logo glow was a 150×66 glowing rectangle around a whole area, not hugging any actual shape",
-    "No duration was exported (default 150f) and the large dark gradients had no grain, so they banded"
+    "The kanban UI used 13-18px type, so once tilted not a single word on the panel could be read",
+    "The pool centre was a greyish white, like a flashlight on blank paper; the light had nothing to do with the content",
+    "The tilt was too steep (rotateZ -17deg) and the panel was cropped off frame, unbalancing the composition",
+    "It ended in a fully black frame with only a thin right-edge glow, leaving nothing to look at"
   ],
   "changesEn": [
-    "The panel is now a believable board UI: a Northwind workspace logo, navigation with icons and an unread badge, colour-coded Spaces, and In review / Shipped columns with four white task cards each (title, tag, due date or shipped, avatar) plus a dashed New task slot",
-    "The mask is now a multi-stop light pool, a flat bright plateau over the inner ~22% then an S-shaped falloff with slightly violet shadows, so lit areas are clean and edges drop crisply to black",
-    "The logo glow now hugs the workspace icon as a 1.5px rounded outline with two violet glow layers, lighting only as the beam passes",
-    "Exported GLOW_WAKE_SLEEP_PANEL_DURATION = 140 (sweep → sink back to dark → right-edge ember); vignette and grain added; the linear sweep, edge-streak geometry and wake/sleep envelope are unchanged"
+    "Aurora look: the panel is now the mix view of an audio workstation, Cadenza, with a 104px track title 'Midnight Signal', a full-width 120-bar waveform, four stem meters and one accent play button, readable even when tilted",
+    "Core idea: the light centre is the playhead. Bars under the light glow violet-pink, a playhead line and timecode ride with it, played bars keep a dim violet tint, and stem meters kick as it passes",
+    "The light head stays strictly linear (6-128f); a four-layer glow streak rides the top edge, rings the logo as it passes and lights a vertical streak near the right edge, with violet haze and dust behind it for air",
+    "Tighter framing: the tilt is now rotateX 18 / Y -12 / Z -10 pushed back in Z, so the panel sits fully in frame, and a ghost panel behind it adds thickness",
+    "Sleep gets a landing: 100-134f it sinks back to dark, the right-edge streak turns blue-violet, and the self-lit play button stays to the last frame as the only thing still awake"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

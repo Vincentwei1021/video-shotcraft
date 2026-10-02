@@ -1,28 +1,31 @@
 {
   "stem": "CornerSpotlightReveal",
   "issues": [
-    "Inbox 界面是灰色骨架条（黑色长条当姓名、紫色长条当摘要），显影后读不出是一个收件箱",
-    "相机漂移插值没有钳位，扩张结束后继续外推缩放，画面底边露出一条黑边",
-    "没有导出时长，工作台按默认 150f 渲染，全亮后空停 50f",
-    "开场 1.75 倍特写把 Inbox 的 I 和 All tab 裁掉半截；光前沿只是一圈灰色过渡，没有这张卡\"紫光\"的身份"
+    "灰色骨架条冒充收件箱，标题之外没有可读内容，界面像占位图",
+    "纯黑场 + 冷白界面，光没有颜色也没有身份，读作一张圆形遮罩在放大",
+    "光前沿羽化过宽，整段像灰雾扩散，看不出\"照到 / 照不到\"的界线",
+    "全亮后只剩一张静止的平面界面，没有落点也没有余波"
   ],
   "changes": [
-    "界面换成可信的收件箱：Inbox 标题 + 12 new chip、分类 tab、4 条消息（复选框 / 未读点 / 首字母头像 / 发件人 + 动作 + 时间 / 摘要 / 类型 chip），系统字体与发丝分隔线",
-    "相机漂移改为 0–112f 缓出收住后静止并钳位，底边露黑消失；补导出 CORNER_SPOTLIGHT_REVEAL_DURATION = 130（100f 匀速扩张 + 30f 全亮停留）",
-    "光前沿羽化带挂一圈 screen 叠加的紫色辉边：黑场里是紫光、照亮处自然消失，全亮前淡出；聚光半径与光心仍严格 linear",
-    "内容左上留足边距，开场特写不再裁字；光心白热光晕降一档并偏暖；加轻暗角与颗粒防暗场色带"
+    "look 换成 sand：光被重新解释为日出——光源在画外左上角，照亮晨间日程 app「Aubade」的今日简报（128px 问候、日出弧组件、四项日程含一块赤陶专注时段）",
+    "命门保留：显影平台半径严格 linear 190→2120，恰在 104f 盖满最远角；羽化带收窄到 110+0.3r，光前沿挂两圈 screen 杏粉辉边（宽 + 窄亮带）",
+    "光有色温：被照亮处先叠 multiply 晨光暖调，随时间褪成日光；角落几道极淡丁达尔光柱随光长、全亮后淡出",
+    "光到即醒：每块内容在光前沿扫过时上浮 18px 落座，按到光心距离自动错峰（左上先醒、右下后醒）",
+    "相机 1.12→1.0 缓出 112f 后静止；全亮 hold 46f 里太阳点沿日出弧升到 6:42、日晕极缓呼吸，尾帧是完整的晨间简报海报"
   ],
   "issuesEn": [
-    "The Inbox UI was grey skeleton bars (black bars for names, purple bars for previews), so once lit it never read as an inbox",
-    "The camera drift interpolation was unclamped and kept extrapolating after the reveal, exposing a black strip along the bottom edge",
-    "No duration was exported, so the workbench used the default 150f and the fully lit frame sat idle for 50f",
-    "The 1.75× opening close-up cut the I of Inbox and the All tab in half; the light front was just a grey transition with none of this card's violet identity"
+    "Grey skeleton bars stood in for an inbox; apart from the title nothing was readable, so the UI looked like a placeholder",
+    "Pure black void plus a cold white UI: the light had no colour and no identity, reading as a circular mask scaling up",
+    "The light front was feathered so wide that it spread like grey fog, with no line between lit and unlit",
+    "Once fully lit it was just a static flat screen, with no landing beat and no follow-through"
   ],
   "changesEn": [
-    "The UI is now a believable inbox: Inbox title with a 12 new chip, category tabs and four messages (checkbox, unread dot, initials avatar, sender + action + time, preview, type chip) in the system font with hairline dividers",
-    "Camera drift now eases out over 0–112f then holds, clamped, so the black edge is gone; exported CORNER_SPOTLIGHT_REVEAL_DURATION = 130 (100f linear expansion + 30f fully lit hold)",
-    "A screen-blended violet rim rides the middle of the light front's feather band: violet glow in the dark, vanishing where lit, fading before full reveal; spotlight radius and centre remain strictly linear",
-    "Content has enough top-left margin that the opening close-up no longer clips text; the hot spot is one notch dimmer and warmer; light vignette and grain prevent banding in the dark"
+    "Sand look: the light becomes a sunrise from off-frame top-left, revealing the morning brief of a planner app, Aubade (128px greeting, sunrise-arc widget, four agenda items including a terracotta focus block)",
+    "The core rule stays: the lit radius grows strictly linearly from 190 to 2120 and covers the farthest corner exactly at 104f; the feather is tightened to 110+0.3r and the front carries two screen-blended apricot rims (wide plus a thin bright band)",
+    "The light has colour temperature: newly lit areas start under a multiply dawn tint that fades to daylight, and faint god rays grow from the corner and fade once fully lit",
+    "Light wakes the content: each block rises 18px into place as the front passes it, auto-staggered by distance from the light (top-left first, bottom-right last)",
+    "Camera eases 1.12 to 1.0 over 112f then holds; during the 46f hold the sun dot climbs the arc to 6:42 and the corner glare breathes, so the last frame is a complete morning-brief poster"
   ],
+  "look": "sand",
   "mdChanged": true
 }
