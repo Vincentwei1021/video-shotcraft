@@ -1,30 +1,33 @@
 {
   "stem": "NeedleSweepSelftest",
   "issues": [
-    "画面上方是调试标题 \"NEEDLE SWEEP SELF-TEST\"，卡头是一根灰色骨架条，表盘没有指标名",
-    "亮场白卡上的表盘只有灰刻度 + 一根细琥珀线，没有量程数字、没有表面，“点火自检”毫无仪式感",
-    "回程是两段 interpolate 拼接（in-out 落到过冲位、再 out-cubic 弹回），过冲点速度归零后重新起步，像机械卡顿",
-    "指针高速甩满全弧时没有任何速度表现；没有导出时长，按 150f 渲染"
+    "三只 270° 小表并排塞在一张浅色卡片里，每只表只占画宽 ~8%，刻度和指针细到看不清",
+    "标题是调试文字「NEEDLE SWEEP SELF-TEST」，卡头只有一条灰色骨架条，没有任何内容",
+    "数值 30px 级小字只在落定后突然出现，自检过程中看不到读数，「先亮量程」的仪式感弱",
+    "浅灰底 + 白卡 + 橙色细针，没有光、没有材质，像控件截图而不是发布片镜头"
   ],
   "changes": [
-    "改暗场仪表语境：深色柔光背景 + 颗粒、深色卡面发丝线 + 内高光 + 深投影；卡头 System health + 自检状态胶囊（Running self-test… 呼吸 → All systems nominal）",
-    "表盘加淡表面与外环、0–100 刻度数字、红区；去程扫过的刻度依次点亮再在 24f 内回落（先亮量程），盘面一条跟随指针的琥珀亮弧（柔光层 + 实线层）",
-    "回程改为弹簧：按各表行程反算阻尼比，使每表恰好落过头 8° 一次回摆、速度连续，f+46 起锁死常数真静止",
-    "指针换成锥形发光针 + 金属轴帽，角速度 >4°/帧 时画 4 根递减透明度的角向拖影",
-    "数值 overshoot 弹出、下方 CPU / MEMORY / NETWORK 标注随后淡入；补导出 NEEDLE_SWEEP_SELFTEST_DURATION = 140（f60 后真静止 80f）"
+    "look 换成 graphite（石墨暗场 + 香槟金点缀）：座舱三表构图——中央 R322 大表 + 左右 R222 小表 rotateY ±16° 内倾环抱，仪表组占画宽 ~80%",
+    "表盘做成精密仪表：同心渐变表面 + 玻璃月牙反光、点火时外圈发丝线沿 270° 描出、刻度被指针扫过时点亮再回落、红区满弧时闪亮",
+    "指针改外圈锥形短针 + 盘心读数盘：去程 14f 快起急停甩满全弧、满量程挂 3f，再以按行程反算阻尼的弹簧回落（~7° 一次回摆），高速段画扇形运动拖尾",
+    "盘心读数（148px / 92px）全程跟随指针（自检期弱灰、满弧读到量程上限），落定瞬间转亮白 1.12→1 弹出 + 香槟单位；三表错峰 4f 成波浪",
+    "文案换成虚构品牌 Sable 推理节点：眉题 + 底部状态行 SELF-TEST 呼吸点 → 全部落定后「All systems nominal」逐词升起；hold 段整组 1.0→1.03 极缓推近",
+    "时长 140f → 150f：0–28 点火、16–44 扫针、~52–66 逐表落定、74–100 状态切换、100–150 hold"
   ],
   "issuesEn": [
-    "A debug title \"NEEDLE SWEEP SELF-TEST\" above the card, a grey skeleton bar as the header, and no metric names on the gauges",
-    "Gauges on a white card had only grey ticks and a thin amber line, no scale numbers and no dial face, so the ignition self-test had no sense of ceremony",
-    "The return swing was two stitched interpolates (in-out to the overshoot point, then out-cubic back), stopping dead at the overshoot and restarting like a mechanical hitch",
-    "No sense of speed while the needle whipped across the full arc; no duration export, so it rendered at 150f"
+    "Three small 270° dials sat side by side in a pale card, each only ~8% of the frame wide; ticks and needles were too thin to read",
+    "The title was debug text (NEEDLE SWEEP SELF-TEST) and the card header was a grey skeleton bar with no content",
+    "The 30px-class values only popped in after settling; no readout during the self-test, so the 'light the full range first' ritual was weak",
+    "Light grey stage, white card and thin orange needles with no light or material: it read as a widget screenshot, not a launch-film shot"
   ],
   "changesEn": [
-    "Dark instrument look: tinted dark backdrop with grain, dark card with hairline, inner highlight and deep shadow; header System health with a self-test pill (breathing Running self-test… → All systems nominal)",
-    "Dials gain a faint face and rim, 0–100 scale numbers and a red zone; ticks light up as the needle sweeps then calm down over 24f, and an amber arc (glow + solid) follows the needle",
-    "Return swing is a spring whose damping is solved per gauge so each one overshoots exactly 8° once with continuous velocity, locked to a constant from start+46",
-    "Tapered glowing needle with a metal hub cap; above 4°/frame it draws four fading angular ghost needles",
-    "Values pop with overshoot and CPU / MEMORY / NETWORK labels fade in below; exported NEEDLE_SWEEP_SELFTEST_DURATION = 140 (80f hold after f60)"
+    "Graphite look (dark charcoal with a champagne-gold accent) in a cockpit layout: a central R322 dial flanked by two R222 dials angled ±16° inward; the cluster spans ~80% of the frame",
+    "Precision-instrument dials: concentric gradient faces with a glass crescent, a hairline bezel that traces 270° on ignition, ticks that light up as the needle sweeps past, and a redline that flares at full scale",
+    "Outer tapered needles around a centre readout disc: 14f snap sweep to full scale, a 3f hang, then a spring return with damping solved from the travel (~7° single overshoot), plus a sector motion smear at speed",
+    "The centre readout (148px / 92px) tracks the needle live (dim during the test, reading full scale at the top), then turns bright and pops 1.12→1 with a gold unit on settle; dials stagger 4f as a wave",
+    "Copy for a fictional Sable inference node: kicker plus a SELF-TEST breathing dot that becomes 'All systems nominal' rising word by word; the cluster drifts 1.0→1.03 during the hold",
+    "140f → 150f: 0–28 ignition, 16–44 sweep, ~52–66 dials settle in turn, 74–100 status change, 100–150 hold"
   ],
-  "mdChanged": false
+  "look": "graphite",
+  "mdChanged": true
 }

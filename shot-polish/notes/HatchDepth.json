@@ -1,34 +1,31 @@
 {
   "stem": "HatchDepth",
   "issues": [
-    "字体回退到 Courier 打字机衬线，标签 SERIES_A / GROUP_C 是调试占位词",
-    "背景死黑 #0a0a0c、图表直接漂在屏幕上，没有面板、坐标与层次",
-    "斜纹用整条尺寸的 repeating-gradient，条伸长时斜纹相位随宽度变化而爬动",
-    "实心柱是平涂渐变，且渐变随单条宽度压缩，短条和长条颜色逻辑不一致",
-    "微颤 sin 在 t=0.85 后保持满幅不收，尾帧一直在抖；表头 TOTAL 875K / AVG 1.02M 数据自相矛盾"
+    "整张图表在 480×270 设计坐标里，标签与数值 10px 级小字放大后仍读不清，标签是 SERIES_A / GROUP_C 这类占位名",
+    "黑底 + 灰斜纹 + 蓝色柱，蜕变只是交叉淡化，「占位变真数据」的瞬间没有动作",
+    "五条柱全部同一蓝色，没有主角；表头用等宽小字挤在一行（METRICS ● LIVE TOTAL 875K），且合计与柱值不自洽",
+    "斜纹在柱伸长时会爬动，蜕变后整体平淡，没有落定的那一下"
   ],
   "changes": [
-    "图表收进深色面板（0.25 设计 px 发丝线 + 顶部内高光 + 两层软阴影），背景换柔光暗场 + 暗角 + 颗粒，加 0–400K 刻度网格",
-    "斜纹改为 6px 平铺、锚在条左端，伸长期前沿一根亮线；生长错峰 0.055→0.035 递减、强 ease-out(0.16,1,0.3,1)",
-    "实心层加顶部受光 / 底部压暗 / 贴底辉光，渐变按满幅柱区铺；蜕变用对称 in-out 交叉淡化，中段亮度 1.18→1 落定",
-    "柱端数值随蜕变从 0 滚到终值（tabular-nums），标签颜色平滑退一档而非硬切",
-    "微颤改为指数衰减，t≈0.9 前归零尾帧静止；表头换成标题 + LIVE 胶囊（一次脉冲）+ 自洽的 1.45M total · 290K avg，三段错峰滑入",
-    "系统字体栈 + raster=zoom 按目标尺寸光栅化，标签换成 Organic / Direct / Referral / Paid / Email"
+    "look 换成 sand（米色 · 深墨棕 · 赤陶）制图台：整屏原生 1920 布局，40px 渠道名、72px 高柱（满幅 1180px）、44px 柱端读数、88px 标题，图表占画宽 ~85%",
+    "整张图先是草图：连标题都是一条铅笔斜纹占位条、右上角 DRAFT 虚线胶囊；斜纹改 18px 平铺细铅笔线 + 虚线描边，锚在条左端，伸长不爬动",
+    "蜕变改成「上墨」：每条柱一道 115° 斜切前沿从左扫到右（与斜纹平行），前沿后斜纹退场、实心墨色到位，前沿带一道细高光，读数同步从 0 滚到终值",
+    "强调色只给主角：最大值 Referral 上赤陶色，其余深墨棕；标题占位条虚化成真标题，DRAFT 翻成 ● LIVE，合计 1.45M 与柱值自洽",
+    "时间表：4–48 错峰生长（间隔递减）→ 48–60 草图 hold 一拍 → 60–96 逐条上墨 → 96–118 ±1.5% 阻尼微颤 → 118–150 hold 极缓推近；时长 132f → 150f"
   ],
   "issuesEn": [
-    "Font fell back to Courier typewriter serif; labels SERIES_A / GROUP_C were debug placeholders",
-    "Dead black background with the chart floating on screen: no panel, no axis, no depth",
-    "Hatching used a box-sized repeating gradient, so the stripes crawled as the bars grew",
-    "Solid bars were flat gradients compressed per bar, so short and long bars had inconsistent colour logic",
-    "The sine wiggle stayed at full amplitude after t=0.85 so the end frame kept shaking; header TOTAL 875K / AVG 1.02M was self-contradictory"
+    "The whole chart lived in a 480×270 design space; 10px-class labels and values were still unreadable when scaled, and labels were placeholders like SERIES_A / GROUP_C",
+    "Black stage, grey hatching and blue bars; the morph was a plain crossfade, so the 'placeholder becomes real data' moment had no action",
+    "All five bars were the same blue with no hero; the header crammed mono microcopy into one line (METRICS ● LIVE TOTAL 875K) and its totals did not match the bars",
+    "Hatching crawled as bars grew, and after the morph the chart just sat there with no landing beat"
   ],
   "changesEn": [
-    "Chart now sits in a dark panel (hairline border, top inner highlight, two-layer soft shadow) on a soft-lit dark backdrop with vignette and grain, plus a 0–400K gridline axis",
-    "Hatching is a 6px tile anchored to the bar origin with a bright leading edge while growing; grow stagger tightens 0.055→0.035 with a strong ease-out (0.16,1,0.3,1)",
-    "Solid layer gains top light, bottom shade and an under-glow, gradient spans the full track; the morph is a symmetric in-out crossfade with a 1.18→1 brightness settle",
-    "Bar-end values roll from 0 to final during the morph (tabular-nums); labels dim smoothly instead of hard switching",
-    "Wiggle now decays exponentially to zero by t≈0.9 so the end frame is still; header is a title + LIVE pill (single pulse) + consistent 1.45M total · 290K avg, staggered in",
-    "System font stack with raster=zoom for crisp glyphs; labels renamed to Organic / Direct / Referral / Paid / Email"
+    "Sand look (warm beige, deep ink brown, terracotta) as a drafting table: native 1920 layout with 40px channel names, 72px bars (1180px full width), 44px end values and an 88px title; the chart fills ~85% of the frame",
+    "The whole chart starts as a sketch: even the title is a pencil-hatched placeholder bar, with a dashed DRAFT chip; hatching is now an 18px tile of fine pencil lines with a dashed outline, anchored at the bar's left so it never crawls",
+    "The morph is now 'inking': a 115° slanted front (parallel to the hatching) sweeps each bar left to right, hatching exits behind it and solid ink lands, with a thin highlight on the front and the value counting up from 0",
+    "Accent only on the hero: the largest bar (Referral) is terracotta, the rest deep ink; the title placeholder blurs into the real title, DRAFT flips to ● LIVE, and the 1.45M total matches the bars",
+    "Timeline: 4–48 staggered growth with shrinking gaps, 48–60 a sketch hold, 60–96 inking bar by bar, 96–118 a damped ±1.5% wobble, 118–150 hold with a slow push; 132f → 150f"
   ],
+  "look": "sand",
   "mdChanged": true
 }
