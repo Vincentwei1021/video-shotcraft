@@ -1,262 +1,239 @@
-// research-card-stack-scroll — Research Stack 论文卡叠压滚流（motion-lab 定稿转原生 Remotion）
-// 深色论文卡沿微微向右下的轴线连续飞入并叠压在中心：入场是 translateY(-40)+scale 0.94→1
-// 的 6 帧短促动作，落位带压缩；只有最上一张全清晰渲染标题+作者+摘要，
-// 下方卡按 depth 递增 blur/变暗只露顶部标题条，背景浅灰横向 grid 同步移动做速度参照。
-// 质感改版：
-// - 节拍改为"越来越快"的发牌节奏（间隔 14→9.5f，均值仍≈12f），11 张在 f≈124 全部落定，尾段静止呼吸；
-// - 堆的下沉不再是匀速漂移，而是每落一张就把整叠往右下"推"一格（ease-out），grid 与之严格同步；
-// - 正文随落位淡入（不再落定那一帧硬切出现），飞行段按速度加纵向运动模糊；
-// - 卡面出版级：分类 chip / 编号 / 作者 / 两行摘要 / 引用与页数，发丝线 + 内高光 + 随深度变化的两层阴影。
-// 设计坐标 480×270（DesignStage zoom 放大，字形按目标尺寸光栅化），参数表数值以此坐标系标定。
+// research-card-stack-scroll — 论文卡以越来越快的发牌节拍飞入叠压：最上一张全清晰（正在读），
+// 下面的按深度递增模糊变暗、只露顶部标题条，背景横线与卡堆同步推移做速度参照。
+//
+// 第二轮重设计（石墨暗场 · 纸质文献 · 深度叠堆）：
+// - look = graphite（近单色暗场 + 香槟金点缀）。卡片是暖白纸面的"文献卡"压在石墨舞台上——
+//   亮纸 vs 暗场的反差让"最上一张在光里、下面的沉进暗处"一眼成立。
+// - 构图：左 1/3 是读数区（眉题 + 180px 计数器「已读文献」+ 吞吐率），右 2/3 是卡堆（940×400 卡，
+//   主体占画宽一半）。卡堆沿「左上 ↔ 右下」一条轴线：新卡从右下前方斜飞入、落在最前；
+//   旧卡每被压一张就往左上后方退一格（缩小 5.5%、模糊 +2.4px、变暗 23%），顶部标题条从新卡上沿露出来，
+//   形成一摞有厚度的索引；退满 4 格淡出回收。
+// - 节拍：11 张，间隔 13→7f 递减（越发越快的发牌，量级感一路加压），末张 f≈112 落定后 38f hold。
+// - 每张卡落定后，摘要里一句关键结论被金色荧光笔从左到右划过（6f）——"这一张被读过了"；
+//   计数器随每次落位跳一档（总计 1,284，按发牌累计量导出，与卡堆严格同步）。
+// - 背景横线（台账线）间距 = 退格步长，随卡堆同一累计量上移：一推一停，是速度参照。
+// - 落定：末张落下后计数器锁定弹一下、下方「Synthesis ready」逐词升起；全程相机极缓推近 3%。
+//
+// 时间表（30fps，共 150f）：
+//   0–10     预备：舞台光、读数区眉题、计数 0；首卡 f=2 起飞、f=10 落定
+//   10–112   发牌：间隔 13→7f；每张 9f 飞行（snappy）+ 落位 3f 压缩 + 金笔划线
+//   112–124  锁定：计数器 1,284 弹簧落定（damping 16），「Synthesis ready」升起（118f 起）
+//   124–150  hold：末卡全清晰，相机推近收尾
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, EASE, FONT as PFONT, Grain } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Sheen, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 
-export const RESEARCH_CARD_STACK_SCROLL_DURATION = 144; // 4800ms @30fps
+export const RESEARCH_CARD_STACK_SCROLL_DURATION = 150;
 
-const ORANGE = '#FF6A1F';
-const ORANGE_SOFT = '#FF9A5C';
-const FONT = PFONT.sans;
-const MONO = PFONT.mono;
+const L = LOOKS.graphite;
+const GOLD = L.accent2; // #e4c58a 香槟金
+const GOLD_INK = '#8a6424'; // 纸面上能读的深金
+const PAPER = ['#f6f3ec', '#ece7dd'];
+const PAPER_INK = '#16140f';
+const PAPER_INK2 = '#5b554b';
 
-// 原 setup 里的 stage.clientWidth/clientHeight 分支——原渲染 stage 恒为 480×270
-const W = 480;
-const H = 270;
-const F = 144; // recipe 帧总数（f = t·F）
-const GAP = 30; // 叠压后每张卡的下移间距（每被压一张推一格）
-const XOFF = 9; // 每被压一张的右移量
-const FLY = 6; // 入场行程（帧）
+const CW = 940; // 卡宽
+const CH = 400; // 卡高
+const CX = 1268; // 最前一张卡中心
+const CY = 640;
+const STEP_X = -18; // 每退一格：左移
+const STEP_Y = -60; // 每退一格：上移（= 台账线间距）
+const STEP_S = 0.055; // 每退一格缩小
+const FLY = 9; // 飞行帧数
 
-// 逻辑画布 420×250 → 实际 stage 的等比缩放
-const LW = 420;
-const LH = 250;
-const S = Math.min(W / LW, H / LH);
-
-type Paper = { title: string; tag: string; authors: string; abs: string; cites: number; pages: number };
+type Paper = { tag: string; id: string; title: string; authors: string; pre: string; hl: string; post: string; cites: number; pages: number };
 const PAPERS: Paper[] = [
-  { title: 'Sparse Attention for Long-Context Reasoning', tag: 'cs.LG', authors: 'M. Okafor, L. Chen, R. Iyer', abs: 'We show block-sparse attention retains 97% of dense accuracy on 128k-token reasoning tasks while cutting memory by 6.2×.', cites: 214, pages: 18 },
-  { title: 'Retrieval Drift in Multi-Hop Agent Pipelines', tag: 'cs.IR', authors: 'A. Novak, J. Park', abs: 'Errors compound across retrieval hops; a single re-grounding step after hop two recovers most of the lost recall.', cites: 87, pages: 12 },
-  { title: 'Latent Caching Reduces Tool-Call Latency by 41%', tag: 'cs.DC', authors: 'S. Haddad, Y. Tanaka, E. Moss', abs: 'Caching intermediate latent states between tool calls removes redundant prefill and lowers p95 latency on agent traces.', cites: 132, pages: 10 },
-  { title: 'On the Calibration of Preference Reward Models', tag: 'cs.AI', authors: 'K. Lindqvist, P. Rao', abs: 'Reward models are over-confident near the decision boundary; temperature scaling per prompt cluster fixes most of it.', cites: 59, pages: 14 },
-  { title: 'Grid-Aligned Motion Priors for UI Animation', tag: 'cs.GR', authors: 'H. Duarte, N. Abe', abs: 'Snapping keyframes to a layout grid makes generated interface motion read as intentional rather than drifting.', cites: 41, pages: 9 },
-  { title: 'Cheap Verifiers Beat Expensive Samplers', tag: 'cs.LG', authors: 'T. Mensah, O. Zhou, B. Klein', abs: 'At a fixed compute budget, sampling more with a small verifier outperforms sampling less with a larger model.', cites: 305, pages: 16 },
-  { title: 'Structured Decoding Without Grammar Loss', tag: 'cs.CL', authors: 'I. Petrov, C. Alvarez', abs: 'A lookahead mask keeps outputs schema-valid without the perplexity penalty of hard grammar-constrained decoding.', cites: 76, pages: 11 },
-  { title: 'Depth-Ordered Compositing for Live Interfaces', tag: 'cs.HC', authors: 'R. Bauer, F. Nakamura', abs: 'Sorting interface layers by perceived depth before blending removes most halo artifacts in live UI compositing.', cites: 28, pages: 8 },
-  { title: 'Token-Budget Routing in Agent Fleets', tag: 'cs.MA', authors: 'D. Osei, M. Laurent, G. Sato', abs: 'Routing subtasks by predicted token cost balances fleet load and reduces total spend by 23% at equal quality.', cites: 64, pages: 13 },
-  { title: 'Contrastive Layouts for Document Understanding', tag: 'cs.CV', authors: 'W. Ibrahim, S. Kowalski', abs: 'Pairing each page with a layout-perturbed twin teaches models to read structure, not just the words on it.', cites: 118, pages: 15 },
-  { title: 'Fast Approximate Re-Ranking at Query Time', tag: 'cs.IR', authors: 'L. Moreau, A. Gupta', abs: 'A distilled two-tower scorer re-ranks the top 200 candidates in 3 ms with no measurable loss in nDCG@10.', cites: 93, pages: 10 },
+  { tag: 'cs.LG', id: '2410.0213', title: 'Sparse Attention for Long-Context Reasoning', authors: 'M. Okafor · L. Chen · R. Iyer', pre: 'Block-sparse attention ', hl: 'keeps 97% of dense accuracy', post: ' at 128k tokens.', cites: 214, pages: 18 },
+  { tag: 'cs.IR', id: '2411.0250', title: 'Retrieval Drift in Multi-Hop Agent Pipelines', authors: 'A. Novak · J. Park', pre: 'A single re-grounding step ', hl: 'recovers most lost recall', post: ' after hop two.', cites: 87, pages: 12 },
+  { tag: 'cs.DC', id: '2412.0387', title: 'Latent Caching Cuts Tool-Call Latency by 41%', authors: 'S. Haddad · Y. Tanaka · E. Moss', pre: 'Reusing latent state ', hl: 'removes redundant prefill', post: ' on agent traces.', cites: 132, pages: 10 },
+  { tag: 'cs.AI', id: '2413.0324', title: 'On the Calibration of Preference Reward Models', authors: 'K. Lindqvist · P. Rao', pre: 'Per-cluster temperature ', hl: 'fixes most over-confidence', post: ' near the boundary.', cites: 59, pages: 14 },
+  { tag: 'cs.LG', id: '2414.0361', title: 'Cheap Verifiers Beat Expensive Samplers', authors: 'T. Mensah · O. Zhou · B. Klein', pre: 'At equal compute, ', hl: 'more samples + a small verifier', post: ' win.', cites: 305, pages: 16 },
+  { tag: 'cs.CL', id: '2415.0398', title: 'Structured Decoding Without Grammar Loss', authors: 'I. Petrov · C. Alvarez', pre: 'A lookahead mask ', hl: 'keeps outputs schema-valid', post: ' at no perplexity cost.', cites: 76, pages: 11 },
+  { tag: 'cs.MA', id: '2416.0435', title: 'Token-Budget Routing in Agent Fleets', authors: 'D. Osei · M. Laurent · G. Sato', pre: 'Routing by predicted cost ', hl: 'cuts total spend by 23%', post: ' at equal quality.', cites: 64, pages: 13 },
+  { tag: 'cs.CV', id: '2417.0472', title: 'Contrastive Layouts for Document Understanding', authors: 'W. Ibrahim · S. Kowalski', pre: 'Layout-perturbed twins ', hl: 'teach models to read structure', post: '.', cites: 118, pages: 15 },
+  { tag: 'cs.HC', id: '2418.0509', title: 'Depth-Ordered Compositing for Live Interfaces', authors: 'R. Bauer · F. Nakamura', pre: 'Sorting layers by depth ', hl: 'removes most halo artifacts', post: ' in live UI.', cites: 28, pages: 8 },
+  { tag: 'cs.IR', id: '2419.0546', title: 'Fast Approximate Re-Ranking at Query Time', authors: 'L. Moreau · A. Gupta', pre: 'A distilled scorer ', hl: 're-ranks 200 results in 3 ms', post: ' with no nDCG loss.', cites: 93, pages: 10 },
+  { tag: 'cs.LG', id: '2420.0583', title: 'Scaling Laws for Agentic Literature Review', authors: 'E. Varga · H. Mori · J. Adeyemi', pre: 'Brief quality ', hl: 'scales log-linearly with sources read', post: ', with no plateau before 1,000.', cites: 171, pages: 22 },
 ];
 const N = PAPERS.length;
-const CW = 296;
-const CH = 96;
+const TOTAL = 1284; // 计数器终值
 
-// 落位时间表：首张 f=6 落定，此后间隔 14→9.5 帧递减（越来越快的发牌），末张 f≈123.5 落定，留 ~20f 静止
+// 落位时间表：首张 f=10，此后间隔 13→7f 递减（越发越快），末张 ≈112
 const LAND: number[] = (() => {
-  const out = [FLY];
-  for (let k = 0; k < N - 1; k++) out.push(out[k] + lerp(k / (N - 2), 14, 9.5));
+  const out = [10];
+  for (let k = 0; k < N - 1; k++) out.push(out[k] + mix(13, 7, k / (N - 2)));
   return out;
 })();
+const LAST = LAND[N - 1];
 
-// 每张卡被下一张"推一格"的进度：落位前 0.5f 起、6f 内 ease-out 走完
-const pushK = (f: number, j: number) => seg(f, LAND[j] - 0.5, LAND[j] + 5.5, EASE.out);
+// 第 j 张落位时把它下面整叠推一格：落位前 1f 起、8f ease-out
+const pushK = (f: number, j: number) => ramp(f, LAND[j] - 1, 8, EASE.out);
+// 某张卡被压了几格（连续值）
+const depthOf = (f: number, i: number) => {
+  let s = 0;
+  for (let j = i + 1; j < N; j++) s += pushK(f, j);
+  return s;
+};
+// 飞行进度
+const flyP = (f: number, i: number) => ramp(f, LAND[i] - FLY, FLY, EASE.snappy);
+// 飞行轨迹：从右下前方（+260, +300, 旋 5°, 放大 8%）沿轴线落到最前
+const flyPos = (p: number) => ({ x: (1 - p) * 260, y: (1 - p) * 300, r: (1 - p) * 5, s: 1 + (1 - p) * 0.08 });
 
-// 入场位置（逻辑 px，相对落点）：translateY(-40→0)，outCubic
-const flyP = (f: number, i: number) => seg(f, LAND[i] - FLY, LAND[i], E.outCubic);
+const Card: React.FC<{ p: Paper; i: number; f: number }> = ({ p, i, f }) => {
+  const fp = flyP(f, i);
+  const d = depthOf(f, i);
+  const pos = flyPos(fp);
+  // 落位压缩：落定后 3f 内 y 轴压 2.5% 再回（读作"砸实了"）
+  const e = f - LAND[i];
+  const squash = e >= 0 && e < 3 ? 1 - 0.025 * Math.sin((e / 3) * Math.PI) : 1;
+  const dd = Math.min(d, 4);
+  const x = CX + pos.x + d * STEP_X;
+  const y = CY + pos.y + d * STEP_Y;
+  const s = pos.s * (1 - d * STEP_S);
+  // 退满 3.4 格开始淡出，4.4 格回收
+  const fade = 1 - Math.min(1, Math.max(0, (d - 3.4) / 1));
+  const appear = Math.min(1, (f - (LAND[i] - FLY)) / 2);
+  if (fade <= 0 || appear <= 0) return null;
+  // 飞行段速度模糊（沿轴线方向；落定为 0）
+  const v = Math.hypot(flyPos(flyP(f + 0.5, i)).x - flyPos(flyP(f - 0.5, i)).x, flyPos(flyP(f + 0.5, i)).y - flyPos(flyP(f - 0.5, i)).y);
+  const mb = Math.min(9, v * 0.12);
+  const depthBlur = dd * 2.4;
+  const bright = 1 - dd * 0.23;
+  // 正文：飞行后半程淡入，被下一张盖住时淡出；只有最前一张可读
+  const bodyIn = ramp(f, LAND[i] - 4, 7, EASE.out);
+  const bodyOut = i < N - 1 ? 1 - ramp(f, LAND[i + 1] - FLY + 2, 6, EASE.linear) : 1;
+  const body = bodyIn * bodyOut;
+  // 金笔划线：落定 2f 后 7f 划完
+  const hl = ramp(f, LAND[i] + 2, 7, EASE.swift);
+  const id = `rcs${i}`;
+  const elev = mix(1, 0.3, dd / 4);
+  return (
+    <div style={{
+      position: 'absolute', left: x - CW / 2, top: y - CH / 2, width: CW, height: CH, zIndex: i,
+      opacity: appear * fade,
+      transform: `rotate(${pos.r.toFixed(3)}deg) scale(${s.toFixed(4)}, ${(s * squash).toFixed(4)})`,
+      transformOrigin: '50% 100%',
+      filter: depthBlur > 0.05
+        ? `blur(${depthBlur.toFixed(2)}px) brightness(${bright.toFixed(3)}) saturate(${(1 - dd * 0.15).toFixed(3)})`
+        : mb > 0.4 ? `url(#${id})` : undefined,
+    }}>
+      {mb > 0.4 && depthBlur <= 0.05 && (
+        <svg width={0} height={0} style={{ position: 'absolute' }} aria-hidden>
+          <filter id={id} x="-20%" y="-30%" width="140%" height="160%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation={`${(mb * 0.65).toFixed(2)} ${mb.toFixed(2)}`} />
+          </filter>
+        </svg>
+      )}
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 26, overflow: 'hidden',
+        background: `linear-gradient(172deg, ${PAPER[0]} 0%, ${PAPER[1]} 100%)`,
+        boxShadow:
+          `inset 0 1px 0 rgba(255,255,255,0.9), inset 0 0 0 1px rgba(40,30,15,0.08), ` +
+          `0 ${(4 * elev).toFixed(1)}px ${(10 * elev).toFixed(1)}px rgba(0,0,0,${(0.45 * elev).toFixed(3)}), ` +
+          `0 ${(40 * elev).toFixed(1)}px ${(90 * elev).toFixed(1)}px -10px rgba(0,0,0,${(0.7 * elev).toFixed(3)})`,
+      }}>
+        {/* 末卡落定后一次扫光（Q4：只给主角一次，裁进圆角） */}
+        {i === N - 1 && <Sheen progress={ramp(f, LAND[i] + 8, 22, EASE.swift)} strength={0.55} width={0.18} />}
+        {/* 纸面受光：顶部偏左一抹亮 */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(90% 70% at 22% 0%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%)' }} />
+        {/* 顶部标题条：分类 / 编号 / 页数——这条在旧卡上从新卡上沿露出 */}
+        <div style={{ position: 'absolute', left: 52, right: 52, top: 30, display: 'flex', alignItems: 'center', gap: 18, fontFamily: FONT.mono, fontSize: 24, letterSpacing: '0.02em', color: PAPER_INK2 }}>
+          <span style={{ background: PAPER_INK, color: PAPER[0], padding: '5px 12px 4px', borderRadius: 8, fontWeight: 600 }}>{p.tag}</span>
+          <span>PREPRINT {p.id}</span>
+          <span style={{ marginLeft: 'auto', fontVariantNumeric: 'tabular-nums' }}>{p.cites} cites · {p.pages} pp</span>
+        </div>
+        {/* 标题：所有卡都有 */}
+        <div style={{ position: 'absolute', left: 52, right: 60, top: 92, ...type(54, 680), lineHeight: 1.06, color: PAPER_INK }}>{p.title}</div>
+        {/* 正文：作者 + 带金笔划线的结论句 */}
+        <div style={{ position: 'absolute', left: 52, right: 52, top: 236, opacity: body, transform: `translateY(${((1 - bodyIn) * 10).toFixed(2)}px)` }}>
+          <div style={{ fontFamily: FONT.sans, fontSize: 30, fontWeight: 600, color: GOLD_INK, letterSpacing: '-0.005em' }}>{p.authors}</div>
+          <div style={{ marginTop: 18, fontFamily: FONT.sans, fontSize: 34, fontWeight: 450, lineHeight: 1.32, color: PAPER_INK2, letterSpacing: '-0.012em' }}>
+            {p.pre}
+            <span style={{
+              color: PAPER_INK, fontWeight: 600,
+              backgroundImage: `linear-gradient(90deg, ${alpha('#f2c65a', 0.75)}, ${alpha('#f2c65a', 0.75)})`,
+              backgroundRepeat: 'no-repeat', backgroundSize: `${(hl * 100).toFixed(2)}% 46%`, backgroundPosition: '0 82%',
+              boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone',
+            }}>{p.hl}</span>
+            {p.post}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const ResearchCardStackScroll: React.FC = () => {
-  const t = useT();
-  const f = t * F;
-  // 已压上的张数（连续值）——grid 位移与所有卡的下沉都由它导出，保证严格同速
-  const pushes = (i: number) => {
-    let s = 0;
-    for (let j = i + 1; j < N; j++) s += pushK(f, j);
-    return s;
-  };
-  const gridShift = pushes(0) + pushK(f, 0);
+  const f = useCurrentFrame();
+  // 全局已发牌累计量（连续）——台账线、计数器都由它导出，与卡堆严格同步
+  let dealt = 0;
+  for (let j = 0; j < N; j++) dealt += pushK(f, j);
+  const lineShift = (dealt * -STEP_Y) % 60; // 台账线上移（间距 60 = 退格步长）
+  const count = Math.round((TOTAL * Math.min(dealt, N)) / N);
+  const lock = springAt(f, LAST + 2, { damping: 16, stiffness: 200 });
+  const lockPulse = f > LAST + 2 ? 1 + 0.045 * Math.sin(Math.min(1, lock) * Math.PI) : 1;
+  const cam = 1 + 0.03 * ramp(f, 0, 150, EASE.smooth);
+  const intro = ramp(f, 0, 14, EASE.out);
+  // 吞吐率：随发牌加速而升（按当前间隔换算 papers/sec 的"展示值"）
+  const rate = (mix(4.2, 11.6, ramp(f, 10, LAST - 10, EASE.linear))).toFixed(1);
   return (
-    <AbsoluteFill>
-      <Backdrop tone="light" light={{ x: 0.42, y: 0.12 }} accent={ORANGE} grain={0} vignette={0.2} />
-      <DesignStage bg="transparent" raster="zoom">
-        {/* 背景横向 grid：随整叠被推下的量同步下移做速度参照；上下羽化，不顶到画框 */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: -40,
-            backgroundImage: 'linear-gradient(rgba(30,32,40,.07) 0.25px,transparent 0.5px)',
-            backgroundSize: '100% 24px',
-            transform: `translateY(${((gridShift * GAP * S) % 24).toFixed(3)}px)`,
-            WebkitMaskImage: 'linear-gradient(180deg, transparent 6%, #000 30%, #000 70%, transparent 94%)',
-            maskImage: 'linear-gradient(180deg, transparent 6%, #000 30%, #000 70%, transparent 94%)',
-          }}
-        />
-        {/* 逻辑画布 track：中心锚点 + 等比缩放 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: 0,
-            height: 0,
-            transformOrigin: '0 0',
-            transform: `scale(${S})`,
-          }}
-        >
-          {PAPERS.map((pp, i) => {
-            if (f < LAND[i] - FLY) return null;
-            const p = flyP(f, i);
-            const e = f - LAND[i]; // 该卡相对落位的本地帧
-            const stackN = pushes(i); // 被压了几张（连续）
-            const drift = stackN * GAP;
-            // 落位压缩：落定后 0→2.4f 内 y 轴压 3% 再弹回（正弦包络，读作"砸实了"）
-            const squash = e >= 0 && e < 2.4 ? 1 - 0.03 * Math.sin((e / 2.4) * Math.PI) : 1;
-            const y = lerp(p, -40, 0) + drift;
-            const x = stackN * XOFF;
-            const depth = Math.min(1, drift / (GAP * 3)); // depth 递增 blur + 变暗
-            // 入场 1.5f 淡入（尽快不透明，免得透出下面那张的正文）；越深越透（亮底上深色堆不至于糊成黑块）；过 3.2 格后 1.6 格内回收
-            const opacity =
-              Math.min(1, (f - (LAND[i] - FLY)) / 1.5) * (1 - depth * 0.3) *
-              (1 - Math.max(0, Math.min(1, (drift - GAP * 3.2) / (GAP * 1.6))));
-            if (opacity <= 0.001) return null;
-            // 飞行段纵向运动模糊（按速度，落定为 0）
-            const vy = (lerp(flyP(f + 0.5, i), -40, 0) - lerp(flyP(f - 0.5, i), -40, 0)) * S * 4; // 输出 px/帧
-            const mb = Math.min(6, vy * 0.22);
-            // 正文：飞行后半程淡入上浮（落定时已可读）；被下一张盖住时随其落位淡出
-            const bodyIn = seg(f, LAND[i] - 4, LAND[i] + 1, EASE.out);
-            const bodyOut = i < N - 1 ? 1 - seg(f, LAND[i + 1] - FLY, LAND[i + 1] - 2) : 1;
-            const body = bodyIn * bodyOut;
-            const elev = lerp(depth, 1, 0.35); // 越深阴影越弱，避免堆底糊成黑块
-            const accent = i % 4 === 1;
-            return (
-              <div
-                key={i}
-                style={{
-                  position: 'absolute',
-                  left: -CW / 2,
-                  top: -CH / 2 - 14,
-                  width: CW,
-                  height: CH,
-                  zIndex: i,
-                  opacity,
-                  transform: `translate(${x.toFixed(3)}px,${y.toFixed(3)}px) scale(${lerp(p, 0.94, 1)},${lerp(p, 0.94, 1) * squash})`,
-                  filter:
-                    depth > 0.002
-                      ? `blur(${(depth * 4).toFixed(2)}px) brightness(${(1 - depth * 0.25).toFixed(3)})`
-                      : mb > 0.3
-                        ? `url(#rcs-mb-${i})`
-                        : undefined,
-                }}
-              >
-                {mb > 0.3 && depth <= 0.002 && (
-                  <svg width={0} height={0} style={{ position: 'absolute' }} aria-hidden>
-                    <filter id={`rcs-mb-${i}`} x="-10%" y="-40%" width="120%" height="180%">
-                      <feGaussianBlur stdDeviation={`0 ${(mb / (S * 4)).toFixed(3)}`} />
-                    </filter>
-                  </svg>
-                )}
-                <div
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: 'linear-gradient(180deg, #202126 0%, #18191d 100%)',
-                    borderRadius: 11,
-                    overflow: 'hidden',
-                    fontFamily: FONT,
-                    boxShadow:
-                      `inset 0 0.3px 0 rgba(255,255,255,.10), inset 0 0 0 0.3px rgba(255,255,255,.07), ` +
-                      `0 ${(0.8 * elev).toFixed(2)}px ${(2 * elev).toFixed(2)}px rgba(14,15,20,${(0.22 * elev).toFixed(3)}), ` +
-                      `0 ${(12 * elev).toFixed(2)}px ${(28 * elev).toFixed(2)}px -6px rgba(14,15,20,${(0.30 * elev).toFixed(3)})`,
-                  }}
-                >
-                  {/* 卡顶受光 */}
-                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(120% 70% at 30% 0%, rgba(255,255,255,.05), rgba(255,255,255,0) 60%)' }} />
-                  {/* 左侧色条：每 4 张一根橙色，其余是石墨 */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: 10,
-                      bottom: 10,
-                      width: 2.2,
-                      borderRadius: '0 2px 2px 0',
-                      background: accent ? ORANGE : 'rgba(255,255,255,.12)',
-                    }}
-                  />
-                  {/* 标题条：所有卡都渲染 */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: 14,
-                      top: 11,
-                      width: 268,
-                      font: `640 9.5px/1.3 ${FONT}`,
-                      letterSpacing: '-0.012em',
-                      color: '#f2f2f4',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {pp.title}
-                  </div>
-                  {/* 正文（作者 + 摘要 + 页脚）：只有最上一张可见，随落位淡入 */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: 14,
-                      top: 29,
-                      width: 268,
-                      opacity: body,
-                      transform: `translateY(${lerp(bodyIn, 2.5, 0).toFixed(3)}px)`,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, font: `500 7px/1 ${FONT}` }}>
-                      <span
-                        style={{
-                          font: `600 6px/1 ${MONO}`, color: accent ? ORANGE_SOFT : '#c9cad0', padding: '1.6px 3.5px', borderRadius: 3,
-                          background: accent ? 'rgba(255,106,31,.14)' : 'rgba(255,255,255,.07)',
-                        }}
-                      >
-                        {pp.tag}
-                      </span>
-                      <span style={{ color: ORANGE_SOFT, letterSpacing: '0.01em' }}>{pp.authors}</span>
-                    </div>
-                    <div
-                      style={{
-                        marginTop: 6, font: `400 7.2px/1.42 ${FONT}`, color: 'rgba(235,236,240,.62)', letterSpacing: '0.004em',
-                        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', height: 20.5,
-                      }}
-                    >
-                      {pp.abs}
-                    </div>
-                    <div
-                      style={{
-                        marginTop: 7, display: 'flex', alignItems: 'center', gap: 8, font: `500 6.2px/1 ${MONO}`,
-                        color: 'rgba(235,236,240,.40)', fontVariantNumeric: 'tabular-nums',
-                      }}
-                    >
-                      <span>arXiv:24{10 + i}.0{(i * 37 + 113) % 900 + 100}</span>
-                      <span style={{ width: 1.6, height: 1.6, borderRadius: 1, background: 'rgba(235,236,240,.3)' }} />
-                      <span>{pp.cites} citations</span>
-                      <span style={{ width: 1.6, height: 1.6, borderRadius: 1, background: 'rgba(235,236,240,.3)' }} />
-                      <span>{pp.pages} pp</span>
-                      <span
-                        style={{
-                          marginLeft: 'auto', font: `600 6px/1 ${FONT}`, color: '#e9e9ec', padding: '2px 5px', borderRadius: 3,
-                          boxShadow: 'inset 0 0 0 0.3px rgba(255,255,255,.22)',
-                        }}
-                      >
-                        PDF
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+    <AbsoluteFill style={{ background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.66, y: 0.3 }} fill={{ x: 0.1, y: 0.95 }} breathe={0.4}>
+        {/* 台账横线：间距 = 退格步长，跟卡堆同一累计量上移；左右与上下羽化 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: -60, bottom: -60,
+          backgroundImage: `linear-gradient(180deg, ${alpha('#ffffff', 0.055)} 1px, transparent 1px)`,
+          backgroundSize: '100% 60px', backgroundPosition: `0 ${(-lineShift + 20).toFixed(2)}px`,
+          WebkitMaskImage: 'radial-gradient(ellipse 52% 60% at 64% 52%, #000 35%, transparent 100%)',
+          maskImage: 'radial-gradient(ellipse 52% 60% at 64% 52%, #000 35%, transparent 100%)',
+        }} />
+      </Stage>
+
+      <AbsoluteFill style={{ transform: `scale(${cam.toFixed(4)})`, transformOrigin: '60% 55%' }}>
+        {/* 卡堆下方的接触光：卡片落在一束光里 */}
+        <div style={{
+          position: 'absolute', left: CX - 640, top: CY + 120, width: 1280, height: 260,
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha('#000000', 0.55)} 0%, transparent 70%)`,
+        }} />
+        {PAPERS.map((p, i) => (f >= LAND[i] - FLY ? <Card key={i} p={p} i={i} f={f} /> : null))}
+
+        {/* 读数区 */}
+        <div style={{ position: 'absolute', left: 132, top: 352, width: 520, opacity: intro, transform: `translateY(${((1 - intro) * 16).toFixed(2)}px)` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontFamily: FONT.mono, fontSize: 22, letterSpacing: '0.2em', color: L.ink3 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 5, background: GOLD, boxShadow: `0 0 14px ${alpha(GOLD, 0.8)}` }} />
+            ORRERY · DEEP RESEARCH
+          </div>
         </div>
-      </DesignStage>
-      <Grain opacity={0.05} />
+        <div style={{
+          position: 'absolute', left: 124, top: 396, ...type(184, 760), color: L.ink,
+          transform: `scale(${lockPulse.toFixed(4)})`, transformOrigin: '0% 60%',
+          textShadow: f > LAST ? `0 0 ${(40 * (1 - ramp(f, LAST + 2, 30))).toFixed(1)}px ${alpha(GOLD, 0.35)}` : undefined,
+        }}>
+          {count.toLocaleString('en-US')}
+        </div>
+        <div style={{ position: 'absolute', left: 132, top: 596, ...type(40, 500), color: L.ink2, opacity: intro }}>
+          papers read for your brief
+        </div>
+        {/* 吞吐率 → 落定后换成 Synthesis ready */}
+        <div style={{ position: 'absolute', left: 132, top: 676, height: 44, overflow: 'hidden', width: 520 }}>
+          <div style={{
+            fontFamily: FONT.mono, fontSize: 32, color: L.ink3, fontVariantNumeric: 'tabular-nums',
+            opacity: intro * (1 - ramp(f, LAST + 2, 8, EASE.exit)),
+            transform: `translateY(${(-ramp(f, LAST + 2, 10, EASE.exit) * 40).toFixed(2)}px)`,
+          }}>
+            {rate} papers / sec
+          </div>
+          <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', alignItems: 'center', gap: 14 }}>
+            <span style={{
+              width: 12, height: 12, borderRadius: 6, background: GOLD, opacity: ramp(f, LAST + 6, 8),
+              boxShadow: `0 0 16px ${alpha(GOLD, 0.9)}`,
+            }} />
+            <TextReveal text="Synthesis ready" by="word" variant="rise" start={LAST + 6} each={14} gap={4}
+              style={{ ...type(32, 600), color: GOLD }} />
+          </div>
+        </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };

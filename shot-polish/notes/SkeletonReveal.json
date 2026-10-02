@@ -1,30 +1,31 @@
 {
   "stem": "SkeletonReveal",
   "issues": [
-    "只有消息行“变真”，侧栏和频道头到结尾仍是灰条，读作没加载完",
-    "推近 1.34 且原点偏心，结尾侧栏与窗口上下边被切，主区下半是空白",
-    "没有导出时长，靠卡片 md 推断",
-    "骨架期是静止灰条，缺少加载态语法；头像是四块灰色方块，字体硬编码 Helvetica",
-    "窗口是 2px 灰边 + 单层阴影，纸面背景平涂"
+    "米灰底 + 黑色涂鸦 + 灰白窗口，三级保真度在色彩上没有区别，整体像线框图",
+    "涂鸦一出场就是完整静态线稿，第一级缺少“想法正在被画下”的动作",
+    "消息正文 27px、频道 19px、侧栏小标题 13px，推近后仍读不清",
+    "内容是通用占位（四条消息 + 五个频道），信息量多但没有主角，结尾缺少句号"
   ],
   "changes": [
-    "第三级覆盖整个界面：工作区名、频道列表（选中态 #rebrand）、私信、频道头（话题 + 成员）与输入框都由灰条交叉显影成真内容，外围先一步、输入框收尾",
-    "推近改为以窗口中心 1→1.22，整窗始终在画内；补 SKELETON_REVEAL_DURATION = 172",
-    "骨架期加一次加载态 shimmer（lighten 混合只提亮灰条）；骨架行滚入改强 ease-out",
-    "头像改四色克制渐变 + 内高光，系统字体栈、负字距与 tabular 时间；窗口发丝线 + 三层软阴影 + 落地影；纸面柔光底与颗粒"
+    "look 换成 porcelain：钴蓝马克笔线稿 → 冷灰蓝骨架 → 全彩界面（海军蓝侧栏 + 钴蓝强调），三级保真度也是一条色彩线",
+    "线稿开场 16f 逐笔描出、点阵草图纸淡入，之后每 4f 煮沸；换真一拍改为 8f ease-in 缩退 + 骨架弹簧同帧弹入",
+    "为镜头重新设计界面：虚构产品 Parlor 的 #launch 频道，3 条消息，名字 30px、正文 40px、频道 32–40px，窗口 1480×820 居中",
+    "节奏重排：骨架滚入 → shimmer 扫一次 → 推近 1.08 + 侧栏/顶栏先显影、三行 14f 错峰逐词显影",
+    "末词「today?」晚 14f 以钴蓝加粗 + 一次过冲落地，之后约 30f 干净 hold"
   ],
   "issuesEn": [
-    "Only the message rows became real; the sidebar and channel header stayed grey bars to the end, reading as unfinished loading",
-    "The 1.34 push with an off-center origin cropped the sidebar and the window's top/bottom edges, and the lower half of the main pane was empty",
-    "No exported duration; it relied on the md inference",
-    "The skeleton phase was static grey bars with no loading cue; avatars were grey squares and the font was hard-coded Helvetica",
-    "The window had a 2px grey border with a single shadow on a flat paper background"
+    "Beige background, black doodle and a grey-white window: the three fidelity levels looked the same in colour, like a wireframe",
+    "The doodle appeared fully drawn and static, so the first level lacked the act of an idea being sketched",
+    "Message text was 27px, channels 19px and sidebar labels 13px, still unreadable after the push-in",
+    "Generic placeholder content (four messages, five channels): busy, no hero and no full stop at the end"
   ],
   "changesEn": [
-    "The third level now covers the whole interface: workspace name, channel list (selected #rebrand), DMs, channel header (topic + members) and the composer all cross-develop from bars into content, periphery first and composer last",
-    "The push is now 1→1.22 about the window center so the whole window stays in frame; added SKELETON_REVEAL_DURATION = 172",
-    "One loading shimmer pass during the skeleton phase (lighten blend brightens only the bars); skeleton rows slide in with a strong ease-out",
-    "Avatars use four restrained gradients with inner highlight; system font stack, negative tracking and tabular timestamps; hairline window with three-layer soft shadow and floor shadow; soft-lit paper backdrop with grain"
+    "Look switched to porcelain: cobalt marker sketch → cool grey-blue skeleton → full-colour UI (navy sidebar, cobalt accent), so fidelity also climbs in colour",
+    "The sketch draws itself stroke by stroke over 16f on dotted paper, then boils every 4f; the swap is an 8f ease-in shrink-out with the skeleton springing in on the same frame",
+    "The UI is redesigned for camera: a fictional Parlor #launch channel with three messages, 30px names, 40px body and 32–40px channels in a centred 1480×820 window",
+    "Rhythm reworked: skeleton rows slide in → one shimmer pass → 1.08 push-in while the sidebar and header develop first and three rows develop word by word 14f apart",
+    "The last word 'today?' lands 14f late in bold cobalt with one overshoot, followed by ~30f of clean hold"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

@@ -1,28 +1,31 @@
 {
   "stem": "RowEmbed",
   "issues": [
-    "空槽补丁用 #fdfcfa，比页面底色 #f9f6f1 偏白，五个槽位读成一整块白板",
-    "取景穿帮：起点露出页顶外约 200px 空白，终点页底下方空出约 160px，且结尾标题被切半",
-    "行落下是对称缓入缓出，到槽位前已经减速到零，“扣进去”的冲击感弱；节拍等间隔",
-    "强调色缝是一根硬头实色条，飞行行没有速度感"
+    "整页浅色截图铺满全屏，画面没有舞台、光和空间层次，读起来像一张截图在平移",
+    "行只是 2D 平移下落 120px，没有真实高度感，“嵌入”读作贴纸",
+    "机位全程正视且只有轻微下摇，节奏平，镜头没有起承落",
+    "68 帧里末行 58 帧才落地，强调色缝收尾即结束，没有落定 hold"
   ],
   "changes": [
-    "补丁改为逐像素采样的真实底色，并加 20% 透明度的虚线槽位框，观众能看到“空位在等”（Q9）",
-    "相机改为 cy 500→740、zoom 1.12→1.25 缓动下摇加微推，全程被页面铺满，结尾上沿落在分隔线与「项目资料」之间",
-    "下落缓动改 bezier(.5,0,.8,.75)，末段带速度砸进槽位后由 press 回弹吸收；飞行段按速度加纵向运动模糊；节拍改 10→7 帧递减",
-    "槽位接触影随行接近收紧变实，飞行行加顶部受光与发丝边；强调色缝两端羽化；整体加极轻暗角与颗粒"
+    "look 换成 ember 暖黑舞台：只取「研究问题」一节真实截图做成圆角面板，两层大软影 + 发丝边 + 顶部受光，和页面自身的赤橙强调色同系",
+    "机位改成一条 crane：开场 40° 低角度斜俯，边落行边摇正推近，86f 落成正视（信息密集列表最终正视、可读）",
+    "行从面板上方 250px 的真实 3D 高度落下，以底边为铰链、顶边抬起 16° 再合上，投影随高度收紧变实，末段带速度砸进槽位 + press 回弹",
+    "节拍改为 12→7f 递减的行雨，时长 68→112f，末行 62f 落地后留约 40f 正视 hold",
+    "嵌入缝加宽到 3px 并配一层极淡行底橙光；面板按目标倍率直接布局，3D 只旋转不放大，截图文字全程清晰"
   ],
   "issuesEn": [
-    "The empty-slot patch was #fdfcfa, whiter than the page's #f9f6f1, so the five slots read as one big white board",
-    "Framing gaps: the start showed ~200px beyond the page top, the end left ~160px empty below the page and sliced the title in half",
-    "Rows fell with a symmetric ease-in-out and reached the slot at zero speed, so the snap-in had no impact; cue spacing was uniform",
-    "The accent seam was a hard-ended solid bar and the falling rows had no sense of speed"
+    "The light full-page screenshot filled the frame with no stage, light or depth; it read as a screenshot panning",
+    "Rows only dropped 120px in 2D with no real height, so the 'embed' read like a sticker",
+    "The camera stayed frontal with a slight tilt-down, flat rhythm and no arc",
+    "In 68 frames the last row landed at 58 and the shot ended with the seam; no settled hold"
   ],
   "changesEn": [
-    "The patch uses the pixel-sampled page color plus a 20%-alpha dashed slot outline, so viewers see an empty slot waiting (Q9)",
-    "Camera now eases cy 500→740 with zoom 1.12→1.25 (tilt down plus slight push), always filled by the page; the final top edge sits between a divider and the next section",
-    "Drop easing is bezier(.5,0,.8,.75) so rows hit the slot with speed and the press bounce absorbs it; velocity-based vertical motion blur in flight; cues accelerate (10→7f gaps)",
-    "A slot contact shadow tightens as each row approaches; flying rows get a top highlight and hairline edge; the seam has feathered ends; subtle vignette and grain overall"
+    "Look switched to an ember warm-dark stage: only the 'research questions' section of the real screenshot becomes a rounded panel with two soft shadows, a hairline and top light, matching the page's own vermilion accent",
+    "The camera is now a single crane: a 40° low oblique opening that straightens and pushes in as rows land, settling frontal at 86f so the dense list ends readable",
+    "Rows drop from a real 3D height of 250px above the panel, hinged at the bottom edge with the top lifted 16° before closing, with a shadow that tightens as they descend, slamming into the slot with a press rebound",
+    "Rhythm is an accelerating 12→7f row rain; duration 68→112f, the last row lands at 62f followed by ~40f of frontal hold",
+    "The seam widens to 3px with a faint orange under-glow; the panel is laid out at target scale and the 3D only rotates, so the screenshot text stays crisp"
   ],
+  "look": "ember",
   "mdChanged": true
 }
