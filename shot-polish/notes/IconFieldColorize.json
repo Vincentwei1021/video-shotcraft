@@ -1,32 +1,31 @@
 {
   "stem": "IconFieldColorize",
   "issues": [
-    "没有导出时长常量，工作台按 md 猜成 45f，改版前视频只有浮现段，翻色这个唯一爆点根本没演到",
-    "图标是 44px 裸字形散在纯白底上，像一张图标字体表，不像“功能宇宙”",
-    "浮现批次纯随机，满屏零碎闪现，没有方向",
-    "四道色波是高饱和的蓝/橙/绿/红，色带死平；两色交替时半透明叠出浑浊的中间色",
-    "整场偏上（上边距 26、下边距 20），纯白底没有层次"
+    "浅灰底上的浅灰磨砂方块，灰阶态几乎和背景融在一起，\"摆满了\"的那一拍读不出来",
+    "四道色波是靛 / 琥珀 / 青绿 / 珊瑚四个跨色相的颜色，终态像一张彩虹色卡，不像品牌",
+    "翻色是新旧两层透明度交叉，波前沿只是颜色变了，没有\"点亮\"的光感，背景也毫无反应",
+    "终态只是一屏色块横带，没有标题、没有落点，结尾帧不是一张海报"
   ],
   "changes": [
-    "导出 ICON_FIELD_COLORIZE_DURATION = 150（浮现 ~50f + 静置 + 翻色 ~42f + 终态 hold 1s）",
-    "图标装进 60px 的 app 图标式圆角方块：灰阶态是浅灰磨砂底加冷灰字形；点亮态是品牌色渐变底、白字形、内高光加同色投影，翻色读作“整块被点亮”",
-    "浮现批次按离中心距离（70%）加噪声（30%）分组，读作从中心向外铺开；入场改为 overshoot 微弹，同时上浮 10px",
-    "色板换成克制的靛 / 琥珀 / 青绿 / 珊瑚，同色带内 ±4% 明度微差；新色层 1.5f 内盖满，不出浑色；保留行差 1.4f 的波纹和 1.22x 翻色 pop",
-    "整场按格距居中，边距均匀；柔光浅底加极淡暗角和颗粒，全程 smooth 曲线极缓推近 2.5%"
+    "look 换成 ember（暖黑 + 橙金）：图标做成熄灯的深色键帽（暖黑底、发丝边、顶沿受光、暗灰字形），灰阶在暗场里读作\"还没通电\"",
+    "色波改为同色系日出渐变（金 → 琥珀 → 橙 → 珊瑚红）四段横带，仍是 4 道波从各自起始行向下快扫、后波覆盖更低行带",
+    "单枚翻色改为通电：新色自上而下 clip 灌满键帽 + 1.22× pop + 灌满后 screen 白闪 + 泛光过冲；每行亮起后身后舞台染上同色光带",
+    "节奏重排：中心向外浮现 48f → 静置时整场压暗 12% 蓄力 → 4 道波 ~30f 扫完（原 42f）→ 余波稳定",
+    "收尾加落版：中心径向暗幕 + 30px 眉题 400+ INTEGRATIONS + 两行 132px 标题「Every tool, / one switch.」逐词升起；全程推近 4%，时长 150→170f"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench guessed 45f from the md, so the before video shows only the fade-in and never reaches the colorize payoff",
-    "Icons were bare 44px glyphs on pure white, reading like an icon-font specimen rather than a feature universe",
-    "Fade-in batches were purely random, giving scattered flicker with no direction",
-    "The four waves were saturated blue/orange/green/red bands with flat color, and crossfades between colors produced muddy intermediates",
-    "The field sat high (26px top margin vs 20px bottom) on a flat white background"
+    "Light grey frosted tiles on a light grey background: the greyscale state almost melted into the stage, so the \"field is full\" beat never registered",
+    "The four waves were indigo, amber, teal and coral across the whole hue wheel, so the end state read as a rainbow swatch card rather than a brand",
+    "The flip was an opacity crossfade between two layers; the wavefront just changed colour with no sense of lighting up, and the background never reacted",
+    "The final state was just a screen of colour bands with no title or landing; the last frame was not a poster"
   ],
   "changesEn": [
-    "Exported ICON_FIELD_COLORIZE_DURATION = 150 (~50f fade-in + rest + ~42f colorize + 1s final hold)",
-    "Icons now sit in 60px app-icon style rounded tiles: the gray state is a frosted light-gray tile with a cool-gray glyph; the lit state is a brand-color gradient tile with a white glyph, inner highlight and same-hue shadow, so the colorize reads as whole tiles lighting up",
-    "Fade-in batches are grouped by distance from center (70%) plus noise (30%), so the field blooms outward; the entrance uses an overshoot pop with a 10px rise",
-    "The palette is now a restrained indigo / amber / teal / coral with ±4% lightness variation within each band; the new color covers fully within 1.5f to avoid mud; the 1.4f row-stagger wave and 1.22x pop are kept",
-    "The field is centered on its grid with even margins; soft light background with faint vignette and grain, plus a slow 2.5% push-in on a smooth curve"
+    "Ember look (warm black with orange and gold): icons are unlit dark keycaps (warm black base, hairline edge, lit top lip, dim grey glyph), so greyscale reads as \"not powered yet\" on the dark stage",
+    "Waves become one analogous sunrise gradient (gold, amber, orange, coral red) in four bands; still four waves sweeping down from their own start rows, each later wave covering lower rows",
+    "Each flip now powers on: the new colour fills the keycap top-down via clip, with a 1.22x pop, a screen-blend white flash once full and a glow overshoot; as each row lights, the stage behind it picks up a band of the same colour",
+    "Rhythm reworked: 48f centre-out reveal, then the whole field dims 12% during the rest as an inhale, then four waves finish in ~30f (was 42f) before the light settles",
+    "Added a landing: a central radial scrim, a 30px 400+ INTEGRATIONS kicker and a two-line 132px headline \"Every tool, / one switch.\" rising word by word; 4% slow push throughout, duration 150 to 170f"
   ],
+  "look": "ember",
   "mdChanged": true
 }

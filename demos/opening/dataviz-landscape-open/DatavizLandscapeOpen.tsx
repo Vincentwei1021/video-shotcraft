@@ -1,506 +1,355 @@
-import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
-import {EASE, FONT, Grain, Vignette, ramp} from '../../_fixtures/Polish';
-
 /**
  * DatavizLandscapeOpen — 暗场支流线束地景开场
  * 配方卡: references/shots/opening/dataviz-landscape-open.md
  *
- * 隐喻: 无数团队工作流(支流)汇成一个产品(主干)。
- * 三层景深: 近景大虚焦流过 / 中景标签清晰可读 / 远景渐隐。
- * 相机: 低速匀稳横移 + 视差 + 极缓 zoom, 收尾不急刹。
- * 质感: 带冷色相的深场 + 冷白线 + 唯一强调色(主干/汇点/图钉);
- *   支流沿流向渐亮(源头淡、汇入处亮), 生长期线头带一颗小光点;
- *   标签 = 图钉弹出 + 深色胶囊衬底的等宽 ID (衬底压住穿过的线, 保可读)。
+ * 第二轮重设计（石墨 · 荧光黄绿 · 真透视地景）：
+ * - look = lime。不再是平面 SVG 横移：整片线束画在一张真透视的地平面上（针孔投影，相机高 220、焦距 1100），
+ *   一条荧光黄绿主干从镜头脚下蜿蜒奔向画面右 1/3 处的消失点（汇点），11 条灰绿支流从两侧画外切向汇入。
+ *   景深 / 视差 / 雾全部由投影深度算出来：近处线条又宽又虚（按深度分进模糊层）、中景锐利、远处变细隐入地平线。
+ * - 相机低空沿河道前飞 + 横向缓移（dolly + truck），整段 bezier 减速：开场即在飞、收尾缓停接字标，不急刹。
+ * - 中景支流上钉 7 枚虚构 issue 标签（立杆图钉 + 等宽 ID 胶囊），随透视逐渐变大、向两侧散开；
+ *   生长完成后沿线有亮脉冲低速流向汇点（数据在流）。
+ * - 收尾：消失点亮起一团黄绿光（交棒亮部），天空里落一行大标题「Every thread, / one release.」，
+ *   结尾帧是完整的海报。
+ *
+ * 时间表（30fps，共 180f）：
+ *   0–10    从深场浮出（地平线光带首帧就在）
+ *   0–36    主干由近及远 draw-on（out-cubic），笔尖光点
+ *   8–70    支流错峰生长（每条 4–6f，近处先），笔尖光点
+ *   44–104  标签非均匀错峰立起（图钉过冲 → 立杆 → 胶囊去模糊），104f 后不再新增
+ *   60–180  流动脉冲；相机全程前飞，140f 后明显减速
+ *   104–140 标题：眉题 + 两行逐词升起；汇点光 120f 起升亮
+ *   140–180 hold：相机缓停、脉冲流动，海报落定
  */
+import React from 'react';
+import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {EASE, FONT, bezier, mix, ramp} from '../../_fixtures/Polish';
+import {Dust, LOOKS, Stage, TextReveal, alpha, type} from '../../_fixtures/Look';
 
-const W = 1920;
-const H = 1080;
-const DUR = 165; // 5.5s @30fps
+const DUR = 180; // 6s @30fps
 export const DATAVIZ_LANDSCAPE_OPEN_DURATION = DUR;
-const WORLD_W = 4200;
 
-// ---------- palette ----------
-const BG_DEEP = '#05070c'; // 带冷色相的深场底 (替代 #050505 纯中性黑)
-const INK = '#e2e8ff'; // 冷白线色
-const ACCENT = '#9aabff'; // 唯一强调色: 柔和长春花蓝
-const ACCENT_RGB = '154,171,255';
+const L = LOOKS.lime;
+const HY = 420; // 地平线（屏幕 y）
+const F = 1100; // 焦距
+const CAM_H = 220; // 相机离地高度
+const SLOPE = 0.29; // 主干总体走向（dX/dZ）→ 消失点 x = 960 + F*SLOPE ≈ 1279（右 1/3）
+const VPX = 960 + F * SLOPE;
 
-// ---------- easing ----------
-const outCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-const growth = (frame: number, start: number, dur: number) => {
-  const t = Math.min(1, Math.max(0, (frame - start) / dur));
-  return outCubic(t);
+// ───────────── 相机 ─────────────
+const camPath = bezier(0.3, 0.3, 0.55, 1); // 匀速起步、尾段减速缓停
+const CAM_DIST = 950;
+const camAt = (frame: number) => {
+  const t = Math.min(1, Math.max(0, frame / (DUR - 1)));
+  const z = CAM_DIST * camPath(t);
+  const lat = mix(-140, 110, EASE.smooth(t)); // 横向缓移：近远景相对错动 = 视差
+  return {z, x: SLOPE * z + lat};
 };
 
-// ---------- geometry ----------
-type Pt = {x: number; y: number};
-
-// 主干: 缓和的水系曲线 (世界坐标)
-const trunkY = (x: number) => 480 + 55 * Math.sin((x - 300) / 1050);
-const trunkSlope = (x: number) => (55 / 1050) * Math.cos((x - 300) / 1050);
-const TRUNK_X0 = -300;
-const TRUNK_X1 = WORLD_W + 100;
-
-const trunkPath = () => {
-  const pts: string[] = [];
-  for (let x = TRUNK_X0; x <= TRUNK_X1; x += 50) {
-    pts.push(`${x === TRUNK_X0 ? 'M' : 'L'} ${x} ${trunkY(x).toFixed(1)}`);
-  }
-  return pts.join(' ');
+type P3 = {x: number; z: number};
+const project = (p: P3, cam: {x: number; z: number}) => {
+  const zr = p.z - cam.z;
+  return {sx: 960 + (F * (p.x - cam.x)) / zr, sy: HY + (F * CAM_H) / zr, zr};
 };
 
-// 三次贝塞尔求值 (用于把标签钉在线上)
-const cubicAt = (p0: Pt, p1: Pt, p2: Pt, p3: Pt, t: number): Pt => {
-  const u = 1 - t;
-  return {
-    x: u * u * u * p0.x + 3 * u * u * t * p1.x + 3 * u * t * t * p2.x + t * t * t * p3.x,
-    y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y,
-  };
-};
+// ───────────── 世界几何（地平面 X/Z）─────────────
+const trunkX = (z: number) => SLOPE * z - 160 + 150 * Math.sin(z / 950);
+const trunkDX = (z: number) => SLOPE + (150 / 950) * Math.cos(z / 950);
 
-// 弧长表: draw-on 用 pathLength=1 按弧长推进, 线头光点必须按同一弧长取点才贴住笔尖
-const arcTable = (at: (t: number) => Pt, n = 160) => {
-  const pts = Array.from({length: n + 1}, (_, i) => at(i / n));
-  const cum = [0];
-  for (let i = 1; i <= n; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
-  const total = cum[n];
-  return (frac: number): Pt => {
-    const L = Math.min(1, Math.max(0, frac)) * total;
-    let i = 1;
-    while (i < n && cum[i] < L) i++;
-    const k = (L - cum[i - 1]) / Math.max(1e-6, cum[i] - cum[i - 1]);
-    return {x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * k, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * k};
-  };
-};
-
-// 支流: 起点在深处四散, 以切向汇入主干 (切线连续)
-type Trib = {p0: Pt; p1: Pt; p2: Pt; p3: Pt; opacity: number; growStart: number; growDur: number};
-
-const makeTrib = (
-  start: Pt,
-  mergeX: number,
-  opacity: number,
-  growStart: number,
-  growDur: number,
-): Trib => {
-  const end: Pt = {x: mergeX, y: trunkY(mergeX)};
-  const slope = trunkSlope(mergeX);
-  const len = Math.hypot(1, slope);
-  // P2 沿主干切线反向后退 => 到达时切线连续
-  const p2: Pt = {x: end.x - (330 * 1) / len, y: end.y - (330 * slope) / len};
-  const p1: Pt = {
-    x: start.x + (end.x - start.x) * 0.35,
-    y: start.y + (end.y - start.y) * 0.12,
-  };
-  return {p0: start, p1, p2, p3: end, opacity, growStart, growDur};
-};
-
-// 中景支流 6 条 (主角层), 错峰 4–6f
-const MID_TRIBS: Trib[] = [
-  makeTrib({x: -380, y: 130}, 1020, 0.62, 6, 32),
-  makeTrib({x: -260, y: 880}, 1180, 0.55, 10, 32),
-  makeTrib({x: -60, y: 40}, 1330, 0.7, 15, 32),
-  makeTrib({x: 60, y: 960}, 1500, 0.5, 19, 32),
-  makeTrib({x: 320, y: 210}, 1680, 0.6, 24, 32),
-  makeTrib({x: 420, y: 790}, 1840, 0.55, 30, 32),
-];
-const TRIB_ARC = MID_TRIBS.map((t) => arcTable((u) => cubicAt(t.p0, t.p1, t.p2, t.p3, u)));
-const TRUNK_ARC = arcTable((u) => {
-  const x = TRUNK_X0 + (TRUNK_X1 - TRUNK_X0) * u;
-  return {x, y: trunkY(x)};
+// 主干：-300 → 14000，近密远疏采样
+const TRUNK: P3[] = Array.from({length: 261}, (_, i) => {
+  const z = -300 + Math.pow(i / 260, 1.7) * 14300;
+  return {x: trunkX(z), z};
 });
 
-const tribPath = (t: Trib) =>
-  `M ${t.p0.x} ${t.p0.y} C ${t.p1.x} ${t.p1.y}, ${t.p2.x} ${t.p2.y}, ${t.p3.x} ${t.p3.y}`;
+// 三次贝塞尔按弧长等距重采样
+const bez = (a: P3, b: P3, c: P3, d: P3, t: number): P3 => {
+  const u = 1 - t;
+  return {
+    x: u * u * u * a.x + 3 * u * u * t * b.x + 3 * u * t * t * c.x + t * t * t * d.x,
+    z: u * u * u * a.z + 3 * u * u * t * b.z + 3 * u * t * t * c.z + t * t * t * d.z,
+  };
+};
+const resample = (at: (t: number) => P3, n: number) => {
+  const raw = Array.from({length: 241}, (_, i) => at(i / 240));
+  const cum = [0];
+  for (let i = 1; i < raw.length; i++) cum.push(cum[i - 1] + Math.hypot(raw[i].x - raw[i - 1].x, raw[i].z - raw[i - 1].z));
+  const total = cum[cum.length - 1];
+  const out: P3[] = [];
+  let j = 1;
+  for (let k = 0; k <= n; k++) {
+    const target = (k / n) * total;
+    while (j < raw.length - 1 && cum[j] < target) j++;
+    const f = (target - cum[j - 1]) / Math.max(1e-6, cum[j] - cum[j - 1]);
+    out.push({x: mix(raw[j - 1].x, raw[j].x, f), z: mix(raw[j - 1].z, raw[j].z, f)});
+  }
+  return out;
+};
 
-// 远景 4 条: 更细更暗, 向更深处的远点收拢
-// (控制点形式, 供节点标记取样——卡"视差可见性": 特征点穿过画面)
-type FarLine = {p0: Pt; p1: Pt; p2: Pt; p3: Pt; growStart: number; growDur: number; op: number};
-const FAR_LINES: FarLine[] = [
-  {p0: {x: -300, y: 260}, p1: {x: 700, y: 250}, p2: {x: 2400, y: 330}, p3: {x: 3400, y: 490}, growStart: 12, growDur: 36, op: 0.3},
-  {p0: {x: -200, y: 700}, p1: {x: 800, y: 690}, p2: {x: 2500, y: 610}, p3: {x: 3450, y: 492}, growStart: 16, growDur: 36, op: 0.26},
-  {p0: {x: -350, y: 400}, p1: {x: 900, y: 390}, p2: {x: 2600, y: 420}, p3: {x: 3500, y: 493}, growStart: 22, growDur: 36, op: 0.33},
-  {p0: {x: -250, y: 590}, p1: {x: 850, y: 600}, p2: {x: 2650, y: 560}, p3: {x: 3520, y: 494}, growStart: 27, growDur: 36, op: 0.24},
+// 支流：起点在两侧画外，切向汇入主干（汇入点切线 = 主干切线）
+type TribSpec = {side: number; z0: number; off: number; zm: number; lm: number; grow: number; w: number};
+const TRIB_SPECS: TribSpec[] = [
+  {side: -1, z0: -260, off: 700, zm: 1500, lm: 520, grow: 8, w: 5},
+  {side: 1, z0: -120, off: 900, zm: 2100, lm: 640, grow: 11, w: 5},
+  {side: -1, z0: 500, off: 1500, zm: 2700, lm: 760, grow: 16, w: 4.4},
+  {side: 1, z0: 800, off: 1800, zm: 3300, lm: 820, grow: 20, w: 4.4},
+  {side: -1, z0: 1400, off: 2300, zm: 3900, lm: 900, grow: 25, w: 4.2},
+  {side: 1, z0: 1700, off: 2500, zm: 4600, lm: 980, grow: 29, w: 4.2},
+  {side: -1, z0: 2500, off: 2900, zm: 5300, lm: 1050, grow: 34, w: 4.2},
+  {side: 1, z0: 3100, off: 3200, zm: 6100, lm: 1150, grow: 38, w: 4.2},
+  {side: -1, z0: 4100, off: 3600, zm: 7100, lm: 1250, grow: 43, w: 4.2},
+  {side: 1, z0: 5000, off: 3900, zm: 8200, lm: 1350, grow: 47, w: 4.2},
+  {side: 1, z0: -420, off: 260, zm: 980, lm: 380, grow: 4, w: 6}, // 贴着镜头右下方掠过的近景支流（大虚焦）
 ];
-const farPath = (l: FarLine) =>
-  `M ${l.p0.x} ${l.p0.y} C ${l.p1.x} ${l.p1.y}, ${l.p2.x} ${l.p2.y}, ${l.p3.x} ${l.p3.y}`;
-// 远景节点标记: 每条线 3 枚暗点, 随层平移穿过画面 → 视差可辨
-const FAR_NODE_TS = [0.28, 0.55, 0.82];
+const TRIBS = TRIB_SPECS.map((s) => {
+  const end: P3 = {x: trunkX(s.zm), z: s.zm};
+  const dx = trunkDX(s.zm);
+  const dl = Math.hypot(dx, 1);
+  const p2: P3 = {x: end.x - (dx / dl) * s.lm, z: end.z - (1 / dl) * s.lm};
+  const p0: P3 = {x: trunkX(s.z0) + s.side * s.off, z: s.z0};
+  const p1: P3 = {x: p0.x + (end.x - p0.x) * 0.12, z: p0.z + (end.z - p0.z) * 0.5};
+  return {...s, pts: resample((t) => bez(p0, p1, p2, end, t), 90)};
+});
 
-// 近景: 大虚焦斜向流过前景 (与横移运动方向成明显角度——
-// 卡"视差可见性": 平行于运动方向的线沿自身滑动不可见)
-const NEAR_LINES = [
-  {d: 'M 130 1270 C 480 830, 880 360, 1290 -130', growStart: 2, growDur: 40, op: 0.2, w: 9},
-  {d: 'M 1480 1240 C 1830 800, 2180 330, 2540 -110', growStart: 10, growDur: 40, op: 0.16, w: 7},
-];
+// ───────────── 线段渲染：按深度分层（近虚 / 中实 / 远雾）─────────────
+const smooth01 = (a: number, b: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+type Seg = {x1: number; y1: number; x2: number; y2: number; w: number; o: number; c: string};
 
-// ---------- 标签 (中景层, 全部虚构 ID) ----------
-type LabelSpec = {trib: number; t: number; id: string; appear: number; above: boolean};
+const emitLine = (
+  pts: P3[], g: number, cam: {x: number; z: number}, opts: {w: number; color: string; base: number; ramp?: boolean; pulse: (u: number) => number},
+  sharp: Seg[], near: Seg[],
+) => {
+  const n = pts.length - 1;
+  const reach = g * n;
+  const kMax = Math.min(n, Math.ceil(reach));
+  for (let k = 0; k < kMax; k++) {
+    const a = pts[k];
+    const b0 = pts[k + 1];
+    const f = Math.min(1, reach - k);
+    const b = f < 1 ? {x: mix(a.x, b0.x, f), z: mix(a.z, b0.z, f)} : b0;
+    if (a.z - cam.z < 70 || b.z - cam.z < 70) continue;
+    const pa = project(a, cam);
+    const pb = project(b, cam);
+    if ((pa.sx < -200 && pb.sx < -200) || (pa.sx > 2120 && pb.sx > 2120) || (pa.sy > 1300 && pb.sy > 1300)) continue;
+    const zr = (pa.zr + pb.zr) / 2;
+    const u = (k + 0.5 * f) / n;
+    const fog = 1 - smooth01(2600, 11000, zr); // 远处雾化
+    const lift = opts.ramp ? 0.3 + 0.7 * Math.pow(u, 0.8) : 1; // 支流：源头淡、汇入处亮
+    // 脉冲只在中远景显形：近处一段线在屏幕上很长，逐段明暗会读成台阶
+    const pv = opts.pulse(u);
+    const o = opts.base * fog * lift * mix(1, pv, smooth01(500, 1400, zr));
+    if (o < 0.01) continue;
+    const w = Math.max(0.9, Math.min(46, (opts.w * F) / zr));
+    const nearW = 1 - smooth01(420, 1050, zr); // 近景权重 → 进模糊层
+    const seg = {x1: pa.sx, y1: pa.sy, x2: pb.sx, y2: pb.sy, w, c: opts.color};
+    if (nearW < 0.98) sharp.push({...seg, o: o * (1 - nearW)});
+    if (nearW > 0.02) near.push({...seg, w: w * 1.3, o: o * nearW * 0.7});
+  }
+  // 笔尖
+  if (g > 0 && g < 1) {
+    const k = Math.min(n - 1, Math.floor(reach));
+    const f = reach - k;
+    const tip = {x: mix(pts[k].x, pts[k + 1].x, f), z: mix(pts[k].z, pts[k + 1].z, f)};
+    if (tip.z - cam.z > 70) return project(tip, cam);
+  }
+  return null;
+};
 
-// 错峰间隔非等差 (8/10/8/10/9/10f); 最后一枚 f103, 距交棒帧 (f120) ≥15f 无新增
+// ───────────── 标签（中景，全部虚构 ID）─────────────
+// 位置按投影逐帧核过：起止两端都错开（不叠、不压汇点、不出画），近处一枚随前飞明显变大
+type LabelSpec = {trib: number; u: number; id: string; note: string; appear: number};
 const LABELS: LabelSpec[] = [
-  {trib: 0, t: 0.62, id: 'OKR-1024', appear: 48, above: true},
-  {trib: 1, t: 0.58, id: 'TEAM-4417', appear: 56, above: false},
-  {trib: 2, t: 0.66, id: 'KR-2093', appear: 66, above: true},
-  {trib: 3, t: 0.6, id: 'SYNC-3308', appear: 74, above: false},
-  {trib: 4, t: 0.68, id: 'OBJ-2471', appear: 84, above: true},
-  {trib: 5, t: 0.64, id: 'PLAN-9124', appear: 93, above: false},
-  {trib: 4, t: 0.86, id: 'GOAL-7752', appear: 103, above: true},
+  {trib: 2, u: 0.6, id: 'ENG-2184', note: 'merged', appear: 44},
+  {trib: 1, u: 0.75, id: 'DES-0931', note: 'shipped', appear: 53},
+  {trib: 3, u: 0.6, id: 'API-4417', note: 'in review', appear: 62},
+  {trib: 6, u: 0.3, id: 'OPS-1208', note: 'merged', appear: 73},
+  {trib: 7, u: 0.45, id: 'WEB-3390', note: 'in review', appear: 84},
+  {trib: 8, u: 0.45, id: 'ML-0762', note: 'merged', appear: 96},
 ];
+const LABEL_PTS = LABELS.map((l) => {
+  const pts = TRIBS[l.trib].pts;
+  return {p: pts[Math.round(l.u * (pts.length - 1))]};
+});
 
-// 汇点 (偏画面一侧, 收尾亮部引导视线)
-const CONV: Pt = {x: 1850, y: trunkY(1850)};
-
-// 生长线头: 一颗小核 + 柔晕, 只在生长期可见, 到达终点前 15% 行程内淡出
-const GrowHead: React.FC<{p: Pt; g: number; r?: number; strength?: number}> = ({p, g, r = 3, strength = 1}) => {
-  const vis = g <= 0.001 ? 0 : interpolate(g, [0, 0.06, 0.85, 1], [0, 1, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  if (vis <= 0.001) return null;
+const Label: React.FC<{spec: LabelSpec; at: P3; frame: number; cam: {x: number; z: number}}> = ({spec, at, frame, cam}) => {
+  const pr = project(at, cam);
+  if (pr.zr < 200) return null;
+  const k = Math.min(1.7, Math.max(0.7, 1500 / pr.zr)); // 透视缩放（近大远小），钳住可读区间
+  const fog = 1 - smooth01(3600, 8000, pr.zr);
+  const pin = ramp(frame, spec.appear, 10, EASE.overshoot);
+  const pinOp = ramp(frame, spec.appear, 4, EASE.out);
+  const stem = ramp(frame, spec.appear + 2, 12, EASE.snappy);
+  const tag = ramp(frame, spec.appear + 6, 14, EASE.snappy);
+  // 立杆世界高度远低于相机高度 → 标签落在地平线以下、按深度上下错开（杆高≈相机高时所有标签都投影到地平线上挤成一排）
+  const stemH = 44 * k;
+  const fs = 25 * k;
   return (
-    <g opacity={vis * strength}>
-      <circle cx={p.x} cy={p.y} r={r * 6} fill="url(#dv-head-halo)" />
-      <circle cx={p.x} cy={p.y} r={r} fill="#ffffff" />
-    </g>
+    <div style={{position: 'absolute', left: 0, top: 0, opacity: fog}}>
+      {/* 图钉（落在线上） */}
+      <div style={{
+        position: 'absolute', left: pr.sx - 6 * k, top: pr.sy - 6 * k, width: 12 * k, height: 12 * k, borderRadius: 2.5 * k,
+        background: L.accent, opacity: pinOp, transform: `scale(${pin})`,
+        boxShadow: `0 0 0 ${3 * k}px ${alpha(L.bg[2], 0.9)}, 0 0 ${18 * k}px ${alpha(L.accent, 0.7)}`,
+      }} />
+      {/* 立杆 */}
+      <div style={{
+        position: 'absolute', left: pr.sx - 0.75, top: pr.sy - 8 * k - stemH * stem, width: 1.5, height: stemH * stem,
+        background: `linear-gradient(0deg, ${alpha(L.accent, 0.7)}, ${alpha(L.ink, 0.25)})`,
+      }} />
+      {/* ID 胶囊 */}
+      <div style={{
+        position: 'absolute', left: pr.sx - 2 * k, top: pr.sy - 8 * k - stemH - 46 * k + (1 - tag) * 14 * k,
+        height: 46 * k, padding: `0 ${14 * k}px 0 ${12 * k}px`, borderRadius: 10 * k, boxSizing: 'border-box',
+        display: 'flex', alignItems: 'center', gap: 10 * k, whiteSpace: 'nowrap',
+        background: alpha('#141711', 0.82), border: `1px solid ${alpha(L.ink, 0.12)}`,
+        boxShadow: `inset 0 1px 0 ${alpha('#ffffff', 0.06)}, 0 ${10 * k}px ${28 * k}px ${alpha('#000000', 0.5)}`,
+        opacity: tag, filter: tag < 0.98 ? `blur(${((1 - tag) * 6).toFixed(2)}px)` : undefined,
+      }}>
+        <div style={{width: 7 * k, height: 7 * k, borderRadius: 4 * k, background: L.accent}} />
+        <span style={{fontFamily: FONT.mono, fontSize: fs, fontWeight: 600, color: L.ink, letterSpacing: '0.02em'}}>{spec.id}</span>
+        <span style={{fontFamily: FONT.sans, fontSize: fs * 0.82, fontWeight: 500, color: L.ink3}}>{spec.note}</span>
+      </div>
+    </div>
   );
 };
 
-// ---------- component ----------
+// ───────────── 组件 ─────────────
 export const DatavizLandscapeOpen: React.FC = () => {
   const frame = useCurrentFrame();
-
-  // 相机: 匀稳横移 3.2px/f (2–5 区间), 全程斜率恒定 (不急刹)——氛围段刻意匀速
-  const camX = frame * 3.2;
-  // 极缓 zoom 1.0 → 1.06
-  const zoom = interpolate(frame, [0, DUR - 1], [1, 1.06], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-
-  // 视差: 近 1.4× / 中 1× / 远 0.6×
-  const farX = -camX * 0.6;
-  const midX = -camX * 1.0;
-  const nearX = -camX * 1.4;
-
-  // 主干先行: f0–38 out-cubic
-  const trunkGrow = growth(frame, 0, 38);
-
-  // 流动感 (卡"流动感"行): draw-on 完成后, 虚线相位低速漂向汇点
-  // 速度 1.5px/f (卡 1–2), 叠加透明度 ≤0.3; 生长完成后才淡入
-  const flowOffset = -frame * 1.5; // dashoffset 递减 = 相位沿画线方向(向汇点)漂移
-  const flowDash = '14 56'; // 世界像素单位
-  const flowIn = (gEnd: number) => ramp(frame, gEnd, 20, EASE.smooth);
-
-  // 收尾亮部 (交棒段 f118+ 缓升, 引导视线向汇点/右侧)
-  const handoffGlow = ramp(frame, 118, 42, EASE.swift) * 0.42;
-  // 开场从深场里浮出 (前 10f 整体亮度 0.4→1), 不硬切进第一帧
+  const cam = camAt(frame);
   const fadeUp = ramp(frame, 0, 12, EASE.out);
 
-  const layerStyle = (tx: number): React.CSSProperties => ({
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: WORLD_W,
-    height: H,
-    transform: `translateX(${tx}px)`,
+  const sharp: Seg[] = [];
+  const near: Seg[] = [];
+  const tips: {sx: number; sy: number; zr: number; trunk: boolean}[] = [];
+
+  // 流动脉冲：生长完后沿线流向汇点的亮脉冲（窄峰，低速）
+  const flowIn = (end: number) => ramp(frame, end, 24, EASE.smooth);
+  const pulseFn = (end: number, n: number, speed: number, seed: number) => {
+    const on = flowIn(end);
+    return (u: number) => {
+      const ph = u * n - frame * speed + seed;
+      const c = Math.cos(ph * Math.PI * 2);
+      return 0.7 + on * 0.55 * Math.pow(Math.max(0, c), 4);
+    };
+  };
+
+  const trunkG = ramp(frame, 0, 36, EASE.out);
+  TRIBS.forEach((t, i) => {
+    const g = ramp(frame, t.grow, 34, EASE.out);
+    const tip = emitLine(t.pts, g, cam, {w: t.w, color: L.ink2, base: 0.62, ramp: true, pulse: pulseFn(t.grow + 34, 2.2, 0.018, i * 0.37)}, sharp, near);
+    if (tip) tips.push({...tip, trunk: false});
   });
+  const tTip = emitLine(TRUNK, trunkG, cam, {w: 11, color: L.accent, base: 0.95, pulse: pulseFn(36, 4, 0.022, 0)}, sharp, near);
+  if (tTip) tips.push({...tTip, trunk: true});
+  const trunkSegs = sharp.filter((s) => s.c === L.accent);
+
+  // 地面点阵：与世界锁定的网格，前飞时从远处涌来
+  const dots: {x: number; y: number; r: number; o: number}[] = [];
+  const STEP = 420;
+  const zStart = Math.ceil((cam.z + 300) / STEP) * STEP;
+  for (let z = zStart; z < cam.z + 9000; z += STEP) {
+    for (let x = Math.floor((cam.x - 5200) / STEP) * STEP; x < cam.x + 5200; x += STEP) {
+      const pr = project({x, z}, cam);
+      if (pr.sx < -20 || pr.sx > 1940 || pr.sy > 1100) continue;
+      const o = 0.28 * (1 - smooth01(2000, 9000, pr.zr)) * smooth01(300, 900, pr.zr);
+      if (o < 0.01) continue;
+      dots.push({x: pr.sx, y: pr.sy, r: Math.max(0.8, Math.min(3.2, 2400 / pr.zr)), o});
+    }
+  }
+
+  const handoff = ramp(frame, 118, 50, EASE.swift);
+  const lineRender = (s: Seg, i: number) => (
+    <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={s.c} strokeWidth={s.w} strokeOpacity={s.o} strokeLinecap="butt" />
+  );
 
   return (
-    <AbsoluteFill style={{backgroundColor: BG_DEEP, overflow: 'hidden'}}>
-      {/* zoom 容器: 以画面中心为原点 */}
-      <AbsoluteFill style={{transform: `scale(${zoom})`, transformOrigin: '50% 50%', opacity: 0.4 + 0.6 * fadeUp}}>
-        {/* 底色: 冷色相深场 + 汇点方向一团极淡的蓝色地光, 远处更深 (空间感来自明暗梯度) */}
-        <AbsoluteFill
-          style={{
-            background:
-              `radial-gradient(70% 60% at 68% 47%, rgba(${ACCENT_RGB},0.07) 0%, rgba(${ACCENT_RGB},0) 70%), ` +
-              'radial-gradient(120% 90% at 60% 45%, #0d111b 0%, #080a11 52%, #05070b 100%)',
-          }}
-        />
+    <AbsoluteFill style={{background: L.bg[2], overflow: 'hidden'}}>
+      <AbsoluteFill style={{opacity: 0.35 + 0.65 * fadeUp}}>
+        <Stage look={L} keyLight={{x: VPX / 1920, y: HY / 1080}} fill={{x: 0.12, y: 0.95}} horizon={HY / 1080} intensity={0.55} grain={0.1} vignette={0.6}>
+          {/* 天空里的极淡浮尘 */}
+          <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: HY, overflow: 'hidden'}}>
+            <Dust look={L} count={26} seed={7} drift={0.12} opacity={0.35} color={L.ink2} />
+          </div>
+          {/* 地面：地平线以下略亮一档的冷灰绿，向近处压暗 */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: HY, bottom: 0,
+            background: `linear-gradient(180deg, ${alpha('#2a3122', 0.55)} 0%, ${alpha('#141811', 0.3)} 30%, ${alpha('#050604', 0)} 100%)`,
+          }} />
+          {/* 地平线发丝线 */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: HY - 0.5, height: 1,
+            background: `linear-gradient(90deg, ${alpha(L.ink, 0)} 0%, ${alpha(L.ink, 0.16)} 40%, ${alpha(L.accent, 0.35)} 66%, ${alpha(L.ink, 0.12)} 85%, ${alpha(L.ink, 0)} 100%)`,
+          }} />
+        </Stage>
 
-        {/* ---- 远景层 (视差 0.6×) ---- */}
-        <div style={{...layerStyle(farX), filter: 'blur(0.6px)'}}>
-          <svg width={WORLD_W} height={H} style={{position: 'absolute'}}>
-            {FAR_LINES.map((l, i) => {
-              const g = growth(frame, l.growStart, l.growDur);
-              return (
-                <g key={i}>
-                  <path
-                    d={farPath(l)}
-                    fill="none"
-                    stroke={INK}
-                    strokeWidth={1.2}
-                    strokeLinecap="round"
-                    opacity={l.op}
-                    pathLength={1}
-                    strokeDasharray={1}
-                    strokeDashoffset={1 - g}
-                  />
-                  {/* 节点标记: 可见特征点穿过画面, 让 0.6× 层位移可辨 */}
-                  {FAR_NODE_TS.map((t, j) => {
-                    const p = cubicAt(l.p0, l.p1, l.p2, l.p3, t);
-                    return (
-                      <circle
-                        key={j}
-                        cx={p.x}
-                        cy={p.y}
-                        r={2.6}
-                        fill={INK}
-                        opacity={t <= g ? l.op + 0.1 : 0}
-                      />
-                    );
-                  })}
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-
-        {/* ---- 中景层 (主角层, 视差 1×) ---- */}
-        <div style={layerStyle(midX)}>
-          <svg width={WORLD_W} height={H} style={{position: 'absolute', overflow: 'visible'}}>
-            <defs>
-              {/* 支流沿流向渐亮: 源头 0.22 → 汇入处 1 (读作"往主干流") */}
-              {MID_TRIBS.map((t, i) => (
-                <linearGradient key={i} id={`dv-trib-${i}`} gradientUnits="userSpaceOnUse" x1={t.p0.x} y1={t.p0.y} x2={t.p3.x} y2={t.p3.y}>
-                  <stop offset="0" stopColor={INK} stopOpacity={0.22} />
-                  <stop offset="0.55" stopColor={INK} stopOpacity={0.75} />
-                  <stop offset="1" stopColor={INK} stopOpacity={1} />
-                </linearGradient>
-              ))}
-              {/* 主干: 冷白 → 汇点往后染一点强调色 */}
-              <linearGradient id="dv-trunk" gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={WORLD_W} y2={0}>
-                <stop offset="0" stopColor={INK} stopOpacity={0.7} />
-                <stop offset={CONV.x / WORLD_W} stopColor="#f2f4ff" stopOpacity={1} />
-                <stop offset="1" stopColor={ACCENT} stopOpacity={0.9} />
-              </linearGradient>
-              <radialGradient id="dv-head-halo">
-                <stop offset="0" stopColor={`rgb(${ACCENT_RGB})`} stopOpacity={0.55} />
-                <stop offset="0.35" stopColor={`rgb(${ACCENT_RGB})`} stopOpacity={0.16} />
-                <stop offset="1" stopColor={`rgb(${ACCENT_RGB})`} stopOpacity={0} />
-              </radialGradient>
-            </defs>
-            {/* 微辉光垫层: 1–2px soft glow 压出"发光线"(卡坑注, Q4 单点许可内), 主干带强调色 */}
-            <g style={{filter: 'blur(4px)'}}>
-              <path
-                d={trunkPath()}
-                fill="none"
-                stroke={ACCENT}
-                strokeWidth={9}
-                strokeLinecap="round"
-                opacity={0.22}
-                pathLength={1}
-                strokeDasharray={1}
-                strokeDashoffset={1 - trunkGrow}
-              />
-              {MID_TRIBS.map((t, i) => (
-                <path
-                  key={i}
-                  d={tribPath(t)}
-                  fill="none"
-                  stroke={`url(#dv-trib-${i})`}
-                  strokeWidth={5.5}
-                  strokeLinecap="round"
-                  opacity={t.opacity * 0.2}
-                  pathLength={1}
-                  strokeDasharray={1}
-                  strokeDashoffset={1 - growth(frame, t.growStart, t.growDur)}
-                />
-              ))}
-            </g>
-            {/* 主干 (唯一) */}
-            <path
-              d={trunkPath()}
-              fill="none"
-              stroke="url(#dv-trunk)"
-              strokeWidth={2.8}
-              strokeLinecap="round"
-              opacity={0.88}
-              pathLength={1}
-              strokeDasharray={1}
-              strokeDashoffset={1 - trunkGrow}
-            />
-            {/* 支流, 错峰生长 */}
-            {MID_TRIBS.map((t, i) => (
-              <path
-                key={i}
-                d={tribPath(t)}
-                fill="none"
-                stroke={`url(#dv-trib-${i})`}
-                strokeWidth={2}
-                strokeLinecap="round"
-                opacity={Math.min(1, t.opacity + 0.18)}
-                pathLength={1}
-                strokeDasharray={1}
-                strokeDashoffset={1 - growth(frame, t.growStart, t.growDur)}
-              />
-            ))}
-            {/* 流动感: 虚线相位沿线漂向汇点 (1.5px/f, 叠加透明度 ≤0.3) */}
-            <path
-              d={trunkPath()}
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth={2.8}
-              strokeLinecap="round"
-              opacity={0.3 * flowIn(38)}
-              strokeDasharray={flowDash}
-              strokeDashoffset={flowOffset}
-            />
-            {MID_TRIBS.map((t, i) => (
-              <path
-                key={`flow-${i}`}
-                d={tribPath(t)}
-                fill="none"
-                stroke={`url(#dv-trib-${i})`}
-                strokeWidth={2.2}
-                strokeLinecap="round"
-                opacity={0.28 * flowIn(t.growStart + t.growDur)}
-                strokeDasharray={flowDash}
-                strokeDashoffset={flowOffset}
-              />
-            ))}
-            {/* 生长线头: 笔尖一颗小光点 (按弧长取点, 与 draw-on 同步) */}
-            <GrowHead p={TRUNK_ARC(trunkGrow)} g={trunkGrow} r={3.4} />
-            {MID_TRIBS.map((t, i) => {
-              const g = growth(frame, t.growStart, t.growDur);
-              return <GrowHead key={`head-${i}`} p={TRIB_ARC[i](g)} g={g} r={2.6} strength={0.85} />;
-            })}
-          </svg>
-
-          {/* 标签: 图钉先弹出 (overshoot), 胶囊 ID 晚 3f 跟上 (上浮 + 去模糊), 落定后沿线微漂 */}
-          {LABELS.map((l) => {
-            const trib = MID_TRIBS[l.trib];
-            const base = cubicAt(trib.p0, trib.p1, trib.p2, trib.p3, l.t);
-            const pinP = ramp(frame, l.appear, 10, EASE.overshoot);
-            const pinOp = ramp(frame, l.appear, 5, EASE.out);
-            const tagP = ramp(frame, l.appear + 3, 14, EASE.snappy);
-            // 图钉外圈: 出现时扩一圈再收成常驻细环
-            const ringP = ramp(frame, l.appear, 18, EASE.out);
-            // 沿线微漂: 出现后沿切线方向缓移 ~6px
-            const drift = interpolate(frame, [l.appear, DUR - 1], [0, 6], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-            });
-            const ahead = cubicAt(trib.p0, trib.p1, trib.p2, trib.p3, Math.min(1, l.t + 0.02));
-            const dx = ahead.x - base.x;
-            const dy = ahead.y - base.y;
-            const dl = Math.hypot(dx, dy) || 1;
-            const px = base.x + (dx / dl) * drift;
-            const py = base.y + (dy / dl) * drift;
-            // 图钉锚在线上 (中心 = 线上取样点, 卡坑注: 钉线分离读作浮尘);
-            // 胶囊沿垂直方向偏移, 避开线体; 入场从线的方向往外浮 10px
-            const tagH = 36;
-            const tagTop = l.above ? py - 22 - tagH : py + 18;
-            const rise = (1 - tagP) * (l.above ? 10 : -10);
+        <svg width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
+          <defs>
+            <filter id="dv-near" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="11" /></filter>
+            <filter id="dv-glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="7" /></filter>
+            <radialGradient id="dv-tip">
+              <stop offset="0" stopColor="#ffffff" stopOpacity={0.9} />
+              <stop offset="0.3" stopColor={L.accent} stopOpacity={0.35} />
+              <stop offset="1" stopColor={L.accent} stopOpacity={0} />
+            </radialGradient>
+          </defs>
+          {dots.map((d, i) => <circle key={i} cx={d.x} cy={d.y} r={d.r} fill={L.ink2} fillOpacity={d.o} />)}
+          {/* 主干泛光（只给主角） */}
+          <g filter="url(#dv-glow)" opacity={0.75}>
+            {trunkSegs.map((s, i) => <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={L.accent} strokeWidth={s.w * 3} strokeOpacity={s.o * 0.45} strokeLinecap="butt" />)}
+          </g>
+          {sharp.map(lineRender)}
+          {tips.map((t, i) => {
+            const r = Math.max(3, Math.min(18, (t.trunk ? 7000 : 4200) / t.zr));
             return (
-              <React.Fragment key={l.id}>
-                {/* 外圈细环 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: px - 15,
-                    top: py - 15,
-                    width: 30,
-                    height: 30,
-                    borderRadius: 8,
-                    boxSizing: 'border-box',
-                    border: `1px solid rgba(${ACCENT_RGB},0.7)`,
-                    opacity: pinOp * (0.95 - 0.55 * ringP),
-                    transform: `scale(${0.5 + 0.7 * ringP - 0.2 * ringP * ringP})`,
-                  }}
-                />
-                {/* 图钉核 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: px - 6.5,
-                    top: py - 6.5,
-                    width: 13,
-                    height: 13,
-                    borderRadius: 3,
-                    background: '#f4f6ff',
-                    boxShadow: `0 0 0 3px rgba(5,7,12,0.9), 0 0 14px rgba(${ACCENT_RGB},0.55)`,
-                    opacity: pinOp,
-                    transform: `scale(${pinP})`,
-                  }}
-                />
-                {/* ID 胶囊: 深色半透明衬底 + 发丝线, 压住背后穿过的线 */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: px + 12,
-                    top: tagTop + rise,
-                    height: tagH,
-                    padding: '0 12px 0 10px',
-                    boxSizing: 'border-box',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 9,
-                    borderRadius: 8,
-                    background: 'rgba(12,15,24,0.78)',
-                    border: '1px solid rgba(255,255,255,0.09)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 24px rgba(0,0,0,0.45)',
-                    opacity: tagP,
-                    filter: tagP < 0.98 ? `blur(${((1 - tagP) * 6).toFixed(2)}px)` : undefined,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  <div style={{width: 6, height: 6, borderRadius: 3, background: ACCENT, opacity: 0.9}} />
-                  <span
-                    style={{
-                      fontFamily: FONT.mono,
-                      fontSize: 23,
-                      fontWeight: 500,
-                      letterSpacing: '0.06em',
-                      color: '#e9edf8',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}
-                  >
-                    {l.id}
-                  </span>
-                </div>
-              </React.Fragment>
+              <g key={i}>
+                <circle cx={t.sx} cy={t.sy} r={r * 5} fill="url(#dv-tip)" />
+                <circle cx={t.sx} cy={t.sy} r={r * 0.6} fill="#ffffff" />
+              </g>
             );
           })}
+        </svg>
 
-          {/* 交棒亮部: 汇点方向留亮 (冷白核 + 强调色外晕), 引导视线接下一镜头 */}
-          <div
-            style={{
-              position: 'absolute',
-              left: CONV.x - 460,
-              top: CONV.y - 280,
-              width: 920,
-              height: 560,
-              background:
-                `radial-gradient(50% 50% at 50% 50%, rgba(240,244,255,0.5) 0%, rgba(${ACCENT_RGB},0.16) 40%, rgba(${ACCENT_RGB},0) 72%)`,
-              opacity: handoffGlow,
-              filter: 'blur(18px)',
-              pointerEvents: 'none',
-            }}
-          />
-        </div>
+        {/* 汇点交棒亮部：消失点一团黄绿光，收尾升亮 */}
+        <div style={{
+          position: 'absolute', left: VPX - 520, top: HY - 260, width: 1040, height: 520, pointerEvents: 'none',
+          background: `radial-gradient(50% 50% at 50% 50%, ${alpha('#f4ffd6', 0.55)} 0%, ${alpha(L.accent, 0.22)} 22%, ${alpha(L.accent, 0)} 70%)`,
+          opacity: 0.25 + 0.75 * handoff, mixBlendMode: 'screen',
+        }} />
+        <div style={{
+          position: 'absolute', left: VPX - 4, top: HY - 4, width: 8, height: 8, borderRadius: 4, background: '#f6ffe0',
+          boxShadow: `0 0 18px 6px ${alpha(L.accent, 0.6)}`, opacity: 0.4 + 0.6 * handoff,
+        }} />
 
-        {/* ---- 近景层 (大虚焦, 视差 1.4×) ---- */}
-        <div style={{...layerStyle(nearX), filter: 'blur(14px)'}}>
-          <svg width={WORLD_W} height={H} style={{position: 'absolute'}}>
-            {NEAR_LINES.map((l, i) => (
-              <path
-                key={i}
-                d={l.d}
-                fill="none"
-                stroke={i === 0 ? INK : ACCENT}
-                strokeWidth={l.w}
-                strokeLinecap="round"
-                opacity={l.op}
-                pathLength={1}
-                strokeDasharray={1}
-                strokeDashoffset={1 - growth(frame, l.growStart, l.growDur)}
-              />
-            ))}
-          </svg>
-        </div>
+        {/* 远的先画、近的后画：近处胶囊正确遮住远处图钉 */}
+        {LABELS.map((l, i) => ({l, p: LABEL_PTS[i].p}))
+          .sort((a, b) => b.p.z - a.p.z)
+          .map(({l, p}) => (frame >= l.appear ? <Label key={l.id} spec={l} at={p} frame={frame} cam={cam} /> : null))}
+
+        {/* 近景大虚焦层（在标签之上：前景掠过） */}
+        <svg width={1920} height={1080} style={{position: 'absolute', inset: 0}}>
+          <g filter="url(#dv-near)">{near.map(lineRender)}</g>
+        </svg>
       </AbsoluteFill>
 
-      {/* 屏幕空间的暗角 + 颗粒 (不随 zoom), 收住四角、防大面积暗部色带 */}
-      <Vignette strength={0.55} inner={0.42} color="#010207" cy={0.47} />
-      <Grain opacity={0.09} blend="soft-light" />
+      {/* 标题：天空左上，收尾落字 */}
+      <div style={{position: 'absolute', left: 120, top: 128}}>
+        <div style={{
+          fontFamily: FONT.mono, fontSize: 28, fontWeight: 600, color: L.accent, letterSpacing: '0.16em',
+          opacity: ramp(frame, 104, 14, EASE.out), transform: `translateY(${(1 - ramp(frame, 104, 18, EASE.snappy)) * 12}px)`,
+        }}>
+          1,284 ISSUES · 46 TEAMS
+        </div>
+        <div style={{...type(108, 650), color: L.ink, marginTop: 26}}>
+          <TextReveal text="Every thread," by="word" variant="rise" start={110} each={20} gap={5} />
+        </div>
+        <div style={{...type(108, 650), color: L.accent, marginTop: 4}}>
+          <TextReveal text="one release." by="word" variant="rise" start={121} each={20} gap={5} />
+        </div>
+      </div>
     </AbsoluteFill>
   );
 };

@@ -1,34 +1,31 @@
 {
   "stem": "CraneRiseReveal",
   "issues": [
-    "没有导出时长常量，工作台按卡片 md 猜成 20f，改版前视频只有开场 hold，拉升揭示整段没演出来",
-    "起点特写取景越出页面底边，画面下方留一条约 150px 的页外空灰底",
-    "Easing.out(quad) 从 hold 的静止直接跳到最高速，起吊瞬间速度突变",
-    "行脉冲是一块纯灰叠层，像整行被抹脏，不像产品里的选中态",
-    "全片纯平底，快速拉升段没有任何运动模糊，速度感只靠位移"
+    "世界是通用灰阶 FakeDashboard：五行灰色占位条和方块，特写里没有一个能读的字，观众不知道\"这一行\"是什么",
+    "开场 3.2× 特写只看到两行巨大的空白卡片，画面像放大的线框图，第一帧不是一张设计过的画面",
+    "拉升后的终帧是一页满屏灰条，没有标题、没有数字、没有主角，读不出\"这一行只是一面墙的一格\"",
+    "行脉冲是淡灰洗层，在灰白页面上几乎看不见；满幅后 30f 完全静止，hold 段是死帧"
   ],
   "changes": [
-    "补 CRANE_RISE_REVEAL_DURATION = 150（特写 hold 20f + 拉升 100f + 满幅静止 30f），完整演出拉升",
-    "起点对准点按 fy = 1080 − 540/s 求，取景下缘贴住页面底边；下缘是进度的凸函数，全程不露空底",
-    "曲线改为 bezier(0.2,0,0.25,1)：零速起步、19% 处达峰（≈2.3× 平均速）再长尾缓停；hold 内先推近 1.5% 做起吊预备",
-    "行脉冲改成强调色相的深色洗层（左 0.16→右 0.05）加 1.5px 靛蓝细描边，读作“这一行被选中”",
-    "前 42f 快速段包 CameraMotionBlur（130°/10 采样），慢速段不包；脉冲层单独放在模糊外面，避免竖条伪影",
-    "加随拉开收淡的暗角（0.16→0.05）和 0.035 颗粒，特写时视线聚焦在那一行"
+    "look 换成 porcelain（冷白 + 钴蓝 + 青绿点缀）：世界重做成为镜头设计的物流产品窗口「Relay」——顶栏、Shipments 页头、104px 在途件数 KPI、12 行真实感运单（单号 / 航线 / 承运商 / ETA / 状态胶囊 / 进度 / 重量）",
+    "开场 3.0× 特写里单号与航线是 63px 大字；对焦设计：只有被追踪的那一行是实的（钴蓝底 + 呼吸追踪点），其余行压到 38%，起吊后 26f 回满",
+    "保留升降臂运镜（同一条 bezier(0.2,0,0.25,1) 驱动 scale 3.0→1 与对准点），视野上缘越线触发的钴蓝洗光从行首掠到行尾，快速段包 CameraMotionBlur",
+    "体量感：KPI 与拉升同期从 0 数到 48,210；窗口阴影随拉开升到悬浮高度、舞台点阵 0.35 视差，终帧读作瓷白舞台上的一件产品",
+    "hold 段加一个小事件：追踪行状态弹簧翻成青绿「Delivered」+ 对勾描画 + 进度条补满；时长 150→165f"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench guessed 20f from the card, so the before video shows only the opening hold and never the crane reveal",
-    "The opening close-up framed past the page's bottom edge, leaving a ~150px empty gray strip",
-    "Easing.out(quad) jumps from the static hold straight to top speed, so the lift starts with a velocity spike",
-    "The row pulse was a flat gray overlay that read as a smudge, not a product selection state",
-    "Flat background throughout and no motion blur on the fast lift, so speed came only from displacement"
+    "The world was the generic grey FakeDashboard: five rows of grey placeholder bars and squares, with no readable text in the close-up, so the viewer never learns what \"this row\" is",
+    "The 3.2x opening close-up showed two huge blank cards, like a zoomed wireframe; frame one was not a designed image",
+    "The pulled-back final frame was a full page of grey bars with no title, number or hero, so \"this row is one cell of a whole wall\" never reads",
+    "Row pulses were faint grey washes, almost invisible on the grey-white page; after reaching full frame the shot froze for 30f, a dead hold"
   ],
   "changesEn": [
-    "Added CRANE_RISE_REVEAL_DURATION = 150 (20f hold + 100f lift + 30f full-frame rest) so the whole reveal plays",
-    "The opening focus point is solved as fy = 1080 − 540/s so the frame's bottom edge sits on the page edge; the bottom edge is convex in progress, so no void ever shows",
-    "Curve is now bezier(0.2,0,0.25,1): zero-velocity start, peak at 19% (~2.3x mean speed), long settling tail; the hold adds a 1.5% push-in as anticipation",
-    "Row pulse is now an accent-hued dark wash (0.16 left to 0.05 right) with a 1.5px indigo hairline ring, reading as 'this row is selected'",
-    "The first 42f fast segment is wrapped in CameraMotionBlur (130 degrees, 10 samples) and the slow tail is left sharp; pulses sit outside the blur to avoid banding artifacts",
-    "Added a vignette that fades as the camera pulls out (0.16 to 0.05) plus 0.035 grain, so the close-up focuses the eye on the row"
+    "Porcelain look (cool white, cobalt, teal accent): the world is rebuilt as a shot-designed logistics app window, \"Relay\", with top bar, Shipments header, a 104px in-transit KPI and 12 realistic shipment rows (ID, route, carrier, ETA, status pill, progress, weight)",
+    "In the 3.0x close-up the ID and route are 63px type; a focus pull keeps only the tracked row sharp (cobalt tint, breathing tracking dot) with other rows at 38%, restoring over 26f once the crane lifts",
+    "The crane move is kept (one bezier(0.2,0,0.25,1) drives scale 3.0 to 1 and the focus point); a cobalt sweep crosses each row from its start as the top of frame passes it, and the fast segment gets CameraMotionBlur",
+    "Sense of scale: the KPI counts 0 to 48,210 in sync with the pull; the window shadow lifts to a floating height and a background dot grid moves at 0.35 parallax, so the end frame reads as a product sitting on a porcelain stage",
+    "The hold gets one small event: the tracked row springs to a teal \"Delivered\" pill with a drawn check and a filled progress bar; duration 150 to 165f"
   ],
+  "look": "porcelain",
   "mdChanged": true
 }

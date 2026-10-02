@@ -1,193 +1,209 @@
-// letterspace-materialize v3 —— 按批次 11 用户意见修正（截图 superhuman，4 张）：
-// ① 字形比例改宽：v2 竖长（60x100），对照终态截图字高≈50/字宽≈58（宽高比≈1.15），
-//    v3 重绘全部骨架字形到 78x64 视框（字面 58x54），方正略宽 + 细笔画 + 大字距；
-// ② 所有字母同时开始同时完成：去掉 v2 的逐字错峰（PER/jitter），全字符同一帧起笔、
-//    pathLength 归一保证不同笔画长度的字母在同一帧齐收（截图 2/3 的全行并行半截态）。
-// v4 质感：底景从"三块模糊色块"重做为暮色湖景——分层天空渐变 + 两层程序山脊（大气透视：远淡近深）
-//    + 宽幅地平线霞光（铺出画外，不露光带两端）+ 水面（天光倒影 + 缓慢漂移的细波光）+ 字标水面倒影；
-//    颗粒防渐变色带；背景极缓推近 3%（远山/近山不同速，微视差），字标本身不位移。
+// letterspace-materialize —— 大字距字标全字符并行连续描画结晶：所有字母同帧起笔、笔画像手写一样连续生长、
+// 同帧齐收成词；氛围底景上的品牌字标显影。原片出处：superhuman-promo.mp4 ≈4.5–6.5s（手法参照，字标改为虚构品牌）。
+//
+// 第二轮重设计（沙 · 沙丘破晓 · 细墨线字标）：
+// - look = sand（米色 + 赤陶）。底景从"暮色湖景"换成亮场的沙丘破晓：暖米色天空、低悬的白日 + 大片日晕、
+//   四层程序沙丘（远淡近深的大气透视，向阳坡亮、背阴坡深，近两层山脊有一道受光脊线）、地平线薄雾带、
+//   浮动的细沙微尘；相机极缓推近 + 向右横移，四层按 1.5% / 3% / 5% / 8% 不同速——视差让沙丘有纵深；
+//   太阳全程缓缓升起 24px，结晶完成时日晕再亮一档（"字标点亮了天"）。
+// - 字标「SOLSTICE」（虚构）：8 个单线骨架字形重绘，按光学宽度排（I 窄、O/C 圆字），字面高 103px、
+//   字距 ≈0.6em、墨色细线 5px。全字符共享同一进度 p：同帧起笔、pathLength 归一 → 同帧齐收。
+//   每一笔的笔尖带一小段赤陶"热墨"（刚落下的墨还是暖色，随后冷成墨色），收笔时淡掉。
+// - 落版：结晶完成后一行衬线斜体副标「Your day, in better light.」由虚到实浮现；字标本身不位移。
+//
+// 时间表（30fps，共 120f）：
+//   0–14    底景已在（第 1 帧即完整画面）、微尘浮动、相机开始推
+//   14–66   描画 52f：bezier(0.5,0,0.3,1)——起笔缓、中段快、收笔略长；全字符同帧起收
+//   60–84   结晶收束：热墨笔尖淡出、日晕升亮
+//   72–92   副标由虚到实
+//   90–120  hold 30f（R1）
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { bezier, ramp, EASE, Grain, Vignette } from '../../_fixtures/Polish';
+import { bezier, ramp, EASE, mix } from '../../_fixtures/Polish';
+import { Dust, LOOKS, SERIF, Stage, alpha } from '../../_fixtures/Look';
 
-// 78x64 视框内的方正略宽细骨架字形（子笔画顺序=描画顺序）
-const GLYPHS: Record<string, string> = {
-  S: 'M 62 13 C 51 4, 18 3, 15 15 C 12 26, 29 29, 39 31 C 50 33, 66 37, 63 48 C 60 59, 21 61, 11 50',
-  U: 'M 12 5 L 12 40 C 12 59, 66 59, 66 40 L 66 5',
-  P: 'M 12 59 L 12 5 L 44 5 C 64 5, 64 32, 44 32 L 12 32',
-  E: 'M 62 5 L 12 5 L 12 59 L 62 59 M 12 31 L 56 31',
-  R: 'M 12 59 L 12 5 L 44 5 C 64 5, 64 31, 44 31 L 12 31 M 42 31 L 64 59',
-  H: 'M 12 5 L 12 59 M 66 5 L 66 59 M 12 31 L 66 31',
-  M: 'M 8 59 L 8 6 L 39 38 L 70 6 L 70 59',
-  A: 'M 7 59 L 39 5 L 71 59 M 17 41 L 61 41',
-  N: 'M 12 59 L 12 5 L 66 59 L 66 5',
-};
+export const LETTERSPACE_MATERIALIZE_DURATION = 120; // 静置 14f + 描画 52f + 收束/副标 24f + hold 30f
 
-const WORD = 'SUPERHUMAN';
-const START = 16;   // 全字符统一起画帧（无错峰）
-const DUR = 52;     // 全字符统一画完帧数（pathLength 归一→同帧齐收）
-export const LETTERSPACE_MATERIALIZE_DURATION = 105; // 静置 16f + 描画 52f + 终态 hold 37f（>1s，R1）
-
-const HORIZON = 640; // 水天线 y
-const MARK_Y = 470; // 字标中心 y（落在霞光区，水天线之上）
-// 描画曲线：起笔缓、中段快、收笔略长（手写的落笔→行笔→收笔）
+const L = LOOKS.sand;
+const START = 14; // 全字符统一起画帧（无错峰）
+const DUR = 52; // 全字符统一画完帧数
 const strokeEase = bezier(0.5, 0, 0.3, 1);
 
-// 程序山脊：若干正弦叠加的确定性轮廓（无随机源）
-const ridge = (seed: number, base: number, amp: number) => {
-  const pts: string[] = [];
-  for (let x = -60; x <= 1980; x += 20) {
-    const y =
-      base -
-      amp * (0.55 * Math.sin(x / 233 + seed) + 0.3 * Math.sin(x / 97 + seed * 2.1) + 0.15 * Math.sin(x / 41 + seed * 3.7) + 0.6);
-    pts.push(`${x},${y.toFixed(1)}`);
-  }
-  return `M -60 ${HORIZON + 2} L ${pts.join(' L ')} L 1980 ${HORIZON + 2} Z`;
+// ───────────── 字形（单线骨架，64 高视框；x 从 0 起，w = 光学宽度）─────────────
+const GLYPHS: Record<string, { d: string; w: number }> = {
+  S: { d: 'M 52 13 C 41 4, 8 3, 5 15 C 2 26, 19 29, 29 31 C 40 33, 56 37, 53 48 C 50 59, 11 61, 1 50', w: 55 },
+  O: { d: 'M 31 5 C 7 5, 0 20, 0 32 C 0 46, 10 59, 31 59 C 52 59, 62 46, 62 32 C 62 18, 54 5, 31 5', w: 62 },
+  L: { d: 'M 0 5 L 0 59 L 44 59', w: 44 },
+  T: { d: 'M 0 5 L 56 5 M 28 5 L 28 59', w: 56 },
+  I: { d: 'M 0 5 L 0 59', w: 0 },
+  C: { d: 'M 57 16 C 50 8, 41 5, 31 5 C 9 5, 0 20, 0 32 C 0 46, 10 59, 31 59 C 41 59, 50 56, 57 48', w: 57 },
+  E: { d: 'M 46 5 L 0 5 L 0 59 L 46 59 M 0 31 L 40 31', w: 46 },
+  // 以下字母本词未用，留在库里供换词复用（同一套骨架比例）
+  U: { d: 'M 0 5 L 0 40 C 0 59, 54 59, 54 40 L 54 5', w: 54 },
+  P: { d: 'M 0 59 L 0 5 L 32 5 C 52 5, 52 32, 32 32 L 0 32', w: 47 },
+  R: { d: 'M 0 59 L 0 5 L 32 5 C 52 5, 52 31, 32 31 L 0 31 M 30 31 L 52 59', w: 52 },
+  H: { d: 'M 0 5 L 0 59 M 54 5 L 54 59 M 0 31 L 54 31', w: 54 },
+  M: { d: 'M 0 59 L 0 6 L 31 38 L 62 6 L 62 59', w: 62 },
+  A: { d: 'M 0 59 L 32 5 L 64 59 M 10 41 L 54 41', w: 64 },
+  N: { d: 'M 0 59 L 0 5 L 54 59 L 54 5', w: 54 },
 };
-const FAR_RIDGE = ridge(1.3, HORIZON, 70);
-const NEAR_RIDGE = ridge(4.1, HORIZON + 2, 34);
+const WORD = 'SOLSTICE';
+const GAP = 40; // 字距（视框单位，≈0.6 × 字面高）
+const ROUND = new Set(['O', 'C', 'S']); // 圆字光学收一点字距
+const K = 1.9; // 视框 → 屏幕
+const LAYOUT = (() => {
+  let x = 0;
+  const out: { ch: string; x: number }[] = [];
+  Array.from(WORD).forEach((ch, i) => {
+    if (i > 0) x += GAP - (ROUND.has(ch) || ROUND.has(WORD[i - 1]) ? 4 : 0);
+    out.push({ ch, x });
+    x += GLYPHS[ch].w;
+  });
+  return { glyphs: out, width: x };
+})();
+const MARK_W = LAYOUT.width * K;
+const MARK_CY = 392; // 字标中心 y
+const STROKE = 2.7; // 视框单位 → ~5px
+const HOT = 0.07; // 热墨笔尖长度（pathLength 比例）
 
-// 水面细波光：确定性的若干条横向短亮线，缓慢左右漂移
-const GLINTS = Array.from({ length: 22 }, (_, i) => {
-  const s = Math.sin(i * 91.7) * 43758.5453;
-  const r = s - Math.floor(s);
-  const s2 = Math.sin(i * 47.3 + 5) * 24634.6345;
-  const r2 = s2 - Math.floor(s2);
-  const depth = (i + 0.5) / 22; // 0 = 近水天线，1 = 近画面底
-  return {
-    y: HORIZON + 8 + depth * depth * 400,
-    x: 960 + (r - 0.5) * (500 + depth * 1100),
-    w: 40 + r2 * 120 + depth * 160,
-    a: 0.05 + (1 - depth) * 0.12,
-    ph: r * 6.28,
-  };
-});
-
-const Word: React.FC<{ e: number; glowAmt: number }> = ({ e, glowAmt }) => (
-  <div style={{ display: 'flex', gap: 34, alignItems: 'center' }}>
-    {WORD.split('').map((ch, li) => (
-      <svg key={li} width={78} height={64} viewBox="0 0 78 64" style={{ overflow: 'visible', display: 'block' }}>
-        {e > 0 && (
-          <path
-            d={GLYPHS[ch]}
-            fill="none"
-            stroke="#f6f3fa"
-            strokeWidth={5.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            pathLength={1}
-            strokeDasharray={1}
-            strokeDashoffset={1 - e}
-            style={{
-              filter: `drop-shadow(0 0 ${5 + glowAmt * 10}px rgba(245,225,240,${0.3 + glowAmt * 0.38}))`,
-            }}
-          />
-        )}
-      </svg>
-    ))}
-  </div>
+const Wordmark: React.FC<{ e: number; hot: number }> = ({ e, hot }) => (
+  <svg
+    width={MARK_W + 40} height={64 * K + 40} viewBox={`-20 -20 ${MARK_W + 40} ${64 * K + 40}`}
+    style={{ position: 'absolute', left: 960 - MARK_W / 2 - 20, top: MARK_CY - 32 * K - 20, overflow: 'visible' }}
+  >
+    <g transform={`scale(${K})`} fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth={STROKE}>
+      {LAYOUT.glyphs.map((g, i) => (
+        <g key={i} transform={`translate(${g.x} 0)`}>
+          {e > 0 && (
+            <path d={GLYPHS[g.ch].d} stroke={L.ink} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - e} />
+          )}
+          {e > 0 && hot > 0 && (
+            // 笔尖热墨：只显示 [e−HOT, e] 这一小段，盖在墨线上
+            <path d={GLYPHS[g.ch].d} stroke={L.accent} strokeWidth={STROKE * 1.15} pathLength={1}
+              strokeDasharray={`${HOT} 2`} strokeDashoffset={HOT - e} opacity={hot} />
+          )}
+        </g>
+      ))}
+    </g>
+  </svg>
 );
+
+// ───────────── 沙丘 ─────────────
+// 确定性沙丘轮廓：长波起伏 + 尖化的波峰（风积沙丘一侧缓一侧陡）
+const dune = (seed: number, base: number, amp: number, lambda: number) => {
+  const pts: [number, number][] = [];
+  for (let x = -200; x <= 2120; x += 16) {
+    const u = x / lambda + seed;
+    const crest = Math.pow(0.5 + 0.5 * Math.sin(u + 0.55 * Math.sin(u)), 2.6); // 偏斜 + 尖化：脊线成刃、坡面缓
+    const roll = 0.35 * Math.sin(x / (lambda * 0.37) + seed * 2.3);
+    pts.push([x, base - amp * (crest * 0.8 + roll * 0.25)]);
+  }
+  return pts;
+};
+const toFill = (pts: [number, number][]) => `M -200 1200 L ${pts.map(([x, y]) => `${x} ${y.toFixed(1)}`).join(' L ')} L 2120 1200 Z`;
+const toLine = (pts: [number, number][]) => `M ${pts.map(([x, y]) => `${x} ${y.toFixed(1)}`).join(' L ')}`;
+
+// 风纹：沿沙丘轮廓向下平移的细等高线（越往下越疏、越淡），给近两层沙丘表面质感
+const ripples = (pts: [number, number][], n: number, step: number, seed: number) =>
+  Array.from({ length: n }, (_, k) => {
+    const off = 26 + k * step * (1 + k * 0.12);
+    return {
+      d: `M ${pts.map(([x, y]) => `${x} ${(y + off + 4 * Math.sin(x / (46 + k * 7) + seed + k)).toFixed(1)}`).join(' L ')}`,
+      o: 0.16 * (1 - k / n),
+    };
+  });
+
+type Layer = { pts: [number, number][]; top: string; bottom: string; rim?: number; blur?: number; push: number; truck: number; rip?: { n: number; step: number } };
+const LAYERS: Layer[] = [
+  { pts: dune(0.8, 700, 46, 260), top: '#eedcc4', bottom: '#e6cfb2', blur: 1.2, push: 0.015, truck: -6 },
+  { pts: dune(2.6, 770, 68, 330), top: '#e2c39f', bottom: '#d6b28b', rim: 0.5, push: 0.03, truck: -14 },
+  { pts: dune(4.1, 880, 96, 420), top: '#cfa378', bottom: '#b98b5f', rim: 0.7, push: 0.05, truck: -26, rip: { n: 7, step: 16 } },
+  { pts: dune(5.7, 1020, 120, 560), top: '#ad7a4f', bottom: '#8c5d3a', rim: 0.55, blur: 2.4, push: 0.08, truck: -44, rip: { n: 6, step: 22 } },
+];
+const ORIGIN_Y = 700;
 
 export const LetterspaceMaterialize: React.FC = () => {
   const frame = useCurrentFrame();
+  const T = LETTERSPACE_MATERIALIZE_DURATION;
 
   // 全字符共享同一进度：同时开始、同时完成
   const e = ramp(frame, START, DUR, strokeEase);
-  // 画完瞬间轻微提亮回落（结晶收束）——全字符同帧发生；收笔前 30% 逐渐蓄亮
-  const rise = ramp(frame, START + DUR * 0.7, DUR * 0.3, EASE.swift);
-  const fall = 1 - ramp(frame, START + DUR, 14, EASE.out);
-  const glowAmt = e >= 1 ? fall : rise;
-
-  // 背景极缓推近：远山 1→1.02，近景/水面 1→1.035（微视差）；字标不动
-  const push = ramp(frame, 0, LETTERSPACE_MATERIALIZE_DURATION, EASE.smooth);
-  const sFar = 1 + 0.02 * push;
-  const sNear = 1 + 0.035 * push;
-  // 霞光随结晶微微升亮（字标"点亮"了天边）
-  const dawn = 0.85 + 0.15 * ramp(frame, START + DUR * 0.5, DUR, EASE.out);
+  const hot = 1 - ramp(frame, START + DUR - 6, 14, EASE.out);
+  const cam = ramp(frame, 0, T, EASE.smooth);
+  const sunY = 690 - 24 * ramp(frame, 0, T, EASE.out);
+  const dawn = 0.82 + 0.18 * ramp(frame, START + DUR * 0.6, 34, EASE.out); // 结晶收束时日晕再亮一档
+  const tag = ramp(frame, 72, 20, EASE.out);
 
   return (
-    <AbsoluteFill style={{ background: '#120f24', overflow: 'hidden' }}>
-      {/* 天空 + 远山（远层） */}
-      <AbsoluteFill style={{ transform: `scale(${sFar})`, transformOrigin: `50% ${HORIZON}px` }}>
-        <AbsoluteFill
-          style={{
-            background:
-              `linear-gradient(180deg, #17153a 0%, #24204f 24%, #3a2f63 42%, #5f4270 53%, #8a5878 ${((HORIZON - 14) / 1080) * 100}%, #1c1838 ${(HORIZON / 1080) * 100}%, #0b0a17 100%)`,
-          }}
-        />
-        {/* 宽幅地平线霞光：椭圆铺出画外，两端无断口 */}
-        <div
-          style={{
-            position: 'absolute', left: -480, right: -480, top: HORIZON - 260, height: 520, opacity: dawn,
-            background: 'radial-gradient(ellipse 50% 50% at 54% 50%, rgba(246,168,170,0.42) 0%, rgba(214,130,160,0.2) 35%, rgba(140,100,170,0.06) 65%, rgba(0,0,0,0) 80%)',
-          }}
-        />
-        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-          <defs>
-            <linearGradient id="lm-far" x1="0" y1={HORIZON - 120} x2="0" y2={HORIZON} gradientUnits="userSpaceOnUse">
-              <stop offset="0" stopColor="#5a4473" />
-              <stop offset="1" stopColor="#3e3260" />
-            </linearGradient>
-          </defs>
-          {/* 远山：偏亮、偏霞色（大气透视） */}
-          <path d={FAR_RIDGE} fill="url(#lm-far)" opacity={0.75} style={{ filter: 'blur(1.2px)' }} />
-        </svg>
-      </AbsoluteFill>
-
-      {/* 近山 + 水面（近层，推得更快） */}
-      <AbsoluteFill style={{ transform: `scale(${sNear})`, transformOrigin: `50% ${HORIZON}px` }}>
-        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-          <path d={NEAR_RIDGE} fill="#271f43" />
-        </svg>
-        {/* 水面：天光倒影（霞光在水里拉长变淡）+ 渐深到画面底 */}
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: HORIZON, bottom: 0,
-            background:
-              'radial-gradient(ellipse 46% 40% at 54% 0%, rgba(230,150,165,0.22) 0%, rgba(150,105,160,0.08) 50%, rgba(0,0,0,0) 80%), ' +
-              'linear-gradient(180deg, #2a2346 0%, #18142e 30%, #0d0b1a 100%)',
-          }}
-        />
-        {/* 水天线一道极细亮边 */}
-        <div
-          style={{
-            position: 'absolute', left: 0, right: 0, top: HORIZON - 1, height: 2,
-            background: 'linear-gradient(90deg, rgba(255,200,210,0) 8%, rgba(255,200,210,0.35) 54%, rgba(255,200,210,0) 92%)',
-          }}
-        />
-        {/* 细波光：缓慢漂移 */}
-        {GLINTS.map((g, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute', top: g.y, height: 1.5, borderRadius: 1, width: g.w,
-              left: g.x - g.w / 2 + Math.sin(frame / 38 + g.ph) * 14,
-              background: `linear-gradient(90deg, rgba(255,215,225,0), rgba(255,215,225,${(g.a * (0.75 + 0.25 * Math.sin(frame / 23 + g.ph))).toFixed(3)}), rgba(255,215,225,0))`,
-            }}
-          />
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.62 }} fill={null} intensity={0.6} grain={0.06} vignette={0.22}>
+        {/* 天空 */}
+        <AbsoluteFill style={{ background: 'linear-gradient(180deg, #e3d2bd 0%, #ecdcc6 38%, #f6e6cd 62%, #f3dfc2 100%)' }} />
+        {/* 日晕 + 太阳 */}
+        <div style={{
+          position: 'absolute', left: 960 - 900, top: sunY - 620, width: 1800, height: 1240, opacity: dawn,
+          background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,247,230,0.95) 0%, rgba(255,236,206,0.55) 22%, rgba(250,222,184,0.18) 48%, rgba(245,215,175,0) 72%)',
+        }} />
+        <div style={{
+          position: 'absolute', left: 960 - 118, top: sunY - 118, width: 236, height: 236, borderRadius: '50%',
+          background: 'radial-gradient(circle, #fffefa 0%, #fffaf0 52%, rgba(255,244,226,0.6) 62%, rgba(255,240,218,0.0) 72%)', opacity: dawn,
+          boxShadow: '0 0 120px 30px rgba(255,238,205,0.55)',
+        }} />
+        {/* 高空薄云：三缕极淡的横向云丝缓慢右移，hold 段天空不死 */}
+        {[{ y: 150, w: 900, x: 180, o: 0.32, v: 0.35 }, { y: 228, w: 640, x: 1180, o: 0.24, v: 0.5 }, { y: 96, w: 520, x: 1420, o: 0.2, v: 0.25 }].map((c, i) => (
+          <div key={i} style={{
+            position: 'absolute', left: c.x + frame * c.v, top: c.y, width: c.w, height: 26, borderRadius: 13,
+            background: `linear-gradient(90deg, rgba(255,248,236,0) 0%, rgba(255,248,236,${c.o}) 35%, rgba(255,248,236,${c.o * 0.8}) 70%, rgba(255,248,236,0) 100%)`,
+            filter: 'blur(8px)',
+          }} />
         ))}
-      </AbsoluteFill>
+        {/* 地平线薄雾 */}
+        <div style={{
+          position: 'absolute', left: -100, right: -100, top: 640, height: 150,
+          background: 'linear-gradient(180deg, rgba(255,246,232,0) 0%, rgba(255,246,232,0.55) 50%, rgba(255,246,232,0) 100%)',
+        }} />
+        {/* 四层沙丘：远淡近深，推近与横移按层递增（视差） */}
+        {LAYERS.map((ly, i) => (
+          <svg key={i} width={1920} height={1080} style={{
+            position: 'absolute', inset: 0, overflow: 'visible',
+            transformOrigin: `960px ${ORIGIN_Y}px`, transform: `translateX(${(ly.truck * cam).toFixed(2)}px) scale(${(1 + ly.push * cam).toFixed(4)})`,
+            filter: ly.blur ? `blur(${ly.blur}px)` : undefined,
+          }}>
+            <defs>
+              <linearGradient id={`lm-d${i}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor={ly.top} />
+                <stop offset="1" stopColor={ly.bottom} />
+              </linearGradient>
+            </defs>
+            <path d={toFill(ly.pts)} fill={`url(#lm-d${i})`} />
+            {ly.rip && ripples(ly.pts, ly.rip.n, ly.rip.step, i * 1.7).map((r, k) => (
+              <path key={k} d={r.d} fill="none" stroke={k % 2 ? '#fff1dc' : '#6e4a2c'} strokeWidth={1.4} strokeOpacity={r.o} />
+            ))}
+            {/* 逆光脊线：太阳在沙丘背后，脊线被勾一道亮边 */}
+            {ly.rim && <path d={toLine(ly.pts)} fill="none" stroke="#fff6e6" strokeWidth={2.4} strokeOpacity={ly.rim} />}
+            {/* 层间薄雾：每层脚下一抹空气，拉开前后 */}
+            {i < 3 && (
+              <rect x={-200} y={Math.max(...ly.pts.map((p) => p[1])) - 40} width={2320} height={120} fill="rgba(255,244,228,0.28)" style={{ filter: 'blur(18px)' }} />
+            )}
+          </svg>
+        ))}
+        {/* 浮动细沙 */}
+        <Dust look={L} count={34} seed={11} drift={0.45} opacity={0.55} color="#fff6e6" />
+      </Stage>
 
-      {/* 字标水面倒影：以水天线为轴镜像，低透明 + 轻虚 + 向下渐隐 */}
-      <div
-        style={{
-          position: 'absolute', left: 0, right: 0, top: 2 * HORIZON - MARK_Y - 32, height: 64,
-          display: 'flex', justifyContent: 'center',
-          transform: 'scaleY(-1)', opacity: 0.12, filter: 'blur(2.4px)',
-          WebkitMaskImage: 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%)',
-          maskImage: 'linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.2) 100%)',
-        }}
-      >
-        <Word e={e} glowAmt={glowAmt * 0.5} />
+      <Wordmark e={e} hot={hot} />
+
+      {/* 副标：由虚到实 */}
+      <div style={{
+        position: 'absolute', left: 0, right: 0, top: MARK_CY + 32 * K + 54, textAlign: 'center',
+        fontFamily: SERIF, fontStyle: 'italic', fontSize: 44, fontWeight: 400, color: L.ink2, letterSpacing: '0.01em',
+        opacity: tag, filter: tag < 0.99 ? `blur(${((1 - tag) * 10).toFixed(2)}px)` : undefined,
+        transform: `translateY(${mix(10, 0, tag).toFixed(2)}px)`,
+      }}>
+        Your day, in better light.
       </div>
-
-      {/* 大字距字标：全字符并行连续描画 */}
-      <div style={{ position: 'absolute', left: 0, right: 0, top: MARK_Y - 32, height: 64, display: 'flex', justifyContent: 'center' }}>
-        <Word e={e} glowAmt={glowAmt} />
-      </div>
-
-      <Vignette strength={0.45} inner={0.5} color="#05040c" cy={0.5} />
-      <Grain opacity={0.08} blend="soft-light" />
+      {/* 极淡的暖色压角，把视线收向字标 */}
+      <AbsoluteFill style={{ pointerEvents: 'none', background: `radial-gradient(ellipse 80% 70% at 50% 45%, ${alpha(L.shadow, 0)} 60%, ${alpha(L.shadow, 0.1)} 100%)` }} />
     </AbsoluteFill>
   );
 };
