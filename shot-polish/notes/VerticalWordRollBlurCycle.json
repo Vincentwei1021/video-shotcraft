@@ -1,0 +1,28 @@
+{
+  "stem": "VerticalWordRollBlurCycle",
+  "issues": [
+    "相邻行用 CSS blur() 各向同性地糊，横向笔画也糊成一团，读不出机械滚筒那种只在滚动方向失焦的景深",
+    "滚轮换词时整列只是平移，速度最快的那几帧没有任何运动模糊，和落定时一样锐",
+    "三行视窗上下沿是 overflow 硬裁切，远行的字在边上被一刀切掉",
+    "#F7F7FA 平底，整个画面只有一行字，没有光也没有颗粒"
+  ],
+  "changes": [
+    "相邻行 blur 改为 SVG feGaussianBlur stdDeviation=\"0 b\"，只在纵向失焦，距离曲线（邻行 3px、最远 5px）不变",
+    "按滚轮速度叠一层 ≤4px 的纵向运动模糊，换词前快后慢的那 0.55s 有速度感，落定后归 0",
+    "离中心越远的行按滚筒曲面压扁（最多 14%），视窗上下沿 26% 柔边渐隐，不再硬切",
+    "背景换成柔光渐变 + 极淡强调色余光 + 轻暗角，颗粒放在设计坐标容器外按成片像素取样；强调色统一为 #5b63d3，拍点、缓动、染色系数都不动"
+  ],
+  "issuesEn": [
+    "Neighboring rows used an isotropic CSS blur(), smearing horizontal strokes too, so it never read as a mechanical drum that defocuses only along the roll direction",
+    "During each word change the column simply translated, with no motion blur on the fastest frames, so it looked as sharp in motion as at rest",
+    "The top and bottom of the three-row window were hard overflow cuts that sliced through the outer words",
+    "A flat #F7F7FA ground held a single line of text, with no light and no grain"
+  ],
+  "changesEn": [
+    "Neighbor blur now uses an SVG feGaussianBlur with stdDeviation=\"0 b\", so rows defocus only vertically; the distance curve (3px for neighbors, 5px max) is unchanged",
+    "A vertical motion blur of up to 4px is layered on in proportion to roll speed, giving each 0.55s fast-then-slow change a sense of speed, and drops to 0 once the word lands",
+    "Rows flatten with distance from center to suggest the drum's curvature (up to 14%), and the window's top and bottom fade out over a 26% soft edge instead of cutting hard",
+    "The background is now a soft-lit gradient with a faint accent tint and a light vignette; grain sits outside the design-coordinate stage so it samples at output resolution; the accent is unified to #5b63d3, with beats, easing and the tint coefficient unchanged"
+  ],
+  "mdChanged": true
+}

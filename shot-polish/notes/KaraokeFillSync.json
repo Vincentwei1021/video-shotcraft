@@ -1,0 +1,32 @@
+{
+  "stem": "KaraokeFillSync",
+  "issues": [
+    "没有导出时长常量，工作台按 md 抓成 10f，改版前视频是两行灰字，一个词都没开始填",
+    "填色前沿是 clip-path 硬切口，正在读的词和读完的词同一个深色，看不出哪个词是此刻",
+    "读指是一根 8px 直角黑条，读完一帧消失，没有收尾动作",
+    "标语靠左 240px 内边距排，构图偏左；Helvetica 字体，灰平底",
+    "静音预览没有任何旁白参照，变色读起来没头没脑"
+  ],
+  "changes": [
+    "导出 KARAOKE_FILL_SYNC_DURATION = 150（末词 f130 填完，f140 前退色 / 收线完毕，静止到 150）",
+    "揭开改用 mask 线性渐变带 ±4% 柔边前沿，词内仍按语速线性推进；正在读的词填强调色 #5b63d3，读完 10f 退成主墨色",
+    "读指改成 8px 强调色圆角条带柔影，右缘跟随前沿，读完 6f 从左往右收掉",
+    "标语两行居中，SF Pro 800 / 150px 负字距，未读字用 13% 墨色；柔光背景加颗粒",
+    "底部加 48 根竖条的旁白波形：词内起伏、换气处回落，已播部分着强调色，作静音预览的参照"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench took 10f from the md, so the before video shows two lines of gray text without a single word filled",
+    "The fill edge was a hard clip-path cut, and words being read and words already read used the same dark color, so it was unclear which word was current",
+    "The reading pointer was an 8px square-cornered black bar that vanished in a single frame when a word finished",
+    "The tagline was laid out flush left with 240px of padding, pulling the composition left; Helvetica on a flat gray ground",
+    "A silent preview had no narration cue at all, so the color changes looked unmotivated"
+  ],
+  "changesEn": [
+    "Exported KARAOKE_FILL_SYNC_DURATION = 150 (the last word finishes filling at f130, color settle and pointer retract finish before f140, then hold to 150)",
+    "The reveal now uses a linear-gradient mask with a ±4% soft leading edge, still advancing linearly at speaking pace; the current word fills in the accent #5b63d3 and settles to the main ink over 10f once read",
+    "The pointer is now an 8px rounded accent bar with a soft shadow; its right edge tracks the fill, and once the word is read it retracts left to right over 6f",
+    "Both lines are centered in SF Pro 800 at 150px with negative tracking, unread words in 13% ink; soft-lit backdrop with grain",
+    "Added a 48-bar narration waveform at the bottom that rises during words, drops at the breath pauses and colors the played portion in the accent, as a cue for silent previews"
+  ],
+  "mdChanged": true
+}

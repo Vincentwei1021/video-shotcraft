@@ -1,0 +1,32 @@
+{
+  "stem": "WordRelayFilmstrip",
+  "issues": [
+    "没有导出时长常量，工作台从源码抓成 16f，改版前视频只有半秒，第一个动词都没落完",
+    "左列页面卡全是彩色灰条骨架，作为\"证据\"读不出任何内容；卡与动词也对不上（researches 停在奖牌榜、codes 停在出货表）",
+    "胶片步进滚动 635px 只靠 ease-in-out 平移，最快的几帧没有运动模糊",
+    "动词原位纯淡入淡出，新词没有\"落位\"的动作，旧词也不带方向",
+    "#faf8f3 平底，卡片阴影是一层 0 12px 40px 的粗影"
+  ],
+  "changes": [
+    "导出 WORD_RELAY_FILMSTRIP_DURATION = 170（末词 f124 落定后 hold 46f）；切词 14/62/108、16f 步进滚动、词块中心对齐 y=540 全部不变",
+    "六张卡重做成出版级假页面并保持黑白相间：基准报告 / 研究长文 / 构建流水线 / 代码评审 / 影像查看器 / 出货表，researches、builds、codes 各停在对应的证据卡上",
+    "滚动时按速度给整列叠纵向运动模糊（amount 0.2，封顶 9px，静止为 0）；卡片换成发丝边 + 两层暖色软阴影",
+    "旧词先灰化，切点起 8f ease-in 上移 14px 淡出（顺着胶片滚动方向）；新词后半窗口从下方 16px 去虚（5px→0）snappy 落位，先出后进不叠影",
+    "词块上方加一枚 01/03 序号与动词同步翻页；底景换成暖纸色渐变 + 左上柔光 + 轻暗角 + 颗粒"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench pulled 16f from the source, so the before video lasts half a second and never finishes landing the first verb",
+    "The page cards were colored skeleton bars that showed nothing as evidence, and they did not match the verbs (researches stopped on a medal table, codes on a shipments table)",
+    "Each 635px filmstrip step was a plain ease-in-out translation with no motion blur on its fastest frames",
+    "The verbs simply crossfaded in place: new words had no landing move and old words left with no direction",
+    "The ground was flat #faf8f3, and the cards carried a single heavy 0 12px 40px shadow"
+  ],
+  "changesEn": [
+    "Exported WORD_RELAY_FILMSTRIP_DURATION = 170 (46f hold after the last verb lands at f124); the 14/62/108 switches, 16f step scroll and the word block centered on y=540 are unchanged",
+    "Rebuilt all six cards as publication-grade mock pages, still alternating dark and light: benchmark report, research article, build pipeline, code review, scan viewer and shipments table, so researches, builds and codes each stop on matching evidence",
+    "While scrolling, the whole column gets velocity-driven vertical motion blur (amount 0.2, capped at 9px, zero at rest); cards now use hairline borders and a two-layer warm soft shadow",
+    "The outgoing verb grays first, then rises 14px and fades over 8f with ease-in from the switch point, following the filmstrip's scroll direction; the incoming verb lands in the second half of the window, rising 16px into place and sharpening from a 5px blur with snappy easing; the old word always clears before the new one arrives, so they never overlap",
+    "Added a small 01/03 counter above the word block that turns with each verb; the background is now a warm paper gradient with a soft top-left glow, light vignette and grain"
+  ],
+  "mdChanged": true
+}

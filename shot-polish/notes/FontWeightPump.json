@@ -1,0 +1,32 @@
+{
+  "stem": "FontWeightPump",
+  "issues": [
+    "没有导出时长常量，工作台按 md 抓成 10f，改版前视频只有静止的标题，第一拍（帧 30）都没到",
+    "字重 400↔900 离散跳变，加上整行居中排版，每次变粗整行都跟着变宽重排，字在左右晃",
+    "Helvetica 常规字重配灰平底，标题没有分量，也没有任何蹦迪的氛围",
+    "底部节拍点是 G.line 浅灰，压在 G.bg 上几乎看不见，静音预览读不出在跟拍",
+    "重音拍只靠 scaleX 区分，和普通拍几乎一样"
+  ],
+  "changes": [
+    "导出 FONT_WEIGHT_PUMP_DURATION = 140（五拍 30–110，末拍回弹到 f122，之后真静止 18f）",
+    "每个字符钉在常规字重排好的槽位里原位变粗：字重 400+500·env 连续插值（SF Pro 可变字重）+ 6px·env 描边，整行不重排",
+    "全员同帧命中，回弹从中间 9f 到边缘 12f 错开收，读作冲击向两侧散开的跟随",
+    "改成带色相的暗场，标题近白 #eef0f6，身后一小片强调色柔光随包络呼吸；重音拍额外 scaleX 1.08 并把字色染向强调色",
+    "节拍点重做：命中点亮强调色放大 1.7 倍带辉光，已过的拍保留暗亮，重音拍点更大"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench took 10f from the md, so the before video shows only the static title and never reaches the first beat at frame 30",
+    "Weight jumped between 400 and 900 in one step, and because the line was centered, every pulse made the whole line wider and reflow, so the letters slid sideways",
+    "Regular-weight Helvetica on a flat gray ground gave the title no weight and none of the club energy the move is about",
+    "The beat dots were light G.line gray on G.bg, nearly invisible, so a silent preview could not show that the text follows the beat",
+    "Accent beats differed from normal beats only by a scaleX change and looked almost the same"
+  ],
+  "changesEn": [
+    "Exported FONT_WEIGHT_PUMP_DURATION = 140 (five beats from 30 to 110; the last rebound ends at f122, followed by 18f of true stillness)",
+    "Each character is pinned to a slot laid out at regular weight and thickens in place: weight interpolates continuously as 400+500·env (SF Pro variable weight) plus a 6px·env stroke, so the line never reflows",
+    "All characters hit on the same frame, but they rebound outward from the center (9f in the middle to 12f at the edges), so the impact visibly spreads to both sides",
+    "Moved to a hue-tinted dark scene: near-white #eef0f6 title with a small accent glow behind it that breathes with the envelope; accent beats add scaleX 1.08 and tint the letters toward the accent color",
+    "Rebuilt the beat dots: the dot for the current beat lights in the accent color, scales up 1.7× and glows, past beats stay dimly lit, and accent-beat dots are larger"
+  ],
+  "mdChanged": true
+}

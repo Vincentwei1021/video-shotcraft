@@ -1,0 +1,32 @@
+{
+  "stem": "TerminalTypewriter",
+  "issues": [
+    "没有导出时长常量，工作台按 default 渲 150f，比镜头本意 145f 多出 5f",
+    "终端窗是灰阶占位：窗控三个灰点、标题栏一根灰条、#1e1e1c 平底配一层粗阴影，没有材质",
+    "终端里只有一行路径和一行命令，下面大半块是空的黑底",
+    "2f/字符机械匀速，光标打字时也在闪，节奏像加载动画",
+    "回车后切到 dashboard 就停了，命令敲下去之后什么结果都没有，后面 77f 是死帧"
+  ],
+  "changes": [
+    "导出 TERMINAL_TYPEWRITER_DURATION = 145，保留 f58 回车、f58–64 急推 1→3.2、f64 硬切、1.06→1 回稳的节拍",
+    "终端重做成出版级窗口：纵向渐变机身 + 白色 7% 发丝边 + 顶部内高光 + 悬浮软阴影，三色窗控略降饱和，标题栏居中写窗口名",
+    "补上两条带 ✓ 的历史命令和路径 / 分支行作上下文，压暗成纹理；窗高收到 580，内容铺满不留空底",
+    "打字改成逐字 1–4f 的确定性间隔（均值仍 2f，首尾帧不变，新词首字前顿一拍），光标打字中常亮、空闲时才方波闪；回车帧补一行 ▲ Deploying 输出，急推末 3f 加 blur",
+    "切到新版 dashboard 后，f80 右下角浮起一枚 \"Deployed to production\" 提示（snappy 12f，阴影随落定收紧），给引信一个结果"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench rendered the 150f default, 5f longer than the intended 145f",
+    "The terminal was grayscale placeholder art: three gray window dots, a gray bar for the title, a flat #1e1e1c body and one heavy drop shadow, with no sense of material",
+    "The terminal held only a path line and a command line, leaving most of the window as empty black",
+    "Typing ran at a mechanical 2f per character with the cursor blinking even mid-typing, which read like a loading animation",
+    "After Enter the shot cut to the dashboard and stopped: the command produced no visible result, and the last 77f were a dead frame"
+  ],
+  "changesEn": [
+    "Exported TERMINAL_TYPEWRITER_DURATION = 145, keeping the beats: Enter at f58, the 1→3.2 push over f58–64, the hard cut at f64 and the 1.06→1 settle",
+    "Rebuilt the terminal as a publication-grade window: vertical-gradient body, 7% white hairline border, top inner highlight and a soft floating shadow; slightly desaturated traffic lights and a centered window title in the title bar",
+    "Added two history commands with ✓ results plus a path / branch line as context, dimmed to texture; the window is now 580px tall, so the content fills it without an empty bottom",
+    "Typing now uses deterministic 1–4f gaps per character (still averaging 2f, same first and last frames, with a beat of hesitation before each new word); the cursor stays solid while typing and blinks only when idle; Enter prints a ▲ Deploying output line, and the push blurs over its last 3f",
+    "After the cut to the new dashboard, a \"Deployed to production\" toast rises in at the bottom right at f80 (12f snappy, shadow tightening as it settles), so the command has a visible result"
+  ],
+  "mdChanged": true
+}

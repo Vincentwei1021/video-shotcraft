@@ -1,0 +1,28 @@
+{
+  "stem": "WordRelayGeometry",
+  "issues": [
+    "Better 的三实线圆用 rotate(-90) 绕原点转，md 写的 x 轴 −110/0/110 横排变成了竖排，上下两个圆被推出画面，只剩中间一个和两段弧",
+    "结论词 Stronger 收白到 t=0.98 才完成，落定后只剩约 4 帧就结束，结论没有呼吸",
+    "前两词的白色填充是 clip-path 硬切口横扫，像进度条；进出场只有缩放淡出，没有景深",
+    "#07080c 平底加 20 颗同样大小的白点，几何线是平的细线，整体偏素"
+  ],
+  "changes": [
+    "三实线圆改为绕各自圆心 rotate(-90 cx 0) 起笔，按 md 横排相扣；trim 生长时笔头带一粒亮点，长满即熄",
+    "Stronger 的 sheen 出现 / 扫光 / 收白窗口提前（扫光 t0+0.07→0.21，收白 t0+0.21→0.27），f164 前落定，留约 16f hold；三段时段、入出场窗不变",
+    "填充改为 ±6% 柔边 mask 揭示；新词 1.06→1 去虚推近，旧词 0.86 缩小时加 3px 退焦，读出前后景深；描边层改用静态字库 Helvetica Neue，避开 SF 可变字体描边露出的内部交叠线",
+    "底景加中心冷色柔光与暗角，颗粒放在设计坐标外按成片像素取样；微尘按种子分远近两层（远层更大更虚更淡）；几何线加 1.6px 柔光"
+  ],
+  "issuesEn": [
+    "Better's three solid circles used rotate(-90) about the origin, so the horizontal row at x = −110/0/110 specified in the md turned into a vertical stack; the top and bottom circles were pushed out of frame, leaving one circle and two arcs",
+    "The concluding word, Stronger, did not finish turning white until t=0.98, leaving only about 4 frames after it landed, so the payoff never got to breathe",
+    "The first two words filled with white behind a hard clip-path wipe that read like a progress bar, and the entrances and exits were plain scale fades with no depth",
+    "A flat #07080c ground, 20 identical white dots and thin flat geometry lines made the whole frame feel sparse"
+  ],
+  "changesEn": [
+    "The three solid circles now start their stroke with rotate(-90 cx 0) about their own centers, so they interlock in a horizontal row as the md specifies; while each trim grows, a small bright dot marks the pen tip and goes out once the circle closes",
+    "Stronger's sheen appearance, sweep and whiteout now start earlier (sweep t0+0.07→0.21, whiteout t0+0.21→0.27), landing before f164 and leaving about a 16f hold; the three segment windows and the entry/exit windows are unchanged",
+    "The fill now reveals through a ±6% soft-edged mask; incoming words push in from 1.06 to 1 as they sharpen, and outgoing words shrink to 0.86 while defocusing by 3px, which reads as depth; the outline layer uses the static Helvetica Neue to avoid the internal overlap lines that SF's variable font shows when stroked",
+    "Added a cool central glow and vignette to the ground; grain sits outside the design-coordinate stage so it samples at output resolution; the dust splits by seed into near and far layers (far motes larger, softer and fainter); the geometry lines get a 1.6px soft glow"
+  ],
+  "mdChanged": true
+}

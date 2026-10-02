@@ -1,0 +1,32 @@
+{
+  "stem": "TypewriterErrorRetype",
+  "issues": [
+    "没有导出时长常量，工作台按 default 渲 150f，比镜头本意 160f 少 10f，收尾静止被截掉",
+    "Courier New 粗体压在灰平底上，像打字机字体的截图，没有产品字卡的质感",
+    "光标是 7px 纯墨色竖条，和字同色，犹豫段的两闪不够醒目",
+    "改口打完就结束，宣言词 \"command center\" 和平庸的 \"just\" 没有任何主次，结尾一帧没有落点",
+    "整行孤零零悬在画面中央，没有上下文"
+  ],
+  "changes": [
+    "导出 TYPEWRITER_ERROR_RETYPE_DURATION = 160；三档速度（打 2f / 删 1.5f / 重打 1.5f）与光标三态时间表一帧不动，f110 后静止 50f",
+    "改用等宽字体 100px / 600 字重、60px 固定槽，最终句整体居中、左缘锚定不横移；柔光底配颗粒",
+    "光标改成 6px 强调色圆角竖条带淡辉光，犹豫与完稿的闪烁一眼可见",
+    "打完的同时（f96–110，与完稿两闪并行）一道强调色马克笔底色从左到右铺到 \"command center\" 下半身，给宣言一个落定",
+    "行上方加一行与左缘对齐的 34px 灰色眉题 \"Introducing Acme Console\"，开场 10f 淡入"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench rendered the 150f default, 10f short of the intended 160f, which cut off the closing hold",
+    "Bold Courier New on a flat gray ground looked like a screenshot of a typewriter font, not a product title card",
+    "The cursor was a 7px solid ink bar in the same color as the text, so the two hesitation blinks barely registered",
+    "Once the retype finished, nothing set the payoff words \"command center\" apart from the plain \"just\", so the final frame had no focal point",
+    "The single line floated alone in the middle of the frame with no context"
+  ],
+  "changesEn": [
+    "Exported TYPEWRITER_ERROR_RETYPE_DURATION = 160; the three speeds (type 2f / delete 1.5f / retype 1.5f) and the three-state cursor timeline are unchanged frame for frame, with 50f of stillness after f110",
+    "Switched to a 100px monospace at weight 600 in fixed 60px slots; the final sentence is centered and left-anchored so it never shifts sideways, on a soft-lit background with grain",
+    "The cursor is now a 6px rounded accent bar with a faint glow, so the hesitation and completion blinks read at a glance",
+    "As typing completes (f96–110, alongside the two completion blinks), an accent marker band sweeps left to right under the lower half of \"command center\" to land the payoff",
+    "Added a 34px gray kicker, \"Introducing Acme Console\", aligned to the line's left edge and fading in over the first 10f"
+  ],
+  "mdChanged": true
+}

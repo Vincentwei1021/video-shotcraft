@@ -1,0 +1,30 @@
+{
+  "stem": "ScrambleDecode",
+  "issues": [
+    "没有导出时长常量，工作台按 md 抓成 66f，改版前视频停在 \"DECODE S6604\"，最后 5 个字符没锁完",
+    "亮灰平底配灰字，看不出技术产品要的终端/解码气质；字体回退 ui-monospace，乱码和真字只差颜色",
+    "所有乱码字亮度一样，看不出解码头在哪、正往哪推进",
+    "锁定反色闪是一块直角黑块，锁定后没有任何落定动作；进度条是 10px 灰块按字数一格一格跳"
+  ],
+  "changes": [
+    "导出 SCRAMBLE_DECODE_DURATION = 130（帧 86 锁完最后一个字符，静止 44f）",
+    "改成带色相的暗场（Backdrop dark + 靛蓝余光 + 暗角 + 颗粒），锁定字近白 #eef0f6、乱码用低透明冷灰，0–10f 乱码自左向右渐显",
+    "乱码亮度按到解码头的距离分级（0.3→0.75），解码头下有强调色短下划线，每次锁定后 4f snappy 跳到下一个真字符（跳过空格）",
+    "保留帧 20+i×6 锁定和 2f 反色闪，闪块改成浅色圆角块带柔光；锁定后字形 6f 从 1.14 收回 1，叠 14f 衰减的强调色底光",
+    "底部 HUD：3px 细轨 + 平滑推进的渐变填充 + 32px 等宽状态（DECODING→DECODED）与 tabular-nums 计数"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench took 66f from the md, so the before video stops at \"DECODE S6604\" with the last five characters still unlocked",
+    "Gray text on a flat light-gray ground has none of the terminal, code-breaking feel a tech product needs; the font fell back to ui-monospace, and scrambled and real glyphs differed only in color",
+    "Every scrambled glyph had the same brightness, so there was no visible decode head or direction of progress",
+    "The lock flash was a square black block with no settle afterward, and the 10px gray progress bar jumped one character at a time"
+  ],
+  "changesEn": [
+    "Exported SCRAMBLE_DECODE_DURATION = 130 (last character locks at frame 86, then 44f of stillness)",
+    "Moved to a hue-tinted dark scene (dark Backdrop, faint indigo glow, vignette, grain); locked glyphs are near-white #eef0f6, scrambled glyphs a low-opacity cool gray, and the scramble fades in from left to right over frames 0–10",
+    "Scramble brightness now rises with proximity to the decode head (0.3→0.75); an accent underline marks the head and makes a 4f snappy jump to the next real character after each lock, skipping the space",
+    "Kept the 20+i×6 lock timing and the 2f inverse flash, now drawn as a light rounded cell with a soft glow; each locked glyph settles from 1.14 to 1 over 6f under an accent underglow that fades over 14f",
+    "Bottom HUD: a 3px track with a smoothly advancing gradient fill, a 32px monospace status (DECODING→DECODED) and a tabular-nums counter"
+  ],
+  "mdChanged": true
+}

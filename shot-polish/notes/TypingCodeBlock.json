@@ -1,0 +1,28 @@
+{
+  "stem": "TypingCodeBlock",
+  "issues": [
+    "两块面板是 #10121a 平底 + #1c2030 实色边框，压在 #0a0b10 死黑底上，没有层次也没有光",
+    "顶部 8px 的 LINE FADE-IN / CHAR TYPING 是调试式小标签，面板读起来不像编辑器",
+    "没有行号、当前行、状态栏，右侧打字时看不出光标在哪一行，打完也没有完成的信号",
+    "DesignStage 用 transform 放大 4 倍，小字号代码走合成期放大，字边不够利"
+  ],
+  "changes": [
+    "两块面板做成同规格的编辑器窗口：纵向渐变机身、白色 8% 发丝边、顶部内高光、两层阴影；标题栏有窗控、main.ts 页签和右侧强调色手法标签",
+    "加行号槽（右侧该行开打才亮起）、当前行淡高亮、底部状态栏；右侧打完状态由 ● Typing… 变成绿色 ● Saved",
+    "左侧逐行淡入上浮保持 stagger 0.14 / 窗 0.3 / 8px，上浮同时 1.2px→0 去虚；右侧线性打字、setup 期着色、#3a4468 方块光标不变",
+    "背景换成顶部冷色柔光 + 纵向渐变 + 暗角 + 颗粒；DesignStage 改 raster='zoom'，代码按目标尺寸栅格化"
+  ],
+  "issuesEn": [
+    "Both panels were flat #10121a with solid #1c2030 borders on a dead-black #0a0b10 ground, with no depth and no light",
+    "The 8px LINE FADE-IN / CHAR TYPING labels at the top looked like debug tags, so the panels did not read as code editors",
+    "There were no line numbers, no current-line highlight and no status bar, so on the right it was hard to tell which line the cursor was on, and nothing signaled completion",
+    "DesignStage upscaled 4× with a transform, so the small code text was enlarged at composite time and its edges were not crisp"
+  ],
+  "changesEn": [
+    "Both panels are now identically specced editor windows: vertical-gradient body, 8% white hairline border, top inner highlight and a two-layer shadow; the title bar carries window controls, a main.ts tab and an accent technique label on the right",
+    "Added a line-number gutter (on the right, each number lights up when its line starts), a faint current-line highlight and a bottom status bar; when typing finishes the right status changes from ● Typing… to a green ● Saved",
+    "The left line-by-line fade-and-rise keeps its 0.14 stagger, 0.3 window and 8px travel, and now also sharpens from a 1.2px blur to 0 as each line rises; the right side's linear typing, setup-time coloring and #3a4468 block cursor are unchanged",
+    "The background is now a cool top glow over a vertical gradient with vignette and grain; DesignStage switched to raster='zoom' so the code rasterizes at its final size"
+  ],
+  "mdChanged": true
+}
