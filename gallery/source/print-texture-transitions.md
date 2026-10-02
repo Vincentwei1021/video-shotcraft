@@ -23,6 +23,8 @@ name: print-texture-transitions
 |------|--------|----------|
 | 渗边 | SVG mask 白圆挂 `feTurbulence(fractalNoise, baseFrequency 0.02, octaves 3, seed 固定)` + `feDisplacementMap scale 60→160 随帧涨` | filter 只揉遮罩形状、内容始终清晰；seed 必须写死（确定性） |
 | 洇开 | 半径 [20,98f]→[0,1450px] Easing.out(quad)，乘 `1+0.08·sin(0.32f)·env` 快慢不匀扰动（env 末 20f 衰减归零） | 匀速圆扩张读作普通 iris——扰动即"墨的脾气" |
+| 墨边 | 两层遮罩圆领先新景 20–42px：外沿 0.42 不透明 + 3.2px 羽化、内芯 0.86 + 1px 羽化，再外一圈 +110px 重羽化湿晕（0.12）；14–22f 先落一个小墨点 | 无墨边读作普通 iris 擦除；墨边太宽太实读作烧纸洞 |
+| 显影 | 新景在遮罩内 scale 1.035→1（20–100f ease-out），摘罩前精确回到 1 | 不收会在摘罩帧跳一下 |
 | 收尾摘罩 | 洇满后（帧 ~100）摘掉 SVG mask 直接铺新景 | feTurbulence 有亚像素抖动，不摘则结尾永不真静止（本批实渲判例） |
 | 收尾 | 新景就位后真静止 ≥30f | R1 |
 

@@ -19,20 +19,22 @@ name: word-relay-geometry
   重叠 0.04 是交接而非硬切；末段无出场（收在片尾）
 - 每词双层文字（56px/800）：`outline` 层 `-webkit-text-stroke:1px #6a7186`
   + 透明填充，`fill` 层纯白——**描边先到位，填充后揭示**
-- 前两词的填充是横向擦入：`fill.clipPath = inset(-20% (1-fillp)·100% -20% 0)`，
+- 前两词的填充是横向擦入：`fill.clipPath = inset(-20% (1-fillp)·100% -20% 0)`（demo 换成 ±6% 柔边的
+  `mask-image` 线性渐变，前沿不再是硬切口），
   `fillp = seg(t, t0+0.06, t0+0.18, E.inOutCubic)`，同时 outline 透明度
   降到 0.25（`1 - fillp·0.75`，留一点描边做重影）
 - 第一词的虚线圆（r=100、`stroke-dasharray:5 7`）：`scale(lerp(grow,0.4,1))`
   从 0.4 长到 1，同时 `rotate(-90 + t·30)`——**用全片 t 做自转**，所以它在
   自己那一段里持续转，不是转完就停；第二词的三实线圆（r=62，x 轴
-  -110/0/110）走 SVG trim：`pathLength=1` + `dasharray=1` + `dashoffset`
+  -110/0/110，起笔旋转须绕各自圆心 `rotate(-90 cx 0)`，绕原点转会把三圆竖排推出画面）走 SVG trim：`pathLength=1` + `dasharray=1` + `dashoffset`
   从 1 收到 0，三圆延迟 `d = 0/0.06/0.12` 依次生长，出场时 trim 反向减回去
 - Stronger 的 sheen：`linear-gradient(100deg, …#fff 50%…)` + `background-size:280%`
   + `background-clip:text`，`backgroundPosition` 从 100% 扫到 0%
-  （窗 t0+0.08→+0.26，inOutCubic），随后 `white = seg(t0+0.27, t0+0.34)`
+  （窗 t0+0.07→+0.21，inOutCubic），随后 `white = seg(t0+0.21, t0+0.27)`（demo 提前收束，
+  结论词在片尾前落定 hold ≈16f）
   把 sheen 换成纯白 fill 并打 18px 白色辉光
-- 出场统一 `scale(lerp(tout, 1, 0.86))` 缩小淡出（**缩小而非放大**，读作
-  "退场"不是"冲出画面"）；背景 20 颗微尘
+- 出场统一 `scale(lerp(tout, 1, 0.86))` 缩小淡出并 3px 退焦（**缩小而非放大**，读作
+  "退场"不是"冲出画面"）；进场反向 1.06→1 去虚；描边层用静态字库（可变字体描边会露出内部交叠轮廓）；背景 20 颗微尘
   `y = (1 - ((t·sp + ph) % 1))·110 - 5`（%），速度 `sp = 0.5 + rand·0.8` 各异
 
 ## 参数表
@@ -44,7 +46,7 @@ name: word-relay-geometry
 | 虚线圆 | r=100、`dash 5 7`、scale 0.4→1、自转 `t·30`° | 自转绑全片 t 所以永不停——这是"快"的证据；scale 起点 >0.7 就没有"长出来" |
 | trim 生长 | `pathLength=1` + dashoffset 1→0，相位差 0.06 | 相位差是"依次相扣"的关键，同时生长读作三个独立圆；窗 0.12 与 fill 同步收敛 |
 | sheen 扫光 | `100deg` 渐变、`background-size:280%`、位置 100%→0% | 280% 保证白带只占字宽一小段（=金属高光）；100% 时整字一起变亮，不是扫光 |
-| 收白 | `seg(t0+0.27, t0+0.34)` ≈13f + 18px 辉光 | 这一下是全片唯一的"结论"待遇；删了三个词就是平级，第三点没有落点 |
+| 收白 | `seg(t0+0.21, t0+0.27)` ≈11f + 18px 辉光 | 这一下是全片唯一的"结论"待遇；删了三个词就是平级，第三点没有落点 |
 | 字号配色 | 56px/800、描边 `#6a7186`、几何 `#565e78`、底 `#07080c`，微尘 20 颗 | 几何色比描边略暗一档是层级，几何比字亮就抢主角；微尘是把三拍缝成一个空间的胶水，>40 颗读作雪 |
 
 ## 已知坑

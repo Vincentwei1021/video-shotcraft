@@ -18,13 +18,13 @@ B 是组合变异：急刹帧**同帧**四个 L 角标从画外飞入咬合锁�
 ## 两式选型
 | 式 | 做法 | 适用 |
 |----|------|------|
-| A changelog-scroll-brake | translateY 扫 ~2400px（out exp 指数减速 ~50f），blur 由帧间位移差分驱动（0–6px 自动清零）；停点行 scale 1.03 抬升+阴影+3px 描边，其余 opacity 退 0.38 | changelog 段落基本款 |
-| B brake-reticle-lock | 滚动三段：sin-in 加速→cubic-out 猛减速冲过头 +30px→回弹落定；blur=v×0.12 封顶 24px；角标从 ±620/±320 画外 Easing.back(2.4) 飞入咬合，高亮 6f 内完成、标签 back(2.6) 弹出 | 停点需要更强打击感的高光段 |
+| A changelog-scroll-brake | translateY 扫 ~2400px（cubic-bezier(.45,0,.06,1)：~5f 拉满速再长尾指数式减速，共 50f），纵向方向性 blur 由帧间位移差分驱动（×0.32 封顶 30px，停稳自动清零）；停点行 scale 1.03 抬升+阴影+2px 强调色描边，其余 opacity 退 0.38 | changelog 段落基本款 |
+| B brake-reticle-lock | 滚动三段：sin-in 加速→cubic-out 猛减速冲过头 +30px→回弹落定；纵向方向性 blur=v×0.15 封顶 32px；角标从 ±620/±320 画外 Easing.back(2.4) 飞入咬合，高亮 6f 内完成、标签 back(2.6) 弹出 | 停点需要更强打击感的高光段 |
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
-| 减速曲线 | A 纯 out-exp；B 加"冲过头 30px 回弹" | 匀速滚读作跑马灯；B 的过头回弹是"哐"的来源 |
+| 减速曲线 | A 快起步 + 长尾减速（bezier .45,0,.06,1）；B 加"冲过头 30px 回弹" | 匀速滚读作跑马灯；B 的过头回弹是"哐"的来源 |
 | blur 驱动 | 帧间位移差分 `|p(f)-p(f-1)|`×系数 | 手排模糊关键帧必然对不上速度；差分法帧确定（模式已沉为 assets/lib/helpers/motion.ts velocityAt） |
 | 行高节奏 | 72/94/116 三档错落 | 等高行高速掠过时色带无节奏 |
 | 停位 | 目标行停画面纵向正中 | 停偏读作事故 |

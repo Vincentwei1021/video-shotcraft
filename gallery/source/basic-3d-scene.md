@@ -12,9 +12,9 @@ name: basic-3d-scene
 ## 动效核心
 - 核心配方一行：**camera = stepTransform.inverse()**。每步只写卡片自己的 pose（x/y/z/rx/ry/rz/s），相机变换按 `scale(1/s) rotateZ(-rz) rotateY(-ry) rotateX(-rx) translate3d(-x,-y,-z)` 取逆，顺序严格相反
 - 四站姿态各有戏剧点：STEP01 原点正视 → STEP02 右移 520px + ry−40°（世界左转）→ STEP03 rz90°（画框侧躺，相机跟着转正它）→ OVERVIEW s=3.1（相机 1/3.1 拉远总览）
-- 飞行链式插值：三段 `flyAt=[0.22,0.48,0.76]` 各 0.16（inOutCubic），cam 从当前值向下一站 lerp——中断任一段都是合法姿态
+- 飞行链式插值：三段 `flyAt=[0.22,0.48,0.76]` 各 0.16（不对称 in-out bezier 0.62,0,0.22,1：起步稳、落位更软），cam 从当前值向下一站 lerp——中断任一段都是合法姿态；飞行段做时间采样运动模糊（快门 0.5f，子帧数按相机位移自适应 4–12）
 - enter/exit 聚焦：`af`（累计飞行进度）与卡片序号距离决定 `opacity 0.28–1 + blur 0–3.5px`；OVERVIEW 段强制全员点亮（`max(1-d, over)`）
-- OVERVIEW 卡本身放大 3.1 倍但内容预除 2.2——总览时它是"标题牌"而非巨物
+- OVERVIEW 卡本身放大 3.1 倍但内容预除 2.9——总览时它是"标题牌"而非巨物，且让开两侧 STEP 01/02 卡不压字（总览站 x=235）
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |

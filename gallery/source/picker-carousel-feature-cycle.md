@@ -25,7 +25,7 @@ name: picker-carousel-feature-cycle
 - 行内图标 opacity `max(0, 1 − d*1.6)`——只有焦点行看得见图标
 - 落定后药丸 `scaleY 1 + sin(min(1, land/0.6)·π)*0.06` 呼吸一下
   （`land` 只在 HOLD 段内 >0，即吸附完成才呼吸）
-- 视口上下各 26% 的 PAPER→透明渐变遮罩，让进出项自然消隐
+- 视口上下各 26% 的 alpha 渐隐遮罩（`mask-image` 透明→不透明），让进出项自然消隐
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
@@ -44,7 +44,7 @@ name: picker-carousel-feature-cycle
   位移，否则焦点框漂移，"内容穿过焦点"的语义立刻失效
 - 距离衰减写在 `fontSize` 上会触发逐帧重排（行高固定所以布局不跳），
   行高若改成 auto 就会抖；rowH 必须写死
-- 渐变遮罩的颜色要与背景 PAPER 完全一致，差一档就露出边界带
+- 渐隐用 `mask-image` 做 alpha 遮罩，不要叠纸色色块：底色一旦是渐变/有光斑，色块遮罩就会露出矩形边界带
 - 左外侧 26×22 的方形 AI 徽标用 `margin:-11px 0 0 -186px` 相对画面中心
   定位；改视口宽度必须同改 186px
 - ITEMS 是 7 条占位功能名（"Data Cleanup" 等），落地换真实功能名时

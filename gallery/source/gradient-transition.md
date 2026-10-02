@@ -28,6 +28,7 @@ name: gradient-transition
 
 ## 已知坑
 - 这是背景卡：前景放排版/UI 时把 label pill 删掉，并把整层 opacity 压到 0.6–0.8 或叠暗色 scrim，否则彩虹 conic 段会吃掉前景对比度
+- `radial-gradient(circle R …)` 的 R 只接受长度：写成 `circle 45%` 整条渐变失效、该段渲成纯黑——百分比半径要么换算成 px（demo 以 400px 为 100%），要么改用 `ellipse X% Y%`
 - CSS 渐变字符串每帧重写触发 repaint 而非 composite——大画幅 + 低端设备需实测；Remotion 服务端渲染无此顾虑
 - conic 段的七段色环是"演出"性质，品牌化场景建议换成三色循环（A→B→C→A）
 - 三段各自独立可拆用：只要 linear 段（0–0.4 重归一化到 0–1）就是一张"角度扫过"的极简底

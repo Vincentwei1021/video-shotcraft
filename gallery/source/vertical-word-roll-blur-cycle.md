@@ -21,7 +21,8 @@ name: vertical-word-roll-blur-cycle
 - reel 定位 `translateY(ROW - p·ROW)`，ROW=44px，mask 高 `ROW·3`=132px
   （露三行）——中心行恒定是 mask 第二行
 - 距离驱动的三通道，`d = |i - p|`：
-  - blur：`d<1` 时 `3d`，`d≥1` 时 `3 + 2·min(d-1,1)`（最远 5px）
+  - blur：`d<1` 时 `3d`，`d≥1` 时 `3 + 2·min(d-1,1)`（最远 5px）；demo 用 SVG
+    `feGaussianBlur stdDeviation="0 b"` 只糊纵向，转动时再按滚轮速度叠 ≤4px 纵向运动模糊（静止为 0）
   - opacity：`d<1` 时 `1 - 0.65d`，否则 `max(0.1, 0.35 - 0.23(d-1))`
   - 颜色：`mixHex(ACCENT_DIM, ACCENT, clamp01(1 - 2.4d))` —— **d>0.42 就完全
     是暗色**，所以只有真正落定的那一刻才是强调色，滚动中途全程灰

@@ -21,6 +21,9 @@ name: marker-underline-title
 - 位置：贴字底（bottom 偏移 ≈ -0.1em），中轴微上斜跟随斜体字势
 - 时机：标题完全落定后 +4~8f 起笔——划线是"看完标题后的强调"，
   与标题同动就抢戏
+- 质感（demo）：笔画过一道确定性干笔滤镜——低频 feTurbulence 位移（1.8px）做毛糙边、
+  沿笔向拉长的高频噪声阈值做细碎飞白；墨色暖调近黑 multiply 进纸面
+- demo 导出 `MARKER_UNDERLINE_TITLE_DURATION = 75`：标题两行错峰 22f 落定 → f32–42 划线 → 静止 33f
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |

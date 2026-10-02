@@ -17,14 +17,14 @@ name: neon-triple-marquee
 ## 动效核心
 - 无缝回绕：副本按固定 unitW 等距绝对定位，`(frame*speed) % unitW`
   取模平移——匀速 linear（marquee 类是库内 linear 豁免项）
-- 空心描边字：`-webkit-text-stroke`，color transparent；亮度脉冲
+- 空心描边字：`-webkit-text-stroke`，color transparent，外层彩色灯管 + 内层近白热芯（只在通电时亮）；亮度脉冲
   同时驱动三件事——描边宽 5→8px、opacity 0.35→1、双层 drop-shadow
   辉光（8→30px + 20→70px）——只调 opacity 不调辉光读不出"霓虹通电"
 - 轮唱相位：周期 45f，行间相位差 15f（周期/3），余弦软包络且每行
   只占周期前 1/3 亮、后 2/3 归零——保证"一亮俩暗"永远成立
 - 三行配色蓝/粉/琥珀（#4d9fff/#ff4dd2/#ffb347），深底 #050308；
   中行反向且略快（14/17/14 px/f）——同速对滚读作镜像，破掉
-- 词尾加分隔点（•）撑词间距，unitW = 估宽 + 1.3 倍字号空隙
+- 词尾加分隔点（•）撑词间距，unitW = 实测词宽（canvas measureText）+ 分隔点宽 + 2×0.42 倍字号间隔，词距处处相等
 
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
