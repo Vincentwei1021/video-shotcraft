@@ -3,10 +3,16 @@
 // 前 70%（11 段）读不出字，最后 3 段落位瞬间突然可读；
 // 末段落位帧整字轻微 scale 脉冲（1→1.06→1）。
 // 每段入场：opacity 0→1 + 沿笔画方向 12px 滑入（out 缓动），6f。
-// f0–14 静置空场；末段落位于 f104，脉冲至 f112，真静止 ≥38f（150f 总长）。
+// f0–14 静置空场；末段落位于 f110，脉冲至 f118，真静止 ≥32f（150f 总长）。
+// 质感：深场换成带冷色相的柔光暗底（替代 #2f2f2f 平灰）；悬念期每段落位时短促"点燃"
+// （亮到纯白 + 小辉光，4f 内回落到 0.8 的暖灰白），整词处在"半亮碎片"状态；末段落位帧
+// 全部笔画一起升到满亮 + 柔和泛光——意义成立的那一刻用光来"啪"一下；
+// 调试占位标题去掉，改为落位后浮出的一行副题（只在揭晓后出现，不提前泄底）。
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { G, TitleBlock } from '../../_fixtures/Fixtures';
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
+import { Backdrop, EASE, FONT, Grain, ramp } from '../../_fixtures/Polish';
+
+export const STROKE_SEGMENT_BUILD_DURATION = 150;
 
 // "SHIP" 手工笔画段。坐标系：每字 200 宽、320 高，字间距 60。
 // 段 = {x1,y1,x2,y2}，线宽 44，方形端帽（不连续感更强）。
@@ -57,6 +63,9 @@ const WORD_W = ADV * 3 + K; // 980
 const OX = (1920 - WORD_W) / 2;
 const OY = (1080 - H) / 2 + 20;
 
+const LIT = [242, 239, 232]; // 揭晓后的暖白
+const rgb = (k: number) => `rgb(${LIT.map((v) => Math.round(v * k)).join(',')})`;
+
 export const StrokeSegmentBuild: React.FC = () => {
   const frame = useCurrentFrame();
 
@@ -67,60 +76,104 @@ export const StrokeSegmentBuild: React.FC = () => {
     [1, 1.06, 1],
     { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
   );
+  // 揭晓：全部笔画从 0.8 亮度一起升到满亮，泛光同步升起再收成常驻微光
+  const reveal = ramp(frame, LAST_LAND - 1, 6, EASE.snappy);
+  const bloom = interpolate(frame, [LAST_LAND - 1, LAST_LAND + 3, LAST_LAND + 24], [0, 1, 0.35], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.cubic),
+  });
+  const kicker = ramp(frame, LAST_LAND + 6, 16, EASE.out);
+
+  const segs = SEGS.map((seg, i) => {
+    const rank = ORDER.indexOf(i);
+    const start = FIRST + rank * STEP;
+    if (frame < start) return null; // 未开始的段不渲染
+    const t = ramp(frame, start, SEG_IN, EASE.snappy);
+    // 沿笔画方向滑入 12px
+    const dx = seg.x2 - seg.x1;
+    const dy = seg.y2 - seg.y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const slide = 12 * (1 - t);
+    const ox = (-dx / len) * slide;
+    const oy = (-dy / len) * slide;
+    // 点燃：落位瞬间亮到 1.0，4f 内回落到 0.8（悬念期的碎片是"半亮"的）；揭晓后统一满亮
+    const ignite = interpolate(frame, [start, start + 2, start + SEG_IN + 4], [0.6, 1, 0.8], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const k = ignite + (1 - ignite) * reveal;
+    const flash = interpolate(frame, [start, start + 2, start + SEG_IN + 4], [0, 1, 0], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    return { i, x1: OX + seg.x1 + ox, y1: OY + seg.y1 + oy, x2: OX + seg.x2 + ox, y2: OY + seg.y2 + oy, t, k, flash };
+  }).filter((x): x is NonNullable<typeof x> => x !== null);
 
   return (
-    <div style={{ width: 1920, height: 1080, background: G.ink, overflow: 'hidden', position: 'relative' }}>
-      <div
+    <AbsoluteFill style={{ background: '#0d0e12', overflow: 'hidden' }}>
+      <Backdrop tone="dark" light={{ x: 0.5, y: 0.42 }} grain={0} vignette={0.6} />
+      {/* 揭晓泛光：字后一团极淡的暖光，随 bloom 升起 */}
+      <AbsoluteFill
         style={{
-          position: 'absolute',
-          top: 110,
-          width: '100%',
-          textAlign: 'center',
-          fontFamily: 'Helvetica, Arial, sans-serif',
-          fontWeight: 800,
-          fontSize: 44,
-          color: G.mid,
-          letterSpacing: 2,
+          background: 'radial-gradient(ellipse 40% 34% at 50% 52%, rgba(255,236,210,0.16) 0%, rgba(255,236,210,0) 70%)',
+          opacity: bloom,
         }}
-      >
-        STROKE SEGMENT BUILD
-      </div>
+      />
       <svg
         width={1920}
         height={1080}
         style={{ position: 'absolute', left: 0, top: 0, transform: `scale(${pulse})`, transformOrigin: '50% 55%' }}
       >
-        {SEGS.map((seg, i) => {
-          const rank = ORDER.indexOf(i);
-          const start = FIRST + rank * STEP;
-          if (frame < start) return null; // 未开始的段不渲染
-          const t = interpolate(frame, [start, start + SEG_IN], [0, 1], {
-            easing: Easing.out(Easing.cubic),
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
-          });
-          // 沿笔画方向滑入 12px
-          const dx = seg.x2 - seg.x1;
-          const dy = seg.y2 - seg.y1;
-          const len = Math.hypot(dx, dy) || 1;
-          const slide = 12 * (1 - t);
-          const ox = (-dx / len) * slide;
-          const oy = (-dy / len) * slide;
-          return (
-            <line
-              key={i}
-              x1={OX + seg.x1 + ox}
-              y1={OY + seg.y1 + oy}
-              x2={OX + seg.x2 + ox}
-              y2={OY + seg.y2 + oy}
-              stroke={G.panel}
-              strokeWidth={44}
-              strokeLinecap="butt"
-              opacity={t}
-            />
-          );
-        })}
+        <defs>
+          <filter id="ssb-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="14" />
+          </filter>
+        </defs>
+        {/* 辉光层：单段点燃时一下 + 揭晓时整词一下（同一形状模糊垫底） */}
+        <g filter="url(#ssb-glow)">
+          {segs.map((g) => {
+            const a = Math.max(g.flash * 0.55, bloom * 0.5) * g.t;
+            if (a < 0.01) return null;
+            return (
+              <line key={g.i} x1={g.x1} y1={g.y1} x2={g.x2} y2={g.y2} stroke="#fff3e2" strokeWidth={44} strokeLinecap="butt" opacity={a} />
+            );
+          })}
+        </g>
+        {segs.map((g) => (
+          <line
+            key={g.i}
+            x1={g.x1}
+            y1={g.y1}
+            x2={g.x2}
+            y2={g.y2}
+            stroke={g.flash > 0.5 ? '#ffffff' : rgb(g.k)}
+            strokeWidth={44}
+            strokeLinecap="butt"
+            opacity={g.t}
+          />
+        ))}
       </svg>
-    </div>
+      {/* 揭晓后的副题：只在落位之后出现 */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: OY + H + 70,
+          textAlign: 'center',
+          fontFamily: FONT.sans,
+          fontSize: 34,
+          fontWeight: 500,
+          letterSpacing: '0.2em',
+          color: 'rgba(225,228,236,0.72)',
+          opacity: kicker,
+          transform: `translateY(${(1 - kicker) * 12}px)`,
+        }}
+      >
+        VERSION 4.0 · AVAILABLE TODAY
+      </div>
+      <Grain opacity={0.08} blend="soft-light" />
+    </AbsoluteFill>
   );
 };

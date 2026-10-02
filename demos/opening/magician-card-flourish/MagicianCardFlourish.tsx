@@ -8,11 +8,19 @@
 //    旋转放慢（24f 转 ~40°，真实星芒旋转是镜头效应，快了就假）；
 // ③ 弹射出场：slow-in → burst → decelerating arc（起飞先慢速蓄力挤出，
 //    急加速弹射，弧线段整体减速抵达中心硬定格）。
-// v5 其余保留：中心极远飞出+13 圈自旋+94% 定格+sheen 扫光。总长 141 帧。
+// v5 其余保留：中心极远飞出+13 圈自旋+94% 定格+sheen 扫光。总长 126 帧。
+// v10 质感（闪光/弹射/自旋/定格参数全部不动，均为用户逐轮定值）：
+// ① 卡面从灰阶骨架换成出版级海报卡（品牌行 + 蓝色星光主视觉 + 标题/副题 + 作者行与 CTA），
+//    主视觉呼应开场蓝色星芒——"变出来的就是这张卡"；卡背换成深海军蓝 + 细纹章 + 中心徽记；
+// ② 清晰度（Q2）：卡片按定格尺寸（×1.88）布局、CSS zoom 栅格化，飞行中只做 ≤1 的缩小，
+//    定格帧文字锐利（原版按 380 宽栅格化再放大 1.88 倍，定格即糊）；
+// ③ 暗场从纯 #000 换成带冷色相的近黑 + 暗角 + 颗粒；定格后卡后亮起一团极淡的蓝色环境光；
+// ④ 2px 灰边 → 发丝线 + 顶部内高光。
 import React, { useId } from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 import { CameraMotionBlur } from '@remotion/motion-blur';
 import { G } from '../../_fixtures/Fixtures';
+import { FONT, Grain, Vignette, ramp, EASE } from '../../_fixtures/Polish';
 
 const CARD_W = 380;
 const CARD_H = 540;
@@ -21,6 +29,7 @@ const AX = CARD_W / Math.hypot(CARD_W, CARD_H);
 const AY = CARD_H / Math.hypot(CARD_W, CARD_H);
 
 // —— 时间轴（30fps / 126 帧）——
+export const MAGICIAN_CARD_FLOURISH_DURATION = 126; // 闪光 9f + 飞行 50f + 定格展示/扫光 67f
 // v9.6（批次 18）：光效 0.5s→0.3s（9f）
 const TAKEOFF = 9;               // 开场光效 0.3s（9f）后卡片才起飞
 const FLASH_END = 12;            // 闪光尾焰完全消失（坍缩略拖 3 帧）
@@ -31,46 +40,120 @@ const SHEEN_DUR = 26;            // 扫光时长（一次性）
 const TURNS = 13;                // 飞行总圈数（整数→定格瞬间恰好正面朝镜头）
 const FINAL_SCALE = 1.88;        // 终态：卡高 540×1.88≈1015 ≈ 94% 画面高（1080）
 
-// 卡片正面：灰阶海报卡
+// 卡片正面：出版级海报卡（380×540 设计坐标；外层按 ×FINAL_SCALE 布局后用 zoom 栅格化）
 const CardFace: React.FC = () => (
   <div style={{
-    width: CARD_W, height: CARD_H, borderRadius: 22, background: G.card,
-    border: `2px solid ${G.border}`, boxSizing: 'border-box', padding: 26,
-    display: 'flex', flexDirection: 'column', gap: 16, overflow: 'hidden',
+    width: CARD_W, height: CARD_H, borderRadius: 22, boxSizing: 'border-box', padding: 22,
+    background: 'linear-gradient(180deg, #ffffff 0%, #f6f6f4 100%)',
+    border: `1px solid ${G.hairline}`,
+    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9)',
+    display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden', fontFamily: FONT.sans, color: G.ink1,
   }}>
-    <div style={{ height: 26, width: '62%', background: G.bar, borderRadius: 13 }} />
-    <div style={{ height: 12, width: '84%', background: G.line, borderRadius: 6 }} />
-    <div style={{
-      flex: 1, borderRadius: 14, background: `linear-gradient(145deg, #e6e6e4, ${G.bar})`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ width: 110, height: 110, borderRadius: 55, background: G.mid, opacity: 0.55 }} />
+    {/* 品牌行 */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+      <div style={{
+        width: 26, height: 26, borderRadius: 8, position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(145deg, #2d6cf0 0%, #1a3fae 100%)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)',
+      }}>
+        <svg viewBox="0 0 24 24" width={26} height={26} style={{ position: 'absolute', inset: 0 }}>
+          <path d="M12 4.5 L13.4 10.6 L19.5 12 L13.4 13.4 L12 19.5 L10.6 13.4 L4.5 12 L10.6 10.6 Z" fill="#ffffff" />
+        </svg>
+      </div>
+      <div style={{ fontSize: 15, fontWeight: 650, letterSpacing: '-0.01em' }}>Aurora</div>
+      <div style={{
+        marginLeft: 'auto', fontSize: 10.5, fontWeight: 650, letterSpacing: '0.1em', color: '#2457d6',
+        padding: '4px 8px', borderRadius: 6, background: 'rgba(45,108,240,0.1)',
+      }}>NEW</div>
     </div>
-    <div style={{ height: 12, width: '74%', background: G.line, borderRadius: 6 }} />
-    <div style={{ height: 12, width: '52%', background: G.line, borderRadius: 6 }} />
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
-      <div style={{ width: 34, height: 34, borderRadius: 17, background: G.mid }} />
-      <div style={{ height: 11, width: 90, background: G.line, borderRadius: 5 }} />
-      <div style={{ marginLeft: 'auto', width: 58, height: 24, borderRadius: 12, background: G.ink, opacity: 0.75 }} />
+    {/* 主视觉：深蓝夜空里的一颗星芒（呼应开场闪光） */}
+    <div style={{
+      flex: 1, borderRadius: 14, position: 'relative', overflow: 'hidden',
+      background: 'radial-gradient(ellipse 80% 60% at 50% 46%, #1f4fb8 0%, #102a6b 42%, #0a1638 100%)',
+      boxShadow: 'inset 0 0 0 1px rgba(10,20,50,0.25)',
+    }}>
+      {/* 同心细环 */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'repeating-radial-gradient(circle at 50% 46%, rgba(255,255,255,0) 0 23px, rgba(160,200,255,0.08) 23px 24px)',
+      }} />
+      {/* 星芒：辉光 + 四向细芒 */}
+      <div style={{
+        position: 'absolute', left: '50%', top: '46%', width: 170, height: 170, margin: '-85px 0 0 -85px',
+        background: 'radial-gradient(circle, rgba(170,215,255,0.9) 0%, rgba(80,150,255,0.35) 22%, rgba(60,120,255,0) 62%)',
+      }} />
+      <svg viewBox="-100 -100 200 200" width={200} height={200} style={{ position: 'absolute', left: '50%', top: '46%', margin: '-100px 0 0 -100px' }}>
+        <defs>
+          <linearGradient id="mcf-face-ray" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="1" stopColor="#7fb6ff" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[-38, 52, 142, 232].map((d, i) => (
+          <path key={d} transform={`rotate(${d})`} d={`M 0 -1.6 L ${i % 2 ? 58 : 92} 0 L 0 1.6 Z`} fill="url(#mcf-face-ray)" />
+        ))}
+        <circle r={5} fill="#ffffff" />
+      </svg>
+      <div style={{
+        position: 'absolute', left: 16, bottom: 14, fontSize: 11, fontWeight: 600, letterSpacing: '0.14em',
+        color: 'rgba(220,232,255,0.8)',
+      }}>SEASON 04</div>
+      <div style={{
+        position: 'absolute', right: 16, bottom: 14, fontSize: 11, fontWeight: 500, color: 'rgba(220,232,255,0.6)',
+        fontVariantNumeric: 'tabular-nums',
+      }}>No. 0417</div>
+    </div>
+    {/* 标题 + 副题 */}
+    <div>
+      <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.08 }}>Meet the new Aurora</div>
+      <div style={{ marginTop: 7, fontSize: 17, color: G.ink2, letterSpacing: '-0.008em', lineHeight: 1.3 }}>
+        A sharper way to plan, ship and share.
+      </div>
+    </div>
+    {/* 作者行 + CTA */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingTop: 12, borderTop: `1px solid ${G.hairline}` }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'linear-gradient(145deg, #3a3c44, #23242a)', color: 'rgba(255,255,255,0.92)', fontSize: 12, fontWeight: 600,
+      }}>SL</div>
+      <div>
+        <div style={{ fontSize: 13.5, fontWeight: 600 }}>Studio Lumen</div>
+        <div style={{ fontSize: 12, color: G.ink3, marginTop: 1 }}>Oct 2026</div>
+      </div>
+      <div style={{
+        marginLeft: 'auto', height: 32, padding: '0 16px', borderRadius: 16, display: 'flex', alignItems: 'center',
+        background: G.ink1, color: '#ffffff', fontSize: 13.5, fontWeight: 600,
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.14), 0 2px 6px rgba(16,18,24,0.18)',
+      }}>Open</div>
     </div>
   </div>
 );
 
-// 卡背：深灰斜纹
+// 卡背：深海军蓝 + 细纹章 + 中心徽记
 const CardBack: React.FC = () => (
   <div style={{
-    position: 'absolute', inset: 0, borderRadius: 22, background: '#3c3c40',
-    border: '2px solid #55555a', boxSizing: 'border-box', overflow: 'hidden',
+    position: 'absolute', inset: 0, borderRadius: 22, overflow: 'hidden',
+    background: 'linear-gradient(160deg, #1f2c52 0%, #121a36 55%, #0c1126 100%)',
+    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.16)',
   }}>
     <div style={{
       position: 'absolute', inset: 0,
-      background: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.07) 0 14px, transparent 14px 28px)',
+      background:
+        'repeating-linear-gradient(45deg, rgba(150,180,255,0.06) 0 1px, transparent 1px 12px), ' +
+        'repeating-linear-gradient(-45deg, rgba(150,180,255,0.06) 0 1px, transparent 1px 12px)',
     }} />
     <div style={{
-      position: 'absolute', inset: 34, borderRadius: 12, border: '2px solid rgba(255,255,255,0.16)',
+      position: 'absolute', inset: 22, borderRadius: 14, boxShadow: 'inset 0 0 0 1px rgba(200,215,255,0.22)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      <div style={{ width: 72, height: 72, borderRadius: 36, border: '3px solid rgba(255,255,255,0.22)' }} />
+      <div style={{
+        width: 84, height: 84, borderRadius: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'linear-gradient(145deg, #2d6cf0 0%, #1a3fae 100%)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3), 0 0 0 6px rgba(45,108,240,0.12)',
+      }}>
+        <svg viewBox="0 0 24 24" width={56} height={56}>
+          <path d="M12 4.5 L13.4 10.6 L19.5 12 L13.4 13.4 L12 19.5 L10.6 13.4 L4.5 12 L10.6 10.6 Z" fill="#ffffff" />
+        </svg>
+      </div>
     </div>
   </div>
 );
@@ -219,52 +302,60 @@ const Scene: React.FC = () => {
   // 扫光经过时整卡亮度微抬升（正弦单拱），保证"整体光泽"肉眼可感
   const sheenLift = sheenVisible ? 0.07 * Math.sin(sheenP * Math.PI) : 0;
 
+  // 按定格尺寸布局（W×H = 设计尺寸 × FINAL_SCALE），飞行中只做 ≤1 的缩小 → 定格帧按原生分辨率栅格化
+  const W = CARD_W * FINAL_SCALE;
+  const H = CARD_H * FINAL_SCALE;
+  const R = 22 * FINAL_SCALE;
   return (
-    <div style={{ width: 1920, height: 1080, background: '#000000', position: 'relative', overflow: 'hidden' }}>
-      {/* —— 卡片：闪光过后从中心飞出，纯黑空间中飞行 —— */}
+    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
+      {/* —— 卡片：闪光过后从中心飞出，暗场空间中飞行 —— */}
       <div style={{
-        position: 'absolute', left: cx - CARD_W / 2, top: cy - CARD_H / 2,
-        width: CARD_W, height: CARD_H,
-        transform: `scale(${scale})`,
+        position: 'absolute', left: cx - W / 2, top: cy - H / 2,
+        width: W, height: H,
+        transform: `scale(${scale / FINAL_SCALE})`,
         transformOrigin: '50% 50%',
         opacity: airborne ? 1 : 0,
       }}>
         <div style={{
           width: '100%', height: '100%',
-          transform: `perspective(1300px) rotate3d(${AX}, ${AY}, 0, ${theta}deg)`,
+          // 透视距离随布局尺寸同比放大，保持与原版一致的透视感
+          transform: `perspective(${1300 * FINAL_SCALE}px) rotate3d(${AX}, ${AY}, 0, ${theta}deg)`,
           transformOrigin: '50% 50%',
           position: 'relative',
-          borderRadius: 22,
+          borderRadius: R,
           filter: sheenLift > 0 ? `brightness(${1 + sheenLift})` : undefined,
         }}>
-          <CardFace />
-          <div style={{ opacity: facingBack ? 1 : 0, position: 'absolute', inset: 0 }}>
-            <CardBack />
+          <div style={{ position: 'absolute', inset: 0, zoom: FINAL_SCALE }}>
+            <CardFace />
+            <div style={{ opacity: facingBack ? 1 : 0, position: 'absolute', inset: 0 }}>
+              <CardBack />
+            </div>
           </div>
           {/* 转动中的动态侧光（贴在卡面上，非环境光）；定格后随 theta 冻结 */}
           <div style={{
-            position: 'absolute', inset: 0, borderRadius: 22, pointerEvents: 'none',
+            position: 'absolute', inset: 0, borderRadius: R, pointerEvents: 'none',
             background: `linear-gradient(${115 + Math.sin((theta * Math.PI) / 180) * 30}deg, rgba(255,255,255,0) 30%, rgba(255,255,255,${0.14 + 0.14 * Math.abs(Math.sin((theta * Math.PI) / 180))}) 50%, rgba(255,255,255,0) 70%)`,
             mixBlendMode: 'screen',
           }} />
-          {/* 定格后的一次性 sheen 扫光：斜高光带左→右扫过整卡 */}
+          {/* 定格后的一次性 sheen 扫光：斜高光带左→右扫过整卡（裁进圆角，Q4） */}
           {sheenVisible && (
             <div style={{
-              position: 'absolute', inset: 0, borderRadius: 22, overflow: 'hidden',
+              position: 'absolute', inset: 0, borderRadius: R, overflow: 'hidden',
               pointerEvents: 'none',
             }}>
               <div style={{
                 position: 'absolute', top: '-45%', bottom: '-45%',
                 left: `${-70 + sheenP * 215}%`, width: '42%',
-                background: 'linear-gradient(100deg, rgba(200,200,205,0) 0%, rgba(225,225,230,0.5) 34%, rgba(255,255,255,0.9) 50%, rgba(225,225,230,0.5) 66%, rgba(200,200,205,0) 100%)',
+                background: 'linear-gradient(100deg, rgba(200,200,205,0) 0%, rgba(225,225,230,0.4) 34%, rgba(255,255,255,0.75) 50%, rgba(225,225,230,0.4) 66%, rgba(200,200,205,0) 100%)',
                 transform: 'rotate(16deg)',
-                mixBlendMode: 'overlay',
+                // soft-light：深色主视觉上明显提亮，白卡上的深色文字基本不被洗白
+                mixBlendMode: 'soft-light',
               }} />
-              {/* 叠一层 screen 提亮，让灰色区块上的高光带更亮 */}
+              {/* 叠一层 screen 提亮，让深色主视觉上的高光带更亮 */}
               <div style={{
                 position: 'absolute', top: '-45%', bottom: '-45%',
                 left: `${-70 + sheenP * 215}%`, width: '26%',
-                background: 'linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.45) 45%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.45) 55%, rgba(255,255,255,0) 100%)',
+                background: 'linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.14) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.14) 55%, rgba(255,255,255,0) 100%)',
                 transform: 'rotate(16deg)',
                 mixBlendMode: 'screen',
               }} />
@@ -273,6 +364,20 @@ const Scene: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// 暗场底：带冷色相的近黑（替代纯 #000）；定格后卡后亮起一团极淡的蓝色环境光（像卡还带着变出来时的光）
+const Stage: React.FC = () => {
+  const f = useCurrentFrame();
+  const ambient = ramp(f, LAND - 4, 22, EASE.out);
+  return (
+    <AbsoluteFill style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 48%, #0b0d16 0%, #06070c 60%, #030406 100%)' }}>
+      <AbsoluteFill style={{
+        opacity: ambient,
+        background: 'radial-gradient(ellipse 42% 58% at 50% 50%, rgba(45,108,240,0.22) 0%, rgba(45,108,240,0.07) 45%, rgba(45,108,240,0) 75%)',
+      }} />
+    </AbsoluteFill>
   );
 };
 
@@ -286,11 +391,23 @@ const FlashLayer: React.FC = () => {
   );
 };
 
-export const MagicianCardFlourish: React.FC = () => (
-  <>
-    <CameraMotionBlur shutterAngle={150} samples={7}>
-      <Scene />
-    </CameraMotionBlur>
-    <FlashLayer />
-  </>
-);
+export const MagicianCardFlourish: React.FC = () => {
+  const f = useCurrentFrame();
+  // 定格后全量冻结，运动模糊采样完全一致 → 定格段不再包 CameraMotionBlur（结果相同，省 7 倍渲染）
+  const moving = f <= LAND;
+  return (
+    <AbsoluteFill>
+      <Stage />
+      {moving ? (
+        <CameraMotionBlur shutterAngle={150} samples={7}>
+          <Scene />
+        </CameraMotionBlur>
+      ) : (
+        <Scene />
+      )}
+      <FlashLayer />
+      <Vignette strength={0.36} inner={0.62} color="#000000" />
+      <Grain opacity={0.08} blend="soft-light" />
+    </AbsoluteFill>
+  );
+};

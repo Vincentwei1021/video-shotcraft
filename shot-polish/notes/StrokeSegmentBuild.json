@@ -1,0 +1,30 @@
+{
+  "stem": "StrokeSegmentBuild",
+  "issues": [
+    "画面上方打着调试用的 STROKE SEGMENT BUILD 卡名大字，Helvetica 灰字压在深灰底上",
+    "底色是 #2f2f2f 平灰，没有层次也没有色相，字揭晓时缺少“暗场显影”的氛围",
+    "每段笔画只是灰白色块淡入滑入，点亮没有“光”的感觉；揭晓那一刻只有 6% 的缩放脉冲，力度弱",
+    "没有导出时长常量，工作台按默认值猜成 150f（恰好对），但完全靠猜"
+  ],
+  "changes": [
+    "去掉调试标题，改为揭晓后才浮出的副题 VERSION 4.0 · AVAILABLE TODAY（34px、0.2em 字距），不提前泄底",
+    "底色换成带冷色相的柔光暗场（Backdrop dark + 0.6 暗角 + 0.08 soft-light 颗粒）",
+    "每段落位时短促“点燃”：2f 内亮到纯白并带 14px 模糊辉光，4f 内回落到 0.8 的暖灰白，悬念期整词处在“半亮碎片”状态",
+    "末段落位帧所有笔画一起升到满亮暖白，字后泛光同步升起再收成常驻微光，配合原有 1→1.06→1 脉冲让“认出”那一刻更响；入场改为 snappy 曲线",
+    "导出 STROKE_SEGMENT_BUILD_DURATION = 150；乱序表、段间隔 6f、末段 f110 落位等节拍全部不变"
+  ],
+  "issuesEn": [
+    "A debug title STROKE SEGMENT BUILD (the card name) sat at the top in gray Helvetica on dark gray",
+    "The background was flat #2f2f2f with no depth or hue, so the reveal lacked a 'developing in the dark' atmosphere",
+    "Each stroke segment just faded and slid in as a gray-white block, with no sense of lighting up; the reveal moment had only a 6% scale pulse",
+    "No exported duration constant: the workbench defaulted to 150f, which happened to be right but was a guess"
+  ],
+  "changesEn": [
+    "Removed the debug title; a subtitle VERSION 4.0 · AVAILABLE TODAY (34px, 0.2em tracking) now rises only after the reveal, so nothing is given away early",
+    "The background is now a cool-hued soft dark field (Backdrop dark, 0.6 vignette, 0.08 soft-light grain)",
+    "Each segment 'ignites' as it lands: it flashes to pure white with a 14px blur glow within 2f, then settles to a 0.8 warm off-white within 4f, so during the suspense phase the word sits as half-lit fragments",
+    "On the final segment's landing frame all strokes rise together to full warm white and a glow blooms behind the word and settles to a faint persistent halo, reinforcing the existing 1→1.06→1 pulse at the moment of recognition; entrances use a snappy curve",
+    "Exported STROKE_SEGMENT_BUILD_DURATION = 150; the shuffled order, 6f stagger and f110 final landing are unchanged"
+  ],
+  "mdChanged": false
+}

@@ -15,6 +15,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
+import { Grain, softShadow } from '../../_fixtures/Polish';
 
 export const ORBIT_RING_TITLE_OPEN_DURATION = 130; // 4.33s @30fps
 
@@ -53,8 +54,8 @@ const EXIT_BLUR = 6.5;
 
 const INK = '#1d1d1f';
 const INK_DIM = '#7a7a7a';
-const SANS = '-apple-system, "PingFang SC", BlinkMacSystemFont, sans-serif';
-const MONO = 'Menlo, "SF Mono", monospace';
+const SANS = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif';
+const MONO = '"SF Mono", "JetBrains Mono", Menlo, monospace';
 // 彩色 pastel mesh：四个大半径径向渐变叠在米白底上，纯 CSS，无素材依赖
 const MESH_BG =
   'radial-gradient(52% 44% at 18% 22%, rgba(122,90,248,0.20) 0%, rgba(122,90,248,0) 70%),' +
@@ -79,72 +80,117 @@ const Pad: React.FC<{ children: React.ReactNode; bg?: string }> = ({ children, b
   </div>
 );
 
-const Bar: React.FC<{ w: number; h?: number; color?: string; radius?: number }> = ({
-  w,
-  h = 16,
-  color = '#e3e3e8',
-  radius = 8,
-}) => <div style={{ width: w, height: h, borderRadius: radius, background: color }} />;
+// 卡内文字：按 960×540 作画、整体缩到 0.4 倍，正文用 26–44px 才在成片里读得出纹理
+const T: React.FC<{ size: number; color?: string; weight?: number; mono?: boolean; style?: React.CSSProperties; children: React.ReactNode }> = ({
+  size,
+  color = INK,
+  weight = 500,
+  mono,
+  style,
+  children,
+}) => (
+  <div
+    style={{
+      fontSize: size,
+      color,
+      fontWeight: weight,
+      fontFamily: mono ? MONO : SANS,
+      letterSpacing: mono ? 0 : size >= 40 ? '-0.03em' : '-0.01em',
+      lineHeight: 1.25,
+      whiteSpace: 'nowrap',
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+);
+const Caps: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div style={{ fontSize: 24, fontWeight: 600, letterSpacing: '0.14em', color: INK_DIM }}>{children}</div>
+);
 
-/** 1 马克笔扫读：一行字被黄块自左盖过 */
+/** 1 马克笔扫读：一句话被黄块自左盖过 */
 const TileSweep: React.FC = () => {
   const f = useCurrentFrame();
-  const s = F(f, 14, 34);
+  const s = F(f, 14, 34, Easing.bezier(0.16, 1, 0.3, 1));
   return (
     <Pad>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 26 }}>
-        <Bar w={300} h={14} />
-        <div style={{ position: 'relative', width: 640, height: 40 }}>
-          <div
-            style={{
-              position: 'absolute',
-              left: -8,
-              top: 2,
-              width: 636 * s,
-              height: 36,
-              background: MARKER_COLOR,
-              borderRadius: 6,
-            }}
-          />
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center' }}>
-            <Bar w={620} h={22} color="#2a2a30" radius={4} />
-          </div>
-        </div>
-        <Bar w={480} h={14} />
+      <Caps>RELEASE NOTES</Caps>
+      <div style={{ position: 'relative', display: 'inline-block', marginTop: 34 }}>
+        <div
+          style={{
+            position: 'absolute',
+            left: -10,
+            right: -10,
+            top: 6,
+            bottom: 2,
+            background: MARKER_COLOR,
+            borderRadius: 6,
+            transformOrigin: 'left center',
+            transform: `scaleX(${s})`,
+          }}
+        />
+        <T size={50} weight={700} style={{ position: 'relative' }}>Motion that feels considered.</T>
       </div>
+      <T size={30} color={INK_DIM} weight={450} style={{ marginTop: 30 }}>Every card ships with timing, easing</T>
+      <T size={30} color={INK_DIM} weight={450} style={{ marginTop: 6 }}>and a validated reference build.</T>
     </Pad>
   );
 };
 
-/** 2 指标 + sparkline 描线 */
+/** 2 指标 + sparkline 描线（灰底轨迹首帧即在，描线点亮 + 面积渐显） */
 const SPARK = 'M8 118 L118 92 L228 104 L338 56 L448 68 L558 20 L632 34';
 const TileMetric: React.FC = () => {
   const f = useCurrentFrame();
-  const draw = F(f, 10, 46);
+  const draw = F(f, 10, 46, Easing.bezier(0.65, 0, 0.35, 1));
   const val = 128 + Math.round(F(f, 8, 40, Easing.out(Easing.quad)) * 84);
+  const chip = F(f, 34, 46);
   return (
     <Pad>
-      <div style={{ fontSize: 30, color: INK_DIM, letterSpacing: '0.06em' }}>SESSIONS</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <Caps>SESSIONS</Caps>
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 600,
+            color: '#1f8a5b',
+            background: 'rgba(31,138,91,0.1)',
+            padding: '4px 12px',
+            borderRadius: 999,
+            opacity: chip,
+            transform: `translateY(${(1 - chip) * 8}px)`,
+          }}
+        >
+          +18.4%
+        </div>
+      </div>
       <div
         style={{
           fontSize: 132,
           fontWeight: 700,
           color: INK,
+          letterSpacing: '-0.04em',
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1.1,
         }}
       >
         {val}
       </div>
-      <svg width={640} height={140} viewBox="0 0 640 140" style={{ marginTop: 12 }}>
-        {/* 灰底轨迹：首帧就有内容，描线只是把它点亮 */}
-        <path d={SPARK} fill="none" stroke="#e3e3e8" strokeWidth={8} strokeLinecap="round" />
+      <svg width={640} height={140} viewBox="0 0 640 140" style={{ marginTop: 12, overflow: 'visible' }}>
+        <defs>
+          <linearGradient id="orto-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#7A5AF8" stopOpacity={0.22} />
+            <stop offset="1" stopColor="#7A5AF8" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <path d={`${SPARK} L632 140 L8 140 Z`} fill="url(#orto-area)" opacity={draw} />
+        <path d={SPARK} fill="none" stroke="#ececf1" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" />
         <path
           d={SPARK}
           fill="none"
           stroke="#7A5AF8"
           strokeWidth={8}
           strokeLinecap="round"
+          strokeLinejoin="round"
           strokeDasharray={900}
           strokeDashoffset={900 * (1 - draw)}
         />
@@ -154,24 +200,38 @@ const TileMetric: React.FC = () => {
 };
 
 /** 3 竖向步骤清单逐条勾选 */
+const STEPS = ['Draft the storyboard', 'Pick shot cards', 'Tune easing curves', 'Render & review'];
 const TileSteps: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <Pad>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 34 }}>
-        {[0, 1, 2, 3].map((i) => {
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 30 }}>
+        {STEPS.map((label, i) => {
           const on = F(f, 8 + i * 9, 22 + i * 9);
+          const tick = F(f, 12 + i * 9, 22 + i * 9, Easing.bezier(0.34, 1.45, 0.64, 1));
           return (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 26, opacity: 0.35 + on * 0.65 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
               <div
                 style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  background: on > 0.6 ? '#7A5AF8' : '#e3e3e8',
+                  width: 46,
+                  height: 46,
+                  borderRadius: 23,
+                  flex: 'none',
+                  boxSizing: 'border-box',
+                  background: on > 0.6 ? '#7A5AF8' : '#ffffff',
+                  border: on > 0.6 ? 'none' : '3px solid #dcdce3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
-              />
-              <Bar w={200 + i * 110} h={22} color="#2a2a30" radius={6} />
+              >
+                <svg width={26} height={26} viewBox="0 0 24 24" style={{ transform: `scale(${tick})` }}>
+                  <path d="M5 12.5 L10 17 L19 7.5" fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <T size={36} weight={on > 0.6 ? 600 : 500} color={on > 0.6 ? INK : '#9a9aa2'}>
+                {label}
+              </T>
             </div>
           );
         })}
@@ -180,18 +240,28 @@ const TileSteps: React.FC = () => {
   );
 };
 
-/** 4 路线描线 + 落点钉针 */
+/** 4 路线描线 + 落点钉针（浅网格地图底） */
 const TileRoute: React.FC = () => {
   const f = useCurrentFrame();
-  const draw = F(f, 6, 42);
+  const draw = F(f, 6, 42, Easing.bezier(0.65, 0, 0.35, 1));
   const pin = spring({ frame: f - 36, fps: 30, config: { damping: 12 } });
+  const tag = F(f, 42, 54);
   return (
     <Pad bg="#f4f4f7">
-      <svg width={848} height={428} viewBox="0 0 848 428">
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            'linear-gradient(rgba(29,29,31,0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(29,29,31,0.05) 2px, transparent 2px)',
+          backgroundSize: '80px 80px',
+        }}
+      />
+      <svg width={848} height={428} viewBox="0 0 848 428" style={{ position: 'relative', overflow: 'visible' }}>
         <path
           d="M40 380 C 200 380 190 210 340 200 C 500 190 500 90 700 70"
           fill="none"
-          stroke="#c9c9d2"
+          stroke="#d6d6de"
           strokeWidth={10}
           strokeLinecap="round"
         />
@@ -204,39 +274,66 @@ const TileRoute: React.FC = () => {
           strokeDasharray={1100}
           strokeDashoffset={1100 * (1 - draw)}
         />
+        <circle cx={40} cy={380} r={14} fill="#ffffff" stroke="#7A5AF8" strokeWidth={6} />
         <g transform={`translate(700 70) scale(${pin})`}>
-          <circle r={26} fill="#7A5AF8" />
-          <circle r={10} fill="#ffffff" />
+          <circle r={34} fill="rgba(122,90,248,0.18)" />
+          <circle r={24} fill="#7A5AF8" />
+          <circle r={9} fill="#ffffff" />
         </g>
       </svg>
+      <div
+        style={{
+          position: 'absolute',
+          left: 470,
+          top: 64, // 钉针左侧、路线上方，不压线
+          padding: '10px 18px',
+          borderRadius: 12,
+          background: '#ffffff',
+          boxShadow: '0 0 0 2px rgba(29,29,31,0.06), 0 10px 24px rgba(16,24,40,0.12)',
+          opacity: tag,
+          transform: `translateY(${(1 - tag) * 10}px)`,
+        }}
+      >
+        <T size={28} weight={600}>ETA 12 min</T>
+      </div>
     </Pad>
   );
 };
 
-/** 5 深底终端打字 */
+/** 5 深底终端打字（打字是机械匀速语义，逐字线性揭示） */
+const TERM = [
+  { t: '$ npx remotion render Open', c: '#e8e8ee' },
+  { t: '✓ Bundled in 2.1s', c: '#5ad19a' },
+  { t: '  Rendering frames 0–129', c: '#a0a0aa' },
+  { t: '✓ Done → out/open.mp4', c: '#5ad19a' },
+];
 const TileTerminal: React.FC = () => {
   const f = useCurrentFrame();
-  const rows = [520, 400, 610, 300];
   return (
-    <Pad bg="#1d1d1f">
+    <Pad bg="#17171a">
       <div style={{ display: 'flex', gap: 14, marginBottom: 34 }}>
         {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
           <div key={c} style={{ width: 20, height: 20, borderRadius: 10, background: c }} />
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {/* 提示符常驻：首帧的终端里已经有东西，打字才是动效本身 */}
-        <Bar w={120} h={18} color="#7A5AF8" radius={4} />
-        {rows.map((w, i) => {
+        <T size={28} mono color="#a28bff">~/shotcraft</T>
+        {TERM.map((row, i) => {
           const p = F(f, 8 + i * 11, 20 + i * 11, Easing.linear);
-          return <Bar key={i} w={w * p} h={18} color="#4a4a52" radius={4} />;
+          const n = Math.round(row.t.length * p);
+          return (
+            <T key={i} size={28} mono color={row.c} style={{ height: 35 }}>
+              {row.t.slice(0, n)}
+            </T>
+          );
         })}
       </div>
     </Pad>
   );
 };
 
-/** 6 线稿描画（铅笔速写） */
+/** 6 线稿描画（铅笔速写，点阵纸底） */
 const TileSketch: React.FC = () => {
   const f = useCurrentFrame();
   const strokes = [
@@ -247,13 +344,21 @@ const TileSketch: React.FC = () => {
   ];
   return (
     <Pad>
-      <svg width={848} height={428} viewBox="0 0 848 428">
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'radial-gradient(circle, rgba(29,29,31,0.12) 2px, transparent 2.5px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      <svg width={848} height={428} viewBox="0 0 848 428" style={{ position: 'relative' }}>
         {/* 淡稿：首帧是一张有底稿的纸，描线把它落成实线 */}
         {strokes.map((d, i) => (
-          <path key={`g${i}`} d={d} fill="none" stroke="#e7e7ec" strokeWidth={7} strokeLinecap="round" />
+          <path key={`g${i}`} d={d} fill="none" stroke="#e4e4ea" strokeWidth={7} strokeLinecap="round" />
         ))}
         {strokes.map((d, i) => {
-          const p = F(f, 6 + i * 10, 24 + i * 10);
+          const p = F(f, 6 + i * 10, 24 + i * 10, Easing.bezier(0.65, 0, 0.35, 1));
           return (
             <path
               key={i}
@@ -262,6 +367,7 @@ const TileSketch: React.FC = () => {
               stroke={INK}
               strokeWidth={7}
               strokeLinecap="round"
+              strokeLinejoin="round"
               strokeDasharray={900}
               strokeDashoffset={900 * (1 - p)}
             />
@@ -275,7 +381,8 @@ const TileSketch: React.FC = () => {
 /** 7 卡片缩成胶囊（主体让位） */
 const TileShrink: React.FC = () => {
   const f = useCurrentFrame();
-  const p = F(f, 16, 44);
+  const p = F(f, 16, 44, Easing.bezier(0.65, 0, 0.35, 1));
+  const cont = F(f, 28, 50);
   return (
     <Pad bg="#f4f4f7">
       <div
@@ -287,23 +394,37 @@ const TileShrink: React.FC = () => {
           height: 428 - 350 * p,
           borderRadius: 16 + 30 * p,
           background: '#ffffff',
-          boxShadow: '0 0 0 1px rgba(29,29,31,0.08)',
+          boxShadow: '0 0 0 2px rgba(29,29,31,0.06), 0 12px 28px rgba(16,24,40,0.08)',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: p > 0.6 ? 'center' : 'flex-start',
+          justifyContent: p > 0.6 ? 'center' : 'flex-start',
+          padding: p > 0.6 ? 0 : 40,
+          boxSizing: 'border-box',
         }}
-      />
+      >
+        {p <= 0.6 ? (
+          <div style={{ opacity: 1 - p / 0.6 }}>
+            <Caps>WEEKLY SUMMARY</Caps>
+            <T size={44} weight={700} style={{ marginTop: 18 }}>12 shots approved</T>
+            <T size={28} color={INK_DIM} weight={450} style={{ marginTop: 10 }}>3 pending review · 1 re-render</T>
+          </div>
+        ) : (
+          <T size={30} weight={600} style={{ opacity: (p - 0.6) / 0.4 }}>Summary</T>
+        )}
+      </div>
       <div
         style={{
           position: 'absolute',
-          left: 220,
-          top: 130,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 22,
-          opacity: p,
+          left: 260,
+          top: 150,
+          opacity: cont,
+          transform: `translateX(${(1 - cont) * 24}px)`,
         }}
       >
-        <Bar w={420} h={20} color="#2a2a30" radius={6} />
-        <Bar w={330} h={20} />
-        <Bar w={380} h={20} />
+        <T size={46} weight={700}>Q3 launch plan</T>
+        <T size={28} color={INK_DIM} weight={450} style={{ marginTop: 14 }}>Owner · Studio team</T>
+        <T size={28} color={INK_DIM} weight={450} style={{ marginTop: 6 }}>Due Oct 18</T>
       </div>
     </Pad>
   );
@@ -327,15 +448,15 @@ const TileImpact: React.FC = () => {
         }}
       >
         {/* 常驻小行 = 首帧的锚，大字砸下来才有对比 */}
-        <div style={{ fontSize: 30, color: INK_DIM, letterSpacing: '0.4em' }}>2026 · Q3</div>
+        <div style={{ fontSize: 30, fontWeight: 600, color: '#7A5AF8', letterSpacing: '0.4em' }}>2026 · Q3</div>
         <div
           style={{
             fontSize: 128,
             fontWeight: 800,
-            letterSpacing: '-0.04em',
+            letterSpacing: '-0.045em',
             color: INK,
             transform: `scale(${0.72 + p * 0.28})`,
-            opacity: p,
+            opacity: Math.min(1, p),
           }}
         >
           GO LIVE
@@ -351,7 +472,7 @@ const TILES: { Comp: React.FC; bg: string }[] = [
   { Comp: TileMetric, bg: '#ffffff' },
   { Comp: TileRoute, bg: '#f4f4f7' },
   { Comp: TileSteps, bg: '#ffffff' },
-  { Comp: TileTerminal, bg: '#1d1d1f' },
+  { Comp: TileTerminal, bg: '#17171a' },
   { Comp: TileSketch, bg: '#ffffff' },
   { Comp: TileImpact, bg: '#ffffff' },
 ];
@@ -375,10 +496,12 @@ export const OrbitRingTitleOpen: React.FC = () => {
   const kickerIn = interpolate(t, KICKER_IN, [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
+    easing: H_EASE,
   });
   const exitQ = interpolate(t, [EXIT_AT, EXIT_AT + EXIT_DUR], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
+    easing: Easing.bezier(0.7, 0, 0.84, 0),
   });
 
   const chars = Array.from(HEADLINE);
@@ -418,7 +541,13 @@ export const OrbitRingTitleOpen: React.FC = () => {
         const op = interpolate(t, [0.06 + i * 0.05, 0.42 + i * 0.05], [0, 1], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
+          easing: Easing.bezier(0.22, 1, 0.36, 1),
         });
+        // 逐卡淡入时同步从 0.9 长到 1（与环撑开同向，读作"环长出来"）
+        const grow = 0.9 + 0.1 * op;
+        // 分层阴影随纵深变化：近处（下方）离地高、影大而虚，远处贴地、影小而实
+        const elev = 10 + 8 * depth;
+        const dark = tile.bg === '#17171a';
         return (
           <div
             key={i}
@@ -428,12 +557,13 @@ export const OrbitRingTitleOpen: React.FC = () => {
               top: y - (CH * s) / 2,
               width: CW * s,
               height: CH * s,
-              borderRadius: 10,
+              borderRadius: 12,
               overflow: 'hidden',
               background: tile.bg,
               opacity: op,
+              transform: `scale(${grow})`,
               zIndex: 10 + Math.round(depth * 5),
-              boxShadow: '0 0 0 1px rgba(29,29,31,0.08), 0 14px 34px rgba(16,24,40,0.12)',
+              boxShadow: `${dark ? 'inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 1px rgba(0,0,0,0.2)' : 'inset 0 1px 0 rgba(255,255,255,0.9), 0 0 0 1px rgba(29,29,31,0.07)'}, ${softShadow(elev, { color: '#1a1830', strength: 1.15 })}`,
             }}
           >
             {/* 卡内按 960×540 作画再整体缩到卡宽——内容组件不需要知道自己被缩小了 */}
@@ -511,12 +641,15 @@ export const OrbitRingTitleOpen: React.FC = () => {
           letterSpacing: '0.35em',
           color: INK_DIM,
           opacity: kickerIn * (1 - exitQ),
+          transform: `translateY(${(1 - kickerIn) * 12}px)`,
           filter: exitQ > 0.01 ? `blur(${exitQ * EXIT_BLUR}px)` : undefined,
           zIndex: 30,
         }}
       >
         {KICKER}
       </div>
+      {/* 极淡颗粒：pastel mesh 大面积渐变防色带 */}
+      <Grain opacity={0.045} style={{ zIndex: 40 }} />
     </AbsoluteFill>
   );
 };

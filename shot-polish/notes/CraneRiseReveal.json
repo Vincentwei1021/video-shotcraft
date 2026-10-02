@@ -1,0 +1,34 @@
+{
+  "stem": "CraneRiseReveal",
+  "issues": [
+    "没有导出时长常量，工作台按卡片 md 猜成 20f，改版前视频只有开场 hold，拉升揭示整段没演出来",
+    "起点特写取景越出页面底边，画面下方留一条约 150px 的页外空灰底",
+    "Easing.out(quad) 从 hold 的静止直接跳到最高速，起吊瞬间速度突变",
+    "行脉冲是一块纯灰叠层，像整行被抹脏，不像产品里的选中态",
+    "全片纯平底，快速拉升段没有任何运动模糊，速度感只靠位移"
+  ],
+  "changes": [
+    "补 CRANE_RISE_REVEAL_DURATION = 150（特写 hold 20f + 拉升 100f + 满幅静止 30f），完整演出拉升",
+    "起点对准点按 fy = 1080 − 540/s 求，取景下缘贴住页面底边；下缘是进度的凸函数，全程不露空底",
+    "曲线改为 bezier(0.2,0,0.25,1)：零速起步、19% 处达峰（≈2.3× 平均速）再长尾缓停；hold 内先推近 1.5% 做起吊预备",
+    "行脉冲改成强调色相的深色洗层（左 0.16→右 0.05）加 1.5px 靛蓝细描边，读作“这一行被选中”",
+    "前 42f 快速段包 CameraMotionBlur（130°/10 采样），慢速段不包；脉冲层单独放在模糊外面，避免竖条伪影",
+    "加随拉开收淡的暗角（0.16→0.05）和 0.035 颗粒，特写时视线聚焦在那一行"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench guessed 20f from the card, so the before video shows only the opening hold and never the crane reveal",
+    "The opening close-up framed past the page's bottom edge, leaving a ~150px empty gray strip",
+    "Easing.out(quad) jumps from the static hold straight to top speed, so the lift starts with a velocity spike",
+    "The row pulse was a flat gray overlay that read as a smudge, not a product selection state",
+    "Flat background throughout and no motion blur on the fast lift, so speed came only from displacement"
+  ],
+  "changesEn": [
+    "Added CRANE_RISE_REVEAL_DURATION = 150 (20f hold + 100f lift + 30f full-frame rest) so the whole reveal plays",
+    "The opening focus point is solved as fy = 1080 − 540/s so the frame's bottom edge sits on the page edge; the bottom edge is convex in progress, so no void ever shows",
+    "Curve is now bezier(0.2,0,0.25,1): zero-velocity start, peak at 19% (~2.3x mean speed), long settling tail; the hold adds a 1.5% push-in as anticipation",
+    "Row pulse is now an accent-hued dark wash (0.16 left to 0.05 right) with a 1.5px indigo hairline ring, reading as 'this row is selected'",
+    "The first 42f fast segment is wrapped in CameraMotionBlur (130 degrees, 10 samples) and the slow tail is left sharp; pulses sit outside the blur to avoid banding artifacts",
+    "Added a vignette that fades as the camera pulls out (0.16 to 0.05) plus 0.035 grain, so the close-up focuses the eye on the row"
+  ],
+  "mdChanged": true
+}

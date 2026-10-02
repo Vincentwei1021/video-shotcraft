@@ -6,8 +6,11 @@
 // 悬停 sin bob（54f）→ reseat（18f 落地微压）；SVG rounded-rect 轮廓光束两圈
 // （lap1 快而亮 / lap2 慢而弱）；悬停期左侧 3D 注记 + 马克笔荧光条。
 // 主角卡 = layout.projects.cards[3]，中心 x 恰为 960（页面中心）。
+// 质感修订：聚光灯拆成 multiply 压暗 + soft-light 提亮两层（原版一层 normal 叠加把整页蒙成灰褐、
+// 把卡中段文字洗成白斑）；注记加纸色柔光衬底；极淡颗粒。相机/动作弧/光束时间轴全部不动。
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { PageCam2D, CamKey2D } from '../../_fixtures/PageCam2D';
+import { Grain } from '../../_fixtures/Polish';
 import layout from '../../_textures/live-layout.json';
 
 export const SPOTLIGHT_HERO_CARD_DURATION = 139; // 82–220f，落在 shot 内 offset 0
@@ -256,6 +259,16 @@ export const SpotlightHeroCard: React.FC = () => {
                     filter: 'blur(12px)', opacity: 0.55 * noteVis,
                   }}
                 />
+                {/* 纸色柔光衬底：注记压在邻卡文字上，没有衬底就和背后的字打架（Q11 scrim）；
+                    与字同处一个 3D 平面、同一台相机 */}
+                <div
+                  style={{
+                    position: 'absolute', left: 506, top: 628, width: 340, height: 200,
+                    transform: `translateZ(${noteZ - 1}px) translateY(${(1 - noteIn) * 26}px)`,
+                    background: 'radial-gradient(ellipse 50% 50% at 46% 50%, rgba(250,247,242,0.96) 0%, rgba(250,247,242,0.82) 48%, rgba(250,247,242,0) 100%)',
+                    filter: 'blur(6px)', opacity: noteVis,
+                  }}
+                />
                 <div
                   style={{
                     position: 'absolute', left: 556, top: 668, width: 230,
@@ -284,19 +297,32 @@ export const SpotlightHeroCard: React.FC = () => {
           })() : null}
         </PageCam2D>
 
-        {/* roving / locking spotlight: warm pool + dim outside */}
+        {/* roving / locking spotlight —— 拆成两层、各用合适的混合模式：
+            ① 光池外压暗：暖棕 multiply（压暗但保色相，不像灰纱蒙一层）；
+            ② 光池提亮：暖白 soft-light（中间调变亮，深色文字保持对比，不被洗成白斑）+ 极弱 screen 抬亮。
+            光池比原版放大 ~1.3 倍、边缘更软，读作舞台光而不是贴在卡上的白色圆盘 */}
         <AbsoluteFill
           style={{
-            background: `radial-gradient(${poolRx}px ${poolRy}px at ${spotX}% ${spotY}%, rgba(255,241,214,0.42), rgba(255,241,214,0.10) 45%, rgba(70,56,38,${vignette * spotOn}) 100%)`,
+            background: `radial-gradient(${poolRx * 1.35}px ${poolRy * 1.35}px at ${spotX}% ${spotY}%, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 38%, rgba(96,72,44,${(vignette * 0.95).toFixed(3)}) 100%)`,
+            mixBlendMode: 'multiply',
             pointerEvents: 'none', opacity: spotOn,
           }}
         />
         <AbsoluteFill
           style={{
-            background: `radial-gradient(300px 220px at ${spotX - 6}% ${spotY + 10}%, rgba(255,246,228,0.18), transparent 70%)`,
-            pointerEvents: 'none', opacity: spotOn * 0.7,
+            background: `radial-gradient(${poolRx * 1.3}px ${poolRy * 1.3}px at ${spotX}% ${spotY}%, rgba(255,236,204,0.75) 0%, rgba(255,236,204,0.3) 45%, rgba(255,236,204,0) 78%)`,
+            mixBlendMode: 'soft-light',
+            pointerEvents: 'none', opacity: spotOn,
           }}
         />
+        <AbsoluteFill
+          style={{
+            background: `radial-gradient(${poolRx}px ${poolRy}px at ${spotX}% ${spotY}%, rgba(255,244,224,0.12), rgba(255,244,224,0) 70%)`,
+            mixBlendMode: 'screen',
+            pointerEvents: 'none', opacity: spotOn,
+          }}
+        />
+        <Grain opacity={0.04} />
       </AbsoluteFill>
     </AbsoluteFill>
   );

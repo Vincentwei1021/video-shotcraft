@@ -1,0 +1,32 @@
+{
+  "stem": "Fracture",
+  "issues": [
+    "25 块瓦片各自配一块随机灰蓝渐变，拼齐后像一张拼布，看不出是“一整面海报”",
+    "中央的 REASSEMBLE 是把卡名打在画面上的调试占位，没设字体，回退成 Times 衬线",
+    "字悬浮在瓦片之上、在飞散前单独淡出，和碎片的物理事件脱节",
+    "瓦片是平涂色块，翻转时没有明暗变化；背景是死平的 #0b0b10",
+    "inOutCubic 落位是软着陆，没有入槽感；飞行段没有运动模糊，hold 段完全静止"
+  ],
+  "changes": [
+    "25 块改为切同一张海报（按格位偏移 background-position）：冷色深场、左上柔光、底部发光地平线弧，拼齐才看见完整画面；拼缝 2px",
+    "标题换成出版级的眉题 INTRODUCING 加主标题 Every piece, in place.（系统字体，700 字重，-0.035em），印在海报切片上，t=0.42–0.52 亮起，退场时被碎片一起撕走",
+    "瓦片按朝向做明暗（cos rx · cos ry，最暗压 0.6），顶沿 1px 受光高光；落位曲线改为 bezier(0.42,0,0.3,1)，落位后 ~10f 内有一次 ≤2.5° 的阻尼小摆",
+    "聚合段和飞散段包 CameraMotionBlur（170°/8 采样），hold 段不包、保持锐利；hold 段整面海报极缓推近 3%",
+    "背景改成带色相的柔光深场加暗角，海报身后的环境光随拼合程度亮起；颗粒放在模糊层之外；DesignStage 用 raster=zoom，3D 瓦片里的字不糊"
+  ],
+  "issuesEn": [
+    "Each of the 25 tiles had its own random gray-blue gradient, so the assembled grid read as a patchwork rather than one poster",
+    "The central REASSEMBLE was a debug placeholder (the card name) with no font set, falling back to Times serif",
+    "The text floated above the tiles and faded out on its own before the scatter, disconnected from the physical event",
+    "Tiles were flat color with no shading as they turned, over a dead-flat #0b0b10 background",
+    "The inOutCubic landing was a soft touchdown with no sense of seating; no motion blur on the flight segments and a fully static hold"
+  ],
+  "changesEn": [
+    "All 25 tiles now slice one shared poster (background-position offset per cell): cool deep field, top-left soft light and a glowing horizon arc at the bottom, so the full image appears only once assembled; 2px seams",
+    "The title is now a publication-grade eyebrow INTRODUCING plus headline Every piece, in place. (system font, 700 weight, -0.035em), printed on the poster slices; it lights up at t=0.42–0.52 and is torn away with the fragments on exit",
+    "Tiles shade by orientation (cos rx · cos ry, up to 0.6 darkening) with a 1px lit top edge; the landing curve is now bezier(0.42,0,0.3,1), followed by one damped wobble of ≤2.5° within ~10f",
+    "The assemble and scatter segments are wrapped in CameraMotionBlur (170 degrees, 8 samples) while the hold stays sharp; the poster pushes in a slow 3% during the hold",
+    "The background is now a hued soft-light dark field with vignette, plus an ambient glow behind the poster that brightens as it assembles; grain sits outside the blur; DesignStage uses raster=zoom so text inside the 3D tiles stays crisp"
+  ],
+  "mdChanged": true
+}

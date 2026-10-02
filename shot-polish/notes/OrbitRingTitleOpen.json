@@ -1,0 +1,28 @@
+{
+  "stem": "OrbitRingTitleOpen",
+  "issues": [
+    "八张环上卡的内容大多是灰色骨架条：马克笔卡只有一根黑条，终端是几根灰条，缩胶囊卡里是一个空白药丸",
+    "卡框是 10px 圆角加单层阴影，近处和远处的卡阴影一样，纵深只靠 ±9% 缩放",
+    "逐卡淡入是线性的，卡片是“贴”上来的，不是“长”出来",
+    "副行线性淡入、退场线性失焦；大面积 pastel 渐变没有颗粒，容易出色带"
+  ],
+  "changes": [
+    "八张卡换成出版级假内容，各自的小动效保留：马克笔扫过一句标题加两行正文；终端逐字打出 render 命令和 ✓ 输出；清单变成带勾选图标的四个真实步骤；指标卡加 +18.4% 涨幅 chip 和面积渐变；路线卡加网格地图底、起点圈和 ETA 标签；线稿卡铺点阵纸；胶囊卡从周报卡缩成 Summary 胶囊，同时让位给 Q3 计划",
+    "卡框改为 12px 圆角，加发丝线和顶部内高光；两层软阴影的离地高度随纵深变化（elevation 10±8），近处的卡影子大而虚，远处的小而实",
+    "逐卡淡入改用 cubic-bezier(.22,1,.36,1)，同时从 0.9 长到 1，和环撑开同向",
+    "副行走同一条缓动并上浮 12px；退场改用 ease-in(0.7,0,0.84,0)；字体栈换成系统 SF 栈，加 0.045 颗粒防色带。环半径、公转速度、标题逐字节奏、马克块时机全部不变"
+  ],
+  "issuesEn": [
+    "Most of the eight orbiting cards were gray skeleton bars: the marker card was one black bar, the terminal a few gray bars, and the shrink card an empty white pill",
+    "Card frames used a 10px radius and a single shadow, identical for near and far cards, so depth came only from the ±9% scale",
+    "Per-card fade-in was linear, so cards looked pasted on rather than growing in",
+    "The kicker faded in linearly and the exit blurred out linearly; the large pastel gradient had no grain and was prone to banding"
+  ],
+  "changesEn": [
+    "All eight cards now carry publication-grade fake content while keeping their micro-animations: the marker sweeps a headline over two body lines; the terminal types a render command with ✓ output; the checklist has four real steps with check icons; the metric card gains a +18.4% delta chip and an area gradient; the route card gets a grid map, a start ring and an ETA tag; the sketch card sits on dot-grid paper; the shrink card collapses a weekly-summary card into a Summary pill and makes room for a Q3 plan",
+    "Card frames now use a 12px radius with a hairline and an inner top highlight; a two-layer soft shadow scales with depth (elevation 10±8), large and soft for near cards and small and tight for far ones",
+    "Per-card fade-in uses cubic-bezier(.22,1,.36,1) and grows from 0.9 to 1, matching the direction of the ring expansion",
+    "The kicker uses the same ease with a 12px rise; the exit uses ease-in (0.7,0,0.84,0); the font stack is now the system SF stack; added 0.045 grain against banding. Ring radii, orbit speed, per-character title timing and marker timing are all unchanged"
+  ],
+  "mdChanged": true
+}

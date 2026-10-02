@@ -1,0 +1,30 @@
+{
+  "stem": "LetterspaceMaterialize",
+  "issues": [
+    "没有导出时长常量，工作台按 md 猜成 15f，改版前视频停在起笔前的空底景，字标一笔都没画",
+    "底景是三块模糊色块：纵向渐变有明显色带，地平线光带两端在画框边断开，右侧还有一团方形光斑",
+    "md 写明对标暮色山景加水面倒影，demo 只有渐变，没有山也没有水，空间感为零",
+    "画面全静止，结晶完成后的 hold 段是一张死帧"
+  ],
+  "changes": [
+    "导出 LETTERSPACE_MATERIALIZE_DURATION = 105（静置 16f + 描画 52f + 字标 hold 37f，超过 1s，符合 R1）",
+    "底景重做成暮色湖景：分层天空渐变，两层程序山脊（远山偏亮偏霞色、轻虚，近山深），宽幅地平线霞光铺出画外不露断口，水天线一道细亮边",
+    "水面加天光倒影和 22 条缓慢漂移、明暗呼吸的细波光；字标以水天线为轴做 0.12 透明度、2.4px 虚化、向下渐隐的倒影，和描画严格同步",
+    "描画曲线换成 bezier(0.5,0,0.3,1)，收笔稍长；收笔前 30% 逐渐蓄亮、完成后 14f 回落，霞光随结晶微微升亮",
+    "背景极缓推近（远山 2%、近景 3.5%，形成微视差），字标本身不位移；加暗角和 0.08 颗粒，消除渐变色带"
+  ],
+  "issuesEn": [
+    "No exported duration constant: the workbench guessed 15f from the md, so the before video stops on the empty backdrop before a single stroke is drawn",
+    "The backdrop was three blurred color blobs: visible banding in the vertical gradient, a horizon band whose ends break off at the frame edges, and a boxy glow on the right",
+    "The md cites a dusk mountain-and-lake reference, but the demo was only a gradient, with no mountains, no water and no sense of space",
+    "The frame was completely static, so the post-crystallization hold was a dead frame"
+  ],
+  "changesEn": [
+    "Exported LETTERSPACE_MATERIALIZE_DURATION = 105 (16f rest + 52f draw + 37f wordmark hold, over 1s per R1)",
+    "Rebuilt the backdrop as a dusk lake: layered sky gradient, two procedural ridgelines (far ridge lighter, dusk-tinted and softly blurred; near ridge darker), a wide horizon glow that extends past the frame so no ends show, and a thin bright waterline",
+    "The water carries the sky reflection and 22 slowly drifting, softly pulsing glints; the wordmark gets a reflection mirrored about the waterline (0.12 opacity, 2.4px blur, fading downward) that stays in sync with the draw",
+    "The draw curve is now bezier(0.5,0,0.3,1) with a slightly longer finishing stroke; the glow builds over the last 30% and falls off 14f after completion, and the horizon glow brightens slightly as the word crystallizes",
+    "The background pushes in very slowly (far ridge 2%, foreground 3.5%, for slight parallax) while the wordmark itself never moves; added vignette and 0.08 grain to remove banding"
+  ],
+  "mdChanged": false
+}

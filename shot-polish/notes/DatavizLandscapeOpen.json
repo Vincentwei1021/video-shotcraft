@@ -1,0 +1,32 @@
+{
+  "stem": "DatavizLandscapeOpen",
+  "issues": [
+    "底色是无色相的 #050505 纯中性黑，线全是纯白，整片像黑白线框图，没有配色系统",
+    "标签只有一个白方块加一行裸等宽字，背后的线直接从字上穿过，可读性和质感都弱",
+    "标签只做 12f 线性淡入，没有入场动作，也没有图钉与文字的先后层次",
+    "支流从源头到汇点亮度一样，读不出“往主干流”的方向；生长期笔尖没有任何引导",
+    "大面积暗部没有颗粒，渐变容易出色带；没有导出时长常量，工作台按默认值猜成 150f，截掉了交棒段"
+  ],
+  "changes": [
+    "改为带冷色相的深场（#0d111b→#05070b）加汇点方向一团极淡的蓝色地光；线改冷白 #e2e8ff，强调色只用柔和长春花蓝 #9aabff（主干辉光、图钉、汇点）",
+    "支流描边用沿流向的渐变（源头 0.22 → 汇入处 1），主干在汇点之后染上强调色",
+    "生长期笔尖加一颗小光点（核 + 强调色柔晕），按弧长表取点，和 draw-on 严格同步，到终点前淡出",
+    "标签改成两段式入场：图钉 overshoot 弹出、外圈细环扩散后收成常驻；3f 后 ID 胶囊（深色半透明衬底 + 发丝线 + 强调色点）上浮 10px 并去模糊",
+    "导出 DATAVIZ_LANDSCAPE_OPEN_DURATION = 165，交棒段完整；开场 12f 从深场里浮出；屏幕空间加暗角（0.55）和 0.09 soft-light 颗粒"
+  ],
+  "issuesEn": [
+    "The background was a hueless #050505 and every line pure white, so the shot read as a monochrome wireframe with no color system",
+    "Labels were a bare white square plus raw monospace text with lines running straight through the glyphs, weak in both legibility and finish",
+    "Labels only did a 12f linear fade, with no entrance motion and no ordering between pin and text",
+    "Tributaries had the same brightness from source to merge, so there was no sense of flowing into the trunk, and nothing marked the drawing tip during growth",
+    "Large dark areas had no grain, inviting banding; there was no exported duration constant, so the workbench defaulted to 150f and cut off the handoff"
+  ],
+  "changesEn": [
+    "Cool-hued deep field (#0d111b to #05070b) with a faint blue ground glow toward the merge point; lines are cool white #e2e8ff, and the only accent is a soft periwinkle #9aabff (trunk glow, pins, merge point)",
+    "Tributary strokes use a gradient along the flow (0.22 at the source to 1 at the merge), and the trunk takes on the accent hue past the merge point",
+    "Each drawing tip carries a small light point (core plus accent halo), placed with an arc-length table so it stays exactly on the draw-on head and fades before the end",
+    "Labels enter in two stages: the pin pops with overshoot and its outer ring expands, then settles to a persistent thin ring; 3f later the ID capsule (dark translucent backing, hairline, accent dot) rises 10px while de-blurring",
+    "Exported DATAVIZ_LANDSCAPE_OPEN_DURATION = 165 so the handoff plays in full; the opening fades up from the dark over 12f; added a screen-space vignette (0.55) and 0.09 soft-light grain"
+  ],
+  "mdChanged": false
+}
