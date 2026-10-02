@@ -1,365 +1,248 @@
-// quad-split-parallel-scenes — Quad Split 四宫并行蒙太奇（motion-lab 定稿转原生 Remotion）
-// 手法卡：画面硬切成 2×2 四宫格，四个象限并行跑各自独立的微场景（格内内容可任意替换，
-// 此处仅为示例）：TL 迷你浏览器打字 + 标签堆积 + 慢推，TR mono 打字 + whip 急推，
-// BL 三词逐个弹入，BR pill 滑入 → 光标贝塞尔飞行点击 → 卡片弹出。
-// 关键节拍互相错开 3-6 帧、全程无转场，靠并行密度制造信息轰炸。
-// 设计坐标 480×270（DesignStage 等比放大），参数以此坐标系标定。
-// 质感：占位文案（Placeholder / Tab One / One clear message）换成同一产品的真实感内容；
-// 四格底色改成"浅冷灰 / 深墨 / 强调靛 / 浅暖灰"对角交错（相邻格明度差 ≥15%），每格带低对比
-// 渐变；浏览器窗下半补上页面骨架，TR 换成深色场上的发布命令卡，BR 光标换成 macOS 箭头、
-// 评论卡带头像；窗体统一发丝线 + 内高光 + 两层软阴影；全画面叠极弱颗粒与暗角。时刻表一帧未动。
+// quad-split-parallel-scenes — Quad Split 四宫并行蒙太奇
+// 手法卡：画面硬切 2×2 四宫格，四个象限并行跑各自独立的微场景，关键节拍互相错开 3–6 帧、全程无转场，
+// 靠并行密度制造信息轰炸（格内内容可整体替换，错拍表才是配方）。
+//
+// 第二轮重设计（余烬 · 发布日的四个现场）：
+// - look = ember（暖黑 · 橙 · 琥珀点缀）。四格是虚构产品「Brasa」发布日同时发生的四件事，按明度做棋盘交错：
+//   TL 奶油色 · 浏览器打开发布页 ｜ TR 暖黑 · 终端 deploy + 急推到「live in 4.2s」
+//   BL 橙色实底 · 三个巨大的词逐个砸下（瑞士海报）｜ BR 拿铁色 · 光标点 Approve → Publish → 上线通知弹出
+//   四格之间 8px 暖黑缝 + 20px 圆角，像一块 bento 发布板；格内字全部按 1080p 可读字号重排（≥32px，主词 132px）。
+// - 错拍表（帧，30fps）——任意相邻重事件间隔 ≥3f，从不齐动：
+//     TL  tab 6 / 11 / 16 / 21 弹入 · 0–40 地址栏打字 · 44 页面载入（大标题滑入）· 全程 inQuad 慢推 1→1.1
+//     TR  0–24 命令打字 · 27 / 33 两行输出 · 37 末行出现 + 37–47 whip 急推 1→1.85（sin 包络模糊）
+//     BL  14「Write.」· 30「Ship.」· 49「Repeat.」（overshoot 下落）
+//     BR  4–14 卡片滑入 · 14–25 光标飞向 Approve · 25 点击 · 27–33 按钮变 Approved · 38–50 飞向 Publish · 52 点击 · 56 通知弹出
+//   两处打字光标闪烁周期错开（16f vs 14f + 5 相位）。
+// - 原版 2.1s 无收尾，这一轮加到 90f：0–62 并行轰炸，62–90 四格都落在终态海报上 hold（只剩光标闪烁与慢推）。
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
-import { Grain, Vignette } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, Grain, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha, type } from '../../_fixtures/Look';
 
-export const QUAD_SPLIT_PARALLEL_SCENES_DURATION = 63; // 2100ms @30fps
+export const QUAD_SPLIT_PARALLEL_SCENES_DURATION = 90;
 
-const ACCENT = '#5b63d3';
-const ACCENT_SOFT = '#b9bdf0';
-const F = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Inter, Arial, sans-serif';
-const MONO = '"SF Mono", "JetBrains Mono", Menlo, monospace';
-const INK = '#17181c';
-// 四宫格底色：对角交错的明度（TL 浅冷 / TR 深墨 / BL 强调靛 / BR 浅暖），需要主题色时换成项目色板
-const BGS = [
-  'linear-gradient(160deg, #eef0f3 0%, #e1e4ea 100%)',
-  'radial-gradient(ellipse 90% 80% at 40% 30%, #22242d 0%, #14151a 70%)',
-  'radial-gradient(ellipse 90% 90% at 30% 25%, #6c74e4 0%, #5058cc 60%, #454cbc 100%)',
-  'linear-gradient(200deg, #f3f2ee 0%, #e7e5df 100%)',
+const L = LOOKS.ember;
+const CREAM = '#f7eee4';
+const LATTE = '#e9d7c4';
+const ORANGE = L.accent;
+const DARK = '#160d09';
+
+// 四格几何：外边距 = 缝宽 8px
+const G = 8;
+const QW = (1920 - 3 * G) / 2; // 948
+const QH = (1080 - 3 * G) / 2; // 528
+const QUADS = [
+  { x: G, y: G },
+  { x: 2 * G + QW, y: G },
+  { x: G, y: 2 * G + QH },
+  { x: 2 * G + QW, y: 2 * G + QH },
 ];
-const TRAFFIC = ['#ff5f57', '#febc2e', '#28c840'];
-const TABNAMES = ['Home', 'Docs', 'API', 'Blog', 'Jobs', 'Help']; // ≤4 字符：窄 tab 里不被切半个字母
-const TXT1 = 'Launch notes for Atlas v2'; // 25 字符（与原时刻表同长，打字节奏不漂）
-const TXT2 = 'deploy --prod --region eu'; // 25 字符
-const WORDS = ['Plan.', 'Ship.', 'Grow.'];
-const REPLY = 'Approved!'; // 9 字符
 
-// 窗体材质：发丝线 + 顶部内高光 + 两层软阴影（设计坐标下的 px）
-const WINDOW_SHADOW = 'inset 0 0.5px 0 rgba(255,255,255,0.9), 0 0.5px 1px rgba(16,18,26,0.10), 0 10px 24px -8px rgba(16,18,26,0.28)';
+const blink = (f: number, period: number, phase = 0) => (Math.floor((f + phase) / (period / 2)) % 2 === 0 ? 1 : 0);
+const typed = (s: string, f: number, a: number, b: number) => s.slice(0, Math.floor(ramp(f, a, b - a, EASE.linear) * s.length));
 
-// 二次贝塞尔取点（BR 象限光标飞行路径，坐标单位 %）
-const qBez = (a: number[], b: number[], c: number[], t: number): [number, number] => {
-  const u = 1 - t;
-  return [
-    u * u * a[0] + 2 * u * t * b[0] + t * t * c[0],
-    u * u * a[1] + 2 * u * t * b[1] + t * t * c[1],
-  ];
-};
-
-// 骨架条：页面占位用的低对比圆角条
-const Bar: React.FC<{ w: number | string; h?: number; c?: string; mt?: number }> = ({ w, h = 4, c = '#e6e8ec', mt = 0 }) => (
-  <div style={{ width: w, height: h, borderRadius: h / 2, background: c, marginTop: mt }} />
-);
-
-// TL —— 迷你浏览器：逐字符打字 + tab outBack 弹入 + 全程 inQuad 慢推
-const QuadTL: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
-  const n1 = Math.floor(seg(t, 0.02, 0.95) * TXT1.length);
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: '10%',
-        top: '22%',
-        width: '80%',
-        height: '60%',
-        background: '#fff',
-        borderRadius: 10,
-        border: '0.5px solid rgba(20,22,28,0.10)',
-        boxShadow: WINDOW_SHADOW,
-        fontFamily: F,
-        transform: `scale(${lerp(E.inQuad(t), 1, 1.45)})`,
-        transformOrigin: '50% 78%',
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '7px 9px 0', background: '#f4f5f7', borderBottom: '0.5px solid rgba(20,22,28,0.08)' }}>
-        {TRAFFIC.map((c) => (
-          <i key={c} style={{ width: 6, height: 6, borderRadius: '50%', background: c, boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.12)' }} />
-        ))}
-        <div style={{ display: 'flex', flex: 1, gap: 2, marginLeft: 6, minWidth: 0 }}>
-          {TABNAMES.map((n, i) => {
-            const k = seg(t, 0.08 + i * 0.13, 0.08 + i * 0.13 + 0.09, E.outBack);
-            const active = i === TABNAMES.length - 1 ? k > 0.5 : false;
-            return (
-              <div
-                key={n}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'clip',
-                  fontSize: 6.5,
-                  fontWeight: 500,
-                  textAlign: 'center',
-                  color: active ? INK : '#6b6e76',
-                  background: active ? '#ffffff' : 'rgba(20,22,28,0.05)',
-                  borderRadius: '4px 4px 0 0',
-                  padding: '3px 2px 4px',
-                  transform: `scale(${k})`,
-                  transformOrigin: '50% 100%',
-                }}
-              >
-                {n}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div
-        style={{
-          margin: '6px 10px',
-          height: 20,
-          borderRadius: 10,
-          background: '#f2f3f5',
-          boxShadow: 'inset 0 0 0 0.5px rgba(20,22,28,0.08)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 9px',
-          fontSize: 9.5,
-          color: INK,
-          letterSpacing: '-0.01em',
-        }}
-      >
-        <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke="#8a8f98" strokeWidth={3} strokeLinecap="round" style={{ marginRight: 6, flex: 'none' }}>
-          <circle cx={11} cy={11} r={7} />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
-        <span style={{ whiteSpace: 'nowrap' }}>{TXT1.slice(0, n1)}</span>
-        {/* 光标按帧闪烁：16 帧一个周期 */}
-        <i style={{ width: 1, height: 11, background: ACCENT, marginLeft: 1, opacity: frame % 16 < 8 ? 1 : 0, flex: 'none' }} />
-      </div>
-      {/* 页面骨架：标题行 + 正文 + 按钮 + 配图块，补满窗体下半（窗内余高 ~27px） */}
-      <div style={{ display: 'flex', gap: 10, padding: '1px 12px' }}>
-        <div style={{ flex: 1 }}>
-          <Bar w="74%" h={6} c="#dfe1e7" />
-          <div style={{ marginTop: 6, width: 40, height: 10, borderRadius: 5, background: ACCENT, boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.35)' }} />
-        </div>
-        <div style={{ width: '36%', height: 27, borderRadius: 5, background: 'linear-gradient(150deg, #e9eaf8 0%, #d6d9f2 100%)' }} />
-      </div>
-    </div>
-  );
-};
-
-// TR —— mono 打字 + whip 急推（错拍：0.42-0.54，推近时带运动模糊）
-const QuadTR: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
-  const n2 = Math.floor(seg(t, 0.06, 0.9) * TXT2.length);
-  const zip = seg(t, 0.42, 0.54, E.inOutCubic);
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        fontFamily: MONO,
-        transform: `scale(${lerp(zip, 1, 2.1)})`,
-        // 推近焦点偏右：落定后打字光标仍在格内，后半段字继续往外"长"
-        transformOrigin: '80% 44%',
-        filter: zip > 0 && zip < 1 ? `blur(${(Math.sin(zip * Math.PI) * 4).toFixed(2)}px)` : undefined,
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          left: '12%',
-          top: '24%',
-          width: '76%',
-          background: 'linear-gradient(180deg, #fbfaf6 0%, #f4f2ec 100%)',
-          borderRadius: 8,
-          border: '0.5px solid rgba(255,255,255,0.5)',
-          boxShadow: 'inset 0 0.5px 0 #ffffff, 0 1px 2px rgba(0,0,0,0.35), 0 14px 30px -10px rgba(0,0,0,0.65)',
-          padding: '8px 12px 14px',
-          // 原渲染无全局 border-box：76% 是内容宽，padding 外扩（Remotion 注入
-          // 了 * { box-sizing:border-box }，显式还原 content-box 才对得上原片）
-          boxSizing: 'content-box',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
-          {TRAFFIC.map((c) => (
-            <i key={c} style={{ width: 6, height: 6, borderRadius: '50%', background: c, boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.12)' }} />
-          ))}
-        </div>
-        <div style={{ fontSize: 7.5, color: '#8a8f98', marginBottom: 5, letterSpacing: '0.02em' }}>
-          <span style={{ color: ACCENT }}>✦</span> atlas / release ›
-        </div>
-        <div style={{ fontSize: 10, color: INK, whiteSpace: 'nowrap' }}>
-          <span style={{ color: '#9a9ca4' }}>$ </span>
-          <span>{TXT2.slice(0, n2)}</span>
-          {/* 光标错拍闪烁：与 TL 相位差 5 帧、周期 14 帧 */}
-          <span style={{ opacity: (frame + 5) % 14 < 7 ? 1 : 0, color: ACCENT }}>_</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// BL —— 三词逐个 outBack 弹入（0.24 / 0.46 / 0.56，与其他象限错开）
-const QuadBL: React.FC<{ t: number }> = ({ t }) => (
-  <div
-    style={{
-      position: 'absolute',
-      inset: 0,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: 7,
-      fontFamily: F,
-      fontWeight: 700,
-      fontSize: 22,
-      letterSpacing: '-0.03em',
-      color: '#ffffff',
-      textShadow: '0 2px 8px rgba(20,22,80,0.35)',
-    }}
-  >
-    {WORDS.map((w, i) => {
-      const k = seg(t, [0.24, 0.46, 0.56][i], [0.24, 0.46, 0.56][i] + 0.1, E.outBack);
-      return (
-        <span
-          key={w}
-          style={{
-            display: 'inline-block',
-            transform: `scale(${k}) translateY(${(1 - k) * 8}px)`,
-            opacity: Math.min(1, k * 2),
-          }}
-        >
-          {w}
-        </span>
-      );
-    })}
+// 四格通用：角标（纹理级小字，不必读）
+const Corner: React.FC<{ n: string; label: string; color: string }> = ({ n, label, color }) => (
+  <div style={{ position: 'absolute', left: 34, top: 28, ...type(20, 700, { caps: true }), letterSpacing: '0.2em', color, opacity: 0.7 }}>
+    {n} — {label}
   </div>
 );
 
-// macOS 箭头光标（设计坐标，tip 在左上角）
-const Arrow: React.FC = () => (
-  <svg width={9} height={13} viewBox="-1 -1 18 26" style={{ display: 'block', overflow: 'visible', filter: 'drop-shadow(0 1px 1.5px rgba(16,18,26,0.35))' }}>
-    <path d="M0 0 L0 20.5 L4.9 15.9 L8.1 23.4 L11.4 22 L8.3 14.7 L14.8 14.7 Z" fill="#111216" stroke="#ffffff" strokeWidth={1.6} strokeLinejoin="round" />
-  </svg>
-);
-
-// BR —— 五步交互：pill 滑入 → 光标贝塞尔飞行 → 点击缩放 → 打字回复 → 卡片弹出
-const QuadBR: React.FC<{ t: number }> = ({ t }) => {
-  const slide = seg(t, 0.12, 0.3, E.outBack);
-  const m1 = seg(t, 0.3, 0.42, E.inOutCubic);
-  const m2 = seg(t, 0.62, 0.74, E.inOutCubic);
-  // 光标路径：先飞向 pill，再二段飞向发送键
-  const p = m2 > 0 ? qBez([44, 66], [66, 52], [82, 68], m2) : qBez([88, 30], [50, 40], [44, 66], m1);
-  const c1 = seg(t, 0.42, 0.47);
-  const c2 = seg(t, 0.74, 0.79);
-  const n4 = Math.floor(seg(t, 0.46, 0.62) * REPLY.length);
-  const pop = seg(t, 0.8, 0.88, E.outBack);
-  const sent = n4 >= REPLY.length;
+// ───────────── TL：浏览器打开发布页 ─────────────
+const URL = 'brasa.app/launch';
+const TABS = ['Docs', 'Pricing', 'Blog', 'Launch'];
+const QuadTL: React.FC<{ f: number }> = ({ f }) => {
+  const push = mix(1, 1.1, Math.pow(Math.min(1, f / 90), 2)); // inQuad 慢推：底噪运动
+  const load = ramp(f, 44, 14, EASE.snappy);
   return (
-    <div style={{ position: 'absolute', inset: 0, fontFamily: F }}>
-      {/* 评论卡片：点击发送后弹出 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '12%',
-          bottom: '46%',
-          width: '66%',
-          background: '#ffffff',
-          borderRadius: 8,
-          border: '0.5px solid rgba(20,22,28,0.08)',
-          padding: '6px 9px',
-          boxSizing: 'content-box', // 同上：66% 为内容宽
-          fontSize: 8,
-          color: INK,
-          transform: `scale(${pop})`,
-          transformOrigin: '20% 100%',
-          boxShadow: WINDOW_SHADOW,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-        }}
-      >
-        <div style={{
-          width: 15, height: 15, borderRadius: '50%', flex: 'none', background: 'linear-gradient(145deg, #3a3c44, #23242a)',
-          color: '#fff', fontSize: 6, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>MR</div>
-        <div style={{ lineHeight: 1.3 }}>
-          <b style={{ fontWeight: 600 }}>Maya</b> <span style={{ color: '#9b9da3' }}>· just now</span>
-          <br />
-          {REPLY}
+    <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 90% 90% at 30% 20%, #fffaf3 0%, ${CREAM} 55%, #efe2d3 100%)` }}>
+      <div style={{
+        position: 'absolute', left: 104, top: 112, width: 740, height: 390, borderRadius: 20, background: '#fffdf9', overflow: 'hidden',
+        border: '1px solid rgba(60,30,10,0.10)', boxShadow: `inset 0 1px 0 #fff, 0 2px 4px rgba(60,30,10,0.08), 0 30px 60px -24px rgba(60,30,10,0.35)`,
+        transform: `scale(${push})`, transformOrigin: '50% 90%',
+      }}>
+        {/* 标签栏 */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 58, padding: '0 18px', background: '#f3e9de' }}>
+          <div style={{ display: 'flex', gap: 8, alignSelf: 'center', marginRight: 10 }}>
+            {['#ff6a52', '#ffbd3d', '#5fcf6a'].map((c) => <i key={c} style={{ width: 13, height: 13, borderRadius: 7, background: c }} />)}
+          </div>
+          {TABS.map((t, i) => {
+            const k = ramp(f, 6 + i * 5, 9, EASE.overshoot);
+            const active = i === TABS.length - 1;
+            if (k <= 0) return null;
+            return (
+              <div key={t} style={{
+                padding: '9px 20px 11px', borderRadius: '12px 12px 0 0', ...type(24, active ? 650 : 500),
+                background: active ? '#fffdf9' : 'rgba(60,30,10,0.05)', color: active ? DARK : '#8c7867',
+                transform: `scale(${k})`, transformOrigin: '50% 100%',
+              }}>{t}</div>
+            );
+          })}
+        </div>
+        {/* 地址栏 */}
+        <div style={{ margin: '16px 22px', height: 62, borderRadius: 31, background: '#f6eee5', display: 'flex', alignItems: 'center', padding: '0 24px', gap: 14 }}>
+          <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#a08c7a" strokeWidth={2.2}><rect x={5} y={10} width={14} height={10} rx={2} /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+          <span style={{ ...type(34, 550), color: DARK }}>{typed(URL, f, 0, 40)}</span>
+          <span style={{ width: 3, height: 36, background: ORANGE, opacity: f < 44 ? blink(f, 16) : 0, marginLeft: -10 }} />
+        </div>
+        {/* 页面：44f 载入，大标题从下滑入 */}
+        <div style={{ position: 'absolute', left: 44, top: 168, right: 44 }}>
+          <div style={{ height: 6, borderRadius: 3, background: ORANGE, width: `${load * 100}%`, opacity: 1 - ramp(f, 56, 6, EASE.linear), marginBottom: 20 }} />
+          <div style={{ ...type(22, 750, { caps: true }), letterSpacing: '0.18em', color: ORANGE, opacity: load }}>Brasa 2.0</div>
+          <div style={{ overflow: 'hidden', marginTop: 8 }}>
+            <div style={{ ...type(96, 850), color: DARK, transform: `translateY(${(1 - load) * 110}%)` }}>Launch day.</div>
+          </div>
+          <div style={{ ...type(32, 500), color: '#7a6555', marginTop: 12, opacity: ramp(f, 50, 10, EASE.out) }}>Everything ships at 9:00 AM.</div>
         </div>
       </div>
-      {/* 输入 pill：从右侧滑入 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '8%',
-          bottom: '26%',
-          width: '84%',
-          height: 26,
-          borderRadius: 13,
-          background: 'rgba(255,255,255,0.78)',
-          backdropFilter: 'blur(6px)',
-          border: '0.5px solid rgba(20,22,28,0.08)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 8px',
-          boxSizing: 'content-box', // 同上：84% 为内容宽
-          gap: 6,
-          fontSize: 8,
-          boxShadow: 'inset 0 0.5px 0 #ffffff, 0 6px 16px -6px rgba(16,18,26,0.25)',
-          transform: `translateX(${(1 - slide) * 120}%)`,
-          marginBottom: -pop * 4,
-        }}
-      >
-        <span style={{ background: ACCENT, color: '#fff', borderRadius: 8, padding: '1px 5px', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>00:42</span>
-        <span style={{ flex: 1, color: t < 0.44 ? '#8a8d94' : INK, whiteSpace: 'nowrap' }}>
-          {t < 0.44 ? 'Leave a comment…' : REPLY.slice(0, n4)}
-        </span>
-        <svg width={10} height={10} viewBox="0 0 24 24" fill={sent ? ACCENT : ACCENT_SOFT}>
-          <path d="M3 20.5 21 12 3 3.5l2.6 7.1L14 12l-8.4 1.4z" />
+      <Corner n="01" label="Web" color="#9b8a7a" />
+    </div>
+  );
+};
+
+// ───────────── TR：终端 deploy + whip 急推 ─────────────
+const CMD = 'brasa deploy --prod';
+const QuadTR: React.FC<{ f: number }> = ({ f }) => {
+  const zip = ramp(f, 37, 10, EASE.smooth);
+  const zoom = mix(1, 1.85, zip);
+  const blur = 5 * Math.sin(Math.PI * zip);
+  const old = 1 - 0.92 * zip; // 急推时前几行退成背景
+  const line = (at: number) => ramp(f, at, 5, EASE.out);
+  const mono = (s: number, w = 500): React.CSSProperties => ({ ...type(s, w, { mono: true }), whiteSpace: 'pre' });
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 80% 90% at 70% 10%, #2a1810 0%, ${DARK} 60%, #0d0705 100%)` }}>
+      <div style={{
+        position: 'absolute', left: 80, top: 100, width: 800,
+        transform: `translateY(${(-40 * zip).toFixed(2)}px) scale(${zoom})`, transformOrigin: '0px 225px', filter: blur > 0.2 ? `blur(${blur.toFixed(2)}px)` : undefined,
+      }}>
+        <div style={{ ...mono(36), color: L.ink, opacity: old }}>
+          <span style={{ color: ORANGE }}>$ </span>{typed(CMD, f, 0, 24)}
+          <span style={{ display: 'inline-block', width: 20, height: 38, verticalAlign: '-6px', background: L.ink, opacity: f < 27 ? blink(f, 14, 5) : 0 }} />
+        </div>
+        <div style={{ ...mono(32), color: L.ink2, marginTop: 30, opacity: line(27) * old, transform: `translateX(${(1 - line(27)) * -16}px)` }}>
+          <span style={{ color: L.accent2 }}>✓</span> build      1.8s
+        </div>
+        <div style={{ ...mono(32), color: L.ink2, marginTop: 14, opacity: line(33) * old, transform: `translateX(${(1 - line(33)) * -16}px)` }}>
+          <span style={{ color: L.accent2 }}>✓</span> edge       12 regions
+        </div>
+        <div style={{ ...mono(40, 700), color: L.ink, marginTop: 36, opacity: line(37) }}>
+          <span style={{ color: ORANGE, textShadow: `0 0 18px ${alpha(ORANGE, 0.8)}` }}>●</span> live in <span style={{ color: L.accent2 }}>4.2s</span>
+        </div>
+      </div>
+      <Corner n="02" label="Ship" color={L.ink3} />
+    </div>
+  );
+};
+
+// ───────────── BL：三词砸下 ─────────────
+const WORDS: Array<[string, number]> = [['Write.', 14], ['Ship.', 30], ['Repeat.', 49]];
+const QuadBL: React.FC<{ f: number }> = ({ f }) => (
+  <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(150deg, #ff8340 0%, ${ORANGE} 45%, #e8541c 100%)` }}>
+    <div style={{ position: 'absolute', left: 64, top: 70 }}>
+      {WORDS.map(([w, at], i) => {
+        const s = Math.min(1, Math.max(0, (f - at) / 8));
+        if (s <= 0) return <div key={w} style={{ height: 132 * 0.98 }} />;
+        const y = (1 - EASE.overshoot(s)) * -70;
+        const last = i === WORDS.length - 1;
+        return (
+          <div key={w} style={{
+            ...type(132, 900), lineHeight: 0.98, color: last ? CREAM : DARK, opacity: Math.min(1, s * 3),
+            transform: `translateY(${y.toFixed(2)}px) scale(${mix(1.12, 1, EASE.snappy(s)).toFixed(4)})`, transformOrigin: '0% 100%',
+          }}>{w}</div>
+        );
+      })}
+    </div>
+    <Corner n="03" label="Brand" color={DARK} />
+  </div>
+);
+
+// ───────────── BR：审批 → 发布 → 上线通知 ─────────────
+// 光标锚点（格内坐标，tip）
+const P_START: [number, number] = [860, 470];
+const P_APPROVE: [number, number] = [270, 318];
+const P_PUBLISH: [number, number] = [560, 318];
+const qBez = (a: number[], b: number[], c: number[], t: number): [number, number] => {
+  const u = 1 - t;
+  return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]];
+};
+const QuadBR: React.FC<{ f: number }> = ({ f }) => {
+  const slide = ramp(f, 4, 10, EASE.snappy);
+  const m1 = ramp(f, 14, 11, EASE.swift);
+  const m2 = ramp(f, 38, 12, EASE.swift);
+  const p = m2 > 0 ? qBez(P_APPROVE, [470, 250], P_PUBLISH, m2) : qBez(P_START, [620, 520], P_APPROVE, m1);
+  const press = (at: number) => Math.sin(Math.PI * Math.min(1, Math.max(0, (f - at) / 5)));
+  const approved = ramp(f, 27, 6, EASE.snappy);
+  const published = f >= 54;
+  const toast = ramp(f, 56, 10, EASE.overshoot);
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 90% 90% at 70% 20%, #f4e6d6 0%, ${LATTE} 60%, #dcc5ae 100%)` }}>
+      {/* 发布审批卡 */}
+      <div style={{
+        position: 'absolute', left: 120, top: 120, width: 620, padding: '30px 34px', borderRadius: 22, background: '#fffaf4',
+        border: '1px solid rgba(60,30,10,0.10)', boxShadow: '0 2px 4px rgba(60,30,10,0.08), 0 26px 50px -22px rgba(60,30,10,0.4)',
+        transform: `translateX(${(1 - slide) * -60}px)`, opacity: slide,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ ...type(40, 750), color: DARK }}>Release v2.0</div>
+          <div style={{ marginLeft: 'auto', display: 'flex' }}>
+            {['#e8541c', '#3d5a80', '#c4552d'].map((c, i) => (
+              <div key={c} style={{ width: 40, height: 40, borderRadius: 20, background: c, border: '3px solid #fffaf4', marginLeft: i ? -12 : 0, ...type(18, 700), color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{'MJR'[i]}</div>
+            ))}
+          </div>
+        </div>
+        <div style={{ ...type(30, 500), color: '#7a6555', marginTop: 10 }}>14 changes · 2 reviewers</div>
+        <div style={{ display: 'flex', gap: 16, marginTop: 30 }}>
+          <div style={{
+            width: 260, height: 70, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+            border: `2px solid ${approved > 0.5 ? '#2f9e5b' : 'rgba(60,30,10,0.22)'}`, background: approved > 0.5 ? 'rgba(47,158,91,0.12)' : 'transparent',
+            ...type(32, 650), color: approved > 0.5 ? '#237a46' : DARK, transform: `scale(${1 - 0.06 * press(25)})`,
+          }}>{approved > 0.5 ? 'Approved ✓' : 'Approve'}</div>
+          <div style={{
+            width: 280, height: 70, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: published ? ORANGE : DARK, ...type(32, 700), color: published ? L.onAccent : CREAM,
+            opacity: mix(0.45, 1, approved), transform: `scale(${1 - 0.06 * press(52)})`,
+          }}>{published ? 'Published' : 'Publish'}</div>
+        </div>
+      </div>
+      {/* 上线通知：链尾重音 */}
+      {toast > 0 && (
+        <div style={{
+          position: 'absolute', right: 56, bottom: 44, padding: '20px 26px', borderRadius: 18, background: DARK, display: 'flex', alignItems: 'center', gap: 16,
+          boxShadow: '0 24px 50px -18px rgba(30,12,4,0.7)', transform: `translateY(${(1 - toast) * 40}px) scale(${mix(0.85, 1, toast)})`, opacity: Math.min(1, toast * 2),
+        }}>
+          <span style={{ width: 16, height: 16, borderRadius: 8, background: ORANGE, boxShadow: `0 0 14px ${ORANGE}` }} />
+          <span style={{ ...type(32, 650), color: CREAM }}>Live · <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Math.round(3214 * ramp(f, 56, 30, EASE.snappy)).toLocaleString('en-US')}</span> visitors</span>
+        </div>
+      )}
+      {/* 光标 */}
+      {f >= 10 && f < 76 && (
+        <svg width={34} height={46} viewBox="-1 -1 18 26" style={{
+          position: 'absolute', left: p[0], top: p[1], overflow: 'visible', opacity: ramp(f, 10, 4, EASE.out) * (1 - ramp(f, 68, 8, EASE.exit)),
+          transform: `scale(${1 - 0.18 * Math.max(press(25), press(52))})`, transformOrigin: '0 0', filter: 'drop-shadow(0 3px 5px rgba(40,20,8,0.4))',
+        }}>
+          <path d="M0 0 L0 20.5 L4.9 15.9 L8.1 23.4 L11.4 22 L8.3 14.7 L14.8 14.7 Z" fill={DARK} stroke="#fff" strokeWidth={1.6} strokeLinejoin="round" />
         </svg>
-      </div>
-      {/* 光标：两段点击各缩一次 */}
-      <div
-        style={{
-          position: 'absolute',
-          zIndex: 5,
-          left: `${p[0]}%`,
-          top: `${p[1]}%`,
-          transformOrigin: '0 0',
-          transform: `scale(${1 - Math.sin(c1 * Math.PI) * 0.3 - Math.sin(c2 * Math.PI) * 0.3})`,
-        }}
-      >
-        <Arrow />
-      </div>
+      )}
+      <Corner n="04" label="Review" color="#8f735c" />
     </div>
   );
 };
 
 export const QuadSplitParallelScenes: React.FC = () => {
-  const t = useT();
-  const frame = Math.floor(t * 63); // dur 2100ms @30fps
-  const scenes = [
-    <QuadTL key={0} t={t} frame={frame} />,
-    <QuadTR key={1} t={t} frame={frame} />,
-    <QuadBL key={2} t={t} />,
-    <QuadBR key={3} t={t} />,
-  ];
+  const f = useCurrentFrame();
+  const scenes = [<QuadTL f={f} />, <QuadTR f={f} />, <QuadBL f={f} />, <QuadBR f={f} />];
   return (
-    <AbsoluteFill>
-      <DesignStage bg="#0f1014" raster="zoom">
-        {scenes.map((scene, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: `${(i % 2) * 50}%`,
-              top: `${(i >> 1) * 50}%`,
-              width: '50%',
-              height: '50%',
-              overflow: 'hidden',
-              background: BGS[i],
-            }}
-          >
-            {scene}
-          </div>
-        ))}
-      </DesignStage>
-      <Vignette strength={0.16} inner={0.6} color="#0b0c12" />
-      <Grain opacity={0.05} />
+    <AbsoluteFill style={{ fontFamily: FONT.sans, overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.5 }} fill={null} grain={0} vignette={0.3} />
+      {QUADS.map((q, i) => (
+        <div key={i} style={{
+          position: 'absolute', left: q.x, top: q.y, width: QW, height: QH, borderRadius: 20, overflow: 'hidden',
+          boxShadow: `inset 0 1px 0 ${alpha('#ffffff', i === 1 ? 0.06 : 0.35)}`,
+        }}>
+          {scenes[i]}
+        </div>
+      ))}
+      <Grain opacity={0.06} blend="overlay" />
     </AbsoluteFill>
   );
 };

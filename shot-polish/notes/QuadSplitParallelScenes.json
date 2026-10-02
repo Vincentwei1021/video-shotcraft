@@ -1,32 +1,31 @@
 {
   "stem": "QuadSplitParallelScenes",
   "issues": [
-    "四格全是占位文案：\"Placeholder headline text\"、\"Tab One…Tab Six\"、\"and a second line of copy\"、\"One clear message\"",
-    "四格底色是四档相近的中性灰，整屏灰扑扑，没有主次与色彩节奏",
-    "浏览器窗下半是空白，tab 名在窄 tab 里被切成半个字母",
-    "TR 急推焦点偏左，推近后打字行两头都被裁掉、光标出格，读不到正在打的字",
-    "BR 光标是带黑边的白圆点，评论卡只有两行粗体字；窗体只有一层通用阴影"
+    "四格全是占位文案（Placeholder headline / Section label / One clear message / Tab Tab Tab），读不出在讲什么",
+    "设计坐标 480×270 放大，格内字只有十几像素等效，tab 与评论卡几乎不可读",
+    "灰 / 浅 / 靛蓝三种互不相干的底色，没有统一的 look 与品牌",
+    "63f 全程轰炸、没有收尾，最后一帧不是一张完整画面"
   ],
   "changes": [
-    "时刻表一帧未动（63f、各象限错拍 0.08/0.13、0.42–0.54 急推、0.24/0.46/0.56 三词、BR 五步链），文案换成同一产品的真实感内容且保持原字符数：搜索 \"Launch notes for Atlas v2\"、命令 \"$ deploy --prod --region eu\"、\"Plan. Ship. Grow.\"、回复 \"Approved!\"",
-    "四格底色改为对角交错的浅冷灰 / 深墨 / 强调靛 / 浅暖灰（各带低对比渐变），BL 三词改白字压在强调色上（md 同步）",
-    "浏览器窗补标题行 + 强调色按钮 + 配图块的页面骨架；tab 改 ≤4 字符名居中，末 tab 落定为选中态",
-    "TR 急推焦点挪到 80%、mono 字号 11→10，推近后命令行尾部与光标始终在格内；命令卡放到深色场上并加深投影",
-    "BR 光标换 macOS 箭头、评论卡加首字母头像与\"Maya · just now\"、发送键换实心图标随输入完成变色；全部窗体统一发丝线 + 内高光 + 两层软阴影，全画面叠暗角与 5% 颗粒"
+    "look 改为 ember：四格 = 虚构产品 Brasa 发布日同时发生的四件事（打开发布页 / 终端 deploy / 品牌口号 / 审批发布），奶油·暖黑·橙·拿铁棋盘交错，8px 暖黑缝 + 圆角分格",
+    "格内全部按 1080p 原生排版：地址栏 34px、终端 36–40px mono、BL 三个 132px 大词、审批卡按钮 32px，辅助字都 ≥32px",
+    "错拍表重排：tab 6/11/16/21、终端输出 27/33、急推 37、词 14/30/49、点击 25/52、通知 56——相邻重事件间隔 ≥3f，光标闪烁 16f / 14f 错相",
+    "TR 急推改为以末行为原点 1→1.85 + sin 包络模糊，旧行退到 8%，落成一句巨大的「● live in 4.2s」",
+    "时长 63f→90f：62f 后四格落在终态拼成一张海报（Launch day. / live in 4.2s / Write. Ship. Repeat. / Live · 3,214 visitors）hold 28f"
   ],
   "issuesEn": [
-    "All four quadrants used placeholder copy: 'Placeholder headline text', 'Tab One…Tab Six', 'and a second line of copy', 'One clear message'",
-    "The four backgrounds were near-identical neutral greys, making the frame dull with no hierarchy or colour rhythm",
-    "The bottom half of the browser window was empty, and tab names were cut mid-letter in the narrow tabs",
-    "The TR whip push was focused too far left, so after zooming both ends of the typed line and the caret were cropped out",
-    "The BR cursor was a white dot with a black ring, the comment card was two bold lines, and every window had the same generic shadow"
+    "All four quadrants used placeholder copy (Placeholder headline, Section label, One clear message, Tab Tab Tab) that said nothing",
+    "Built in a 480x270 design space and scaled up, so the text was effectively a dozen pixels tall and tabs and comments were unreadable",
+    "Grey, pale and indigo backgrounds with no shared look or brand",
+    "All 63f were bombardment with no ending; the last frame was not a complete picture"
   ],
   "changesEn": [
-    "Timing is untouched (63f, 0.08/0.13 tab offsets, 0.42–0.54 push, 0.24/0.46/0.56 words, the five-step BR chain); copy is now realistic product content with the original character counts: search 'Launch notes for Atlas v2', command '$ deploy --prod --region eu', 'Plan. Ship. Grow.', reply 'Approved!'",
-    "Backgrounds now alternate diagonally: cool light grey / deep ink / accent indigo / warm light grey, each with a low-contrast gradient; the BL words are white on the accent (card updated)",
-    "The browser window gets a page skeleton (heading bar, accent button, image block); tabs use names of four characters or fewer, centred, and the last tab settles as active",
-    "The TR push focus moved to 80% and mono size went 11→10, so the end of the command line and the caret stay in frame after the push; the command card sits on the dark field with a deeper shadow",
-    "BR uses a macOS arrow cursor, the comment card has an initials avatar and 'Maya · just now', and the send icon fills in when typing finishes; all windows share hairline borders, an inner highlight and a two-layer soft shadow, with a vignette and 5% grain over the frame"
+    "Ember look: the quadrants are four simultaneous launch-day moments for the fictional product Brasa (launch page, terminal deploy, brand slogan, approve and publish) in a cream / warm-black / orange / latte checkerboard with 8px gutters and rounded corners",
+    "Everything is laid out natively at 1080p: 34px address bar, 36-40px terminal mono, three 132px words, 32px buttons, every supporting line at least 32px",
+    "Re-timed off-beat sheet: tabs 6/11/16/21, terminal lines 27/33, whip zoom 37, words 14/30/49, clicks 25/52, toast 56, with at least 3f between heavy events and caret blinks at 16f vs 14f out of phase",
+    "The TR whip zoom now scales 1 to 1.85 about the last line with a sine-envelope blur while older lines fade to 8%, landing on a huge '● live in 4.2s'",
+    "Duration 63f to 90f: after 62f all four quadrants settle into end states that form one poster (Launch day. / live in 4.2s / Write. Ship. Repeat. / Live · 3,214 visitors) held for 28f"
   ],
+  "look": "ember",
   "mdChanged": true
 }

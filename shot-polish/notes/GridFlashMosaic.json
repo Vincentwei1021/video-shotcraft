@@ -1,32 +1,31 @@
 {
   "stem": "GridFlashMosaic",
   "issues": [
-    "没有导出时长常量，工作台从源码抓到 14f，只渲染出填墙前的空底，九宫格一格都没亮",
-    "九格里有两格是灰底上放一张小卡的\"灰卡格\"，其余裁切偏移随手取，多数格子切在卡片之间的空隙",
-    "整面墙是亮灰底 + 白格 + 黑描边，九格同一明度，墙面没有节奏",
-    "入格 3f 缩放是线性插值，吞屏时其余格不受影响，中心格放大缺纵深",
-    "吞屏结束后仍是 0.3125x 缩略页经 3.28 倍 transform 放大，作为收尾满屏页面字边不可靠"
+    "九格全是灰白 dashboard 局部裁切，格子里读不出任何功能，墙只是一堆骨架条",
+    "前 25f 是一块灰底 + 一个孤零零的小卡，开场像死帧",
+    "吞屏用纯 ease-in，带着全速停在满屏帧，落点生硬",
+    "吞屏后落在一张普通 dashboard 页面上，没有品牌、没有文案收尾"
   ],
   "changes": [
-    "补 GRID_FLASH_MOSAIC_DURATION = 140（铺垫 25f + 填墙 19f + 呼吸 14f + 吞屏 14f + 真静止 68f）；每 2f 一格、h(i) 乱序、1.18→1、3.28x 吞屏全部不变",
-    "八个裁切全部对准真实模块（Active users / Revenue / Sessions 指标卡居中留 35px 边、Quarterly goals、Deploys 热力图、三段列表行），去掉灰卡格",
-    "墙改为带色相的深色 Backdrop + 12px 暗缝，格子亮 / 暗两套皮肤棋盘交错（暗格用 FakeDashboard tone=\"dark\"），描边与缝同色系深墨",
-    "入格缩放改 cubic-bezier(0.16,1,0.3,1)（首帧就砸到位附近）；吞屏时其余格同步压暗 42% 退后、中心格加大投影",
-    "吞屏终帧摘罩：满屏页面按终帧几何（缩略页原点经 3.28 绕屏心放大）用 CSS zoom 直出，网格与描边彻底卸载，叠暗角 + 颗粒"
+    "look 改为 midnight：外围 8 格 = 虚构工作台 Ninefold 的 8 件工具，每格一个为镜头设计的大图形 + 48px 名称 + 一个数据；中心格就是品牌海报，3×3 方块字标与九宫格墙语义闭环",
+    "开场第 1 帧就是 9 个暗槽；外围格每 2f 一格乱序硬切亮相（4f scale 1.12→1 + 白闪），中心格晚 2f 最后砸下当重拍",
+    "满墙停 22f：整墙 1.006 呼吸，格内图形各自动一下（柱子长、声纹跳、⌘K 打字、最后一项被勾掉）",
+    "吞屏改为 3f 预备缩 0.97 + 16f 强加速尾段急刹放大到 3.4，外围格同时外推、缩小、压暗让出纵深；格子圆角同步收成直角",
+    "摘罩后海报原生直出：「Nine tools. One workspace.」逐词升起 + PUBLIC BETA 标签，1.5% 推近 hold"
   ],
   "issuesEn": [
-    "No exported duration; the workbench grabbed 14f from the source, so only the empty pre-fill background rendered and no cell ever lit",
-    "Two of the nine cells were 'grey cards' (a small card on grey), and the remaining crop offsets were arbitrary, mostly landing in gaps between cards",
-    "The whole wall was light grey with white cells and black borders, all at one brightness, so it had no rhythm",
-    "The 3f pop-in scale was a linear interpolation, and the other cells ignored the centre zoom, so it had no depth",
-    "After the zoom the final full-screen page was still a 0.3125x thumbnail magnified 3.28x by transform, so text sharpness on the hold was unreliable"
+    "All nine cells were grey dashboard crops; no feature was readable and the wall was just skeleton bars",
+    "The first 25f were a grey field with one lonely small card, a dead-looking opening",
+    "The swallow zoom was pure ease-in and stopped at full speed on the full-screen frame",
+    "It landed on an ordinary dashboard page with no brand or closing copy"
   ],
   "changesEn": [
-    "Added GRID_FLASH_MOSAIC_DURATION = 140 (25f lead-in + 19f fill + 14f breath + 14f zoom + 68f true hold); 2f per cell, h(i) shuffle, 1.18→1 pop and the 3.28x zoom unchanged",
-    "All eight crops now frame real modules (Active users / Revenue / Sessions cards centred with 35px margins, Quarterly goals, the Deploys heatmap, three list-row bands); the grey-card cells are gone",
-    "The wall sits on a tinted dark Backdrop with 12px dark gutters, cells alternate light and dark skins in a checkerboard (dark cells use FakeDashboard tone=\"dark\"), and borders use the same dark ink as the gutters",
-    "Pop-in scale uses cubic-bezier(0.16,1,0.3,1) so it lands almost immediately; during the zoom the other cells darken 42% and recede while the centre cell's shadow deepens",
-    "The last zoom frame unmasks to a full-screen page rendered with CSS zoom at the exact end geometry (thumbnail origin scaled 3.28x around centre), dropping the grid and borders, with vignette and grain"
+    "Midnight look: the eight outer cells are eight tools of the fictional workspace Ninefold, each with a purpose-built graphic, a 48px name and one stat; the centre cell is the brand poster whose 3x3 mark echoes the wall",
+    "Frame 1 already shows nine dark slots; outer cells hard-cut in every 2f in shuffled order (4f scale 1.12 to 1 plus a white flash) and the centre slams in 2f later as the downbeat",
+    "The full wall holds 22f with a 1.006 breath while each tile's graphic moves once (bars grow, waveform jumps, Cmd-K types, a task gets checked)",
+    "The swallow is a 3f anticipation to 0.97 then a 16f accelerate-and-brake zoom to 3.4 while outer cells push out, shrink and darken; the cell corners square off as it grows",
+    "After unmounting, the poster renders natively: 'Nine tools. One workspace.' rises word by word with a PUBLIC BETA tag and a 1.5% push hold"
   ],
-  "mdChanged": false
+  "look": "midnight",
+  "mdChanged": true
 }

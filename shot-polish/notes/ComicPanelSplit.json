@@ -1,32 +1,31 @@
 {
   "stem": "ComicPanelSplit",
   "issues": [
-    "左上卡里叠了一块白底 KPI 数字块（1,284 + 灰条），在新 dashboard 上正好盖住 Active users 卡的曲线，像贴上去的补丁",
-    "没有导出时长常量，工作台从源码抓到 45f，第三格扩张与摘罩后的特写都没渲染出来",
-    "三格机位一格对中上卡、一格对左上浮块，不是同一主体的层层逼近；摘罩后的满屏特写里还露着半截侧栏",
-    "未弹入的区域是纯白死区，缝线是平面双线，分格没有纸面层次",
-    "定格期微推是线性的，扩张段 650px/12f 的高速横移没有任何运动模糊"
+    "主体是灰白占位 dashboard，三格只是同一张截图的不同裁切，看不出\"同一主体三个机位\"在讲什么",
+    "浅灰纸底 + 灰色卡片，整片没有光、没有强调色，暂停任一帧都不像设计过的画面",
+    "定格期三格只是各自缓推几个百分点，读作截图拼贴",
+    "吃屏后落在一张放大的 1,284 数字卡上，没有结尾海报与文案"
   ],
   "changes": [
-    "删除浮在卡上的 KPI 白块，数字特写直接对准页面自身的 Active users 指标 \"24,812 ↗+12.4%\"，三格全部对准同一张卡：全景 1x / 曲线特写 1.9x / 指标特写 2.6x",
-    "补 COMIC_PANEL_SPLIT_DURATION = 150；分格 20f、2f 错峰、3f 弹入、18f 定格、12f out-cubic 扩张、57f 摘罩全部不变",
-    "机位改为\"焦点 F 落到屏幕 C\"参数化，扩张时 F/C 同步插值到满屏终点（焦点 x=590，2.6x 视口左缘恰好避开侧栏）；摘罩帧改 CSS zoom 栅格化，字边锐利",
-    "纸面改暖白 #f3f2ee + 颗粒；斜缝在 16px 墨线 + 10px 白核下垫一层 7px 高斯柔影，像印在纸上的格子；弹入脉冲改带色相的深色",
-    "定格微推改 in-out（扩张起点速度归零）；扩张段第三格内容与移动缝线按速度挂横向 SpeedBlur"
+    "look 改为自定义「漫画墨」：带红相的墨黑 + 奶油纸色缝线 + 朱砂红强调，格内铺半调网点，像印刷漫画",
+    "主体换成 SVG 矢量绘制的虚构定焦镜头 SAROS 35mm f/1.2：三格 = 3/4 侧拍全身 / 对焦环特写 / 镜片微距，放大到 2.45x 字边依然锐利",
+    "节奏改为 4f 一刀：三刀斜缝 3f 从上往下劈出，同帧硬切弹入 + 白闪，被劈开的区域保留压暗原画面；每格晚 7f 盖章一个漫画旁白框",
+    "保活改为主体自己在工作：对焦环转 26°（距离刻度滑过红色指示）、11 片光圈叶片收拢",
+    "末格 2f 反向回拉后 14f 扫屏，镜片机位同步滑到海报构图并按速度横向拖影；落定后左侧 150px 大标题「See in / the dark.」逐行升起，收尾 hold 50f"
   ],
   "issuesEn": [
-    "A white KPI block (1,284 plus a grey bar) was stacked on the top-left card and, on the new dashboard, covered the Active users chart like a pasted patch",
-    "No exported duration; the workbench grabbed 45f from the source, so the third panel's expansion and the final close-up never rendered",
-    "Panel cameras pointed at the top-middle card and the floating block rather than pushing in on one subject, and the full-screen close-up showed half a sidebar",
-    "Areas not yet popped in were dead white, the gutters were flat double lines, and the panels had no printed-page depth",
-    "The hold-phase push was linear, and the 650px-in-12f expansion had no motion blur"
+    "The subject was a grey placeholder dashboard; the three panels were crops of one screenshot and never read as one subject from three cameras",
+    "Pale grey paper and grey cards with no light or accent; no frame looked designed",
+    "During the hold the panels only crept in by a few percent, reading as a screenshot collage",
+    "The expansion landed on an enlarged '1,284' card with no end poster or copy"
   ],
   "changesEn": [
-    "Removed the floating KPI block; the digit close-up now frames the page's own Active users metric '24,812 ↗+12.4%', and all three panels frame that one card: wide 1x / chart 1.9x / metric 2.6x",
-    "Added COMIC_PANEL_SPLIT_DURATION = 150; split at 20f, 2f stagger, 3f pop, 18f hold, 12f out-cubic expansion and the frame-57 unmask all unchanged",
-    "Cameras are now parameterised as 'focus F lands at screen point C', and during expansion F and C interpolate together to the full-screen end (focus x=590, so the 2.6x view's left edge clears the sidebar); the unmasked frame uses CSS zoom so text stays sharp",
-    "Paper is now warm white #f3f2ee with grain; each slanted gutter (16px ink + 10px white core) sits on a 7px Gaussian soft shadow so the panels read as printed; the pop pulse uses a tinted dark",
-    "The hold push is now in-out (zero velocity when expansion starts); during expansion the third panel's content and the moving gutter get velocity-based horizontal SpeedBlur"
+    "Custom 'comic ink' look: red-tinted ink black, cream paper gutters, a single vermilion accent and halftone dots in each panel",
+    "Subject is a fictional SAROS 35mm f/1.2 lens drawn in SVG: 3/4 full body, focus-ring close-up and glass macro, all vector so text stays sharp at 2.45x",
+    "Cuts land every 4f: each slanted gutter draws top to bottom in 3f, its panel hard-cuts in with a white flash over the darkened original; comic caption boxes stamp in 7f later",
+    "Panels stay alive through the product itself: the focus ring turns 26 degrees past the red index and eleven aperture blades close",
+    "The last panel pulls back 2f then sweeps the screen in 14f with horizontal motion blur, landing on a poster with a 150px 'See in / the dark.' headline and a 50f hold"
   ],
-  "mdChanged": false
+  "look": "custom",
+  "mdChanged": true
 }

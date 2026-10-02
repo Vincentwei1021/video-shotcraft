@@ -1,85 +1,226 @@
-// grid-flash-mosaic —— 九宫格闪切
-// 深色墙 → f25 起 3×3 网格按十六分音符(每 2f)逐格啪啪硬入(顺序 h(i) 打乱)，
-// 每格 = 同一产品 dashboard 的不同区域裁切（亮 / 暗两套皮肤交错）；入格 3f scale 1.18→1 + 2f 加深脉冲。
-// 填满后停 14f(整墙微呼吸 1.008) → 中心格 14f Easing.in(cubic) 放大吞掉全屏
-// 成为满屏页面。收尾真静止 ≥40f。
-// 质感：格子落在带色相的深色墙上（12px 暗缝 + 3px 深色描边分格），裁切全部对准真实模块
-// （指标卡 / 列表行 / 柱状图 / 热力图），亮暗皮肤棋盘交错让墙有节奏；吞屏时其余格同步压暗
-// 退后，给中心格让出纵深；吞屏完成后摘罩，满屏页面走 CSS zoom 直出（字边锐利、描边彻底卸载）。
+// grid-flash-mosaic —— 九宫格闪切：3×3 格按十六分音符逐格硬切亮相，填满停一拍，中心格放大吞掉全屏。
+//
+// 第二轮重设计（深蓝夜 · 九件工具一面墙）：
+// - look = midnight（深蓝 · 电光蓝，青绿只做在线点 / 勾选这类点缀）。主体换成虚构工作台「Ninefold」：
+//   8 个外围格 = 8 件工具（Threads / Search / Insights / Calendar / Code / Voice / Tasks / Vault），每格一个为镜头
+//   设计的大图形（气泡、⌘K、柱状、月历、代码、声纹、勾选、锁）+ 44px 名称 + 一个数据——一眼读出"功能矩阵"。
+//   中心格 = 品牌海报本身（3×3 方块字标 + 「Ninefold」）：九宫格墙 = 字标的九个方块，吞屏后语义闭环。
+// - 硬入是命门：未到拍点不渲染、零淡入；每格落下那一帧 4f scale 1.12→1 + 一次白闪（亮场上的"啪"），
+//   顺序打乱、每 2f 一格，中心格晚 2f 最后砸下（重拍）。填满后每格内的小图形各自动一下保活（柱子长、声纹跳、光标打字）。
+// - 吞屏：3f 预备缩到 0.97 → 16f 强加速、尾段急刹地放大到 3.4（格子圆角同步收成直角，边框滑出画外）；外围 8 格同时
+//   向外推开、缩小、压暗——给中心格让出纵深。吞屏完成后摘罩，海报按原生尺寸直出，标语逐词升起。
+//
+// 时间表（30fps，共 140f）：
+//   0–12    空墙：深蓝舞台 + 9 个暗格槽位（第 1 帧就有画面，等待被点亮）
+//   12–26   外围 8 格硬切亮相（每 2f 一格，乱序）
+//   30      中心格最后砸下（白闪更强）
+//   30–52   满墙停一拍：整墙 1.006 呼吸，格内图形各自动一下
+//   52–71   吞屏：3f 预备 + 16f 强加速 / 尾段急刹放大
+//   74–100  海报：标语 rise 逐词、副标 blur 入
+//   100–140 hold：1.5% 极缓推近
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { FakeDashboard } from '../../_fixtures/Fixtures';
-import { Backdrop, EASE, Grain, Vignette, ramp } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, glow, type } from '../../_fixtures/Look';
 
-export const GRID_FLASH_MOSAIC_DURATION = 140; // 铺垫 25f + 填墙 19f + 呼吸 14f + 吞屏 14f + 真静止 68f
+export const GRID_FLASH_MOSAIC_DURATION = 140;
 
-const h = (n: number) => {
-  const s = Math.sin(n * 127.3) * 43758.5453;
-  return s - Math.floor(s);
+const L = LOOKS.midnight;
+
+// ───────────── 网格几何（16:9 格子，放大 3.333 恰好铺满）─────────────
+const CW = 576;
+const CH = 324;
+const GAP = 16;
+const GX = (1920 - (CW * 3 + GAP * 2)) / 2; // 80
+const GY = (1080 - (CH * 3 + GAP * 2)) / 2; // 38
+const MINI = CW / 1920; // 中心格里的海报缩放 0.3
+const ZOOM = 3.4; // >3.333：边框完全滑出画外
+const END_S = MINI * ZOOM; // 摘罩后海报的缩放 1.02
+
+// ───────────── 时间 ─────────────
+const FILL0 = 12;
+const STEP = 2;
+const ORDER = [2, 6, 0, 8, 3, 1, 7, 5]; // 外围格乱序
+const CENTER_AT = FILL0 + ORDER.length * STEP + 2; // 30：中心格晚一拍
+const Z0 = 52; // 预备起
+const ZPRE = 3;
+const ZDUR = 16;
+const Z1 = Z0 + ZPRE + ZDUR; // 71
+const TAG = 74;
+
+const startOf = (i: number) => (i === 4 ? CENTER_AT : FILL0 + ORDER.indexOf(i) * STEP);
+
+// 中心格缩放：预备 0.97 → 强加速、尾段急刹的不对称 in-out 放大到 ZOOM（满屏那一刻不带着全速硬停）
+const ZOOM_EASE = bezier(0.75, 0, 0.22, 1);
+const zoomAt = (f: number) => {
+  const pre = ramp(f, Z0, ZPRE, EASE.out);
+  const go = ramp(f, Z0 + ZPRE, ZDUR, ZOOM_EASE);
+  return mix(1 - 0.03 * pre, ZOOM, go);
 };
 
-const CELL_W = 600;
-const CELL_H = 340;
-const GAP = 12;
-const BORDER = 3;
-const GRID_X = (1920 - (CELL_W * 3 + GAP * 2)) / 2; // 48
-const GRID_Y = (1080 - (CELL_H * 3 + GAP * 2)) / 2; // 18
-const INK = '#0e0f13'; // 描边：与暗缝同色系的深墨
+// ───────────── 外围 8 格的内容 ─────────────
+type Tile = { kicker: string; name: string; stat: string };
+const TILES: Record<number, Tile> = {
+  0: { kicker: 'Chat', name: 'Threads', stat: '1.2k today' },
+  1: { kicker: 'Find', name: 'Search', stat: '12 ms' },
+  2: { kicker: 'Analytics', name: 'Insights', stat: '+38%' },
+  3: { kicker: 'Plan', name: 'Calendar', stat: 'Fri 14' },
+  5: { kicker: 'Build', name: 'Code', stat: 'main ✓' },
+  6: { kicker: 'Meet', name: 'Voice', stat: '02:14' },
+  7: { kicker: 'Do', name: 'Tasks', stat: '18 / 20' },
+  8: { kicker: 'Secure', name: 'Vault', stat: 'SOC 2' },
+};
 
-const FILL_START = 25; // 第一格落下
-const STEP = 2; // 十六分音符：每 2f 一格
-// 打乱顺序：索引按 h(i+1) 排序
-const ORDER = Array.from({ length: 9 }, (_, i) => i).sort((a, b) => h(a + 1) - h(b + 1));
-const RANK: number[] = [];
-ORDER.forEach((cell, k) => (RANK[cell] = k));
-
-const LAST_IN = FILL_START + 8 * STEP + 3; // 最后一格入格动画结束 f44
-const HOLD_END = LAST_IN + 14; // 整墙呼吸段结束 f58
-const ZOOM_DUR = 14;
-const ZOOM_END = HOLD_END + ZOOM_DUR; // f72，之后真静止
-
-// 中心格内是整页 FakeDashboard 缩小版(0.3125)，放大后正好成为满屏页面
-const MINI_SCALE = CELL_W / 1920; // 0.3125
-// 3.2 恰好铺满；加到 3.28 让格子的深色描边完全滑出画外，收尾满屏页面干净
-const ZOOM_SCALE = 3.28;
-const MINI_TOP = (CELL_H - 1080 * MINI_SCALE) / 2;
-
-// 摘罩后的满屏页面几何：与吞屏终帧逐像素一致（缩略页原点经 3.28 绕屏心放大后的位置）
-const MINI_OX = GRID_X + CELL_W + GAP + BORDER;
-const MINI_OY = GRID_Y + CELL_H + GAP + BORDER + MINI_TOP;
-const END_SCALE = MINI_SCALE * ZOOM_SCALE;
-const END_X = 960 + ZOOM_SCALE * (MINI_OX - 960);
-const END_Y = 540 + ZOOM_SCALE * (MINI_OY - 540);
-
-// 非中心格：FakeDashboard 裁切（页面坐标里取景框左上角 x/y + 变体 + 皮肤），对准真实模块；
-// 指标卡裁切左右各留 35px 让卡片居中（卡宽 524 / 格内宽 594）
-type Crop = { x: number; y: number; v: 'A' | 'B'; tone: 'light' | 'dark' };
-const CROPS: Array<Crop | null> = [
-  { x: 221, y: 88, v: 'A', tone: 'light' }, //   Active users 指标 + 曲线
-  { x: 250, y: 280, v: 'B', tone: 'dark' }, //   列表行：Edge cache rollout / Billing v2
-  { x: 1325, y: 88, v: 'A', tone: 'light' }, //  Revenue 柱状图
-  { x: 221, y: 570, v: 'A', tone: 'dark' }, //   Quarterly goals 进度
-  null, //                                       中心格(单独处理)
-  { x: 1325, y: 570, v: 'A', tone: 'light' }, // Sessions 曲线
-  { x: 1000, y: 92, v: 'B', tone: 'light' }, //  列表行：sparkline + 数值
-  { x: 773, y: 570, v: 'A', tone: 'dark' }, //   Deploys 热力图
-  { x: 1320, y: 470, v: 'B', tone: 'light' }, // 列表行：截止日 + 进度条
-];
-
-const CellContent: React.FC<{ i: number }> = ({ i }) => {
-  if (i === 4) {
-    // 中心格：整页 dashboard 缩到格内
+// 每格的大图形（局部坐标，放在格子右上区域；a = 保活进度 0→1）
+const Visual: React.FC<{ i: number; a: number; f: number }> = ({ i, a, f }) => {
+  const box: React.CSSProperties = { position: 'absolute', right: 34, top: 34 };
+  const blue = L.accent;
+  if (i === 0) {
     return (
-      <div style={{ position: 'absolute', left: 0, top: MINI_TOP, transform: `scale(${MINI_SCALE})`, transformOrigin: 'top left' }}>
-        <FakeDashboard variant="A" />
+      <div style={{ ...box, width: 250, display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-end' }}>
+        <div style={{ padding: '12px 18px', borderRadius: '20px 20px 6px 20px', background: L.surface2, border: `1px solid ${L.line}`, ...type(24, 500), color: L.ink2 }}>Ship it Friday?</div>
+        <div style={{ padding: '12px 18px', borderRadius: '20px 20px 20px 6px', background: blue, ...type(24, 600), color: L.onAccent, alignSelf: 'flex-start', transform: `translateY(${(1 - a) * 10}px)`, opacity: 0.4 + 0.6 * a }}>Merged ✓</div>
       </div>
     );
   }
-  const crop = CROPS[i] as Crop;
-  // 裁切片：整页 dashboard 以不同偏移塞进格子(相当于 backgroundPosition 各异)
+  if (i === 1) {
+    const q = 'roadmap q4';
+    const n = Math.floor(ramp(f, CENTER_AT, 16, EASE.linear) * q.length);
+    return (
+      <div style={{ ...box, width: 300, height: 64, borderRadius: 16, background: L.surface2, border: `1px solid ${alpha(blue, 0.5)}`, boxShadow: `0 0 0 4px ${alpha(blue, 0.12)}`, display: 'flex', alignItems: 'center', gap: 12, padding: '0 16px' }}>
+        <div style={{ ...type(22, 700, { mono: true }), color: L.ink2, padding: '4px 8px', borderRadius: 8, border: `1px solid ${L.line}` }}>⌘K</div>
+        <div style={{ ...type(26, 500, { mono: true }), color: L.ink }}>{q.slice(0, n)}<span style={{ color: blue, opacity: Math.floor(f / 8) % 2 ? 1 : 0.2 }}>▍</span></div>
+      </div>
+    );
+  }
+  if (i === 2) {
+    const hs = [0.35, 0.5, 0.42, 0.62, 0.55, 0.74, 0.68, 1];
+    return (
+      <div style={{ ...box, width: 260, height: 150, display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+        {hs.map((h, k) => (
+          <div key={k} style={{ flex: 1, height: `${h * (0.55 + 0.45 * a) * 100}%`, borderRadius: 5, background: k === hs.length - 1 ? blue : alpha(L.ink, 0.16), boxShadow: k === hs.length - 1 ? `0 0 24px ${alpha(blue, 0.5)}` : undefined }} />
+        ))}
+      </div>
+    );
+  }
+  if (i === 3) {
+    return (
+      <div style={{ ...box, display: 'grid', gridTemplateColumns: 'repeat(7, 30px)', gap: 7 }}>
+        {Array.from({ length: 21 }, (_, k) => {
+          const on = k === 11;
+          return <div key={k} style={{ height: 30, borderRadius: 8, background: on ? blue : alpha(L.ink, k % 7 > 4 ? 0.05 : 0.1), ...type(16, 700), color: L.onAccent, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: on ? `scale(${1 + 0.15 * Math.sin(Math.PI * a)})` : undefined }}>{on ? '14' : ''}</div>;
+        })}
+      </div>
+    );
+  }
+  if (i === 5) {
+    const lines: Array<[string, string][]> = [
+      [['const ', L.ink3], ['ship', blue], [' = ', L.ink3], ['await', L.accent2]],
+      [['  deploy', L.ink], ['(', L.ink3], ["'prod'", '#f5b86b'], [')', L.ink3]],
+      [['// ', L.ink3], ['all checks passed', L.ink3]],
+    ];
+    return (
+      <div style={{ ...box, width: 300, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {lines.map((ln, k) => (
+          <div key={k} style={{ ...type(22, 500, { mono: true }), whiteSpace: 'pre', opacity: k === 2 ? 0.3 + 0.7 * a : 1 }}>
+            {ln.map(([t, c], j) => <span key={j} style={{ color: c }}>{t}</span>)}
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (i === 6) {
+    return (
+      <div style={{ ...box, width: 270, height: 110, display: 'flex', alignItems: 'center', gap: 6 }}>
+        {Array.from({ length: 24 }, (_, k) => {
+          const h = 0.25 + 0.75 * Math.abs(Math.sin(k * 0.9 + f * 0.22) * Math.cos(k * 0.37));
+          return <div key={k} style={{ flex: 1, height: `${h * 100}%`, borderRadius: 4, background: k < 15 ? blue : alpha(L.ink, 0.18) }} />;
+        })}
+      </div>
+    );
+  }
+  if (i === 7) {
+    return (
+      <div style={{ ...box, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {['Brief', 'Review', 'Launch'].map((t, k) => {
+          const done = k < 2 || a > 0.6;
+          return (
+            <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 30, height: 30, borderRadius: 9, background: done ? L.accent2 : 'transparent', border: `2px solid ${done ? L.accent2 : L.ink3}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {done && <svg width={18} height={18} viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke={L.onAccent} strokeWidth={3.2} fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+              </div>
+              <div style={{ ...type(26, 500), color: done ? L.ink3 : L.ink, textDecoration: done ? 'line-through' : 'none', width: 120 }}>{t}</div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  // 8: Vault
   return (
-    <div style={{ position: 'absolute', left: -crop.x, top: -crop.y }}>
-      <FakeDashboard variant={crop.v} tone={crop.tone} />
+    <svg width={150} height={150} viewBox="0 0 100 100" style={{ position: 'absolute', right: 60, top: 26 }}>
+      <circle cx={50} cy={50} r={44} fill="none" stroke={alpha(blue, 0.25)} strokeWidth={2} strokeDasharray="3 5" transform={`rotate(${a * 60} 50 50)`} />
+      <rect x={30} y={44} width={40} height={32} rx={7} fill={blue} />
+      <path d="M38 44 V36 a12 12 0 0 1 24 0 V44" fill="none" stroke={L.ink} strokeWidth={5} strokeLinecap="round" />
+      <circle cx={50} cy={60} r={4} fill={L.onAccent} />
+    </svg>
+  );
+};
+
+const ToolTile: React.FC<{ i: number; f: number }> = ({ i, f }) => {
+  const t = TILES[i];
+  const a = ramp(f, CENTER_AT + 2 + (i % 4) * 2, 18, EASE.swift); // 满墙后的保活小动作
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(160deg, ${L.surface2} 0%, ${L.surface} 60%, #0c1222 100%)` }}>
+      <div style={{ position: 'absolute', left: 34, top: 34, ...type(22, 700, { caps: true }), letterSpacing: '0.18em', color: L.ink3 }}>{t.kicker}</div>
+      <div style={{ position: 'absolute', inset: 0, transform: 'scale(1.18)', transformOrigin: `${CW - 34}px 34px` }}>
+        <Visual i={i} a={a} f={f} />
+      </div>
+      <div style={{ position: 'absolute', left: 34, right: 34, bottom: 30, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+        <div style={{ ...type(48, 750), color: L.ink }}>{t.name}</div>
+        <div style={{ ...type(30, 550), color: L.ink2 }}>{t.stat}</div>
+      </div>
+    </div>
+  );
+};
+
+// ───────────── 海报（中心格 = 1920×1080 原生版式）─────────────
+const Mark: React.FC<{ size: number; lit: number }> = ({ size, lit }) => {
+  const g = size * 0.24;
+  const s = (size - 2 * g) / 3;
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      {Array.from({ length: 9 }, (_, k) => {
+        const on = k === 4;
+        return (
+          <div key={k} style={{
+            position: 'absolute', left: (k % 3) * (s + g), top: Math.floor(k / 3) * (s + g), width: s, height: s, borderRadius: s * 0.28,
+            background: on ? L.accent : alpha(L.ink, 0.88), boxShadow: on ? `0 0 ${30 * lit}px ${alpha(L.accent, 0.8 * lit)}` : undefined,
+          }} />
+        );
+      })}
+    </div>
+  );
+};
+
+const Poster: React.FC<{ f: number; live: boolean }> = ({ f, live }) => {
+  const lit = 0.5 + 0.5 * ramp(f, Z1 - 4, 14, EASE.out);
+  return (
+    <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, overflow: 'hidden' }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.2 }} fill={{ x: 0.5, y: 1.05 }} horizon={0.8} />
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 214, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Mark size={184} lit={lit} />
+        <div style={{ ...type(200, 820), color: L.ink, marginTop: 52, textShadow: glow(L.accent, 0.25) }}>Ninefold</div>
+        <div style={{ ...type(62, 600), color: L.ink2, marginTop: 34, height: 74 }}>
+          {live ? (
+            <TextReveal text="Nine tools. One workspace." by="word" variant="rise" start={TAG} each={18} gap={4}
+              unitStyle={(k) => (k >= 2 ? { color: L.ink } : {})} />
+          ) : null}
+        </div>
+        <div style={{ ...type(30, 600, { caps: true }), letterSpacing: '0.26em', color: L.accent, marginTop: 40, opacity: live ? ramp(f, TAG + 16, 14, EASE.out) : 0 }}>
+          Now in public beta
+        </div>
+      </div>
     </div>
   );
 };
@@ -87,73 +228,67 @@ const CellContent: React.FC<{ i: number }> = ({ i }) => {
 export const GridFlashMosaic: React.FC = () => {
   const f = useCurrentFrame();
 
-  // ===== 摘罩：吞屏完成后满屏页面直出（CSS zoom 栅格化），网格结构全部卸载 =====
-  if (f >= ZOOM_END) {
+  // ===== 摘罩：吞屏完成后海报原生直出（+ 极缓推近）=====
+  if (f >= Z1) {
+    const s = END_S * (1 + 0.015 * ramp(f, Z1, 69, EASE.smooth));
     return (
-      <div style={{ width: 1920, height: 1080, background: '#0f1014', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', zoom: END_SCALE, left: END_X / END_SCALE, top: END_Y / END_SCALE, width: 1920, height: 1080 }}>
-          <FakeDashboard variant="A" />
+      <AbsoluteFill style={{ background: L.bg[2], overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transform: `scale(${s})`, transformOrigin: '960px 540px' }}>
+          <Poster f={f} live />
         </div>
-        <Vignette strength={0.12} inner={0.55} color="#1a1c24" />
-        <Grain opacity={0.045} />
-      </div>
+      </AbsoluteFill>
     );
   }
 
-  // 整墙微呼吸：仅在填满后的 14f 停顿段，一个正弦来回 1→1.008→1
-  const breath = f >= LAST_IN && f < HOLD_END ? 1 + 0.008 * Math.sin((Math.PI * (f - LAST_IN)) / 14) : 1;
-
-  // 中心格放大：14f Easing.in(cubic)，吞掉全屏
-  const zoom = interpolate(f, [HOLD_END, ZOOM_END], [1, ZOOM_SCALE], {
-    easing: Easing.in(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
-  // 其余格随吞屏压暗退后
-  const recede = ramp(f, HOLD_END, ZOOM_DUR, EASE.swift);
+  const breath = f >= CENTER_AT && f < Z0 ? 1 + 0.006 * Math.sin((Math.PI * (f - CENTER_AT)) / (Z0 - CENTER_AT)) : 1;
+  const zoom = zoomAt(f);
+  const recede = ramp(f, Z0 + ZPRE, ZDUR, EASE.swift);
 
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden' }}>
-      <Backdrop tone="dark" light={{ x: 0.5, y: 0.42 }} vignette={0.55} grain={0} />
+    <AbsoluteFill style={{ overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.45 }} fill={{ x: 0.85, y: 0.95 }} />
       <div style={{ position: 'absolute', inset: 0, transform: `scale(${breath})`, transformOrigin: '960px 540px' }}>
-        {Array.from({ length: 9 }).map((_, i) => {
-          const start = FILL_START + RANK[i] * STEP;
-          if (f < start) return null; // 硬入：未到拍点不渲染，无淡化
+        {Array.from({ length: 9 }, (_, i) => {
           const row = Math.floor(i / 3);
           const col = i % 3;
-          // 入格 3f scale 1.18→1（强 ease-out：第一帧就砸到位附近，"啪"）
-          const popScale = 1.18 - 0.18 * ramp(f, start, 3, EASE.snappy);
-          // 2f 加深脉冲
-          const darken = interpolate(f, [start, start + 2], [0.45, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-          const isCenter = i === 4;
-          const cellScale = isCenter ? popScale * zoom : popScale;
-          const dim = isCenter ? 0 : 0.42 * recede;
-          const shade = Math.max(darken, dim);
+          const left = GX + col * (CW + GAP);
+          const top = GY + row * (CH + GAP);
+          const st = startOf(i);
+          const center = i === 4;
+          const on = f >= st;
+          // 空槽：未亮的格子是一块极暗的凹槽（硬入前的"等待"）
+          if (!on) {
+            return <div key={i} style={{ position: 'absolute', left, top, width: CW, height: CH, borderRadius: 18, background: alpha('#000', 0.25), border: `1px solid ${alpha(L.ink, 0.05)}` }} />;
+          }
+          const pop = ramp(f, st, 4, EASE.snappy);
+          const flash = 1 - ramp(f, st, center ? 5 : 3, EASE.out);
+          // 外围格吞屏时向外推开、缩小、压暗
+          const dx = (col - 1) * 90 * recede;
+          const dy = (row - 1) * 60 * recede;
+          const sc = center ? mix(1.16, 1, pop) * zoom : mix(1.12, 1, pop) * (1 - 0.08 * recede);
+          const radius = center ? 18 * (1 - ramp(f, Z0 + ZPRE, ZDUR, EASE.linear)) : 18;
           return (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                left: GRID_X + col * (CELL_W + GAP),
-                top: GRID_Y + row * (CELL_H + GAP),
-                width: CELL_W,
-                height: CELL_H,
-                overflow: 'hidden',
-                borderRadius: 4,
-                background: CROPS[i]?.tone === 'dark' ? '#16171c' : '#f1f1ef',
-                border: `${BORDER}px solid ${INK}`,
-                boxSizing: 'border-box',
-                transform: `scale(${cellScale})`,
-                transformOrigin: 'center',
-                zIndex: isCenter ? 10 : 1,
-                boxShadow: isCenter && zoom > 1.001 ? '0 30px 80px -20px rgba(0,0,0,0.6)' : '0 10px 30px -14px rgba(0,0,0,0.5)',
-              }}
-            >
-              <CellContent i={i} />
-              {shade > 0.001 && <div style={{ position: 'absolute', inset: 0, background: '#0b0c10', opacity: shade }} />}
+            <div key={i} style={{
+              position: 'absolute', left, top, width: CW, height: CH, borderRadius: radius, overflow: 'hidden',
+              transform: `translate(${dx}px, ${dy}px) scale(${sc.toFixed(4)})`, transformOrigin: 'center', zIndex: center ? 10 : 1,
+              border: `1px solid ${center ? alpha(L.accent, 0.45) : L.line}`, boxSizing: 'border-box',
+              boxShadow: center
+                ? `0 0 0 1px ${alpha(L.accent, 0.2)}, 0 30px 80px -20px ${alpha(L.shadow, 0.9)}, 0 0 60px ${alpha(L.accent, 0.18)}`
+                : `inset 0 1px 0 ${alpha(L.ink, 0.06)}, 0 18px 40px -18px ${alpha(L.shadow, 0.9)}`,
+            }}>
+              {center ? (
+                <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transform: `scale(${MINI})`, transformOrigin: '0 0' }}>
+                  <Poster f={f} live={false} />
+                </div>
+              ) : (
+                <ToolTile i={i} f={f} />
+              )}
+              {!center && recede > 0 && <div style={{ position: 'absolute', inset: 0, background: L.bg[2], opacity: 0.7 * recede }} />}
+              {flash > 0.01 && <div style={{ position: 'absolute', inset: 0, background: '#e8eeff', opacity: (center ? 0.8 : 0.6) * flash }} />}
             </div>
           );
         })}
       </div>
-      <Grain opacity={0.07} blend="soft-light" />
-    </div>
+    </AbsoluteFill>
   );
 };
