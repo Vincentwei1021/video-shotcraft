@@ -1,0 +1,32 @@
+{
+  "stem": "ReticleLockOn",
+  "issues": [
+    "没有导出时长，工作台从源码猜成 24f，改版前视频只演到角标飞入一半，咬合与标签从未出现",
+    "目标框高度写成 425，比 fixture 卡片 454 短 29px，角标咬不住卡片下沿",
+    "角标是 10px 实心黑块，粗笨且在浅色 UI 上像贴纸",
+    "收缩用三段 inOut 关键帧，每个关键点速度归零，咬合读作'一顿一顿'；飞入无运动模糊",
+    "标签 TARGET · CARD_02 是调试文案，Helvetica 粗体黑底方块；咬合微亮是整块白板盖住卡片"
+  ],
+  "changes": [
+    "补导出 RETICLE_LOCK_ON_DURATION = 90（md 2–3s）：飞入 f14、咬合 f46、标签 f58 落定，之后静止 ≥1s",
+    "目标几何对齐 fixture 卡片 524×454；角标改 5px 圆头强调色笔画 + 2px 白色衬底与轻投影，飞行中带中心十字刻度、锁定后淡出",
+    "收缩与飞入尾段重叠 4f，2.2→0.94 用 swift 不对称缓动冲过头、0.94→1 ease-out 回弹；飞入按速度做斜向 SpeedBlur；咬合帧角标再收紧 6px 的'咔'脉冲",
+    "微亮改为裁进圆角的顶亮渐变（0.55→0.28 节拍不变）+ 1.5px 强调色描边与色光阴影，目标外轻压暗 0.10 聚焦",
+    "标签换出版级深色胶囊：状态点 + 'Top pages' 30px + 等宽 'LOCK 02'，放到左上角标正上方的顶栏空白处；全程相机 smooth 缓推 1→1.035 指向目标"
+  ],
+  "issuesEn": [
+    "No duration was exported; the workbench guessed 24f from the source, so the old video stopped halfway through the fly-in and never showed the lock or label",
+    "Target height was hard-coded as 425, 29px shorter than the 454 fixture card, so the brackets missed the bottom edge",
+    "Corners were 10px solid black slabs, clumsy and sticker-like on the light UI",
+    "The shrink used three in-out keyframe segments with zero velocity at every key, so the lock stuttered; the fly-in had no motion blur",
+    "The label TARGET · CARD_02 was debug copy in a bold Helvetica black box, and the lock highlight was a flat white slab over the card"
+  ],
+  "changesEn": [
+    "RETICLE_LOCK_ON_DURATION = 90 exported (md says 2–3s): fly-in at f14, lock at f46, label settled by f58, then ≥1s still",
+    "Target geometry matches the 524×454 fixture card; corners are 5px round-capped accent strokes on a 2px white underlay with soft shadow, plus a centre crosshair while flying that fades on lock",
+    "Shrink overlaps the fly-in tail by 4f: 2.2→0.94 on an asymmetric swift ease overshooting, 0.94→1 easing out; the fly-in gets diagonal SpeedBlur from velocity, and the lock frame adds a 6px 'bite' pulse",
+    "Highlight is now a top-lit gradient clipped to the card radius (same 0.55→0.28 beat) with a 1.5px accent ring and tinted shadow, while everything else dims 0.10 for focus",
+    "Label rebuilt as a dark publication-grade pill (status dot, 30px 'Top pages', mono 'LOCK 02') placed above the top-left bracket in empty top-bar space; the camera eases in 1→1.035 toward the target throughout"
+  ],
+  "mdChanged": false
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "LineUnfoldPanel",
+  "issues": [
+    "画面上方打着调试标题 LINE UNFOLD PANEL（Helvetica 800 灰字）",
+    "暗场里撑开的是一张纯白骨架卡，2px 灰边 + 白色外发光，和 FUI 暗场语言脱节",
+    "面板靠 scaleY 压扁/撑开，圆角和边框跟着变形，内容被拉扁",
+    "线阶段只是一根白条，没有电光感；撑开、关机都没有边沿/末点的能量变化",
+    "背景是 #1c1c1b 死平灰；没有导出时长，工作台按 150f 默认渲染，尾段 55f 空黑"
+  ],
+  "changes": [
+    "删掉调试标题；面板换深色出版级 Card（tone=dark，Revenue 指标 + 柱图），两层深色阴影 + 发丝线 + 冷色微辉光",
+    "撑开/压扁改为真实宽高 + overflow 揭示，内容固定居中，圆角与 1px 边全程不变形不闪",
+    "线阶段做成白芯 + 冷色（150,176,255）辉光；抽线时两端亮点火花，撑开时线分裂成上下两条发光边推到面板边沿、随内容点亮淡去，退场反向汇拢",
+    "线缩成点时末点有一次径向小闪再熄灭（CRT 关机余辉）",
+    "背景换暗色 Backdrop（带色相 + 强调色余光）+ 中心点阵台面 + 暗角 + 颗粒；补导出 LINE_UNFOLD_PANEL_DURATION = 120（md 3–4s），时间表不变"
+  ],
+  "issuesEn": [
+    "A debug title, LINE UNFOLD PANEL, sat at the top of the frame in grey Helvetica 800",
+    "The panel that unfolded in the dark scene was a plain white skeleton card with a 2px grey border and white glow, at odds with the dark FUI language",
+    "The panel scaled in Y to open and close, so corners and borders distorted and the content was squashed",
+    "The line phase was just a white bar with no electric quality; neither the unfold nor the shutdown had any edge or end-point energy",
+    "The background was a dead flat #1c1c1b; no duration was exported, so the workbench rendered 150f with 55 frames of empty black"
+  ],
+  "changesEn": [
+    "Debug title removed; the panel is a dark publication-grade Card (tone=dark, Revenue metric and bar chart) with two-layer dark shadow, hairline and faint cool glow",
+    "Unfold/collapse now animate true width/height with overflow reveal; content stays centred, so corners and 1px borders never distort or shimmer",
+    "The line is a white core with cool (150,176,255) glow; sparks ride both ends while it extends, and on unfold the line splits into two glowing edges that push out to the panel edges and fade as the content lights, converging again on exit",
+    "When the line shrinks to a point it gives one small radial flare before going out (CRT afterglow)",
+    "Dark Backdrop with hue and accent bloom, a centred dot-grid surface, vignette and grain; LINE_UNFOLD_PANEL_DURATION = 120 exported (md says 3–4s), timetable unchanged"
+  ],
+  "mdChanged": false
+}

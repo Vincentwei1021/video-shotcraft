@@ -5,8 +5,17 @@
 // (opacity→1 + 描边亮白脉冲) 且邻近光斑同帧涨亮一拍（组合共振证明点）；
 // 线二 B→C 接力，C 亮起收束。光斑 95–120f out-sine 减速收敛，
 // 全部动画 f120 前结束，末 35f 真静止。
+//
+// 质感升级：底色换带冷色相的近黑 + 点阵台面；光斑由灰白改为靛蓝/淡紫克制色对（峰值、漂移、
+// surge 节拍不变）；三张灰条骨架卡换成一条数据管线的三站（Sources → Transform → Warehouse，
+// 图标 + 指标 + 状态），半暗→点亮时状态点与指标一起"通电"；飞线改为白芯 + 靛蓝辉光衬底、
+// butt 端分段不再叠出珠串，光头带彗尾光晕；落点帧加一圈扩散冲击环（与卡脉冲、光斑 surge 同帧）；
+// 暗角 + 颗粒防色带。
 import React, { useId } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
+import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+
+export const ORB_FLYLINE_RELAY_DURATION = 155; // ~5.2s：动作 f98 前结束、光斑 f120 冻结、末 35f 真静止
 
 // 库内标准伪随机（帧确定）
 const h = (n: number) => {
@@ -47,12 +56,13 @@ type Orb = {
   ax1: number; ax2: number; ay1: number; ay2: number;
   seed: number;
   surgeAt: number; // 与哪个落点帧共振
+  rgb: string; // 光色
 };
 const ORBS: Orb[] = [
   // 邻近卡 B —— 线1落点(f42)同帧涨亮
-  { size: 720, peak: 0.26, bx: 1500, by: 330, p1: 104, p2: 138, ax1: 130, ax2: 95, ay1: 120, ay2: 92, seed: 1, surgeAt: 42 },
+  { size: 720, peak: 0.26, bx: 1500, by: 330, p1: 104, p2: 138, ax1: 130, ax2: 95, ay1: 120, ay2: 92, seed: 1, surgeAt: 42, rgb: '128,138,255' },
   // 邻近卡 C —— 线2落点(f76)同帧涨亮
-  { size: 640, peak: 0.2, bx: 900, by: 830, p1: 122, p2: 94, ax1: 125, ax2: 88, ay1: 128, ay2: 90, seed: 2, surgeAt: 76 },
+  { size: 640, peak: 0.2, bx: 900, by: 830, p1: 122, p2: 94, ax1: 125, ax2: 88, ay1: 128, ay2: 90, seed: 2, surgeAt: 76, rgb: '178,150,245' },
 ];
 
 const orbPos = (o: Orb, t: number) => {
@@ -119,33 +129,40 @@ const Flyline: React.FC<{
       <line
         key={i}
         x1={pts[i].x} y1={pts[i].y} x2={pts[i + 1].x} y2={pts[i + 1].y}
-        stroke="#f4f4f0" strokeWidth={5} strokeLinecap="round"
+        stroke="#f6f6ff" strokeWidth={3.5} strokeLinecap="butt"
         strokeOpacity={grad * fade}
       />
     );
   }
+  // 彗尾：光头后方一小段加粗的亮段（只在生长期）
+  const tailFrom = Math.max(0, pts.length - 9);
+  const comet = pts.slice(tailFrom).map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
   return (
     <g>
-      {/* 宽幅低透明白 = 辉光衬底（暗底上可见） */}
-      <polyline
-        points={poly} fill="none" stroke="#e8e8e4"
-        strokeWidth={14} strokeLinecap="round" strokeLinejoin="round"
-        strokeOpacity={0.18 * fade}
-      />
+      {/* 靛蓝辉光衬底：宽幅低透明 + 次宽中透明两层（暗底上读作发光而不是灰边） */}
+      <polyline points={poly} fill="none" stroke="rgb(128,138,255)" strokeWidth={18} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.10 * fade} />
+      <polyline points={poly} fill="none" stroke="rgb(150,160,255)" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.22 * fade} />
       {segs}
-      {/* 亮点头领跑：仅生长期挂载 */}
+      {/* 亮点头领跑 + 彗尾：仅生长期挂载 */}
       {growing && (
         <g>
-          <circle cx={head.x} cy={head.y} r={34} fill={`url(#${haloId})`} />
-          <circle cx={head.x} cy={head.y} r={8} fill="#ffffff" />
+          <polyline points={comet} fill="none" stroke="#ffffff" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.55} />
+          <circle cx={head.x} cy={head.y} r={40} fill={`url(#${haloId})`} />
+          <circle cx={head.x} cy={head.y} r={7} fill="#ffffff" />
         </g>
       )}
     </g>
   );
 };
 
-// ===== 深色描边卡：半暗 → 落点帧亮起 + 描边亮白脉冲 =====
+// ===== 管线三站：半暗 → 落点帧亮起 + 描边亮白脉冲 =====
+const STATIONS: Record<number, { title: string; sub: string; value: string; unit: string; icon: string }> = {
+  1: { title: 'Sources', sub: '14 connectors', value: '12.4k', unit: 'events / s', icon: 'M3 4.5h10M3 8h10M3 11.5h6' },
+  2: { title: 'Transform', sub: 'dbt · 38 models', value: '212', unit: 'ms p95', icon: 'M4 3v4.5a2 2 0 0 0 2 2h6M9.5 7 12 9.5 9.5 12' },
+  3: { title: 'Warehouse', sub: 'us-east · 3 replicas', value: '4.8', unit: 'TB synced', icon: 'M3 4.5c0-1 2.2-1.8 5-1.8s5 .8 5 1.8v7c0 1-2.2 1.8-5 1.8s-5-.8-5-1.8zM3 4.5c0 1 2.2 1.8 5 1.8s5-.8 5-1.8M3 8c0 1 2.2 1.8 5 1.8s5-.8 5-1.8' },
+};
+
 const DarkCard: React.FC<{
   frame: number;
   litAt: number; // 亮起帧（Infinity = 一直半暗；A 用 8 表示开场自亮）
@@ -168,28 +185,56 @@ const DarkCard: React.FC<{
         : interpolate(frame, [litAt + 6, litAt + 22], [1, 0.3], {
             extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
           });
-  const borderCol = `rgba(${Math.round(90 + 165 * pulse)},${Math.round(90 + 165 * pulse)},${Math.round(88 + 164 * pulse)},1)`;
-  const glow = pulse > 0 ? `0 0 ${24 * pulse}px ${6 * pulse}px rgba(255,255,255,${(0.3 * pulse).toFixed(3)})` : 'none';
-  const titleW = 45 + ((seed * 37) % 40);
+  const st = STATIONS[seed];
+  const ring = `rgba(${Math.round(255 - 60 * (1 - pulse))},${Math.round(255 - 50 * (1 - pulse))},255,${(0.08 + 0.62 * pulse).toFixed(3)})`;
+  const glow = pulse > 0 ? `, 0 0 ${(28 * pulse).toFixed(1)}px ${(4 * pulse).toFixed(1)}px rgba(150,160,255,${(0.32 * pulse).toFixed(3)})` : '';
   return (
     <div
       style={{
         position: 'absolute', left: x, top: y, width: CARD_W, height: CARD_H,
-        boxSizing: 'border-box', background: '#262624',
-        border: `1.5px solid ${borderCol}`, borderRadius: 14,
-        boxShadow: glow, opacity: op,
-        padding: 24, display: 'flex', flexDirection: 'column', gap: 12,
+        boxSizing: 'border-box', borderRadius: 16, opacity: op, overflow: 'hidden',
+        background: 'linear-gradient(180deg, #1d1e25 0%, #15161b 100%)',
+        boxShadow: `inset 0 0 0 1px ${ring}, inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 4px rgba(0,0,0,0.45), 0 26px 50px -18px rgba(0,0,0,0.75)${glow}`,
+        padding: '24px 26px', display: 'flex', flexDirection: 'column', fontFamily: FONT.sans,
       }}
     >
-      <div style={{ height: 15, width: `${titleW}%`, background: '#4a4a48', borderRadius: 8 }} />
-      <div style={{ height: 10, width: '80%', background: '#383836', borderRadius: 5 }} />
-      <div style={{ height: 10, width: '62%', background: '#383836', borderRadius: 5 }} />
-      <div style={{ marginTop: 'auto', display: 'flex', gap: 9, alignItems: 'center' }}>
-        <div style={{ width: 24, height: 24, borderRadius: 12, background: '#4a4a48' }} />
-        <div style={{ height: 10, width: 78, background: '#383836', borderRadius: 5 }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{
+          width: 34, height: 34, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: `rgba(128,136,240,${(0.06 + 0.1 * lit).toFixed(3)})`, boxShadow: `inset 0 0 0 1px rgba(128,136,240,${(0.12 + 0.16 * lit).toFixed(3)})`,
+        }}>
+          <svg width={17} height={17} viewBox="0 0 16 16" fill="none" stroke={lit > 0.5 ? '#a3aaff' : '#6f7280'} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+            <path d={st.icon} />
+          </svg>
+        </div>
+        <div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: '#ececf0', letterSpacing: '-0.01em' }}>{st.title}</div>
+          <div style={{ fontSize: 13, color: '#7a7d87', marginTop: 3 }}>{st.sub}</div>
+        </div>
+        {/* 状态点：亮起时"通电" */}
+        <div style={{
+          marginLeft: 'auto', width: 9, height: 9, borderRadius: 5,
+          background: lit > 0.02 ? `rgba(154,161,255,${(0.35 + 0.65 * lit).toFixed(3)})` : '#3a3b44',
+          boxShadow: lit > 0.02 ? `0 0 ${(8 * lit).toFixed(1)}px rgba(154,161,255,${(0.9 * lit).toFixed(3)})` : 'none',
+        }} />
+      </div>
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'baseline', gap: 10 }}>
+        <span style={{ fontSize: 46, fontWeight: 650, letterSpacing: '-0.035em', color: '#f1f1f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{st.value}</span>
+        <span style={{ fontSize: 15, color: '#8a8d97' }}>{st.unit}</span>
+      </div>
+      {/* 吞吐条：亮起后填到位 */}
+      <div style={{ marginTop: 16, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+        <div style={{ width: `${(30 + 52 * lit + seed * 4).toFixed(1)}%`, height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, rgba(128,136,240,0.5), #9aa1ff)' }} />
       </div>
     </div>
   );
+};
+
+// 落点冲击环：落点帧起 14f 扩散变淡（与卡脉冲、光斑 surge 同帧，共振的第三个声部）
+const ImpactRing: React.FC<{ frame: number; at: number; c: Pt }> = ({ frame, at, c }) => {
+  if (frame < at || frame > at + 14) return null;
+  const k = interpolate(frame, [at, at + 14], [0, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  return <circle cx={c.x} cy={c.y} r={10 + 70 * k} fill="none" stroke="#c9ceff" strokeWidth={2.5 * (1 - k) + 0.5} strokeOpacity={0.75 * (1 - k)} />;
 };
 
 export const OrbFlylineRelay: React.FC = () => {
@@ -218,11 +263,19 @@ export const OrbFlylineRelay: React.FC = () => {
   const cA = center(CARDS.A);
   const cB = center(CARDS.B);
   const cC = center(CARDS.C);
-  const L1 = { p0: cA, p1: { x: 820, y: 90 }, p2: { x: 1300, y: 180 }, p3: cB };
-  const L2 = { p0: cB, p1: { x: 1620, y: 820 }, p2: { x: 1240, y: 1000 }, p3: cC };
+  // 飞线锚在卡片边沿（不从卡中心穿过文字）：A 上沿 → B 上沿；B 下沿 → C 右沿
+  const L1 = { p0: { x: cA.x + 110, y: CARDS.A.y }, p1: { x: 820, y: 40 }, p2: { x: 1380, y: 110 }, p3: { x: cB.x, y: CARDS.B.y } };
+  const L2 = { p0: { x: cB.x + 60, y: CARDS.B.y + CARD_H }, p1: { x: 1580, y: 820 }, p2: { x: 1380, y: 880 }, p3: { x: CARDS.C.x + CARD_W, y: cC.y } };
 
   return (
-    <AbsoluteFill style={{ background: '#1d1d1b', overflow: 'hidden' }}>
+    <AbsoluteFill style={{ background: 'linear-gradient(180deg,#0e0f14 0%,#0a0b0f 100%)', overflow: 'hidden' }}>
+      {/* 极淡点阵台面 */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.4,
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1.2px)', backgroundSize: '36px 36px',
+        WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, #000 20%, transparent 100%)',
+        maskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, #000 20%, transparent 100%)',
+      }} />
       {/* 氛围层：两团大 blur 光斑，落点帧同帧涨亮（组合共振） */}
       {ORBS.map((o, i) => {
         const pos = orbPos(o, t);
@@ -238,7 +291,7 @@ export const OrbFlylineRelay: React.FC = () => {
               width: o.size,
               height: o.size,
               borderRadius: '50%',
-              background: `radial-gradient(circle, rgba(234,234,230,${a.toFixed(3)}) 0%, rgba(234,234,230,${(a * 0.5).toFixed(3)}) 42%, rgba(234,234,230,0) 70%)`,
+              background: `radial-gradient(circle, rgba(${o.rgb},${a.toFixed(3)}) 0%, rgba(${o.rgb},${(a * 0.5).toFixed(3)}) 42%, rgba(${o.rgb},0) 70%)`,
               filter: 'blur(100px)',
               opacity: fadeIn,
             }}
@@ -258,14 +311,19 @@ export const OrbFlylineRelay: React.FC = () => {
       >
         <defs>
           <radialGradient id={haloId}>
-            <stop offset="0%" stopColor="rgba(255,255,255,0.55)" />
-            <stop offset="55%" stopColor="rgba(255,255,255,0.22)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+            <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
+            <stop offset="30%" stopColor="rgba(170,178,255,0.3)" />
+            <stop offset="100%" stopColor="rgba(128,138,255,0)" />
           </radialGradient>
         </defs>
         <Flyline frame={frame} start={18} haloId={haloId} {...L1} />
         <Flyline frame={frame} start={52} haloId={haloId} {...L2} />
+        <ImpactRing frame={frame} at={42} c={L1.p3} />
+        <ImpactRing frame={frame} at={76} c={L2.p3} />
       </svg>
+
+      <Vignette strength={0.55} inner={0.4} color="#030408" />
+      <Grain opacity={0.08} blend="soft-light" />
     </AbsoluteFill>
   );
 };

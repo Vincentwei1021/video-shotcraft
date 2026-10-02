@@ -1,0 +1,32 @@
+{
+  "stem": "AttentionBounce",
+  "issues": [
+    "图标是白底 + 18px 黑描边的线稿方块，像占位草图，不是一个'表演者'",
+    "地面是一根 8px 灰色实心条，影子单层且只缩不分层",
+    "落地挤压线性 6f 回弹，铃铛本身全程僵硬不动，没有跟随动作",
+    "尘点是实心灰圆点，像掉渣；面板是灰阶骨架 Card + Helvetica 800 'New'",
+    "没有导出时长常量（工作台按 150f 默认）"
+  ],
+  "changes": [
+    "图标换出版级 app icon：琥珀三段渐变 squircle + 顶部玻璃高光 + 底部内阴影 + 白色铃铛字形（投影），两层软阴影随离地高度变大变虚",
+    "铃铛在空中绕挂点做跟随摆动（幅度随跳高 8°→16° 递增），落定后阻尼余摆收敛；落地挤压改为 exp·cos 阻尼回弹（压扁→轻回拉→稳住），宽 1.2x 高 0.8x 峰值不变",
+    "灰色地面条换成极淡地台渐变 + 两端渐隐的地平线；接触阴影分两层：近地小而实（离地即淡）+ 远地大而虚",
+    "尘点改柔焦烟团（膨胀 + 平方衰减淡出）；镜头 8% 推近改 smooth 缓动",
+    "落地同帧右上弹出红色数字角标；面板换'Smart notifications'出版级通知面板（标题、开关、三条通知行错峰 3f 上浮入场）；补导出 ATTENTION_BOUNCE_DURATION = 150"
+  ],
+  "issuesEn": [
+    "The icon was a white square with an 18px black outline — a placeholder sketch, not a performer",
+    "The ground was a solid 8px grey bar and the shadow was a single layer that only shrank",
+    "Landing squash recovered linearly over 6f and the bell itself never moved — no follow-through",
+    "Dust puffs were solid grey dots like crumbs; the panel was a grey skeleton Card with a Helvetica 800 'New' tag",
+    "No duration constant was exported (workbench defaulted to 150f)"
+  ],
+  "changesEn": [
+    "Icon is now a publication-grade app icon: three-stop amber squircle, glassy top highlight, bottom inner shadow and a white bell glyph with drop shadow; a two-layer soft shadow grows and softens with height",
+    "The bell swings from its hanger in the air (amplitude rising 8°→16° with each jump) and settles with a damped sway after the last landing; landing squash is now an exp·cos damped rebound (squash → slight pull-back → settle) with the same 1.2x / 0.8x peak",
+    "The grey ground bar became a faint floor gradient with an edge-faded horizon; contact shadow split into a tight near layer that fades as soon as the icon lifts and a wide soft far layer",
+    "Dust became soft smoke puffs that expand and fade quadratically; the 8% camera push uses a smooth ease",
+    "A red count badge pops on the final landing frame; the panel is a publication-grade 'Smart notifications' panel (title, toggle, three notification rows staggered 3f with a rise); ATTENTION_BOUNCE_DURATION = 150 exported"
+  ],
+  "mdChanged": false
+}

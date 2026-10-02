@@ -1,0 +1,28 @@
+{
+  "stem": "OrbFlylineRelay",
+  "issues": [
+    "三张卡是灰条骨架，'数据接力'没有任何语义，看不出谁传给谁",
+    "飞线从卡中心出发、落在卡中心，线体直接压在卡面内容上",
+    "白线用圆头分段叠画，渐隐尾处出现珠串状亮点；辉光衬底是灰白色，读作描边",
+    "光斑灰白偏脏；没有导出时长，工作台按 150f 渲染，砍掉了 5 帧尾静止"
+  ],
+  "changes": [
+    "三卡改为一条数据管线三站 Sources → Transform → Warehouse：图标 + 指标 + 吞吐条 + 状态点，半暗→点亮时状态点发光、图标转强调色、吞吐条填到位",
+    "飞线改锚在卡片边沿（A 上沿→B 上沿、B 下沿→C 右沿），不再穿过文字",
+    "线体改 3.5px 白芯 butt 分段 + 两层靛蓝辉光衬底，光头带彗尾亮段与靛蓝光晕；落点帧加 14f 扩散冲击环，与卡描边脉冲、光斑 surge 同帧三声部共振",
+    "光斑改靛蓝 / 淡紫色对（峰值与 surge 1+1.6× 不变），底色带冷色相 + 点阵台面 + 暗角 + 颗粒；补导出 ORB_FLYLINE_RELAY_DURATION = 155（md ~5.2s）"
+  ],
+  "issuesEn": [
+    "The three cards were grey-bar skeletons, so the 'data relay' had no meaning — you could not tell what was handing off to what",
+    "Flylines started and ended at card centres, running straight over the card content",
+    "The white line was drawn as round-capped segments that beaded along the fading tail; the grey-white glow underlay read as an outline",
+    "Orbs were a muddy grey-white; no duration was exported, so the workbench rendered 150f and cut 5 frames of tail hold"
+  ],
+  "changesEn": [
+    "Cards became three stations of a data pipeline, Sources → Transform → Warehouse, each with icon, metric, throughput bar and status dot; when a card lights up the dot glows, the icon turns accent and the bar fills",
+    "Flylines now anchor on card edges (A top → B top, B bottom → C right) instead of crossing text",
+    "Line is a 3.5px white core in butt-capped segments over two indigo glow underlays, with a comet tail and indigo halo on the head; each landing adds a 14f expanding impact ring, in the same frame as the card pulse and orb surge",
+    "Orbs recoloured to an indigo / lilac pair (peaks and the 1+1.6× surge unchanged), cool-hued ground with dot grid, vignette and grain; ORB_FLYLINE_RELAY_DURATION = 155 exported (md ~5.2s)"
+  ],
+  "mdChanged": false
+}

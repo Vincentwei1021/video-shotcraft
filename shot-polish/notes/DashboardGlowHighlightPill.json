@@ -1,0 +1,32 @@
+{
+  "stem": "DashboardGlowHighlightPill",
+  "issues": [
+    "Focus Mode 弹窗内容溢出：绝对定位的 Confirm 压住 Pro 选项，Pro 正文从按钮下方漏出弹窗底边",
+    "描边收敛时颜色在 settle=0.5 一帧硬切 #fff0c4→#e6c887，可见跳色",
+    "字体走 system-ui 回退，金字与弹窗标题无字距/字重层级",
+    "弹窗、按钮、仪表盘外框只有平涂 + 实色边，没有受光上沿，黑金质感偏塑料",
+    "大面积近黑暖色渐变无颗粒，暗部有色带"
+  ],
+  "changes": [
+    "弹窗改为纵向 flex，Confirm 用 margin-top:auto 贴底；文案压短到能在 117×108 设计 px 内完整排下，单选圈改为真的 radio 图形",
+    "描边颜色随 settle 逐帧 RGB 插值，笔宽/辉光收敛与颜色同步",
+    "换系统字栈：金字 500 字重 −0.025em、弹窗标题 650 字重，开启字距调整",
+    "弹窗、选项框、Confirm、仪表盘外框补顶部内高光 + 0.5 设计 px 发丝线 + 接触阴影；选中项加金色微渐变底",
+    "整幅叠暖黑暗角（0.5）+ soft-light 颗粒（0.10）；时间轴、姿态关键帧、光斑路径与描边起笔点全部保持原值"
+  ],
+  "issuesEn": [
+    "The Focus Mode modal overflowed: the absolutely positioned Confirm button covered the Pro option, whose copy leaked out below the modal edge",
+    "During the stroke settle the colour hard-switched #fff0c4→#e6c887 in a single frame at settle=0.5, a visible pop",
+    "Fonts fell back to system-ui; the gold title and modal heading had no tracking or weight hierarchy",
+    "Modal, buttons and dashboard frame were flat fills with solid borders and no lit top edge, so the black-and-gold read as plastic",
+    "The large near-black warm gradients had no grain and banded in the shadows"
+  ],
+  "changesEn": [
+    "Modal rebuilt as a vertical flex column with Confirm pinned via margin-top:auto; copy tightened to fit the 117×108 design-px box, radio markers are now real radio glyphs",
+    "Stroke colour interpolates in RGB with settle, in step with the stroke-width and glow decay",
+    "System font stack: the gold word at 500 weight and −0.025em, modal heading at 650, kerning on",
+    "Modal, option boxes, Confirm and dashboard frame gained a top inner highlight, 0.5 design-px hairline and contact shadow; the selected option got a faint gold gradient",
+    "Warm-black vignette (0.5) and soft-light grain (0.10) over the frame; timeline, pose keyframes, light path and stroke start point are unchanged"
+  ],
+  "mdChanged": false
+}

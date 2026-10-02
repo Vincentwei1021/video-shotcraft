@@ -1,0 +1,32 @@
+{
+  "stem": "BrandFrameSnap",
+  "issues": [
+    "窗口是灰阶骨架：2px 灰边、灰色红绿灯、灰条地址栏，模式徽标与角标用 Helvetica 800 硬排",
+    "dashboard 用 transform scale 0.81 塞进 830px 高窗口，底部一排被裁掉半截",
+    "框内底是平铺灰色，画框与内容交界没有任何厚度感，读作色块不读作装裱",
+    "窗口 560px 下落没有运动模糊，阴影固定不随高度变化",
+    "翻色白闪是整屏均匀白，覆盖内容显得脏；没有导出时长常量（工作台靠卡片 md 猜 130f）"
+  ],
+  "changes": [
+    "窗口改成出版级失焦态 macOS 窗口：发丝线边框 + 内高光，中性灰红绿灯（不让绿色混进蓝段），带锁图标的地址栏、居中文件名，模式徽标与框带角标加钢笔/尖括号图标、系统字体 650–700 字重",
+    "dashboard 改用 CSS zoom 0.76 布局级缩放，窗口 1459×869 完整装下（文字按目标尺寸栅格化）",
+    "框内底换 Backdrop 柔光底；画框内缘加一圈内凹阴影做卡纸厚度，色带叠顶亮底暗的薄釉统一主光方向",
+    "下落段按弹簧速度做纵向 SpeedBlur（×0.3、封顶 12px），阴影 elevation 48→14 随落定收紧变实；角标延后 6f 带 8px 上浮入场",
+    "白闪保留 3 帧 0.55 阶梯衰减，改为从画框向内的径向闪（中心 ≈1/3）；补导出 BRAND_FRAME_SNAP_DURATION = 130"
+  ],
+  "issuesEn": [
+    "The window was a grey skeleton: 2px grey border, grey traffic lights, a grey bar for the URL, and mode badge/corner label set in hard Helvetica 800",
+    "The dashboard was transform-scaled 0.81 into an 830px-tall window, cutting the bottom row in half",
+    "The area inside the frame was a flat grey with no depth at the frame edge, so it read as a colour block rather than a mat",
+    "The 560px drop had no motion blur and a fixed shadow regardless of height",
+    "The flip flash was a uniform full-screen white that muddied the content; no duration constant was exported (the workbench guessed 130f from the card md)"
+  ],
+  "changesEn": [
+    "The window is now a publication-grade unfocused macOS window: hairline border and inner highlight, neutral grey traffic lights (so no green leaks into the blue segment), a URL field with lock icon and a centred file name; badge and band label gained pen / angle-bracket icons in the system font at 650–700 weight",
+    "The dashboard uses CSS zoom 0.76 (layout-level scaling) inside a 1459×869 window, fully in frame and rasterised at target size",
+    "Backdrop soft-light ground inside the frame; an inset shadow along the frame's inner edge gives mat thickness, and a top-light/bottom-dark glaze on the bands matches the key light",
+    "The drop gets vertical SpeedBlur from spring velocity (×0.3, capped at 12px) and the shadow tightens from elevation 48 to 14 as it lands; the band label enters 6f later with an 8px rise",
+    "The flash keeps its 3-frame 0.55 stepped decay but is now a radial burst from the frame inward (≈1/3 at centre); BRAND_FRAME_SNAP_DURATION = 130 exported"
+  ],
+  "mdChanged": false
+}

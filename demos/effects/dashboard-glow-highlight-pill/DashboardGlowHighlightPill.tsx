@@ -6,8 +6,13 @@
 // 验收：SSIM mean=0.9583/min=0.9510（BORDERLINE，对照条逐帧肉眼一致）。余差为近黑底
 // 的 x264 暗场量化：把首帧自渲 PNG 过同参数 x264 后与原样片比对得 0.9977——内容已
 // 像素级一致，直接比对的 -0.04 全部来自样片解码端的暗部压缩（2-30 电平带被压到 ~0.8x）。
+//
+// 质感升级（不动时间轴与姿态关键帧）：弹窗改为 flex 纵向排版、文案压到装得下，修掉 Confirm
+// 压住 Pro 选项、正文溢出弹窗底边的穿帮；描边收敛的颜色由硬切改为逐帧插值；弹窗/按钮/仪表盘
+// 外框补顶部内高光与发丝线；字体换系统字栈 + 字距层级；整幅加暗角与胶片颗粒（黑金场防色带）。
 import React from 'react';
 import { DesignStage, E, lerp, rand, seg, useT } from '../../_fixtures/Motion';
+import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
 
 export const DASHBOARD_GLOW_HIGHLIGHT_PILL_DURATION = 60; // 2000ms @30fps
 
@@ -166,7 +171,7 @@ export const DashboardGlowHighlightPill: React.FC = () => {
       <div
         style={{
           position: 'absolute', inset: 0, background: '#050403', overflow: 'hidden',
-          perspective: 800, fontFamily: '-apple-system,system-ui,sans-serif',
+          perspective: 800, fontFamily: FONT.sans, fontKerning: 'normal',
         }}
       >
         {/* 暖色底光（原片黑场并非纯黑，顶部偏暖褐） */}
@@ -180,7 +185,7 @@ export const DashboardGlowHighlightPill: React.FC = () => {
         <div
           style={{
             position: 'absolute', left: '50%', top: '49%', transform: 'translate(-50%,-50%)',
-            fontSize: 27, fontWeight: 400, letterSpacing: 0.2, whiteSpace: 'nowrap',
+            fontSize: 27, fontWeight: 500, letterSpacing: '-0.025em', whiteSpace: 'nowrap',
             background: 'linear-gradient(178deg,#fff8e2 6%,#f6dfa4 44%,#e0bd72 70%,#c99a45 100%)',
             WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
             opacity: 1 - yOut,
@@ -205,7 +210,8 @@ export const DashboardGlowHighlightPill: React.FC = () => {
           <div
             style={{
               position: 'absolute', inset: 0, borderRadius: 6, background: '#101114',
-              border: '1px solid #24272d', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,.6)',
+              border: '0.5px solid rgba(255,255,255,.09)', overflow: 'hidden',
+              boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,.07), 0 1px 2px rgba(0,0,0,.5), 0 20px 50px rgba(0,0,0,.6)',
               filter: `blur(${(bl * 4.5).toFixed(2)}px) brightness(${(1.5 + bl * 0.05).toFixed(3)}) saturate(1.06)`,
             }}
           >
@@ -333,34 +339,42 @@ export const DashboardGlowHighlightPill: React.FC = () => {
             borderRadius: MRAD,
             background: 'linear-gradient(170deg,#141310,#0d0c0a)',
             border: '1px solid rgba(230,196,118,.3)',
-            boxShadow: `0 0 ${(12 * mc).toFixed(1)}px rgba(212,175,90,${(0.3 * mc).toFixed(3)}),0 18px 44px rgba(0,0,0,.72)`,
-            padding: '6px 7px', boxSizing: 'border-box',
+            boxShadow: `inset 0 0.5px 0 rgba(255,240,200,.10), 0 0 ${(12 * mc).toFixed(1)}px rgba(212,175,90,${(0.3 * mc).toFixed(3)}),0 18px 44px rgba(0,0,0,.72)`,
+            padding: '6px 7px 6px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 5.5, fontWeight: 700, color: '#f2ead2', marginBottom: 4 }}>Focus Mode</div>
-          <div style={{ fontSize: 3.4, lineHeight: 1.62, color: '#8b8f98', marginBottom: 3 }}>
-            All panels share one unified workspace layout. Changes in one panel are reflected in the others,{' '}
+          {/* 纵向 flex：标题 → 说明 → 两个选项 → Confirm 贴底；文案长度按盒子 117×108 设计 px 校过，不溢出 */}
+          <div style={{ fontSize: 5.5, fontWeight: 650, letterSpacing: '-0.01em', color: '#f2ead2', marginBottom: 3 }}>Focus Mode</div>
+          <div style={{ fontSize: 3.4, lineHeight: 1.55, color: '#8b8f98', marginBottom: 3 }}>
+            All panels share one workspace layout,{' '}
             <span style={{ color: '#cbb26a' }}>keeping context in one place</span>.
           </div>
-          <div style={{ fontSize: 3.4, color: '#8b8f98', marginBottom: 4 }}>Choose how panels are arranged:</div>
-          <div style={{ border: '1px solid rgba(230,196,118,.42)', borderRadius: 3, background: 'rgba(230,196,118,.05)', padding: '4px 5px', marginBottom: 4 }}>
-            <div style={{ fontSize: 4, fontWeight: 700, color: '#eee6cc' }}>● Standard</div>
-            <div style={{ fontSize: 3.3, lineHeight: 1.55, color: '#8b8f98', marginTop: 1.5 }}>
-              Placeholder body copy for option one. The selected option directly determines the layout of each panel — simple and predictable.
+          <div style={{ fontSize: 3.4, color: '#8b8f98', marginBottom: 3.5 }}>Choose how panels are arranged:</div>
+          <div style={{ border: '0.5px solid rgba(230,196,118,.5)', borderRadius: 3, background: 'linear-gradient(180deg,rgba(230,196,118,.09),rgba(230,196,118,.03))', boxShadow: 'inset 0 0.5px 0 rgba(255,236,190,.12)', padding: '3.5px 5px', marginBottom: 3 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2.5, fontSize: 4, fontWeight: 650, color: '#eee6cc' }}>
+              <span style={{ width: 3.6, height: 3.6, borderRadius: 2, boxSizing: 'border-box', border: '0.9px solid #e6c476', background: 'radial-gradient(circle,#e6c476 0 38%,transparent 44%)' }} />
+              Standard
+            </div>
+            <div style={{ fontSize: 3.3, lineHeight: 1.5, color: '#8b8f98', marginTop: 1.5 }}>
+              Each panel follows the selected layout — simple and predictable.
             </div>
           </div>
-          <div style={{ border: '1px solid #23252a', borderRadius: 3, padding: '4px 5px' }}>
-            <div style={{ fontSize: 4, fontWeight: 700, color: '#b9bec6' }}>○ Pro</div>
-            <div style={{ fontSize: 3.3, lineHeight: 1.55, color: '#71757e', marginTop: 1.5 }}>
-              Placeholder body copy for option two, written a little longer so the block keeps its shape. Replace both with your own wording.
+          <div style={{ border: '0.5px solid rgba(255,255,255,.08)', borderRadius: 3, padding: '3.5px 5px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2.5, fontSize: 4, fontWeight: 650, color: '#b9bec6' }}>
+              <span style={{ width: 3.6, height: 3.6, borderRadius: 2, boxSizing: 'border-box', border: '0.6px solid #6d717a' }} />
+              Pro
+            </div>
+            <div style={{ fontSize: 3.3, lineHeight: 1.5, color: '#71757e', marginTop: 1.5 }}>
+              Arrange panels freely and save your own presets.
             </div>
           </div>
           <div
             style={{
-              position: 'absolute', left: 7, right: 7, bottom: 6, height: 9, borderRadius: 2.5,
-              background: 'linear-gradient(180deg,#e2bd63,#caa03e)',
+              marginTop: 'auto', height: 9, borderRadius: 2.5, flex: 'none',
+              background: 'linear-gradient(180deg,#e8c56c,#c99d3b)',
+              boxShadow: 'inset 0 0.5px 0 rgba(255,246,214,.55), 0 1px 3px rgba(0,0,0,.45)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 4, fontWeight: 700, color: '#241b06',
+              fontSize: 4, fontWeight: 700, letterSpacing: '0.01em', color: '#241b06',
             }}
           >
             Confirm
@@ -382,7 +396,7 @@ export const DashboardGlowHighlightPill: React.FC = () => {
               d={TRACE_D}
               pathLength={P_L}
               fill="none"
-              stroke={settle > 0.5 ? '#e6c887' : '#fff0c4'}
+              stroke={`rgb(${Math.round(lerp(settle, 255, 230))},${Math.round(lerp(settle, 240, 200))},${Math.round(lerp(settle, 196, 135))})`}
               strokeWidth={Number((2.9 - settle * 1.9).toFixed(2))}
               strokeLinecap="round"
               strokeDasharray={`${P_L} ${P_L}`}
@@ -397,6 +411,10 @@ export const DashboardGlowHighlightPill: React.FC = () => {
             />
           </svg>
         </div>
+
+        {/* 黑金场收边：暖黑暗角 + 颗粒（大面积暗部渐变防色带，也给贴图感的 UI 一点胶片质地） */}
+        <Vignette strength={0.5} inner={0.4} color="#020101" />
+        <Grain opacity={0.1} blend="soft-light" scale={0.25} />
       </div>
     </DesignStage>
   );

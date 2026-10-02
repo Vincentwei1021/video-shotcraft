@@ -1,0 +1,34 @@
+{
+  "stem": "AssembleThenTypeFlyin",
+  "issues": [
+    "骨架件是 1px 灰描边的空框，无材质无阴影，暗底上几乎看不见层次",
+    "骨架运动残影是各向同性的 blur，像失焦而不是速度",
+    "文字溢出容器：app.example.com 冲出 url pill、04 / 08 冲出卡片右缘、GET STARTED 顶到 CTA 边",
+    "最后一字在 t≈0.95 才落，整页成形后只剩 10 帧，没有呼吸就结束",
+    "背景是平铺的暗色渐变 + 满屏格纸，无光源、无暗角、大面积色带"
+  ],
+  "changes": [
+    "骨架改成有材质的面板：纵向微渐变 + 0.5 设计 px 发丝线 + 顶部内高光 + 两层软阴影；缩略块加渐变与内描边，social 方块补 × 图标",
+    "骨架残影改为 SpeedBlur 方向性运动模糊（按中心差分速度 ×0.16，封顶 3 设计 px），静止即为 0",
+    "逐字飞入改 snappy 缓动并加景深模糊（按 dz 离焦距离、(1−a)² 衰减），远处虚近处实",
+    "时间轴前移：小标注 start 0.58→0.76 压到 0.52→0.66，字间隔上限从 0.94 改 0.82，尾段留 ≈0.9s 整页静止",
+    "排版收进容器：url pill 加宽并右移文字、页码改右对齐卡片内缘、CTA 加宽并居中；CTA 在文字落定后强调色 159,182,232 '通电'，logo 点阵一颗点亮",
+    "背景加冷色主光斑（骨架段缓慢点亮）+ 卡片后强调色余光 + 网格径向遮罩 + 暗角 + soft-light 颗粒"
+  ],
+  "issuesEn": [
+    "Skeleton pieces were empty 1px grey outlines with no material or shadow, barely separating from the dark ground",
+    "Skeleton motion trail was an isotropic blur that reads as out-of-focus rather than speed",
+    "Text overflowed its containers: app.example.com ran out of the URL pill, 04 / 08 out of the card edge, GET STARTED touched the CTA border",
+    "The last glyph landed at t≈0.95, leaving only 10 frames once the page was complete — no breathing room",
+    "Background was a flat dark gradient with a full-screen graph-paper grid: no light source, no vignette, visible banding"
+  ],
+  "changesEn": [
+    "Skeleton pieces became material panels: vertical micro-gradient, 0.5 design-px hairline, top inner highlight and two-layer soft shadow; thumbnails got gradients and inner strokes, the social box got an × glyph",
+    "The trail is now SpeedBlur directional motion blur driven by central-difference velocity (×0.16, capped at 3 design px), zero when still",
+    "Per-glyph fly-in switched to the snappy ease with depth-of-field blur scaled by dz and decaying as (1−a)², so far glyphs are soft and near ones crisp",
+    "Timeline pulled forward: small-label starts compressed from 0.58→0.76 to 0.52→0.66 and the stagger cap moved from 0.94 to 0.82, leaving ≈0.9s of still, finished page",
+    "Typography fits its containers: wider URL pill, right-aligned page counter inside the card, wider centred CTA; the CTA 'powers on' in accent 159,182,232 after the text lands and one logo dot lights up",
+    "Background gained a cool key-light bloom that brightens during the skeleton phase, a faint accent glow behind the card, a radially masked grid, vignette and soft-light grain"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "PopBurstConfirm",
+  "issues": [
+    "待确认与确认后都是白底 + 22px 黑粗描边圆，'成功'时刻没有状态变化，只多了一个勾",
+    "粒子是等长等距的黑/琥珀短棍，节奏机械，像时钟刻度",
+    "冲击环与粒子都是平面线条，释放瞬间没有任何光感",
+    "'Deployed' 标签是 Helvetica 800 黑色胶囊，与 icon 同时弹出没有跟随",
+    "时长 DUR=120 只是内部常量，没有按约定导出"
+  ],
+  "changes": [
+    "待确认态改浅色凹槽圆 + 缓慢旋转的虚线进度环（读作'进行中'）；释放帧 4f 内'通电'成翡翠绿渐变实心盘（顶部高光、内阴影、两层软阴影随缩放抬升），白色对勾带投影画出；蓄力 0.6x→过冲 1.35x→落回节拍不变",
+    "10 根粒子改两色（主绿 / 浅薄荷）、飞行距离 ±20% 与长度按散列错落、宽度分两档，尾巴随减速收短、透明度平方衰减",
+    "冲击环外叠一层 3 倍宽的淡柔光环；释放帧主角背后一次 12f 的径向绿色柔光（全片唯一光效）",
+    "标签换深色胶囊：绿色对勾徽标 + Deployed 40px 650 字重 + 等宽版本号 v2.14.0，晚 2f（42f）带 16px 上浮 back 弹出",
+    "柔光底 Backdrop + 颗粒；导出 POP_BURST_CONFIRM_DURATION = 120"
+  ],
+  "issuesEn": [
+    "Both pending and confirmed states were a white circle with a 22px black outline; the success moment had no state change beyond the tick",
+    "Particles were identical black/amber sticks at equal spacing — mechanical, like clock ticks",
+    "Ring and particles were flat strokes with no sense of light at the release",
+    "The 'Deployed' tag was a Helvetica 800 black pill that popped with the icon, with no follow-through",
+    "Duration DUR=120 was only an internal constant, not exported per convention"
+  ],
+  "changesEn": [
+    "Pending state is a soft recessed disc with a slowly rotating dotted progress ring (reads as 'in progress'); on release it 'powers on' within 4f into an emerald gradient disc (top highlight, inner shade, two-layer shadow that lifts with scale) and a white tick with drop shadow draws on; the 0.6x anticipation → 1.35x overshoot → settle beat is unchanged",
+    "The 10 particles use two colours (green / pale mint), hashed ±20% travel and length variation and two widths; tails shorten as they decelerate and opacity falls off quadratically",
+    "A faint glow ring three times as wide trails the shock ring, and a single 12f radial green bloom flashes behind the hero on release (the only light effect)",
+    "Tag rebuilt as a dark pill: green tick badge, 'Deployed' at 40px / 650 weight and a mono v2.14.0 version, popping 2f later (42f) with a 16px rise on a back ease",
+    "Soft Backdrop ground with grain; POP_BURST_CONFIRM_DURATION = 120 exported"
+  ],
+  "mdChanged": false
+}

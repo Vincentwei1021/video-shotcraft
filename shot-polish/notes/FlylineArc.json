@@ -1,0 +1,32 @@
+{
+  "stem": "FlylineArc",
+  "issues": [
+    "卡片定位是暗场段落，demo 却铺在灰阶浅色骨架 dashboard 上，飞线是一根黑边白线，毫无'光'的感觉",
+    "白线 + 深灰衬底读作描边路径；圆头分段在渐隐尾叠出珠串",
+    "光头是带黑描边的白点 + 灰色光晕，没有领跑的能量",
+    "到达脉冲是灰黑描边 + 加深罩，像选中框；落点之后什么都不留",
+    "没有导出时长常量（工作台按 150f 默认）"
+  ],
+  "changes": [
+    "底图换 FakeDashboard 深色版、恒定压暗 0.65 + 暗角，飞线成为前景层（与 GlowOrb / Relay 同一暗场系统）",
+    "线体改暗场版：3.5px 白芯 butt 分段 + 7px / 18px 两层靛蓝辉光衬底，亮头暗尾节奏与 22f out-cubic 生长不变",
+    "光头加 9 段彗尾亮段 + 靛蓝径向光晕；起点 6f 亮起锚点，落点留常驻节点（交代连接关系）",
+    "卡脉冲改提亮：1.5px 强调色描边 + 高斯外辉光 + 0.05 卡面提亮，6f 起 12f 落到残余 0.25；落点同帧 14f 扩散冲击环",
+    "颗粒 0.07 防色带；补导出 FLYLINE_ARC_DURATION = 140（f86 后真静止 54f）；md 线体/脉冲两行同步写明暗场版参数"
+  ],
+  "issuesEn": [
+    "The card is meant for a dark section, yet the demo sat on a grey light skeleton dashboard and the flyline was a black-edged white line with no sense of light",
+    "White line on a dark-grey underlay read as a stroked path, and round-capped segments beaded along the fading tail",
+    "The head was a black-outlined white dot with a grey halo — no leading energy",
+    "The arrival pulse was a grey-black outline plus darkening mask, like a selection box, and nothing remained after landing",
+    "No duration constant was exported (workbench defaulted to 150f)"
+  ],
+  "changesEn": [
+    "Background switched to the dark FakeDashboard, constantly dimmed to 0.65 with a vignette, so the flylines are the foreground (same dark system as GlowOrb / Relay)",
+    "Dark-scene line: 3.5px white core in butt-capped segments over 7px / 18px indigo glow layers; bright-head/dim-tail rhythm and 22f out-cubic growth unchanged",
+    "Head gains a 9-segment comet tail and an indigo radial halo; an anchor lights at the origin over 6f and a persistent node marks the landing point",
+    "Card pulse now brightens: 1.5px accent ring, Gaussian outer glow and a 0.05 face lift, rising in 6f and settling over 12f to a 0.25 residual, plus a 14f expanding impact ring on the landing frame",
+    "Grain 0.07 against banding; FLYLINE_ARC_DURATION = 140 exported (54f true hold after f86); md line-body and pulse rows updated with the dark-scene parameters"
+  ],
+  "mdChanged": true
+}

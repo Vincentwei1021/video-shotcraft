@@ -1,0 +1,32 @@
+{
+  "stem": "AuroraBloomBgFlip",
+  "issues": [
+    "B 句收色排到 t≈1.08，片尾 changed 仍是紫色，定稿态从未出现",
+    "极光只读成一团淡紫雾，橙核被主层盖住几乎看不见，缺少内部流动",
+    "亮场 #ececec 与暗场 #0a0a12 都是平铺死色，大面积柔焦渐变有色带",
+    "A 句前 46% 完全静止，像贴图；换句只有 blur/淡入淡出，没有位移落位",
+    "字体为 system-ui 回退、默认字距，字重层级平"
+  ],
+  "changes": [
+    "时间轴前移约 0.06：升起 0.04→0.56、反转 0.57→0.64（仍 ≈0.36s）、A 句 0.40 起、B 句 0.70 起 stagger 0.05、收色 0.09，t≈0.90 定稿后静止 ≈0.5s",
+    "极光改四层：主紫 + 新增品红过渡层（与橙核不同频漂移）+ 抬高的橙核 + 白色融边，暖芯真正透出",
+    "反转瞬间 blob 组 overshoot 轻收 6%，读作'被压成余晖'",
+    "亮场顶部白色柔光、暗场冷色天光随 flip 交替；全程 soft-light 颗粒与随 flip 加深的暗角防色带",
+    "A 句静置期 swift 缓推 1→1.035，blur-out 时上浮 5px；B 句 blur-in 带 6px 上浮落位，收色前紫字带自发光；字体换系统字栈、−0.022em 字距"
+  ],
+  "issuesEn": [
+    "Sentence B's colour settle was scheduled to t≈1.08, so 'changed' was still purple on the last frame — the final state never appeared",
+    "The aurora read as a pale lavender haze; the orange core was buried under the main layer and there was no internal flow",
+    "Both #ececec and #0a0a12 grounds were flat fills, and the big soft gradients banded",
+    "Sentence A sat completely still for the first 46% like a pasted image; the swap used only blur/fade with no positional landing",
+    "Font fell back to system-ui with default tracking and a flat weight hierarchy"
+  ],
+  "changesEn": [
+    "Timeline pulled ≈0.06 earlier: rise 0.04→0.56, flip 0.57→0.64 (still ≈0.36s), A out from 0.40, B in from 0.70 with 0.05 stagger and a 0.09 colour settle — final state lands at t≈0.90 and holds ≈0.5s",
+    "Aurora rebuilt as four layers: main violet, a new magenta bridge layer drifting at a different frequency from the raised orange core, and the white feather edge — the warm heart now shows",
+    "At the flip the blob group squashes 6% on an overshoot ease, reading as being pressed into an afterglow",
+    "A white top light on the light ground and a cool sky light on the dark ground cross-fade with the flip; soft-light grain throughout and a vignette that deepens with the flip kill banding",
+    "Sentence A pushes in 1→1.035 on a swift ease while resting and lifts 5px as it blurs out; B blurs in with a 6px rise and a faint violet glow before turning white; system font stack with −0.022em tracking"
+  ],
+  "mdChanged": true
+}

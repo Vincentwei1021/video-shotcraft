@@ -1,0 +1,28 @@
+{
+  "stem": "GlowOrbAmbient",
+  "issues": [
+    "三团光斑是同一种灰白，叠在 #1d1d1b 暖灰底上读作脏雾而不是光",
+    "中央卡是灰条骨架 + 1.5px 灰边，没有内容也没有材质",
+    "卡缘辉光只是一圈均匀的白色 box-shadow，看不出光从哪个方向来",
+    "大面积 blur(100px) 渐变无颗粒，暗部色带明显；没有导出时长常量"
+  ],
+  "changes": [
+    "底色换带冷色相的近黑渐变 + 中心点阵台面；光斑改靛蓝主光 / 淡紫 / 冷白克制色对，峰值 0.32/0.22/0.18、漂移周期与 90–120f 收敛完全不变",
+    "中央卡换成出版级深色卡：图标、Realtime sync 标题、Live 状态胶囊、99.98% 指标、平滑 sparkline，发丝线 + 内高光 + 两层深色阴影，晚 4f 带 10px 上浮淡入",
+    "辉光改为主导光斑色的外扩 box-shadow（保留 0→28px 驱动）+ 一道 1.2px 定向轮廓光：mask 镂空成边，角度实时朝向最近光斑，只在受光一侧亮，卡面同侧再加一层极淡受光余晖",
+    "暗角 0.55 + soft-light 颗粒 0.08 防色带；补导出 GLOW_ORB_AMBIENT_DURATION = 150"
+  ],
+  "issuesEn": [
+    "All three orbs were the same grey-white on a warm #1d1d1b ground, reading as dirty haze rather than light",
+    "The centre card was a grey-bar skeleton with a 1.5px grey border — no content, no material",
+    "The rim glow was a uniform white box-shadow with no sense of which direction the light came from",
+    "Huge blur(100px) gradients without grain banded visibly; no duration constant was exported"
+  ],
+  "changesEn": [
+    "Ground is now a cool-hued near-black gradient with a centred dot grid; orbs became a restrained indigo key / lilac / cool-white set with identical peaks 0.32/0.22/0.18, drift periods and 90–120f settle",
+    "Centre card is a publication-grade dark card (icon, 'Realtime sync', Live pill, 99.98% metric, smooth sparkline) with hairline, inner highlight and two-layer dark shadow, fading in 4f later with a 10px rise",
+    "Glow is now an outer box-shadow tinted by the dominant orb (same 0→28px drive) plus a 1.2px directional rim light masked to the border whose angle tracks the nearest orb, lighting only the facing side, with a faint matching bloom on the card face",
+    "Vignette 0.55 and soft-light grain 0.08 against banding; GLOW_ORB_AMBIENT_DURATION = 150 exported"
+  ],
+  "mdChanged": false
+}
