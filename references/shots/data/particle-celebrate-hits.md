@@ -2,7 +2,7 @@
 name: particle-celebrate-hits
 一句话: 庆祝粒子两式——confetti-crossfire 双侧礼炮（里程碑揭晓帧双炮交叉彩屑弹幕）与 counter-tick-sparks 数字溅火（计数器每破整千顶部迸火星）
 适用: 里程碑数字/KPI 揭晓/成就段落；A 一次性大庆祝，B 持续小打点
-时长: A 3–4s / B 4–5s
+时长: A 3–4s（demo 含 ≥50f 尾静止共 150f）/ B 4–5s（demo 140f：计数 78f + 终跳 18f + 静止）
 能量: 高潮点缀型（爆发后必须落回纯净静止）
 标签: effects
 ---

@@ -1,0 +1,30 @@
+{
+  "stem": "TimelineTravel",
+  "issues": [
+    "工作台从源码猜到 104f，正好截在急停帧：Today 卡、1.28× 推近和尾段静止从未出镜",
+    "画面上方打着调试标题 TIMELINE TRAVEL，卡片是灰色骨架，刻度标签 Helvetica 回退",
+    "刻度是 6px 墨色竖杠、轴是 6px 灰条，和卡片之间没有连接关系",
+    "冲刺段每帧横移 50px 以上却没有运动模糊，背景死平，没有远近参照，速度感全靠刻度点"
+  ],
+  "changes": [
+    "导出 TIMELINE_TRAVEL_DURATION = 160（f114 后真静止 46f）；变速曲线、6f 提前弹立 spring、急停推近 1→1.28 全部保留",
+    "调试标题换成固定页眉 Release history / Five years of shipping；骨架卡换成里程碑卡（版本 chip / 年份 / 标题 / 说明 / 团队数），Today = v4.0 AI agents 强调色",
+    "刻度换成带光晕的节点（卡片起弹同拍点亮）+ 版本/年份两级标签，卡底到节点一根发丝连杆随弹立长出；轴线 2px 两端渐隐",
+    "世界层按相机速度做横向 SpeedBlur（×0.16，封顶 9px，慢段为 0）；远景大号年份以 0.35× 视差平移、按距离交叉淡入，推近只跟 0.35 倍幅度",
+    "柔光亮场 + 颗粒 + 系统字体栈"
+  ],
+  "issuesEn": [
+    "The workbench guessed 104f from the source, cutting exactly at the brake: the Today card, the 1.28× push-in and the tail hold never appeared",
+    "A debug title TIMELINE TRAVEL sat on screen, cards were grey skeletons and tick labels fell back to Helvetica",
+    "Ticks were 6px ink bars on a 6px grey rail with no visual link to the cards",
+    "The sprint moved 50+ px per frame with no motion blur on a flat background; the only speed cue was the tick dots"
+  ],
+  "changesEn": [
+    "Exported TIMELINE_TRAVEL_DURATION = 160 (46f true hold after f114); the speed curve, 6f-early spring pop and 1→1.28 push-in are unchanged",
+    "Debug title replaced with a fixed header Release history / Five years of shipping; skeleton cards replaced with milestone cards (version chip, year, title, description, team count), Today = v4.0 AI agents in accent",
+    "Ticks are haloed nodes that light up as their card pops, with version/year labels and a hairline stem growing from node to card; 2px rail fading at both ends",
+    "The world layer gets horizontal SpeedBlur from camera speed (×0.16, capped at 9px, zero when slow); far-background giant years parallax at 0.35× and crossfade by distance, following only 35% of the push-in",
+    "Soft-lit light backdrop, grain and system font stack"
+  ],
+  "mdChanged": false
+}

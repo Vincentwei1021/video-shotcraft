@@ -1,0 +1,28 @@
+{
+  "stem": "ParticleSandFill",
+  "issues": [
+    "调试标题 PARTICLE SAND FILL + 卡内两根灰骨架条，2px 灰边卡片，没有坐标、类目和单位",
+    "高柱的雨从卡片外面落进来，颗粒穿过卡片上沿和标题，穿帮",
+    "灰柱里随机混 18% 琥珀颗粒，颗粒中灰 #8f8f8d 又和实体柱浅灰不同色，交接时颜色跳变",
+    "“凝成实体”只是粒子面整体淡出 + 实体柱淡入，读作叠化而非凝结；坠落颗粒是静止方块，看不出加速度"
+  ],
+  "changes": [
+    "导出 PARTICLE_SAND_FILL_DURATION = 150；出版级图表卡：New signups by region / Q3 2026 · thousands，100/200/300 网格 + 基线 + North/West/South/East 类目，柔光亮场 + 颗粒",
+    "雨帘裁进卡片并在绘图区上沿 90px 内渐隐出现；坠落、15% 回弹、6f 柱间错峰与闭式落点全部保留",
+    "颗粒与实体柱同色系：灰柱冷灰、主角柱琥珀，逐颗 ±明度微差；坠落中按速度纵向拉长最多 1.75× 读出加速度",
+    "真凝结：堆满后颗粒间隙 2px→0、圆角 2.5→0（9f in-out），再由带受光渐变 + 顶部内高光的实体柱接管；数值标签 overshoot 上浮弹出"
+  ],
+  "issuesEn": [
+    "Debug title PARTICLE SAND FILL, two grey skeleton bars in the card, 2px grey border, and no axis, categories or units",
+    "Rain for the tall bars fell in from outside the card, crossing its top edge and the title",
+    "Grey bars had 18% random amber grains, and the mid-grey grains did not match the light-grey solid bars, so the colour jumped at handoff",
+    "'Condensing into a solid' was just the grain layer fading out under a fading-in bar, reading as a dissolve; falling grains were static squares with no sense of acceleration"
+  ],
+  "changesEn": [
+    "Exported PARTICLE_SAND_FILL_DURATION = 150; publication-grade chart card with New signups by region / Q3 2026 · thousands, 100/200/300 gridlines, baseline and North/West/South/East categories on a soft-lit backdrop with grain",
+    "Rain is clipped to the card and fades in within 90px below the plot top; gravity, 15% bounce, 6f bar stagger and closed-form landing all kept",
+    "Grains share the bar palette (cool grey, amber for the hero bar) with small per-grain lightness variation, and stretch vertically up to 1.75× by fall speed",
+    "Real condensation: once full, grain gaps close 2px→0 and corners square off over 9f, then a lit gradient bar with top highlight takes over; value labels pop up with overshoot"
+  ],
+  "mdChanged": true
+}

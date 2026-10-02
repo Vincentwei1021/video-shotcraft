@@ -1,0 +1,28 @@
+{
+  "stem": "CounterTickSparks",
+  "issues": [
+    "工作台从源码猜到 78f，正好截在终值帧：终跳 20 颗火星和 1.1x 弹跳从未出镜，也没有尾段静止",
+    "调试标题 COUNTER TICK SPARKS + 灰骨架条 + 2px 灰边白卡，Helvetica 回退",
+    "火星是亮灰底上的琥珀小圆点，辉光在浅底上发脏，几乎看不见",
+    "火星从数字上方 50px 的空白处冒出，与数字没有接触关系；整千 tick 时数字本身毫无反应"
+  ],
+  "changes": [
+    "导出 COUNTER_TICK_SPARKS_DURATION = 140（计数 78f + 终跳 18f + 44f 静止），计数曲线与 tick 预解析不变",
+    "场景改暗场：深色计数卡（发丝线 + 内高光 + 深阴影），数字白→冷灰渐变字，标签 Teams onboarded · since launch 放到数字下方，火星从数字字面顶缘迸出",
+    "火星升级为热粒子：沿速度方向拉成短流星（长度 = 尺寸 + 速度×1.7）、色温随寿命 白热→琥珀→暗红、screen 叠加辉光",
+    "每个整千 tick 数字被敲一下（上跳 3px 阻尼回落）；快计数段按斜率最多 1.4px 虚化；终跳 4f 顶到 1.1x 再 overshoot 回落，数字后一次暖色柔光"
+  ],
+  "issuesEn": [
+    "The workbench guessed 78f from the source, cutting exactly at the final value: the 20-spark final burst and 1.1x pop never appeared and there was no tail hold",
+    "Debug title COUNTER TICK SPARKS, grey skeleton bars and a 2px grey-bordered card with Helvetica fallback",
+    "Sparks were small amber dots on a light grey background where the glow turned muddy and nearly invisible",
+    "Sparks spawned in empty space 50px above the digits with no contact, and the number never reacted to a thousand tick"
+  ],
+  "changesEn": [
+    "Exported COUNTER_TICK_SPARKS_DURATION = 140 (78f count + 18f final burst + 44f hold); count curve and tick pre-solve unchanged",
+    "Dark scene: dark counter card (hairline, inner highlight, deep shadow), white-to-cool-grey number, the label Teams onboarded · since launch moved below so sparks burst from the glyph tops",
+    "Sparks are hot particles: velocity-aligned streaks (length = size + speed×1.7), colour cooling white-hot→amber→dark red over life, screen-blended glow",
+    "Each thousand tick knocks the number up 3px with a damped return; up to 1.4px roll blur on the fast part of the count; the final jump pops to 1.1x in 4f, settles with overshoot, plus one warm bloom behind the number"
+  ],
+  "mdChanged": true
+}

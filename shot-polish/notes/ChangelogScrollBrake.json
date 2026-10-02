@@ -1,0 +1,30 @@
+{
+  "stem": "ChangelogScrollBrake",
+  "issues": [
+    "整列都是灰色骨架条，停点那一行也没有任何内容，读不出“今天这条最大”",
+    "out-exp 从第 14 帧静止瞬间跳到峰速，起步是一记硬切而不是加速",
+    "模糊是各向同性 blur，横向字形和边框一起糊成一团，不像运动模糊",
+    "停点行靠 3px 墨色粗边标记，列表顶/底硬切出画，平灰底；没有导出时长常量"
+  ],
+  "changes": [
+    "导出 CHANGELOG_SCROLL_BRAKE_DURATION = 150；整年 changelog 真实感内容（版本号 / Feature·Improved·Fix 标签 / 标题 / 说明 / 日期，时间自上而下递增，停点后是 Planned 路线图）",
+    "停点 v2.41 Realtime collaboration：Launch 徽标 + NEW 标签，抬升时 2px 强调色描边 + 随抬升变大的两层阴影，其余行仍退暗 0.38",
+    "滚动曲线换成 cubic-bezier(0.45,0,0.06,1)：约 5f 拉满速度再长尾刹停到画面正中，停位不变",
+    "模糊改为沿滚动方向的纵向 SpeedBlur（速度×0.32，封顶 30px），高速段读作色带、字形横向不糊，停稳即清零",
+    "加固定页眉 Changelog · 28 releases in 2026、列表上下渐隐遮罩，柔光亮场 + 颗粒"
+  ],
+  "issuesEn": [
+    "The whole list was grey skeleton bars; even the stop row had no content, so 'today's release is the big one' never read",
+    "The out-expo curve jumped from rest to peak speed on frame 14, a hard cut instead of acceleration",
+    "Blur was isotropic, smearing glyphs and borders sideways too; it did not read as motion blur",
+    "The stop row was marked by a 3px ink border, the list was hard-cropped top and bottom on a flat grey background, and there was no duration constant"
+  ],
+  "changesEn": [
+    "Exported CHANGELOG_SCROLL_BRAKE_DURATION = 150; a year of realistic changelog rows (version, Feature/Improved/Fix tag, title, description, date, chronological top to bottom, Planned roadmap rows after the stop)",
+    "Stop row v2.41 Realtime collaboration with a Launch badge and NEW tag; on lift it gains a 2px accent ring and a growing two-layer shadow while the rest still dims to 0.38",
+    "Scroll curve is cubic-bezier(0.45,0,0.06,1): full speed in about 5f, then a long braking tail to the same centred stop",
+    "Blur is a vertical SpeedBlur along the scroll (speed×0.32, capped at 30px), so the fast part reads as streaks without horizontal smearing and clears on stop",
+    "Fixed header Changelog · 28 releases in 2026, top and bottom fade masks, soft-lit light backdrop and grain"
+  ],
+  "mdChanged": true
+}

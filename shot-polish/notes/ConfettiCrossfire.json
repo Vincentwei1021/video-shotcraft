@@ -1,0 +1,32 @@
+{
+  "stem": "ConfettiCrossfire",
+  "issues": [
+    "画面上方打着调试标题 CONFETTI CROSSFIRE，KPI 卡是 2px 灰边 + 两根灰骨架条 + Helvetica 回退",
+    "彩屑是同一平面的扁平色块，rotateX 没有透视读不出翻转，也没有前后景深",
+    "出膛 70–95px/f 的高速段每帧跳一大截，没有任何拖影，读作闪烁的碎点",
+    "下落段彩屑直线坠落，没有纸片的左右飘摆；揭晓帧卡片本身毫无反应",
+    "平灰底无层次，没有导出时长常量（工作台按默认 150f 猜）"
+  ],
+  "changes": [
+    "导出 CONFETTI_CROSSFIRE_DURATION = 150；KPI 卡换出版级：发丝线 + 内高光 + 随抬升收紧的两层阴影，Customer satisfaction / 98.5% / ▲ 2.1 pts · 4,812 responses 真实文案",
+    "卡片 0.86→1 overshoot 落座 + 上浮 28px，揭晓帧受冲 1→1.018 阻尼回落，炮口一记 12f 柔光 puff",
+    "彩屑升级为真纸片：scaleY=|cos| 翻转、背面压暗 72%、过顶点后 10–32px 左右飘摆；保留原闭式弹道、初速与灰阶+1/3 琥珀配色",
+    "高速段按每帧速度沿运动方向拉伸最多 2.4×（<20px/f 复原），读作拖影而非跳点",
+    "三层景深：30% 远景 0.6× 压暗微虚、在卡片后方；18% 近景 1.5× 虚焦 1.8px、从卡片前掠过；柔光亮场 + 颗粒"
+  ],
+  "issuesEn": [
+    "A debug title CONFETTI CROSSFIRE sat on screen; the KPI card had a 2px grey border, two skeleton bars and Helvetica fallback",
+    "Confetti were flat chips on one plane; rotateX without perspective did not read as flipping, and there was no depth",
+    "During the 70–95px/f launch the pieces jumped huge distances per frame with no trail, reading as flickering dots",
+    "Pieces fell in straight lines with no paper flutter, and the card did not react at the reveal frame",
+    "Flat grey background and no exported duration constant (the workbench guessed 150f)"
+  ],
+  "changesEn": [
+    "Exported CONFETTI_CROSSFIRE_DURATION = 150; the KPI card is publication grade: hairline, inner highlight, two-layer shadow that tightens on landing, real copy Customer satisfaction / 98.5% / ▲ 2.1 pts · 4,812 responses",
+    "Card lands 0.86→1 with overshoot and a 28px rise, takes a damped 1→1.018 kick at the reveal, and each cannon gets a 12f soft muzzle puff",
+    "Confetti behave like paper: scaleY=|cos| flipping, back face darkened to 72%, 10–32px sway after the apex; original closed-form ballistics, speeds and grey + 1/3 amber palette kept",
+    "Fast pieces stretch up to 2.4× along their velocity (resetting below 20px/f), reading as a motion trail instead of jumping dots",
+    "Three depth layers: 30% far pieces at 0.6×, dimmed and soft behind the card; 18% near pieces at 1.5× with 1.8px defocus crossing in front; soft-lit light backdrop and grain"
+  ],
+  "mdChanged": true
+}

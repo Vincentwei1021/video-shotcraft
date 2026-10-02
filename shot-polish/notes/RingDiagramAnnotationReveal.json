@@ -1,0 +1,30 @@
+{
+  "stem": "RingDiagramAnnotationReveal",
+  "issues": [
+    "全片是灰阶占位：SUBJECT / CONTENT / 1234 / EXPLANATION / SUPPORTING DETAIL，图解讲不出任何东西",
+    "开场全屏内容场是一块平涂中灰，圆窗收束时没有“沉浸特写”的质感",
+    "分段外环用 7px CSS dashed 边框，段长不均、端头粗糙；箭头 12 支同帧齐长",
+    "右栏三段左缘各不对齐（321 / 310 / 325），注释条用 scaleX 展开会把文字压扁；Arial 回退"
+  ],
+  "changes": [
+    "内容换成可读的“反馈回路”图解：主体核 Model、内盘 CONTEXT、四块标题拼 L·O·O·P、注释条 Continuous feedback loop、二级说明 12 live signals retrain the core model every hour.",
+    "开场内容场换成带 6px 点阵与强调色柔光的深色场，主体核为受光渐变 + 辉光的靛蓝球；圆窗、细环、外环、布局让位的帧号与曲线全部保留",
+    "外环改为 SVG 24 等分 dash + 内外 0.25px 发丝导轨，每 6 段一枚强调色段，仍只有外环匀速转 44.2°",
+    "箭头绕环顺时针错峰 0.55f 长出、实心箭头头随线端推进、尾端一枚节点；细线统一为成片 1–2px",
+    "右栏统一左对齐 x=304；注释条改为 clip-path 自左揭出、文字随后淡入；柔光亮场 + 颗粒 + 系统字体栈"
+  ],
+  "issuesEn": [
+    "Everything was grey placeholders (SUBJECT / CONTENT / 1234 / EXPLANATION / SUPPORTING DETAIL), so the diagram explained nothing",
+    "The full-screen opening field was flat mid-grey with no sense of an immersive close-up as the aperture closed",
+    "The segmented ring was a 7px CSS dashed border with uneven dashes and rough ends; all 12 arrows grew on the same frame",
+    "Right-column blocks had three different left edges (321 / 310 / 325), the note bar used scaleX which squashed its text, and Arial fallback"
+  ],
+  "changesEn": [
+    "Real content as a 'feedback loop' diagram: Model core, CONTEXT disc, four title tiles spelling L·O·O·P, note bar Continuous feedback loop, detail line 12 live signals retrain the core model every hour.",
+    "The opening field is a dark scene with a 6px dot grid and accent glow around a lit indigo core; aperture, thin ring, outer ring and layout-yield frames and curves are unchanged",
+    "Outer ring is an SVG circle with 24 even dashes, 0.25px hairline guides and one accent segment every six; still only the outer ring rotates 44.2° at constant speed",
+    "Arrows grow clockwise with a 0.55f stagger, solid heads ride the line tip and each tail has a node; all thin lines render at 1–2px",
+    "Right column aligned to x=304; the note bar reveals left-to-right via clip-path with its text fading in after; soft-lit light backdrop, grain and system font stack"
+  ],
+  "mdChanged": true
+}

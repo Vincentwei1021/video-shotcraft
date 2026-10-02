@@ -1,0 +1,34 @@
+{
+  "stem": "HatchDepth",
+  "issues": [
+    "字体回退到 Courier 打字机衬线，标签 SERIES_A / GROUP_C 是调试占位词",
+    "背景死黑 #0a0a0c、图表直接漂在屏幕上，没有面板、坐标与层次",
+    "斜纹用整条尺寸的 repeating-gradient，条伸长时斜纹相位随宽度变化而爬动",
+    "实心柱是平涂渐变，且渐变随单条宽度压缩，短条和长条颜色逻辑不一致",
+    "微颤 sin 在 t=0.85 后保持满幅不收，尾帧一直在抖；表头 TOTAL 875K / AVG 1.02M 数据自相矛盾"
+  ],
+  "changes": [
+    "图表收进深色面板（0.25 设计 px 发丝线 + 顶部内高光 + 两层软阴影），背景换柔光暗场 + 暗角 + 颗粒，加 0–400K 刻度网格",
+    "斜纹改为 6px 平铺、锚在条左端，伸长期前沿一根亮线；生长错峰 0.055→0.035 递减、强 ease-out(0.16,1,0.3,1)",
+    "实心层加顶部受光 / 底部压暗 / 贴底辉光，渐变按满幅柱区铺；蜕变用对称 in-out 交叉淡化，中段亮度 1.18→1 落定",
+    "柱端数值随蜕变从 0 滚到终值（tabular-nums），标签颜色平滑退一档而非硬切",
+    "微颤改为指数衰减，t≈0.9 前归零尾帧静止；表头换成标题 + LIVE 胶囊（一次脉冲）+ 自洽的 1.45M total · 290K avg，三段错峰滑入",
+    "系统字体栈 + raster=zoom 按目标尺寸光栅化，标签换成 Organic / Direct / Referral / Paid / Email"
+  ],
+  "issuesEn": [
+    "Font fell back to Courier typewriter serif; labels SERIES_A / GROUP_C were debug placeholders",
+    "Dead black background with the chart floating on screen: no panel, no axis, no depth",
+    "Hatching used a box-sized repeating gradient, so the stripes crawled as the bars grew",
+    "Solid bars were flat gradients compressed per bar, so short and long bars had inconsistent colour logic",
+    "The sine wiggle stayed at full amplitude after t=0.85 so the end frame kept shaking; header TOTAL 875K / AVG 1.02M was self-contradictory"
+  ],
+  "changesEn": [
+    "Chart now sits in a dark panel (hairline border, top inner highlight, two-layer soft shadow) on a soft-lit dark backdrop with vignette and grain, plus a 0–400K gridline axis",
+    "Hatching is a 6px tile anchored to the bar origin with a bright leading edge while growing; grow stagger tightens 0.055→0.035 with a strong ease-out (0.16,1,0.3,1)",
+    "Solid layer gains top light, bottom shade and an under-glow, gradient spans the full track; the morph is a symmetric in-out crossfade with a 1.18→1 brightness settle",
+    "Bar-end values roll from 0 to final during the morph (tabular-nums); labels dim smoothly instead of hard switching",
+    "Wiggle now decays exponentially to zero by t≈0.9 so the end frame is still; header is a title + LIVE pill (single pulse) + consistent 1.45M total · 290K avg, staggered in",
+    "System font stack with raster=zoom for crisp glyphs; labels renamed to Organic / Direct / Referral / Paid / Email"
+  ],
+  "mdChanged": true
+}

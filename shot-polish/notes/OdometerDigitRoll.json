@@ -1,0 +1,32 @@
+{
+  "stem": "OdometerDigitRoll",
+  "issues": [
+    "工作台按卡片时长只渲染 63f，正好停在末位锁定帧，加深脉冲、标签和 hold 全被截掉",
+    "画面顶部打着调试标题 ODOMETER DIGIT ROLL，标签是两根灰色骨架条",
+    "数位盒硬切：行高贴着字号，邻位数字被切成半截露在上下沿",
+    "四位从第 0 帧直接满速匀速转，残影对称叠在上下两侧，读作重影而不是拖尾",
+    "平灰底 + Helvetica 回退，锁定瞬间没有任何可见的“哒”"
+  ],
+  "changes": [
+    "补导出 ODOMETER_DIGIT_ROLL_DURATION = 150（滚动 63f + 脉冲 8f + 62f 真静止），节拍 20+i×7f / 过冲半格 / 6f 回弹不变",
+    "数位盒行高 230 + 上下各 17% 渐隐遮罩，读作里程表视窗；0–8f 匀加速起步再进全速",
+    "残影改为拖在运动方向后方 0.28/0.56 行，并叠一层按速度的纵向 SpeedBlur（封顶 9px），停稳即清",
+    "滚动中数位为次级灰 #4a4c55，锁定 4f 转主墨色；合计确认时 ink→近黑→ink 脉冲 + 1.035 缩放，% 转强调色",
+    "调试标题换成 Q3 RELIABILITY REPORT 眉标，骨架条换成 48px 主标签 + 34px 副标两行错峰上浮；柔光亮场 + 颗粒 + 系统字体栈"
+  ],
+  "issuesEn": [
+    "The workbench rendered only 63f from the card length, stopping exactly on the final lock, so the pulse, label and hold were cut",
+    "A debug title ODOMETER DIGIT ROLL sat on screen and the label was two grey skeleton bars",
+    "Digit windows were hard-cropped right at the glyph height, leaving half-digits sliced at the edges",
+    "All reels started at full constant speed on frame 0 and the ghosts sat symmetrically above and below, reading as double vision rather than a trail",
+    "Flat grey background with Helvetica fallback, and no visible 'click' at each lock"
+  ],
+  "changesEn": [
+    "Exported ODOMETER_DIGIT_ROLL_DURATION = 150 (63f roll + 8f pulse + 62f true hold); the 20+i×7f stagger, half-row overshoot and 6f return are unchanged",
+    "Row height 230 with a 17% fade mask top and bottom so each digit reads as an odometer window; reels spin up over 0–8f",
+    "Ghosts now trail behind the motion at 0.28/0.56 rows, plus a speed-driven vertical SpeedBlur capped at 9px that clears on lock",
+    "Rolling digits are secondary grey and snap to full ink over 4f on lock; the final confirm pulses ink→near-black→ink with 1.035 scale and the % turns accent",
+    "Debug title replaced with a Q3 RELIABILITY REPORT eyebrow, skeleton bars with a 48px label and 34px subline staggered up; soft-lit light backdrop, grain and system font stack"
+  ],
+  "mdChanged": true
+}
