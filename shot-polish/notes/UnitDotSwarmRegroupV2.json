@@ -1,0 +1,32 @@
+{
+  "stem": "UnitDotSwarmRegroupV2",
+  "issues": [
+    "没有导出时长，工作台按 150f 渲染，f126 后 44f 的真静止被截掉 20f",
+    "调试占位标题 \"UNIT DOT SWARM REGROUP V2\"，平灰底上的扁平色点没有体积",
+    "终幕位图只有 272 个位点，320 颗点里 48 颗回绕叠在 “1/2” 上，数字成了三色马赛克块",
+    "三次迁徙都是同样的随机错峰，柱子不是自底向上码起来；高速段没有任何速度感",
+    "开场点阵完全静止，簇/柱标签是单行粗体字，基线 3px 灰条"
+  ],
+  "changes": [
+    "补导出 UNIT_DOT_SWARM_REGROUP_V2_DURATION = 170；调试标题换成 “Customers · Q3 2026 / Plan mix” 页面标题，柔光背景 + 颗粒",
+    "点改为带受光高光的径向渐变小球 + 统一接触影；开场逐颗 overshoot 冒出并缓慢漂浮",
+    "终幕数字改为单线骨架（含圆弧的 2/8）等弧长采样 160 点、法向 ±9.5 双排 = 恰好 320 颗，落位过半后颜色收拢为墨色；下方 Total customers + 三段构成条保留三组颜色含义",
+    "错峰有方向：簇=随机，柱=按行自底向上（sqrt 分布，越往上越快），数字=按目标 x 自左向右扫；每颗点高速时拖一段 0.75 帧位移的同色拖影",
+    "簇标签改为小号大写组名 + 40px 数值，柱顶加数值、柱底 1.5px 发丝基线从左展开"
+  ],
+  "issuesEn": [
+    "No duration export, so the workbench rendered 150f and cut 20f of the 44f hold after f126",
+    "Debug title \"UNIT DOT SWARM REGROUP V2\" and flat coloured dots on flat grey with no volume",
+    "The final bitmap had only 272 slots, so 48 of the 320 dots wrapped onto the \"1/2\" and the number read as a three-colour mosaic",
+    "All three migrations used the same random stagger; bars did not stack bottom-up; no sense of speed at peak velocity",
+    "The opening field was completely static; cluster/bar labels were single bold lines over a 3px grey baseline"
+  ],
+  "changesEn": [
+    "Exported UNIT_DOT_SWARM_REGROUP_V2_DURATION = 170; debug title replaced with a \"Customers · Q3 2026 / Plan mix\" header on a soft-light backdrop with grain",
+    "Dots are lit radial-gradient spheres with a shared contact shadow; they pop in one by one with overshoot and drift gently",
+    "Final number built from single-line glyph skeletons (curved 2 and 8) sampled at equal arc length, 160 points × two rows = exactly 320 dots; colours converge to ink as they land, with a Total customers caption and a three-segment composition bar keeping the group colours meaningful",
+    "Directional staggers: clusters random, bars row by row bottom-up (sqrt, accelerating), digits swept left to right by target x; fast dots get a same-colour smear of 0.75 frame displacement",
+    "Cluster labels are small caps group names plus 40px values; bars get top values and a 1.5px hairline baseline that wipes in"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,30 @@
+{
+  "stem": "NeedleSweepSelftest",
+  "issues": [
+    "画面上方是调试标题 \"NEEDLE SWEEP SELF-TEST\"，卡头是一根灰色骨架条，表盘没有指标名",
+    "亮场白卡上的表盘只有灰刻度 + 一根细琥珀线，没有量程数字、没有表面，“点火自检”毫无仪式感",
+    "回程是两段 interpolate 拼接（in-out 落到过冲位、再 out-cubic 弹回），过冲点速度归零后重新起步，像机械卡顿",
+    "指针高速甩满全弧时没有任何速度表现；没有导出时长，按 150f 渲染"
+  ],
+  "changes": [
+    "改暗场仪表语境：深色柔光背景 + 颗粒、深色卡面发丝线 + 内高光 + 深投影；卡头 System health + 自检状态胶囊（Running self-test… 呼吸 → All systems nominal）",
+    "表盘加淡表面与外环、0–100 刻度数字、红区；去程扫过的刻度依次点亮再在 24f 内回落（先亮量程），盘面一条跟随指针的琥珀亮弧（柔光层 + 实线层）",
+    "回程改为弹簧：按各表行程反算阻尼比，使每表恰好落过头 8° 一次回摆、速度连续，f+46 起锁死常数真静止",
+    "指针换成锥形发光针 + 金属轴帽，角速度 >4°/帧 时画 4 根递减透明度的角向拖影",
+    "数值 overshoot 弹出、下方 CPU / MEMORY / NETWORK 标注随后淡入；补导出 NEEDLE_SWEEP_SELFTEST_DURATION = 140（f60 后真静止 80f）"
+  ],
+  "issuesEn": [
+    "A debug title \"NEEDLE SWEEP SELF-TEST\" above the card, a grey skeleton bar as the header, and no metric names on the gauges",
+    "Gauges on a white card had only grey ticks and a thin amber line, no scale numbers and no dial face, so the ignition self-test had no sense of ceremony",
+    "The return swing was two stitched interpolates (in-out to the overshoot point, then out-cubic back), stopping dead at the overshoot and restarting like a mechanical hitch",
+    "No sense of speed while the needle whipped across the full arc; no duration export, so it rendered at 150f"
+  ],
+  "changesEn": [
+    "Dark instrument look: tinted dark backdrop with grain, dark card with hairline, inner highlight and deep shadow; header System health with a self-test pill (breathing Running self-test… → All systems nominal)",
+    "Dials gain a faint face and rim, 0–100 scale numbers and a red zone; ticks light up as the needle sweeps then calm down over 24f, and an amber arc (glow + solid) follows the needle",
+    "Return swing is a spring whose damping is solved per gauge so each one overshoots exactly 8° once with continuous velocity, locked to a constant from start+46",
+    "Tapered glowing needle with a metal hub cap; above 4°/frame it draws four fading angular ghost needles",
+    "Values pop with overshoot and CPU / MEMORY / NETWORK labels fade in below; exported NEEDLE_SWEEP_SELFTEST_DURATION = 140 (80f hold after f60)"
+  ],
+  "mdChanged": false
+}

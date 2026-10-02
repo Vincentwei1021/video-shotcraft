@@ -1,0 +1,32 @@
+{
+  "stem": "AxisRescaleShockV2",
+  "issues": [
+    "画面上方是调试占位标题 \"AXIS RESCALE SHOCK V2\"，爆表段冲出去插进的是卡名",
+    "卡片 2px 灰边 + 单层淡影、2px 灰网格、3px 灰色上沿条，线框稿质感",
+    "冲顶用 in-cubic 以最高速硬停，卡片震动是等幅正弦；粗细 10→6 一帧跳变",
+    "重标时四个刻度同帧换、加密网格同帧出现，像切图而不是“哗”地重排",
+    "端点标记 / $340k 标签是平涂色块，没有落座感和增幅信息"
+  ],
+  "changes": [
+    "调试标题换成页面级标题区：左 Revenue overview，右 FY total KPI——爆表段正好冲进 KPI 数字，重标完成时合计从 $493k 滚到 $833k",
+    "卡片发丝线 + 内高光 + 两层软影、柔光背景 + 颗粒；1px 发丝网格、虚线天花板在顶破前一拍连同 $100k 刻度转琥珀",
+    "折线下加淡面积渐变、画线期笔尖带头灯；冲顶用越冲越快再 8% 过冲的贝塞尔，冲出段带柔光，粗细 10→6 平滑收回；震动改阻尼正弦（±8px，约 10f 收敛）",
+    "重标：刻度自上而下错峰 2f 换位并带瞬时纵向虚化，加密网格错峰从左向右展开",
+    "端点标记 overshoot 落座 + 一圈涟漪；真值标签改渐变胶囊 + 指向角 + “▲ 372% vs Nov” 副行；补导出 AXIS_RESCALE_SHOCK_V2_DURATION = 150"
+  ],
+  "issuesEn": [
+    "A debug title \"AXIS RESCALE SHOCK V2\" sat above the chart, so the spike pierced the card name",
+    "2px grey card border with a faint single shadow, 2px grey gridlines and a 3px grey top bar read as a wireframe",
+    "The spike used in-cubic and stopped dead at full speed; the card shake was an undamped sine; stroke width jumped 10→6 in one frame",
+    "All four ticks swapped and the dense gridlines appeared on the same frame, like a cut rather than a rescale",
+    "The end marker and $340k label were flat blocks with no settle and no growth context"
+  ],
+  "changesEn": [
+    "Replaced the debug title with a page header: Revenue overview on the left and an FY total KPI on the right that the spike punches through; the total rolls from $493k to $833k when the rescale lands",
+    "Hairline card with inner highlight and two-layer shadow on a soft-light backdrop with grain; 1px gridlines and a dashed ceiling that turns amber (with the $100k tick) just before it breaks",
+    "Soft area fill and a pen-tip highlight while drawing; the spike accelerates then overshoots ~8% with a glow, stroke eases 10→6, and the shake is a damped sine (±8px, ~10f)",
+    "Rescale ticks swap top-down with a 2f stagger and brief vertical blur; dense gridlines wipe in left to right with stagger",
+    "End marker settles with overshoot plus one ripple; value label is a gradient pill with pointer and a ▲ 372% vs Nov sub-line; exported AXIS_RESCALE_SHOCK_V2_DURATION = 150"
+  ],
+  "mdChanged": false
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "AvatarGridRadialBuildColorize",
+  "issues": [
+    "纯平灰底，网格与标题没有任何前后层次",
+    "图标位是 Unicode 符号（◆■▣），字体回退下粗细不一、像占位符",
+    "缩略图色块随机色相，粉棕橄榄混在一起显脏",
+    "卡片线性淡入 + outQuad 放大，没有落座感，阴影从头到尾一样",
+    "染色只是底色渐变，异常浮现缺少一个让眼睛被吸过去的瞬间；图例 Pending 无对应卡片"
+  ],
+  "changes": [
+    "柔光 Backdrop + 中央白色柔光托底 + 输出像素级颗粒，全程 2.5% 平滑推近给画面呼吸",
+    "三类内容换成出版级：同色相浅底深字的首字母头像、白色矢量图标的渐变 App 图标、定调五套的双色风景缩略图",
+    "生长保持分环 stagger，scale 改为 overshoot 小幅落座（≈1.6%），阴影随落座从贴平抬到静置高度",
+    "染色一拍：底/边/点同曲线，卡片 1→1.045→1 轻顿，状态点一圈涟漪裁在卡片内；同时其余卡片退后 12%、缩略图降饱和",
+    "图例做成发丝线胶囊，Active/Pending/Inactive 计数随染色实时翻动（tabular-nums），新增 2 张琥珀 Pending 卡"
+  ],
+  "issuesEn": [
+    "Flat grey backdrop with no depth between the grid and the headline",
+    "Icon tiles were Unicode glyphs (◆■▣) with inconsistent weights from font fallback",
+    "Thumbnail blocks used random hues, producing a muddy pink/brown/olive mix",
+    "Cards faded in linearly with an outQuad scale and no settle; shadows never changed",
+    "The anomaly reveal was just a background tint with no moment that pulls the eye; the Pending legend item had no cards"
+  ],
+  "changesEn": [
+    "Soft-light Backdrop, a white halo behind the title, output-resolution grain and a slow 2.5% eased push-in",
+    "Publication-grade content: tinted initial avatars, gradient app icons with white vector glyphs, five curated duotone landscape thumbnails",
+    "Ring stagger kept; scale now settles with a small overshoot (~1.6%) and the shadow lifts from flat to resting height on landing",
+    "Colorize beat: bg/border/dot on one curve, a 1→1.045→1 tick, a single dot ripple clipped to the card, while other cards recede 12% and thumbnails desaturate",
+    "Legend became a hairline pill with live Active/Pending/Inactive counts (tabular-nums); two amber Pending cards added"
+  ],
+  "mdChanged": true
+}

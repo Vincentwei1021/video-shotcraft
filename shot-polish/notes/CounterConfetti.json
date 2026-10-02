@@ -1,0 +1,32 @@
+{
+  "stem": "CounterConfetti",
+  "issues": [
+    "纸屑是平面色块匀速自转，没有纸片翻转、空气阻力与景深，像贴纸在飞",
+    "调色板是荧光彩虹（#7bff9e/#ff6cf0 等），与深蓝场景打架",
+    "数字非等宽，计数时位宽跳动；快速计数段数字是静止的锐利字形，没有“滚”的速度感",
+    "冲击环是一根 2px 实线圈，扩散时粗细不变，显得单薄；背景死黑无颗粒，大面积渐变有色带",
+    "标签 METRIC THIS WEEK 是占位文案"
+  ],
+  "changes": [
+    "纸屑升级为真纸片：线性空气阻力 k=0.5、绕自身轴翻转（scaleY=|cos|，背面压暗到 62%）、过顶点后左右飘摆；30% 远景小而暗、18% 近景放大 1.55× 并虚焦从数字前掠过",
+    "8 色演出彩纸降一档饱和度，圆片缩成小亮片；保持抢拍 BURST=0.52 与计数终点 0.56 不变",
+    "数字 tabular-nums，计数快段按曲线斜率给最多 2px 纵向虚化，到位清晰；到位瞬间数字后一记柔闪",
+    "冲击环改为外圈柔光 + 细亮环两层，边宽 1.6→0.4 随扩散变细；背景加地平冷光、暗角与颗粒",
+    "标签换成 NEW TEAMS THIS WEEK，淡入同时字距 11→5 收紧并上移 4px 落座"
+  ],
+  "issuesEn": [
+    "Confetti were flat colour chips spinning at a constant rate with no flipping, air drag or depth, like stickers flying",
+    "The palette was neon rainbow (#7bff9e, #ff6cf0…) clashing with the deep blue scene",
+    "Digits were proportional so the width jittered while counting; the fast part of the count had no sense of rolling speed",
+    "The impact ring was a single 2px solid circle with constant stroke; the background was dead black with no grain and visible banding",
+    "The label METRIC THIS WEEK was placeholder copy"
+  ],
+  "changesEn": [
+    "Confetti behave like paper: linear drag k=0.5, flipping on their own axis (scaleY=|cos|, back face darkened to 62%), sway after the apex; 30% far pieces small and dim, 18% near pieces 1.55× and defocused passing in front of the number",
+    "Kept the 8-colour party palette but one notch less saturated, round pieces shrunk to sequins; burst timing (0.52 before the 0.56 landing) unchanged",
+    "Tabular-nums digits with up to 2px vertical roll blur driven by the count slope, sharp on landing, plus one soft flash behind the number on impact",
+    "Impact ring is now a soft outer glow plus a thin bright ring whose stroke thins 1.6→0.4 as it expands; horizon glow, vignette and grain added to the background",
+    "Label changed to NEW TEAMS THIS WEEK, fading in while tracking tightens 11→5 and it settles up 4px"
+  ],
+  "mdChanged": true
+}

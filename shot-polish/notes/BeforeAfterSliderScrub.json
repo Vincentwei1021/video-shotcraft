@@ -1,0 +1,30 @@
+{
+  "stem": "BeforeAfterSliderScrub",
+  "issues": [
+    "before 是整张灰度 + 灰罩，像禁用截图，是自黑而不是可信的“处理前”",
+    "BEFORE/AFTER 角标是灰条占位，且不随分割线裁切，压在卡片上",
+    "分割杆 6px 实白 + 重黑晕，手柄 3px 灰边 + CSS 三角，像线框稿",
+    "快甩直接从静止弹出，无预备；手柄只做 scaleX，高速段没有速度感"
+  ],
+  "changes": [
+    "before 改为轻微失焦（1.6px）+ 降饱和 + 低对比 + 暖灰雾面，同布局同机位，差异可信",
+    "真文字 Before / After 胶囊放进顶栏空白处，各自长在自己那一层，随分割线一起被揭开",
+    "分割杆换 2px 白线 + 发丝描边 + 软影，after 侧 24px 接触暗影；手柄为渐变白钮 + 内高光 + 矢量双箭头",
+    "f10–14 预备回拉 1.5% 再甩出；甩动期间手柄微缩“被捏住”，按速度横向拉伸到 1.18，杆与手柄做方向性运动模糊，停下归零",
+    "补导出 BEFORE_AFTER_SLIDER_SCRUB_DURATION = 150（110f 动作 + 40f 静止）"
+  ],
+  "issuesEn": [
+    "The before layer was a full greyscale + grey wash, reading as a disabled screenshot rather than a believable unprocessed state",
+    "BEFORE/AFTER labels were grey placeholder bars that were not clipped by the divider and sat on top of cards",
+    "A 6px solid white bar with a heavy dark glow and a handle with a 3px grey border and CSS triangles looked like a wireframe",
+    "The fling started abruptly with no anticipation; the handle only stretched in X with no sense of speed"
+  ],
+  "changesEn": [
+    "Before is now slightly defocused (1.6px), desaturated, low-contrast with a warm haze, same layout and framing, so the difference is credible",
+    "Real Before / After pills sit in the empty top-bar space, each living in its own layer so the divider reveals them",
+    "Divider is a 2px white line with hairline edge and soft shadow plus a 24px contact shade; handle is a gradient white knob with inner highlight and vector chevrons",
+    "4f anticipation pull-back before the fling; the handle compresses while grabbed, stretches up to 1.18 by velocity, and bar + handle get directional motion blur that drops to zero at rest",
+    "Exported BEFORE_AFTER_SLIDER_SCRUB_DURATION = 150 (110f action + 40f hold)"
+  ],
+  "mdChanged": true
+}
