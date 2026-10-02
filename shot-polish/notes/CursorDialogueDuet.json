@@ -1,28 +1,35 @@
 {
   "stem": "CursorDialogueDuet",
   "issues": [
-    "轨迹是分段硬覆盖：60f 绕位起步时 Developer 瞬移 40px、Designer 向后回退约 110px 再起弧，\"人在动\"的连续感断了",
-    "终场巨箭头冲出后只盖住画面约 2/3，末帧右侧仍露暗场，起不到\"遮挡藏切点\"的转场作用",
-    "\"灯光交接\"只体现在名牌亮暗上，暗场近乎纯平黑，画面里没有光",
-    "对话位两枚光标挨得太近，Developer 光标压在 Designer 名牌上；快速绕位与甩出没有速度感"
+    "近黑平底上两枚 42px 小光标 + 16px 名牌，画面大半是空的，名牌字读不清",
+    "\"灯光交接\"只是名牌透明度一亮一暗，没有真正的光，观众看不出谁在说话",
+    "光标之间没有任何台词，\"对话\"全靠观众脑补；双人舞的剧情读不出来",
+    "收尾巨箭头是线性倍率放大、纯色平块整屏，末帧是一块没信息的绿色",
+    "蓝/绿两色与暗场都偏通用，没有电影感的光与空间"
   ],
   "changes": [
-    "两枚光标的位置改为 frame 的连续函数：对话位对称放在中点两侧，绕位以中点为圆心上下分弧、半径 R0→270→R0 且首尾不压扁，与前后段零跳变衔接；Designer 改向右下甩出",
-    "巨箭头放大终值 2.8→110、尖端终点重标定到 (−380,−2690)，134f 起箭头主体整屏遮挡，末帧是干净的纯色遮挡帧",
-    "加一盏跟随说话人的柔光池（蓝/绿色温 + 白芯），70–84f 随名牌交接从 Designer 滑到 Developer，巨箭头起飞后收光；Backdrop 暗场渐变 + 暗角 + 颗粒",
-    "对话位拉开为蓝左下 / 绿右上，名牌互不遮挡；按速度加方向性运动模糊（10px/帧死区，只在绕位快段与甩出出现）；光标加投影与点亮色晕，名牌系统字体 + 内高光"
+    "look 改 graphite 黑匣子剧场：顶上一盏钨丝色追光（体积光锥 + 地面光池 + 浮尘），身份色改冷调长春花蓝 / 暖调琥珀",
+    "灯光交接做成物理的：追光钉在台口说话位，亮度按光标到光心的距离算——绕位时一个走出光、一个走进光，暗处的人去饱和压暗",
+    "光标放大到 ~112px 高（矢量 SVG），名牌在说话时展开成 cursor chat 气泡逐字打出 48px 台词 \"Specs are final.\" / \"Shipping tonight.\"",
+    "绕位改为各绕起止中点同向转半圈的扁弧（不出画），快段加方向性运动模糊；站定时双频微漂",
+    "冲镜前加 8f 后缩预备，倍率在对数空间 ease-in（5.6→380），箭头体内锚点移到画面中心，整屏遮挡成琥珀色海报：标题 \"Handoff, without the handoff.\" 逐词升起，Designer 光标回到句尾谢幕",
+    "时长 140f → 216f：入场 / 台词 / hold / 绕位 / 台词 / 预备 / 冲镜 / 海报 hold 每拍都有呼吸"
   ],
   "issuesEn": [
-    "Trajectories are hard per-segment overrides: at 60f Developer jumps 40px and Designer backs up ~110px before starting the arc, so the cursors no longer move like hands",
-    "The giant arrow only covers about two-thirds of the frame at the end, leaving dark on the right, so it can't hide a cut",
-    "The \"light handoff\" exists only as badge brightness; the dark scene is almost flat black with no light in it",
-    "At the dialogue position the cursors crowd each other and Developer's arrow sits on Designer's badge; the fast swap and exit have no sense of speed"
+    "Two tiny 42px cursors with 16px tags on a flat near-black field; most of the frame is empty and the tags are unreadable",
+    "The 'light handoff' is just tag opacity — there is no actual light, so you can't tell who is speaking",
+    "No lines of dialogue at all; the duet's story has to be imagined",
+    "The closing giant arrow scales linearly and ends on a flat green slab with no information",
+    "Generic blue/green on dark, no cinematic light or space"
   ],
   "changesEn": [
-    "Both positions are now continuous functions of frame: dialogue spots sit symmetrically around a midpoint, the swap runs upper/lower arcs about that midpoint with radius R0→270→R0 and no squash at the ends, so every segment joins with zero jump; Designer now exits down-right",
-    "Giant-arrow end scale 2.8→110 with the tip target recalibrated to (−380,−2690), so from 134f the arrow body covers the whole frame and the last frames are a clean solid mask",
-    "Added a soft light pool that follows whoever is speaking (blue/green tint with a white core), sliding from Designer to Developer with the 70–84f badge handoff and fading as the arrow takes off; dark Backdrop gradient with vignette and grain",
-    "Dialogue spots spread to blue lower-left / green upper-right so badges never overlap; velocity-driven directional blur with a 10px/frame dead zone (only in the fast swap and exit); cursors get shadows and a lit-color halo, badges use the system font with an inner highlight"
+    "Graphite black-box theatre: one tungsten follow-spot from above (volumetric cone, floor pool, dust); identity colors become cool periwinkle vs warm amber",
+    "Physical light handoff: the spot is pinned to the speaking mark and brightness is computed from distance — during the swap one actor walks out of the light and the other walks in; the listener is desaturated in shadow",
+    "Cursors scaled to ~112px (vector SVG); tags expand into cursor-chat bubbles that type 48px lines 'Specs are final.' / 'Shipping tonight.'",
+    "Swap is a flattened half-orbit around each pair's midpoint (stays in frame) with directional motion blur on the fast part and dual-frequency idle drift",
+    "8f anticipation pull-back, then a log-space ease-in zoom (5.6→380) anchored inside the arrow body so it covers the frame; the amber cover becomes a poster with 'Handoff, without the handoff.' rising word by word and the Designer cursor returning for a curtain call",
+    "140f → 216f so every beat (entrance, line, hold, swap, line, anticipation, zoom, poster hold) breathes"
   ],
+  "look": "graphite",
   "mdChanged": true
 }

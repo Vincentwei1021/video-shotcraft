@@ -1,30 +1,31 @@
 {
   "stem": "HashtagToPillMaterialize",
   "issues": [
-    "没有导出时长常量，工作台按卡片\"打字 ~40f\"只渲 40 帧，片子停在打字中途，硬切实体化、缩移和揭示全部没演",
-    "两张底都是平涂纯色（#fcfcfb / #f4f1e5），大面积浅色死平",
-    "胶囊是一块平涂灰色圆角矩形，没有受光与离地关系，\"实体\"感只靠尺寸撑",
-    "0.55x 缩移峰值约 70px/帧却完全锐利，读作滑动的贴图；成品页只有标题+胶囊+正文，版式缺页眉"
+    "白底中灰字、浅灰胶囊，前半段画面几乎没有颜色和光，像原片的线稿",
+    "成品页版式简单：标题 + 三行正文，缺少能说明\"标签\"功能的上下文",
+    "胶囊质感平，第一次硬切的\"成了\"缺少重量",
+    "两段画面同为浅色，第二次硬切的冲击力只靠配色变化"
   ],
   "changes": [
-    "补导出 HASHTAG_TO_PILL_MATERIALIZE_DURATION = 120（揭示 83f 后静止约 1.2s），48/66/80/83 四个时间点与两次 1 帧硬切不变",
-    "底色换成极淡的纵向纸感渐变 + 0.05 颗粒，揭示帧随底色同帧硬切",
-    "胶囊仍无描边，加上亮下暗的微体积、顶沿 3px 内高光和两层软影：hero 时离地 10px，缩移后半程降落、归位贴平，读作嵌进页面",
-    "缩移段用 SpeedBlur 按速度给方向性拖影（0.1×速度，封顶 7px），起止处自动归零",
-    "成品页补一行 32px 低对比页眉（Notes / Music · Edited just now）+ 渐隐发丝分隔线，版式完整"
+    "look 改 paper，前半段反用它的墨色做暖墨暗场（顶光 + 颗粒），打字放大到 180px Futura，朱红恒亮光标是唯一颜色；第二次硬切整页翻成纸白，明暗翻转放大了\"啪\"",
+    "实体化仍是 1 帧硬切：奶油色厚胶囊带受光上沿、体积渐变与两层暖影，浮起 16px，舞台顶光同帧提亮一档；仅 3f 1.03→1 微落定",
+    "缩移 16f bezier(0.5,0,0.25,1) 到 0.3x，后半程落地、按速度加方向性运动模糊，终点是成品页标签行的真实槽位（Q9）",
+    "成品页做成完整笔记应用「Tern」：左栏标签列表（#music 高亮计数 12）、面包屑、132px 标题、胶囊 + Add tag 幽灵按钮、46px 正文、关联笔记行",
+    "时长 120f → 132f，揭示后 41f hold 加 1→1.015 极缓推镜"
   ],
   "issuesEn": [
-    "No exported duration, so the workbench took the card's \"typing ~40f\" and rendered 40 frames: the clip stops mid-typing and never shows the hard-cut materialize, the shrink or the reveal",
-    "Both backgrounds are flat solid fills (#fcfcfb / #f4f1e5), large dead light planes",
-    "The pill is a flat grey rounded rectangle with no light or ground contact; its \"object\" feel rests on size alone",
-    "The 0.55x shrink peaks near 70px/frame yet stays razor sharp, reading as a sliding sticker; the final page has only title, pill and body with no page chrome"
+    "White field, mid-grey type and a pale grey pill — the first half has almost no color or light, like a wireframe of the source",
+    "The finished page is a title plus three lines, with no context explaining what tags do",
+    "The pill is flat, so the first hard cut lacks weight",
+    "Both halves are light, so the second hard cut relies only on a palette swap"
   ],
   "changesEn": [
-    "Exported HASHTAG_TO_PILL_MATERIALIZE_DURATION = 120 (~1.2s of stillness after the reveal at 83f); the 48/66/80/83 beats and both 1-frame hard cuts are unchanged",
-    "Backgrounds are faint vertical paper gradients with 0.05 grain, still hard-cut on the reveal frame",
-    "The pill stays strokeless but gains a top-lit micro volume, a 3px inner top highlight and a two-layer soft shadow: lifted 10px as the hero, descending through the second half of the shrink and lying flat in its slot",
-    "The shrink uses SpeedBlur for velocity-driven directional blur (0.1× speed, capped at 7px), zero at both ends",
-    "The final page gains a 32px low-contrast header (Notes / Music · Edited just now) with a fading hairline rule for a complete layout"
+    "Paper look, with the first half using its ink as a warm dark stage (top light, grain), 180px Futura typing and a steady vermilion caret as the only color; the second hard cut flips the page to paper white, amplifying the snap",
+    "Materialize stays a 1-frame hard cut: a thick cream pill with lit rim, volume gradient and warm two-layer shadow, lifted 16px, while the stage key light steps up in the same frame; only a 3f 1.03→1 settle",
+    "16f bezier(0.5,0,0.25,1) shrink to 0.3x that lands in its second half with directional motion blur, ending in the real tag slot of the page (Q9)",
+    "The finished page is a full notes app 'Tern': tag sidebar (#music highlighted, count 12), breadcrumb, 132px title, pill + ghost 'Add tag', 46px body and a linked-notes row",
+    "120f → 132f with a 41f hold and a slow 1→1.015 push after the reveal"
   ],
+  "look": "paper",
   "mdChanged": true
 }
