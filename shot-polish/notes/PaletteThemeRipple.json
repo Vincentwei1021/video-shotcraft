@@ -1,30 +1,33 @@
 {
   "stem": "PaletteThemeRipple",
   "issues": [
-    "工作台按 inline 推断只渲 95f，正好停在扫场结束帧，源码设计的 75f 深色真静止整段缺失",
-    "深色版是手抄的旧灰阶骨架 DarkDashboard，与升级后的亮色 FakeDashboard 布局、内容都对不上，扫场读作\"换了一页\"而不是\"同一 UI 换肤\"",
-    "⌘K 面板里输入的是四个深灰方块，结果行是灰条，看不出在搜什么；2px 灰边 + 单层黑影",
-    "压暗是中性 brightness 0.55，扫场边缘 5px 纯白环偏粗偏廉价"
+    "原版是灰阶占位 dashboard + 小字命令面板，面板文字 19–25px 在 1080p 里读不清",
+    "面板收缩只是 5f 线性缩小到 0，亮点很小，'收缩点 = 涟漪起点'的因果不够醒目",
+    "涟漪 22f 就铺满，圆形几乎一闪而过",
+    "深浅两版都是中性灰，没有强调色和光，深色版落定后画面毫无变化"
   ],
   "changes": [
-    "补导出 PALETTE_THEME_RIPPLE_DURATION = 170；15/22/38–62/68/73/95 全部关键帧与圆心 (960,470)、收缩完成帧=扫场起始帧的组合命门不变",
-    "删掉手抄深色版，改用同布局的 <FakeDashboard tone=\"dark\" />，两版逐像素同构，扫场只换肤不换页",
-    "面板换成出版级命令面板：放大镜 + 真实逐字输入 \"dark\"（3f 浮入、强调色闪烁光标）+ ⌘K 键帽；结果行 Switch to dark theme / Match system appearance / Increase contrast 带图标，首行匹配字母随输入逐个加粗，打完进入强调色选中态与 ↵ 键帽",
-    "压暗改为冷色相径向压暗 + 去饱和 + 5px 虚化；收缩段按缩放速度给模糊；亮点加强调色辉光核",
-    "扫场边缘改 3px 亮线 + 强调色外辉 + 白色内辉，深色版随扫场 1.01→1 坐实，落定后无 transform"
+    "主体换成满屏音乐库 Overtone：112px Library 标题、5 张 259px 程序化专辑封面、底部播放条（进度一直在走），封面在深浅两版里完全不变，只换 UI 外壳",
+    "custom look：浅版冷瓷灰白、深版近黑石墨，强调色珊瑚红只给选中行、播放进度和涟漪",
+    "命令面板放大到 980px，46px 输入字、32px 结果行，按人手不等间隔打 dark，首行进入珊瑚选中态，回车键帽按下",
+    "收缩改成 CRT 关机式：先纵向压成白热亮线、再横向收成亮点，亮点 + 横向余辉在原地钉 5f，再从该点起涟漪",
+    "涟漪 34f 强 ease-out 到 1260px（圆形全程读得出），3px 白热环 + 珊瑚外辉 + 晚 4f 回声环，深版 1.035→1 坐实，相机打字时推 1.03、涟漪时呼气退回",
+    "深色落定后每张封面在暗场里投下同色辉光，是只有深色模式才看得见的光"
   ],
   "issuesEn": [
-    "The workbench's inline guess rendered only 95f, ending exactly on the sweep's last frame, so the 75f of dark stillness designed in the source was missing",
-    "The dark version was a hand-copied old grey skeleton DarkDashboard that matches neither the layout nor the content of the upgraded light FakeDashboard, so the sweep read as a page change rather than a re-skin of the same UI",
-    "The ⌘K panel 'typed' four dark grey squares into grey-bar results, so you couldn't tell what was searched; 2px grey border and a single black shadow",
-    "The dim was a neutral brightness 0.55, and the 5px pure-white sweep ring was heavy and cheap-looking"
+    "The original was a greyscale placeholder dashboard with a small-type palette; 19–25px text is unreadable at 1080p",
+    "The palette just scaled linearly to 0 in 5f with a tiny dot, so 'collapse point = ripple origin' did not register",
+    "The ripple filled the frame in 22f, so the circle barely read",
+    "Both themes were neutral grey with no accent or light, and nothing changed once dark mode settled"
   ],
   "changesEn": [
-    "Exported PALETTE_THEME_RIPPLE_DURATION = 170; the 15/22/38–62/68/73/95 keyframes, the (960,470) origin and the rule that the shrink-complete frame is the sweep start frame are unchanged",
-    "Dropped the hand-copied dark version in favour of the same-layout <FakeDashboard tone=\"dark\" />, so both versions are pixel-identical in structure and the sweep only re-skins",
-    "The panel is a publication-grade command palette: magnifier, real typed \"dark\" (3f rise, blinking accent caret) and a ⌘K keycap; results Switch to dark theme / Match system appearance / Increase contrast carry icons, the first row bolds each matched letter as it is typed, then takes an accent selected state with a ↵ keycap",
-    "The dim is a cool-tinted radial overlay with desaturation and 5px blur; the shrink gets scale-velocity blur; the pin dot gains an accent glow core",
-    "The sweep edge is a 3px bright line with an accent outer glow and white inner glow, and the dark layer settles 1.01→1 during the sweep with no transform once it lands"
+    "The subject is a full-bleed music library, Overtone: a 112px Library title, five 259px procedural album covers and a now-playing bar whose progress keeps moving; covers stay identical across themes, only the UI shell changes",
+    "Custom look: cool porcelain grey-white for light, near-black graphite for dark, with a coral accent reserved for the selected row, playback progress and the ripple",
+    "The palette is 980px wide with a 46px query and 32px rows; 'dark' is typed at an uneven human rhythm, the top row turns coral and the return keycap presses",
+    "The collapse is a CRT power-off: it squashes into a white-hot line, then shrinks into a dot, and the dot plus a horizontal afterglow holds in place for 5f before the ripple starts there",
+    "The ripple runs 34f with a strong ease-out to 1260px so the circle reads throughout, with a 3px white-hot ring, coral outer glow and an echo ring 4f behind; dark settles 1.035→1, and the camera pushes to 1.03 while typing and exhales back on the ripple",
+    "Once dark settles each cover casts a matching glow onto the dark stage, light you only see in dark mode"
   ],
+  "look": "custom",
   "mdChanged": true
 }

@@ -1,388 +1,253 @@
-// avatar-grid-radial-build-colorize — Avatar Grid 分环生长随机染色（motion-lab 定稿转原生 Remotion）
-// 8×7 小卡片网格由中心向四周分环生长（每 4 帧扩一环，1.2s 铺满），卡片内容混合三种占位：
-// 首字母头像 / 应用图标 / 缩略图，只做 opacity + scale 0.8→1 不位移；铺满后约 15% 的卡片
-// 在 1s 内随机时刻把底色染成浅红、状态点转红，形成"异常项逐渐浮现"的呼吸感。
-// 中央 3×6 区域 visibility:hidden 占位留给标题与图例，标题层始终 100% 不透明。
-// 设计坐标 480×270（DesignStage 等比放大），参数表数值以此坐标系标定。
+// avatar-grid-radial-build-colorize — 8×7 客户卡网格由中心分环生长铺满，随后少数卡片陆续染红标异常
+// 第二轮重设计（石墨监控墙 · 只有红色会说话）：
+// - look = graphite（近单色暗场）：整面墙是灰阶的——头像、logo、名字全部去色，健康状态点也压成低饱和灰绿，
+//   画面里唯一饱和的颜色就是"流失风险红"。红点一亮，观众的眼睛被迫扫全场找下一个（手法核心：群体中浮现异常）。
+// - 内容为镜头编写：虚构客户成功产品 Tether 的账户墙。38 张 200×118 原生 1920 布局的账户卡
+//   （首字母头像 / 抽象人像 / 公司 logo 三种混合 + 名字 + ARR），中央 3×6 区域 visibility:hidden 占位留给标题：
+//   112px「Who's drifting away?」+ 实时滚动的风险汇总「6 accounts · $284k ARR at risk」+ 三色图例计数。
+// - 染红不是"变色"而是一次事件：底 / 描边 / 状态点同一条曲线染红 + 卡片顿一下（1→1.05→1）+ 一圈裁在卡内的红色涟漪
+//   + ARR 行换成流失原因（Inactive 21d / Seats −40% / No champion …）；其余健康卡随异常增多整体退暗（1→0.5），红卡越来越跳。
+// - 收尾：6 张全部浮现后，标题下升起一枚红色行动胶囊「Bring them back in →」（原卡标题文案变成行动），海报落定。
 //
-// 质感升级：柔光背景 + 颗粒（在 DesignStage 外按输出像素铺，避免 zoom 放粗颗粒）；卡片走
-// 发丝线 + 内高光 + 随"长出"抬升的两层软阴影；Unicode 符号换成矢量应用图标、随机色相色块
-// 换成定调的双色缩略图；生长用 overshoot 小幅落座；染色一拍内底/边/点同曲线 + 卡片轻顿一下
-// + 状态点一圈涟漪（裁在卡片内），其余卡片同时微微退后，让红点自己跳出来；图例计数实时翻动。
+// 时间表（30fps，共 168f）：
+//   0–14    标题逐词从线下升起（each 14f，gap 3f），中央先有主角（Q5）
+//   10–40   分环生长：ring = round(hypot(c−3.5, (r−3)/0.85))，每环 4f + 0–3f 抖动；
+//           卡片 opacity 6f + scale 0.86→1（EASE.overshoot 10f）+ 6px→0 收焦，无位移——"长出来"
+//   36–48   汇总行与图例跟进（EASE.out）
+//   52–104  异常浮现：6 张卡在 52/61/69/80/90/101 陆续染红（间隔不等、先疏后密再疏，"陆续发现"）
+//   50–110  健康卡整体退暗 1→0.5（EASE.smooth），风险金额随每次染红滚动累加
+//   112–126 行动胶囊升起（EASE.snappy）
+//   126–168 hold：相机全程 1→1.03 极缓推，红卡辉光微呼吸
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
-import { DesignStage, rand, seg, useT } from '../../_fixtures/Motion';
-import { Backdrop, EASE, FONT, Grain, mix as lerpN, softShadow, tracking } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, mix, ramp } from '../../_fixtures/Polish';
+import { Dust, LOOKS, Stage, TextReveal, alpha } from '../../_fixtures/Look';
 
-export const AVATAR_GRID_RADIAL_BUILD_COLORIZE_DURATION = 168; // 5600ms @30fps
+export const AVATAR_GRID_RADIAL_BUILD_COLORIZE_DURATION = 168; // 5.6s @30fps
 
-const INK = '#17181c';
-const INK2 = '#5d5f66';
-const INK3 = '#8d9097';
-const CARD_WHITE = '#ffffff';
-const FLAG_BG = '#FDECEC';
-const LINE = '#E6E6E2';
-const FLAG_LINE = '#F6CFCF';
-const OK = '#37C46B';
-const WARN = '#F5A524';
-const BAD = '#F0453A';
+const L = LOOKS.graphite;
+const RED = '#ff4a3d';
+const OK = '#7fae92'; // 低饱和灰绿：健康不抢戏
+const WARN = '#c9a46a'; // 低饱和琥珀
 
-// 颜色插值（底/描边/点三通道共用同一条 cT 曲线）
-const hex2rgb = (hex: string): [number, number, number] => [
-  parseInt(hex.slice(1, 3), 16),
-  parseInt(hex.slice(3, 5), 16),
-  parseInt(hex.slice(5, 7), 16),
-];
-const mix = (a: string, b: string, t: number) => {
-  const A = hex2rgb(a);
-  const B = hex2rgb(b);
-  return `rgb(${Math.round(A[0] + (B[0] - A[0]) * t)},${Math.round(A[1] + (B[1] - A[1]) * t)},${Math.round(
-    A[2] + (B[2] - A[2]) * t,
-  )})`;
+// 确定性伪随机
+const rand = (seed: number) => {
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
 };
 
+// ───────────── 网格几何（原生 1920×1080）─────────────
 const COLS = 8;
 const ROWS = 7;
-const TOTAL = 5.6 * 30; // 总帧数（delay 换算用）
+const MX = 96;
+const MY = 72;
+const GAP = 18;
+const CW = (1920 - 2 * MX - (COLS - 1) * GAP) / COLS; // ≈200
+const CH = (1080 - 2 * MY - (ROWS - 1) * GAP) / ROWS; // ≈118
+const isHidden = (c: number, r: number) => r >= 2 && r <= 4 && c >= 1 && c <= 6;
 
-// 网格几何：等价 inset:16px + gap:10px 的 CSS grid，绝对定位手排保住亚像素节距
-const GAP = 10;
-const CELL_W = (480 - 32 - (COLS - 1) * GAP) / COLS; // 47.25
-const CELL_H = (270 - 32 - (ROWS - 1) * GAP) / ROWS; // ≈25.43
-
-// 首字母头像：名字缩写 + 一组低饱和底色（同色相深字），像真实成员列表而不是灰字块
-const INI = ['VS', 'KJ', 'EM', 'AL', 'TR', 'MN', 'BQ', 'DW', 'RC', 'SF', 'PL', 'GH'];
-const TINTS: Array<[string, string]> = [
-  ['#E4E6FA', '#4B53C2'], // 靛
-  ['#DDEFEA', '#2F7D68'], // 青
-  ['#F4E9DA', '#9A6A2C'], // 砂
-  ['#E9E3F3', '#6D4E9E'], // 紫
-  ['#E2ECF6', '#3B6A99'], // 蓝灰
-  ['#EFE6E1', '#8A5A48'], // 陶
-];
-// 应用图标底：同一套色相的饱和版渐变（图标是白色矢量）
-const ICON_GRAD: Array<[string, string]> = [
-  ['#7C83E6', '#545CCB'],
-  ['#4FB39A', '#2E8A73'],
-  ['#E7B36A', '#C98A38'],
-  ['#9C82D2', '#7458B4'],
-  ['#6E9BD0', '#46739F'],
-  ['#3C3F4A', '#22242B'],
-];
-// 缩略图：定调的双色"风景照"（天空 → 远山 → 近山），替代随机色相渐变
-const THUMBS: Array<[string, string, string, string]> = [
-  ['#BCCDE3', '#8CA3C4', '#5A7398', '#F6E7CF'], // 晨雾蓝
-  ['#E9CDB6', '#C59A7E', '#8C6352', '#FCEBD6'], // 砂岩
-  ['#C2DDD2', '#86B3A3', '#4E7F71', '#F1F4E2'], // 松林
-  ['#D3CAEA', '#A193CB', '#6B5E9A', '#F7EAF1'], // 暮紫
-  ['#E6DDC2', '#BDB08A', '#857A57', '#FBF3DC'], // 麦田
+const NAMES = [
+  'Ava L.', 'Kenji M.', 'Brio', 'Noor H.', 'Sable', 'Theo R.', 'Pinecrest', 'Mara V.',
+  'Quillon', 'Iris D.', 'Lowfield', 'Omar S.', 'Juno K.', 'Ferro', 'Elena P.', 'Cobalt',
+  'Ravi N.', 'Wilde', 'Sana T.', 'Dov A.', 'Orchid', 'Lena B.', 'Tamsin G.', 'Haven',
+  'Yuki O.', 'Marlo F.', 'Halden', 'Priya C.', 'Fennel', 'Ines W.', 'Calder', 'Rhea J.',
+  'Moss', 'Ari Z.', 'Lumio', 'Basil E.', 'Wren Q.', 'Ostra', 'Kai U.', 'Nell Y.',
 ];
 
-// 白色矢量图标（12×12 视框），替代字体回退不可控的 Unicode 符号
-const ICON_PATHS = [
-  'M6 1.6 L10.4 6 L6 10.4 L1.6 6 Z', // 菱形
-  'M6 2 L10.2 9.6 H1.8 Z', // 三角
-  'M6 1.8 A4.2 4.2 0 1 0 6.001 1.8 Z M6 4 A2 2 0 1 1 5.999 4 Z', // 圆环
-  'M6.8 1.4 L2.8 6.8 H5.6 L5 10.6 L9.2 5 H6.4 Z', // 闪电
-  'M2.2 2.2 H5.2 V5.2 H2.2 Z M6.8 2.2 H9.8 V5.2 H6.8 Z M2.2 6.8 H5.2 V9.8 H2.2 Z M6.8 6.8 H9.8 V9.8 H6.8 Z', // 四宫格
-  'M6 1.2 C6.5 4.6 7.4 5.5 10.8 6 C7.4 6.5 6.5 7.4 6 10.8 C5.5 7.4 4.6 6.5 1.2 6 C4.6 5.5 5.5 4.6 6 1.2 Z', // 四角星
+// 6 张异常卡：浮现帧 + 原因 + ARR（k$），总计 284
+const FLAG_TIMES = [52, 61, 69, 80, 90, 101];
+const FLAG_INFO = [
+  { why: 'Inactive 21d', arr: 48 },
+  { why: 'Seats −40%', arr: 62 },
+  { why: 'Usage −62%', arr: 35 },
+  { why: 'No champion', arr: 71 },
+  { why: 'Ticket spike', arr: 29 },
+  { why: 'Card failed', arr: 39 },
 ];
 
-// 每格的静态参数（种子跨帧确定）
-const CELLS = Array.from({ length: ROWS * COLS }, (_, i) => {
-  const r = Math.floor(i / COLS);
-  const c = i % COLS;
-  const hidden = r >= 2 && r <= 4 && c >= 1 && c <= 6; // 中央留空给标题 + 图例（占位不破坏网格）
-  const kind = Math.floor(rand(i * 9.1) * 3); // 0=首字母 1=图标 2=图片缩略
-  const ini = INI[(i * 7) % INI.length]; // 步长 7（与 12 互素）：左右/上下相邻格不撞同一缩写
-  const tone = Math.floor(rand(i * 5.3) * TINTS.length);
-  const icon = Math.floor(rand(i * 2.9) * ICON_PATHS.length);
-  const thumb = Math.floor(rand(i * 7.7) * THUMBS.length);
-  const ring = Math.round(Math.hypot((c - 3.5) / 1.0, (r - 3) / 0.85)); // 到中心的"环号"
-  const delay = (ring * 4 + rand(i + 40) * 3) / TOTAL; // 每 4 帧扩一环 + 帧级抖动
-  const flagged = !hidden && rand(i + 900) < 0.15; // ~15% 异常卡
-  const pending = !hidden && !flagged && rand(i + 1300) < 0.12; // 少量 Pending（2 张）（琥珀点，静态），让图例三色都有归属
-  const at = 0.3 + rand(i + 1600) * 0.3; // 染色随机时刻
-  return { r, c, hidden, kind, ini, tone, icon, thumb, delay, flagged, pending, at };
-});
-const VISIBLE = CELLS.filter((c) => !c.hidden);
-const N_PENDING = VISIBLE.filter((c) => c.pending).length;
+type Cell = {
+  c: number; r: number; x: number; y: number; hidden: boolean; kind: number; name: string;
+  arr: number; delay: number; flag: number; pending: boolean; seed: number;
+};
 
-const LEGEND: Array<[string, string]> = [
-  ['Active', OK],
-  ['Pending', WARN],
-  ['Inactive', BAD],
-];
+const CELLS: Cell[] = (() => {
+  const out: Cell[] = [];
+  let n = 0;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const i = r * COLS + c;
+      const hidden = isHidden(c, r);
+      const ring = Math.round(Math.hypot(c - 3.5, (r - 3) / 0.85)); // 到中心的"环号"
+      out.push({
+        c, r, x: MX + c * (CW + GAP), y: MY + r * (CH + GAP), hidden,
+        kind: Math.floor(rand(i * 9.1) * 3), name: hidden ? '' : NAMES[n++ % NAMES.length],
+        arr: 8 + Math.round(rand(i * 3.3) * 70), delay: 10 + ring * 4 + rand(i + 40) * 3, flag: -1, pending: false, seed: i,
+      });
+    }
+  }
+  // 挑 6 张分散的卡做异常（固定种子排序，再按"离已选卡足够远"筛），按浮现顺序编号
+  const vis = out.filter((x) => !x.hidden).sort((a, b) => rand(a.seed + 900) - rand(b.seed + 900));
+  const picked: Cell[] = [];
+  for (const v of vis) {
+    if (picked.length >= 6) break;
+    if (picked.every((p) => Math.abs(p.c - v.c) + Math.abs(p.r - v.r) >= 3)) picked.push(v);
+  }
+  picked.forEach((p, k) => (p.flag = k));
+  vis.filter((v) => v.flag < 0).slice(0, 2).forEach((v) => (v.pending = true));
+  return out;
+})();
 
-// 卡片内容（按 kind 三选一）
-const CellContent: React.FC<{ cl: (typeof CELLS)[number]; fade: number }> = ({ cl, fade }) => {
-  if (cl.kind === 0) {
-    const [bg, fg] = TINTS[cl.tone];
+// ───────────── 头像三种：首字母 / 抽象人像 / 公司 logo（全部灰阶）─────────────
+const Avatar: React.FC<{ cell: Cell; red: number }> = ({ cell, red }) => {
+  const s = 48;
+  const g = 36 + Math.round(rand(cell.seed * 1.7) * 26); // 每个头像灰度不同
+  const base = `rgb(${g},${g + 1},${g + 4})`;
+  const ring = red > 0 ? `0 0 0 2px ${alpha(RED, 0.8 * red)}` : 'inset 0 0 0 1px rgba(255,255,255,0.08)';
+  if (cell.kind === 0) {
+    const ini = cell.name.split(' ').map((w) => w[0]).join('').slice(0, 2);
     return (
-      <div
-        style={{
-          width: 15,
-          height: 15,
-          borderRadius: '50%',
-          background: bg,
-          color: fg,
-          boxShadow: `inset 0 0 0 0.5px rgba(20,22,28,0.06)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 6.2,
-          fontWeight: 650,
-          letterSpacing: '0.01em',
-          fontFamily: FONT.sans,
-        }}
-      >
-        {cl.ini}
+      <div style={{ width: s, height: s, borderRadius: '50%', background: base, boxShadow: ring, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 650, color: '#c9ccd3', letterSpacing: '0.01em', flex: 'none' }}>{ini}</div>
+    );
+  }
+  if (cell.kind === 1) {
+    const hue = 0.5 + rand(cell.seed * 2.3) * 0.5;
+    return (
+      <div style={{ position: 'relative', width: s, height: s, borderRadius: '50%', overflow: 'hidden', background: `linear-gradient(160deg, rgb(${Math.round(70 * hue)},${Math.round(72 * hue)},${Math.round(78 * hue)}), #1d1e22)`, boxShadow: ring, flex: 'none' }}>
+        <div style={{ position: 'absolute', left: s * 0.33, top: s * 0.2, width: s * 0.34, height: s * 0.36, borderRadius: '50%', background: '#9b9ea6' }} />
+        <div style={{ position: 'absolute', left: s * 0.14, top: s * 0.6, width: s * 0.72, height: s * 0.6, borderRadius: '50% 50% 0 0', background: '#7d8088' }} />
       </div>
     );
   }
-  if (cl.kind === 1) {
-    const [a, b] = ICON_GRAD[cl.tone];
-    return (
-      <div
-        style={{
-          width: 14,
-          height: 14,
-          borderRadius: 4,
-          background: `linear-gradient(160deg, ${a}, ${b})`,
-          boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.35), 0 0.5px 1px rgba(16,18,26,0.18)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <svg width={8} height={8} viewBox="0 0 12 12" style={{ display: 'block' }}>
-          <path d={ICON_PATHS[cl.icon]} fill="#ffffff" fillRule="evenodd" />
-        </svg>
-      </div>
-    );
-  }
-  const [sky, far, near, sun] = THUMBS[cl.thumb];
+  const shapes = [
+    'M12 4l8 14H4z', 'M12 3l3 6 6 1-4.5 4.5 1 6.5-5.5-3-5.5 3 1-6.5L3 10l6-1z', 'M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z',
+    'M13 2L5 14h6l-1 8 8-12h-6z', 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 1 0 10 5 5 0 0 1 0-10z',
+  ];
   return (
-    <div style={{ position: 'absolute', inset: 0, filter: fade > 0 ? `saturate(${1 - fade * 0.3})` : undefined }}>
-      <svg width="100%" height="100%" viewBox="0 0 48 26" preserveAspectRatio="none" style={{ display: 'block' }}>
-        <defs>
-          <linearGradient id={`sky${cl.thumb}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={sun} />
-            <stop offset="1" stopColor={sky} />
-          </linearGradient>
-        </defs>
-        <rect width="48" height="26" fill={`url(#sky${cl.thumb})`} />
-        <circle cx={14 + (cl.thumb * 7) % 20} cy="9" r="3.4" fill={sun} opacity="0.9" />
-        <path d={`M0 18 C8 ${12 + cl.thumb} 15 13 22 16 C29 ${19 - cl.thumb} 37 11 48 15 V26 H0 Z`} fill={far} />
-        <path d={`M0 22 C10 18 18 ${20 + (cl.thumb % 2)} 27 21 C36 ${22 - cl.thumb * 0.5} 42 19 48 20 V26 H0 Z`} fill={near} />
-      </svg>
+    <div style={{ width: s, height: s, borderRadius: 15, background: `linear-gradient(160deg, rgb(${g + 18},${g + 19},${g + 23}), ${base})`, boxShadow: `${ring}, inset 0 1px 0 rgba(255,255,255,0.1)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+      <svg width={25} height={25} viewBox="0 0 24 24"><path d={shapes[Math.floor(rand(cell.seed * 4.1) * shapes.length)]} fill="#d5d7dd" fillRule="evenodd" /></svg>
     </div>
   );
 };
 
 export const AvatarGridRadialBuildColorize: React.FC = () => {
-  const t = useT();
-  // 标题：淡入 + 0.98→1 + 3px 虚焦拉实；图例随后浮现（上移 3px 落座）
-  const tIn = seg(t, 0.02, 0.1, EASE.snappy);
-  const legendIn = seg(t, 0.26, 0.36, EASE.out);
-  // 染色幕：其他卡片微微退后（0.30–0.62），观众视线被推向红点
-  const recede = seg(t, 0.28, 0.64, EASE.smooth);
-  // 相机：全程极缓推近 2.5%（平滑曲线，起止零速度），给静态网格一点呼吸
-  const push = lerpN(1, 1.025, seg(t, 0, 1, EASE.smooth));
+  const f = useCurrentFrame();
 
-  // 图例实时计数：Inactive = 已越过染色中点的卡数
-  const nBad = VISIBLE.filter((c) => c.flagged && t >= c.at + 0.018).length;
-  const nActive = VISIBLE.length - N_PENDING - nBad;
-  const counts = [nActive, N_PENDING, nBad];
+  const flaggedNow = FLAG_TIMES.filter((t) => f >= t).length;
+  const recede = ramp(f, 50, 60, EASE.smooth); // 健康卡退暗
+  const push = 1 + 0.03 * ramp(f, 0, AVATAR_GRID_RADIAL_BUILD_COLORIZE_DURATION, EASE.smooth);
+  const sumIn = ramp(f, 36, 12, EASE.out);
+  const ctaT = ramp(f, 112, 14, EASE.snappy);
+
+  // 风险金额：每次染红后 8f 内滚动累加
+  const atRisk = FLAG_INFO.reduce((acc, info, k) => acc + info.arr * ramp(f, FLAG_TIMES[k], 8, EASE.out), 0);
+  const healthy = 38 - 2 - flaggedNow;
 
   return (
-    <AbsoluteFill style={{ background: '#efefec' }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.42 }} accent="#5b63d3" grain={0} vignette={0.16} />
-      <DesignStage bg="transparent" raster="zoom">
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            overflow: 'hidden',
-            fontFamily: FONT.sans,
-            transform: `scale(${push})`,
-            transformOrigin: '50% 47%',
-          }}
-        >
-          {/* 中央柔光托底：标题区域略亮，保证字在网格中间有自己的舞台 */}
-          <div
-            style={{
-              position: 'absolute',
-              left: 60,
-              right: 60,
-              top: 70,
-              bottom: 70,
-              background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,255,255,0.75), rgba(255,255,255,0) 100%)',
-              opacity: tIn,
-            }}
-          />
-          <div style={{ position: 'absolute', inset: 16 }}>
-            {CELLS.map((cl, i) => {
-              const f = 0.09 + cl.delay;
-              const o = seg(t, f, f + 0.03, EASE.out);
-              // 生长：0.8→1，overshoot 小幅冲过再落座（≈1.6%），无位移
-              const sc = seg(t, f, f + 0.055, EASE.overshoot);
-              // 落座时阴影才抬起：长出来之前贴平，长成后静置高度 3
-              const elev = seg(t, f + 0.01, f + 0.06, EASE.out) * 3;
-              // 异常卡：底色染浅红、边框染粉、状态点转红——同一条 cT
-              const cT = cl.flagged ? seg(t, cl.at, cl.at + 0.036, EASE.out) : 0;
-              // 染色那一拍卡片轻顿一下（1→1.045→1，正弦包络）
-              const tick = cl.flagged ? Math.sin(Math.PI * seg(t, cl.at, cl.at + 0.06, EASE.swift)) * 0.045 : 0;
-              // 状态点涟漪：半径 2.5→10、透明度 0.45→0，裁在卡片圆角内
-              const rip = cl.flagged ? seg(t, cl.at + 0.01, cl.at + 0.11, EASE.out) : 0;
-              const fade = cl.flagged ? 0 : recede;
-              const dot = cl.flagged ? mix(OK, BAD, cT) : cl.pending ? WARN : OK;
-              const img = cl.kind === 2;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    left: cl.c * (CELL_W + GAP),
-                    top: cl.r * (CELL_H + GAP),
-                    width: CELL_W,
-                    height: CELL_H,
-                    boxSizing: 'border-box',
-                    borderRadius: 7,
-                    background: cl.flagged ? mix(CARD_WHITE, FLAG_BG, cT) : CARD_WHITE,
-                    border: `0.5px solid ${cl.flagged ? mix(LINE, FLAG_LINE, cT) : img ? 'rgba(20,22,28,0.10)' : LINE}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    lineHeight: 1,
-                    opacity: o * (1 - fade * 0.12),
-                    boxShadow:
-                      `inset 0 0.5px 0 rgba(255,255,255,0.9), ` +
-                      (cT > 0
-                        ? softShadow(elev + tick * 60, { color: '#7a1c16', strength: 0.6 + cT * 0.5 })
-                        : softShadow(elev, { strength: 0.75 })),
-                    visibility: cl.hidden ? 'hidden' : 'visible',
-                    transform: `scale(${lerpN(0.8, 1, sc) + tick})`,
-                  }}
-                >
-                  <CellContent cl={cl} fade={fade} />
-                  {/* 状态点涟漪（一次，裁进卡片） */}
-                  {rip > 0 && rip < 1 && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        right: 6.5 - lerpN(2.5, 10, rip), // 点心距右/上 6.5
-                        top: 6.5 - lerpN(2.5, 10, rip),
-                        width: lerpN(2.5, 10, rip) * 2,
-                        height: lerpN(2.5, 10, rip) * 2,
-                        borderRadius: '50%',
-                        border: `0.6px solid ${BAD}`,
-                        opacity: (1 - rip) * 0.55,
-                        boxSizing: 'border-box',
-                      }}
-                    />
-                  )}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: 4,
-                      top: 4,
-                      width: 5,
-                      height: 5,
-                      borderRadius: '50%',
-                      background: dot,
-                      // 白描边：缩略图上也能读出状态点
-                      boxShadow: `0 0 0 ${img ? 1 : 0.8}px rgba(255,255,255,${img ? 0.95 : 0.9})${
-                        cT > 0 ? `, 0 0 ${3 * cT}px rgba(240,69,58,${0.45 * cT})` : ''
-                      }`,
-                    }}
-                  />
+    <AbsoluteFill style={{ background: L.bg[1], overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.42 }} fill={{ x: 0.5, y: 1.05 }} intensity={0.75}>
+        {/* 中央标题背后一团极淡的红色余光，随异常数增强 */}
+        <div style={{ position: 'absolute', left: 360, top: 300, width: 1200, height: 480, background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(RED, 0.025 + 0.06 * (flaggedNow / 6))} 0%, ${alpha(RED, 0)} 70%)` }} />
+        <Dust look={L} count={18} seed={4} drift={0.15} opacity={0.35} />
+      </Stage>
+
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(4)})`, transformOrigin: '50% 50%' }}>
+        {/* ── 账户卡墙 ── */}
+        {CELLS.map((cell) => {
+          const o = ramp(f, cell.delay, 6, EASE.out);
+          const sc = mix(0.86, 1, ramp(f, cell.delay, 10, EASE.overshoot));
+          const bl = (1 - ramp(f, cell.delay, 6, EASE.out)) * 6;
+          const flagged = cell.flag >= 0;
+          const ft = flagged ? FLAG_TIMES[cell.flag] : 9999;
+          const red = flagged ? ramp(f, ft, 7, EASE.out) : 0; // 底 / 描边 / 点 同一条曲线
+          const tick = flagged ? Math.sin(Math.PI * ramp(f, ft, 9, EASE.swift)) * 0.05 : 0;
+          const rip = flagged ? ramp(f, ft + 1, 16, EASE.out) : 0;
+          const breathe = flagged && red >= 1 ? 0.85 + 0.15 * Math.sin((f - ft) / 9) : 1;
+          const dimK = flagged ? 1 : 1 - 0.5 * recede;
+          const info = flagged ? FLAG_INFO[cell.flag] : null;
+          const dot = flagged ? (red > 0.5 ? RED : OK) : cell.pending ? WARN : OK;
+          return (
+            <div key={cell.seed} style={{
+              position: 'absolute', left: cell.x, top: cell.y, width: CW, height: CH, visibility: cell.hidden ? 'hidden' : 'visible',
+              opacity: o, transform: `scale(${(sc * (1 + tick)).toFixed(4)})`, filter: bl > 0.2 ? `blur(${bl.toFixed(2)}px)` : undefined,
+              zIndex: flagged ? 2 : 1,
+            }}>
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: 18, overflow: 'hidden', boxSizing: 'border-box',
+                background: `linear-gradient(180deg, ${mixHex('#1b1c20', '#2a1414', red)}, ${mixHex('#151619', '#1f0f0f', red)})`,
+                border: `1px solid ${red > 0 ? alpha(RED, 0.15 + 0.6 * red) : 'rgba(255,255,255,0.07)'}`,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,${(0.06 * (1 - red)).toFixed(3)}), 0 14px 30px -14px rgba(0,0,0,0.9)${red > 0 ? `, 0 0 ${(34 * red * breathe).toFixed(1)}px ${alpha(RED, 0.32 * red * breathe)}` : ''}`,
+                filter: dimK < 0.999 ? `brightness(${dimK.toFixed(3)})` : undefined,
+                display: 'flex', alignItems: 'center', gap: 14, padding: '0 16px',
+              }}>
+                {/* 染红涟漪：从状态点荡开，裁在卡内 */}
+                {rip > 0 && rip < 1 && (
+                  <div style={{
+                    position: 'absolute', left: CW - 24 - 160 * rip, top: 22 - 160 * rip, width: 320 * rip, height: 320 * rip, borderRadius: '50%',
+                    border: `2px solid ${alpha(RED, 0.6 * (1 - rip))}`, background: alpha(RED, 0.08 * (1 - rip)),
+                  }} />
+                )}
+                <Avatar cell={cell} red={red} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 22, fontWeight: 620, color: '#dfe1e6', letterSpacing: '-0.015em', whiteSpace: 'nowrap' }}>{cell.name}</div>
+                  <div style={{ position: 'relative', height: 24, marginTop: 4, fontSize: 17, fontWeight: 540, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                    <span style={{ position: 'absolute', left: 0, top: 0, color: '#7c8088', opacity: 1 - red }}>${cell.arr}k ARR</span>
+                    {info && <span style={{ position: 'absolute', left: 0, top: 0, color: RED, opacity: red, transform: `translateY(${((1 - red) * 8).toFixed(2)}px)` }}>{info.why}</span>}
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '45%',
-              transform: `translate(-50%,-50%) scale(${lerpN(0.98, 1, tIn)})`,
-              fontWeight: 760,
-              fontSize: 30,
-              lineHeight: 1.2,
-              letterSpacing: tracking(120),
-              color: INK,
-              textAlign: 'center',
-              zIndex: 5,
-              whiteSpace: 'nowrap',
-              opacity: tIn,
-              filter: tIn < 0.999 ? `blur(${(1 - tIn) * 3}px)` : undefined,
-            }}
-          >
-            Let's bring them back in
-          </div>
-          {/* 图例：一枚发丝线胶囊，三色点 + 实时计数（tabular-nums 不抖） */}
-          <div
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '56.5%',
-              transform: `translate(-50%, ${lerpN(3, 0, legendIn)}px)`,
-              display: 'flex',
-              gap: 11,
-              alignItems: 'center',
-              zIndex: 5,
-              padding: '4.5px 10px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.82)',
-              border: '0.5px solid rgba(20,22,28,0.08)',
-              boxShadow: `inset 0 0.5px 0 rgba(255,255,255,0.9), ${softShadow(2, { strength: 0.7 })}`,
-              opacity: legendIn,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {LEGEND.map(([txt, col], k) => (
-              <div
-                key={txt}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  fontWeight: 560,
-                  fontSize: 10,
-                  lineHeight: 1,
-                  letterSpacing: '0.005em',
-                  color: INK2,
-                }}
-              >
-                <span
-                  style={{
-                    width: 5.5,
-                    height: 5.5,
-                    borderRadius: '50%',
-                    background: col,
-                    display: 'inline-block',
-                    boxShadow: `0 0 0 1.5px ${col}22`,
-                  }}
-                />
-                <span>{txt}</span>
-                <span
-                  style={{
-                    fontVariantNumeric: 'tabular-nums',
-                    fontWeight: 650,
-                    color: k === 2 && counts[2] > 0 ? '#C8322A' : INK3,
-                    minWidth: 9,
-                  }}
-                >
-                  {counts[k]}
-                </span>
+                {/* 状态点 */}
+                <div style={{
+                  position: 'absolute', right: 16, top: 16, width: 11, height: 11, borderRadius: 6, background: dot,
+                  boxShadow: red > 0.5 ? `0 0 0 3px ${alpha(RED, 0.2)}, 0 0 12px ${alpha(RED, 0.9)}` : 'none',
+                }} />
               </div>
+            </div>
+          );
+        })}
+
+        {/* ── 中央标题 / 汇总 / 图例 / 行动胶囊 ── */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 404, textAlign: 'center' }}>
+          <div style={{ fontSize: 112, fontWeight: 800, letterSpacing: '-0.045em', color: L.ink, lineHeight: 1 }}>
+            <TextReveal text="Who's drifting away?" by="word" variant="rise" start={0} each={14} gap={3} />
+          </div>
+          <div style={{
+            marginTop: 30, fontSize: 38, fontWeight: 560, color: L.ink2, letterSpacing: '-0.015em', fontVariantNumeric: 'tabular-nums',
+            opacity: sumIn, transform: `translateY(${((1 - sumIn) * 14).toFixed(2)}px)`,
+          }}>
+            <span style={{ color: flaggedNow > 0 ? RED : L.ink2, fontWeight: 720 }}>{flaggedNow} account{flaggedNow === 1 ? '' : 's'}</span>
+            {' · '}
+            <span style={{ color: L.ink, fontWeight: 700 }}>${Math.round(atRisk)}k</span> ARR at risk
+          </div>
+          <div style={{
+            marginTop: 26, display: 'flex', justifyContent: 'center', gap: 40, fontSize: 26, color: L.ink3, fontWeight: 550,
+            opacity: ramp(f, 40, 10, EASE.out) * (1 - ctaT), fontVariantNumeric: 'tabular-nums',
+          }}>
+            {([['Healthy', OK, healthy], ['Pending', WARN, 2], ['At risk', RED, flaggedNow]] as Array<[string, string, number]>).map(([l, c, n]) => (
+              <span key={l} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ width: 12, height: 12, borderRadius: 6, background: c }} />
+                {l} <span style={{ color: L.ink2 }}>{n}</span>
+              </span>
             ))}
           </div>
         </div>
-      </DesignStage>
-      <Grain opacity={0.045} />
+        {/* 行动胶囊：图例让位，原卡标题文案变成行动 */}
+        <div style={{
+          position: 'absolute', left: 960, top: 628, transform: `translate(-50%, ${((1 - ctaT) * 24).toFixed(2)}px) scale(${mix(0.92, 1, ctaT).toFixed(4)})`,
+          opacity: ctaT, padding: '16px 34px 16px 38px', borderRadius: 999, background: `linear-gradient(180deg, #ff5a4c, #e8382c)`,
+          color: '#fff6f4', fontSize: 30, fontWeight: 680, letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.3), 0 16px 40px -12px ${alpha(RED, 0.7)}, 0 0 60px ${alpha(RED, 0.25)}`,
+        }}>
+          Bring them back in&nbsp;&nbsp;→
+        </div>
+      </div>
     </AbsoluteFill>
   );
 };
+
+// 两个 hex 颜色按 t 混合
+function mixHex(a: string, b: string, t: number) {
+  const p = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const A = p(a);
+  const B = p(b);
+  const k = Math.max(0, Math.min(1, t));
+  return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * k)).join(',')})`;
+}

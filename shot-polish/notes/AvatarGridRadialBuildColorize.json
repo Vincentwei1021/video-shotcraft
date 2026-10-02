@@ -1,32 +1,33 @@
 {
   "stem": "AvatarGridRadialBuildColorize",
   "issues": [
-    "纯平灰底，网格与标题没有任何前后层次",
-    "图标位是 Unicode 符号（◆■▣），字体回退下粗细不一、像占位符",
-    "缩略图色块随机色相，粉棕橄榄混在一起显脏",
-    "卡片线性淡入 + outQuad 放大，没有落座感，阴影从头到尾一样",
-    "染色只是底色渐变，异常浮现缺少一个让眼睛被吸过去的瞬间；图例 Pending 无对应卡片"
+    "原版在 480×270 设计坐标里放大，卡片里只有十几像素的首字母和符号，内容读不出是什么",
+    "浅灰底 + 多色头像/缩略图，彩色太多，染红的卡和彩色缩略图互相抢，'异常'不够跳",
+    "染红只是底色变浅红，没有事件感；标题文案和画面里的数据没有关系",
+    "结尾就停在网格上，没有落点"
   ],
   "changes": [
-    "柔光 Backdrop + 中央白色柔光托底 + 输出像素级颗粒，全程 2.5% 平滑推近给画面呼吸",
-    "三类内容换成出版级：同色相浅底深字的首字母头像、白色矢量图标的渐变 App 图标、定调五套的双色风景缩略图",
-    "生长保持分环 stagger，scale 改为 overshoot 小幅落座（≈1.6%），阴影随落座从贴平抬到静置高度",
-    "染色一拍：底/边/点同曲线，卡片 1→1.045→1 轻顿，状态点一圈涟漪裁在卡片内；同时其余卡片退后 12%、缩略图降饱和",
-    "图例做成发丝线胶囊，Active/Pending/Inactive 计数随染色实时翻动（tabular-nums），新增 2 张琥珀 Pending 卡"
+    "look = graphite：整面墙去色（头像、logo、名字全灰阶，健康点压成低饱和灰绿），画面里唯一饱和的颜色是风险红",
+    "原生 1920 重排：38 张 200×118 账户卡（首字母 / 抽象人像 / logo + 22px 名字 + ARR），虚构客户成功产品 Tether 的账户墙",
+    "分环生长保留：环号 + 每环 4f + 0–3f 抖动，卡片只做 opacity + scale 0.86→1 overshoot + 收焦，无位移",
+    "染红做成事件：6 张分散的卡在 52–101f 不等间隔陆续染红，底 / 描边 / 点同一条曲线 + 顿一下 + 卡内红色涟漪 + ARR 行换成流失原因；其余健康卡整体退暗 1→0.5",
+    "中央 112px 标题「Who's drifting away?」逐词升起，汇总行「6 accounts · $284k ARR at risk」和图例随每次染红滚动计数，最后升起红色行动胶囊「Bring them back in →」作结尾海报",
+    "相机全程 1→1.03 极缓推，标题背后的红色余光随异常数增强"
   ],
   "issuesEn": [
-    "Flat grey backdrop with no depth between the grid and the headline",
-    "Icon tiles were Unicode glyphs (◆■▣) with inconsistent weights from font fallback",
-    "Thumbnail blocks used random hues, producing a muddy pink/brown/olive mix",
-    "Cards faded in linearly with an outQuad scale and no settle; shadows never changed",
-    "The anomaly reveal was just a background tint with no moment that pulls the eye; the Pending legend item had no cards"
+    "The original was scaled up from a 480×270 design space, so cards held initials and symbols only a dozen pixels tall and their content was unreadable",
+    "A light grey stage with multicoloured avatars and thumbnails; with so much colour the red cards competed with the thumbnails and the anomalies did not pop",
+    "Flagging just tinted the background pale red, with no sense of an event, and the title had nothing to do with the data on screen",
+    "It ended on the static grid with no landing"
   ],
   "changesEn": [
-    "Soft-light Backdrop, a white halo behind the title, output-resolution grain and a slow 2.5% eased push-in",
-    "Publication-grade content: tinted initial avatars, gradient app icons with white vector glyphs, five curated duotone landscape thumbnails",
-    "Ring stagger kept; scale now settles with a small overshoot (~1.6%) and the shadow lifts from flat to resting height on landing",
-    "Colorize beat: bg/border/dot on one curve, a 1→1.045→1 tick, a single dot ripple clipped to the card, while other cards recede 12% and thumbnails desaturate",
-    "Legend became a hairline pill with live Active/Pending/Inactive counts (tabular-nums); two amber Pending cards added"
+    "Look = graphite: the whole wall is desaturated (avatars, logos and names in greyscale, healthy dots a muted grey-green) so the only saturated colour on screen is risk red",
+    "Re-laid out natively at 1920: 38 account cards at 200×118 (initials / abstract portrait / logo, 22px name, ARR) forming the account wall of a fictional customer-success product, Tether",
+    "Ring growth kept: ring number, 4f per ring plus 0–3f jitter, cards only fade, scale 0.86→1 with overshoot and come into focus, no travel",
+    "Flagging is an event: six well-spread cards turn red at uneven intervals across 52–101f, fill / border / dot on one curve plus a tick, a clipped red ripple and the ARR line swapping to a churn reason; the healthy cards dim 1→0.5",
+    "A 112px centre title 'Who's drifting away?' rises word by word, the 'n accounts · $Xk ARR at risk' summary and legend count up with each flag, and a red 'Bring them back in →' call-to-action pill rises for the end poster",
+    "A 1→1.03 slow camera push throughout, and a red glow behind the title that grows with the anomaly count"
   ],
+  "look": "graphite",
   "mdChanged": true
 }
