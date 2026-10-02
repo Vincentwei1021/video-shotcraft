@@ -1,109 +1,163 @@
-# 镜头质感升级 · 执行简报（每个参与改版的 agent 必读）
+# 镜头重设计 · 第二轮执行简报（每个参与改版的 agent 必读）
 
-目标：把 `demos/` 下 216 个镜头 demo 的**动效与质感提升到专业动效师水准**，
-但**不替换镜头要表达的内容**。改完每个镜头都要能和改版前的视频并排对照、一眼看出提升。
+## 0. 这一轮要什么
 
-## 1. 什么不能动（内容契约）
+第一轮（`shot-polish/after-v1/`）只做了「保守打磨」：保留原几何、原配色、原节奏，加了阴影/颗粒/缓动。
+结果干净但平淡——浅灰底 + 同一个靛蓝、字小、构图空、节奏没变。用户的反馈：
 
-- **镜头的意图与叙事不变**：卡片 md（`references/shots/<类>/<卡>.md`）的「一句话 / 意图 /
-  动效核心」描述的那件事必须还在——同一个主角、同一组节拍（入场→动作→落定）、同一种手法
-  （crash zoom 还是 crash zoom，打字机还是打字机）。不许把它改成另一个镜头。
-- **时长按镜头本意**：已导出的 `*_DURATION` / `*_DUR` 常量保持原值。**没有导出时长常量的 demo 要补一个**
-  （`export const <STEM_UPPER_SNAKE>_DURATION = N;`，gen-index 会优先读它）：工作台目前对这类 demo 靠猜——
-  「default」一律 150f，「inline」是从源码里抓的第一个数字，常常是错的（如 MagicianCardFlourish 被猜成 12f、
-  ClonerDepthEcho 10f，渲染出来只有半截）。N 取镜头本意的完整时长：先看 demo 自身时间轴（Sequence/常量/
-  注释），再看卡片 md「时长」。查当前推断值：`grep '"<Stem>"' workbench/src/cards/demo-index.ts`。
-  改版后整段动作必须在 N 帧内演完、尾段有落定。不要为了加戏随意拉长已正确的时长。
-- **导出签名不变**：`export const <Stem>: React.FC`、时长常量名、其他被别处 import 的导出
-  （`grep -rn "<导出名>" demos template workbench/src assets` 确认）保持原样。
-- **md 里写死的关键节拍尽量保留**（如「6f 急推」「BURST 早于到位 0.04」）。如果你确实改了
-  md 参数表/动效核心里写明的数值，必须同步改 md 对应句子（只改受影响的数值/描述，不重写卡片）。
-- **不改 `_fixtures/`、`_textures/`、`template/`、`workbench/src/`、`gallery/`**。共享件由主控
-  统一维护；需要共享 helper 时，在你自己的 demo 文件里写局部函数。可以 import
-  `_fixtures/Polish.tsx`（若存在，Phase 0 新增的质感工具件）。
-- 确定性渲染铁律：禁 `Math.random()` / `Date.now()`，一切伪随机用固定种子；所有 interpolate
-  都要 clamp；组件是 `useCurrentFrame()` 的纯函数。
-- 不新增 npm 依赖。可用：remotion、@remotion/motion-blur、@remotion/three + three（已在用的卡）、
-  @remotion/google-fonts（**慎用**：demo 会被 copy 进只装了 remotion 的工程，能用系统字体栈就别用）。
+> 我希望从**节奏、运动曲线、画面效果、配色、设计、排版**上都有**大幅度**的改进；
+> **可以不用遵从原始视频，只用遵从原始视频对应的大致的镜头设计**就行。
 
-## 2. 「专业动效师水准」具体指什么（逐条自查）
+所以这一轮是**重新设计**，不是打磨。标准：把每个镜头当成要放进顶级产品发布片（Apple keynote、
+Linear / Stripe / Vercel / Arc 的 launch film）或动效师作品集 reel 的一个镜头来做。
+暂停任意一帧都应该像一张设计过的海报；播放时节奏有张有弛、运动有重量。
+**和 before、after-v1 并排时，提升必须一眼可见、而且是大幅度的。** 只加了点阴影和颗粒的改动不合格。
 
-先读 `references/aesthetic-rules.md` 的 Q 节（Q1–Q11）与 R2/R3，这是本仓库的判例式审美准则，优先级最高。
-在此之上按下面的清单打磨：
+## 1. 保留什么、放开什么
 
-**运动（motion）**
-- 无线性运动（除非刻意的机械/匀速语义）。入场用强 ease-out（expo/quint 或 cubic-bezier(0.16,1,0.3,1) 级），
-  出场用 ease-in，换位用不对称 in-out；弹簧要有物理感（合适的阻尼，过冲 ≤ 一次可见回弹）。
-- 重叠与跟随（overlap / follow-through）：组内元素错峰（stagger 也要有缓动分布，不是等差），
-  子元素比父元素晚 2–4 帧落定；大动作前有轻微预备（anticipation）。
-- 速度感来自加速度与运动模糊：快速位移/缩放/旋转时给方向性模糊或拖影（按速度量计算，静止时为 0），
-  不要全片常驻模糊。CameraMotionBlur 代价大，只给真正需要的镜头。
-- 落定要「落」：到位后有 settle（微小回弹或阻尼收敛），关键信息落定后留呼吸时间（R1）。
-- 镜头要稳（Q3）：不加手持抖动；相机运动用平滑曲线，避免起止处速度突变。
+**只保留「大致的镜头设计」**——即卡片 md 的「一句话 / 意图」所说的那个手法本身：
+crash zoom 仍是急推、clock wipe 仍是钟表式扫转场、split text stagger 仍是逐字错峰入场、
+counter confetti 仍是计数到头放彩屑。手法的识别度必须更强，不能变成另一个手法。
 
-**质感（look）**
-- 层次与深度：前中后景分层，背景不要死平——低对比渐变、柔和光斑、轻微暗角；用视差、景深（模糊远景）、
-  随高度变化的分层阴影（近地小而实 + 远地大而虚，两层 box-shadow）表现空间。
-- 材质：卡片/面板用细边（1px rgba 发丝线）、顶部内高光、微渐变，不用 2px 实色灰边；大面积纯色渐变加
-  极弱噪点/颗粒防色带（确定性噪点，见 Polish.tsx 或用 SVG feTurbulence 固定 seed）。
-- 光：一处主光方向统一（高光、阴影方向一致）；光效遵守 Q4（只给主角、一次、裁进圆角）。
-- 色彩：有克制的配色系统（中性色 + 1 个强调色 + 必要时 1 个辅助色），避免纯 #000 / #fff 大面积、
-  避免高饱和彩虹堆砌；暗场用带色相的深色（如 #0b0d12 而非 #000）。
-- 字体排版：系统字体栈 `-apple-system, "SF Pro Display", "Helvetica Neue", Inter, Arial, sans-serif`
-  （等宽 `"SF Mono", "JetBrains Mono", Menlo, monospace`）；标题负字距、小字正字距、字重层级分明；
-  数字用 `fontVariantNumeric: 'tabular-nums'` 防抖动；要读的字满足 Q11 字高。
-  调试性质的占位标题（如把卡名大写打在画面上方）要换成像样的内容或去掉。
-- 占位内容出版级（Q10）：灰色骨架条可以升级为真实感的假内容（产品名、指标、人名缩写头像、图标、
-  sparkline），但别喧宾夺主，主角始终是这张卡要演示的运动。
-- 清晰度：3D/放大镜头里的文字不能糊（Q2，用 CSS zoom 或按目标尺寸布局，不靠 transform 放大位图）；
-  1px 线在缩放后不能闪烁。
+**全部可以重做**：
+- 配色（换 look）、背景、光、材质；
+- 版式与构图（主体大小、位置、网格、留白）；
+- 内容与文案（产品名、数字、标题、UI 内容——编更好的；只用虚构品牌，不出现真实公司/产品名）；
+- 字体排版（字号、字重、字距、层级、中英混排）；
+- 节奏与时长（`*_DURATION` 的**值**可以改，常量**名**不变）；运动曲线、错峰、弹簧、相机路径；
+- 可以不再用 `_fixtures/Fixtures.tsx` 的 FakeDashboard / Card / TitleBlock，自己搭为镜头量身定做的画面
+  （它们是通用小字 dashboard，大多数镜头里读不清、也不好看）。
+- 文案语言：原镜头是英文就用英文、中文就用中文；占位/调试文字（如把卡名大写打在角落）一律删掉或换成内容。
 
-**构图（composition）**
-- 主体在安全区内、视觉重心明确；留白有意图；元素对齐到网格。
-- 每一帧暂停都要「能当海报」：没有半截穿帮、没有空白死帧、没有元素意外出画。
-- 结尾帧干净、落定（工作台会定格尾帧）。
+**仍然不能动**：
+- 导出签名：`export const <Stem>: React.FC`、时长常量名、其他被别处 import 的导出
+  （`grep -rn "<导出名>" demos template workbench/src assets` 确认）。组件不接收必需 props。
+- `demos/_fixtures/`、`demos/_textures/`、`template/`、`workbench/src/`、`gallery/` 不改。需要共享 helper 就在自己
+  的 demo 文件里写局部函数。
+- 用真实截图纹理（`staticFile('textures/...')`）的镜头：截图代表"产品既有页面"（Q1），纹理本身保留，
+  但运镜、调色、光、背景舞台、节奏、配套的字和元素都可以重做。
+- 确定性渲染铁律：禁 `Math.random()` / `Date.now()`；伪随机用固定种子；interpolate 全部 clamp；组件是帧的纯函数。
+- 不新增 npm 依赖（可用 remotion、@remotion/motion-blur、@remotion/three + three（已在用的卡）；
+  `@remotion/google-fonts` 不用——demo 会被 copy 进只装 remotion 的工程，用系统字体栈）。
 
-## 3. 工作流程（每个 demo）
+## 2. 工具箱：`demos/_fixtures/Look.tsx`（新）+ `Polish.tsx`
 
-1. 读卡片 md 与 demo 源码（含它 import 的 fixture），弄清意图与节拍。
-2. 看「改版前」：`shot-polish/before/<Stem>.mp4` 已渲染好。出联系表：
-   `python3 shot-polish/sheet.py shot-polish/before/<Stem>.mp4 /tmp/<Stem>.before.jpg 8` 然后 Read 图片。
-   需要细看某帧：`ffmpeg -v error -y -ss <秒> -i <mp4> -frames:v 1 /tmp/x.jpg`。
-   先写下 3–6 条具体的「粗糙点」诊断（例如：线性位移、平灰背景、2px 灰边、字体回退、
-   入场同时弹出无错峰、尾段 2 秒死帧、文字糊、光效溢出圆角）。
-3. 改代码。优先做提升最明显的几项，不要为改而改；保持代码可读、注释风格与原文件一致
-   （中文注释，说明关键常量的用意）。
-4. 自检渲染（在 `workbench/` 目录下执行，会只打包你指定的 demo）：
-   `node scripts/check-demo.mjs <类>/<卡>/<Stem>.tsx [--frames 30,90]`
-   产物在 `shot-polish/after/<Stem>.mp4`、`<Stem>.sheet.jpg`（8 帧联系表）、`<Stem>.f<N>.jpg`（全尺寸单帧）。
-   **必须 Read 联系表和至少 1–2 张全尺寸关键帧亲眼看**，和改版前对比；文字/细线要看全尺寸帧。
-   有问题继续迭代，直到你能明确说出「比改版前好在哪」。渲染失败要修好。
-5. 类型检查（与 CI 同口径 strict）：在仓库根执行 `shot-polish/tsc-demos.sh <类>/<卡>`（可给多个目录），
-   输出 `tsc OK` 才算过。已知误报：`ClipCardLooping.tsx` 找不到 `assets/lib/ClipCard`（符号链接路径所致，忽略）。
+先读这两个文件（都很短）。`import { ... } from '../../_fixtures/Look'`（按层级调整相对路径）。
 
-## 4. 并发约束
+- `LOOKS`：8 套完整调色板，一个镜头选一套——
+  暗场 `midnight`（深蓝·电光蓝，科技/AI/数据）、`aurora`（紫粉，发布/品牌/魔法）、`ember`（暖黑·橙，冲击/速度）、
+  `graphite`（近单色，电影感/克制/高级）、`lime`（石墨·荧光黄绿，运动/数据冲击/节奏）；
+  亮场 `paper`（暖白纸·墨·朱红，编辑排版/文字）、`porcelain`（冷白·钴蓝，SaaS UI/交互演示）、`sand`（米色·赤陶，温暖/生活方式）。
+  每套含 bg/light/surface/surface2/line/ink/ink2/ink3/accent/accent2/onAccent/shadow。
+  **强调色只给主角和关键信息**；accent2 只做点缀。可以在 look 基础上微调，但别回到灰底靛蓝。
+- `<Stage look keyLight fill horizon breathe>`：有主光、余光、可选地平线光带、暗角、颗粒的舞台底。
+- `<GridFloor>` 透视网格地面、`<Dust>` 确定性浮尘散景、`<Sheen>` 单次扫光（Q4：只给主角一次，裁进圆角）。
+- `TYPE` 字号阶梯（mega 260 / display 180 / h1 120 / h2 84 / h3 60 / body 40 / small 32 / label 22）与
+  `type(size, weight, {caps, serif, mono})` 一行出标题样式；`SERIF` 衬线栈（编辑感镜头做大衬线标题很好看）。
+- `<TextReveal text by="char|word|line" variant="rise|blur|drop|scale|track" start each gap ease out>`：逐字/词/行揭示。
+- `stagger(i, n, span, ease)` 错峰分布、`springAt(frame, start, {damping, stiffness})` 物理弹簧、`glow()` / `glowFilter()` 泛光。
+- `Polish.tsx`：`EASE`（snappy/out/smooth/swift/exit/anticip/overshoot）、`ramp`、`mix`、`velocity`、`SpeedBlur`、
+  `softShadow`、`surface`、`Grain`、`Vignette`。
 
-- 你只改分配给你的 demo 目录（`demos/<类>/<卡>/`）和对应卡片 md。别的 agent 在同时改其他目录。
+工具箱是起点不是天花板。镜头需要什么就自己写（局部函数）：SVG 路径动画、遮罩、渐变描边、粒子、
+3D 变换、景深、色差、光晕等都可以。
+
+## 3. 专业动效的标准（逐条自查）
+
+**节奏（rhythm）**
+- 先写一张**时间表**（注释写在组件顶部）：预备 → 主动作 → 跟随/余波 → 落定 hold。每拍几帧、为什么。
+- 有对比：快-慢-快、密-疏。主动作果断（入场 10–20f、大位移 18–32f），关键信息落定后 hold ≥ 20–30f（R1），
+  尾段 hold 15–30f 干净落定（工作台会定格尾帧）。第一帧不要是空白死帧：开场 3 帧内画面里就该有东西
+  （舞台光、一个元素的起始态），除非镜头本意就是从黑起。
+- 禁止长时间什么都不动的死帧（>1s 无任何运动）；hold 段可以有极缓的相机推进（1–3%）或光的呼吸让画面活着——
+  但不加手持抖动（Q3）。
+- 批量元素入场：错峰按曲线分布（`stagger` + EASE），越来越快或先密后疏，挂物理隐喻（R2）。
+
+**运动曲线（motion）**
+- 每个动作按语义选曲线：入场强 ease-out（snappy/expo）、出场 ease-in（exit）、换位不对称 in-out、
+  大动作前预备（anticip）、落座过冲 ≤ 一次可见回弹（overshoot / spring damping 14–20）。不出现线性运动（机械/匀速语义除外）。
+- 重叠与跟随：父先动、子晚 2–4 帧；位置先到、缩放/旋转/阴影晚一点收敛；文字行比底板晚一拍。
+- 速度感：快速位移/缩放/旋转时按速度加方向性模糊（`SpeedBlur` 或按速度算 blur），静止为 0。
+- 相机：平滑、起止无速度突变；推/拉/环绕都要有明确目标与落点。
+
+**画面效果（look）**
+- 一个镜头一个 look，暗场优先考虑（多数产品发布片是暗场 + 光），但按镜头意图选，亮场做好同样高级。
+  **同一批次里的镜头不要都用同一个 look**，整个库要有变化：选之前跑
+  `grep -ho '"look": "[a-z]*"' shot-polish/notes/*.json | sort | uniq -c` 看全库已用分布，在贴合镜头意图的前提下优先用得少的。
+  风格也要有变化：文字类镜头不要都做成「纸 + 衬线编辑风」，UI 类不要都做成「紫色玻璃」——同类镜头之间换手法
+  （瑞士网格 / 粗黑体海报 / 等宽技术感 / 霓虹 / 电影字幕 / 杂志 / 产品发布会 / 数据仪表……）。
+- 空间与层次：前/中/后景分层、视差、景深（远景模糊 + 降对比）、两层软阴影、主光方向统一。
+- 光：主角有光（轮廓光、底光、泛光、扫光其一），背景有光斑/地平线光带/浮尘，不是死平底色。光效遵守 Q4。
+- 材质：面板发丝线细边、顶部内高光、微渐变；暗场面板用带色相的深色 + 低透明度白描边；可做玻璃（backdrop 模糊感
+  用叠层渐变模拟）。大面积渐变上叠 Grain 防色带。
+
+**配色（color）**
+- 中性色 + 1 强调色 + 至多 1 点缀色；强调色面积小而关键。暗场用带色相的深色，不用纯 #000；亮场不用纯 #fff 大面积。
+
+**设计与排版（design & typography）**
+- **字要大、要有层级**：主标题 ≥ h1（120px），关键数字可以 mega/display；要读的辅助字 ≥ 32px（Q11）。
+  1080p 画面里 14–20px 的小字只能当"纹理"（虚化/降亮），不能当内容。
+- 标题负字距、全大写小字放宽字距、字重对比（900 vs 400）、数字 tabular-nums；可用衬线大标题做编辑感，
+  或 mono 做技术感。中英文混排注意基线和字重。
+- 构图：主体占画面要有分量（UI 主体一般占画宽 50–75%），安全边距 ≥ 96px，对齐网格，视觉重心明确，留白有意图。
+- UI 类镜头：做"为镜头设计的 UI"——更少元素、更大字、更强对比、只保留讲清手法所需的信息；
+  仍然像真实产品（真实感的文案、图标、数据），出版级（Q10）。
+- 结尾帧是一张完整的海报。
+
+**转场/多页叠放**：两页共用一个背景（只画一个 `Stage`），否则接缝和暗角叠加会露馅；主角放在 `Stage` 外层，
+`Stage` 的 children 只放背景装饰。
+
+**清晰度**：3D/放大镜头文字不能糊（Q2：放大走 CSS zoom 或按目标尺寸布局）；细线缩放后不闪。
+
+**性能**：单镜头渲染（check-demo 1920×1080）尽量 < 90s。整屏 `filter: blur()` 每帧变化很贵，能用渐变/预模糊/
+小尺寸元素模拟就别全屏实时模糊；粒子数量适度。
+
+## 4. 工作流程（每个 demo）
+
+1. 读卡片 md（`references/shots/<类>/<卡>.md`）与 demo 源码，抓住「大致的镜头设计」是什么。
+2. 看 before（原版）与 after-v1（第一轮）：
+   `python3 shot-polish/sheet.py shot-polish/before/<Stem>.mp4 /tmp/<Stem>.before.jpg 8`，Read 图片；
+   v1 联系表现成：`shot-polish/after-v1/<Stem>.sheet.jpg`。单帧：`ffmpeg -v error -y -ss <秒> -i <mp4> -frames:v 1 /tmp/x.jpg`。
+3. **先做设计决定再写代码**（写进组件顶部注释）：选哪个 look、主体是什么、构图、时间表、关键曲线、
+   要编的内容/文案。问自己：顶级动效师拿到这个手法会怎么拍？
+4. 重写代码。保持可读，中文注释说明关键常量的用意（与仓库风格一致）。
+5. 自检渲染（在 `workbench/` 目录下）：`node scripts/check-demo.mjs <类>/<卡>/<Stem>.tsx --frames 20,60,100`
+   产物在 `shot-polish/after/<Stem>.mp4`、`.sheet.jpg`（8 帧联系表）、`.f<N>.jpg`（全尺寸）。
+   **必须 Read 联系表和 2–3 张全尺寸关键帧**（主动作中段、落定帧、尾帧），和 before / v1 对比。
+   至少迭代两轮：第一轮做出来后挑出 3 个最弱的地方再改。直到你能确信"这个镜头放进发布片不丢人"。
+6. 类型检查（仓库根）：`shot-polish/tsc-demos.sh <类>/<卡>` 输出 `tsc OK` 才算过（已知误报：ClipCardLooping 找不到
+   `assets/lib/ClipCard`，忽略）。
+7. 改了时长、颜色、关键数值或画面描述的，同步改卡片 md 里受影响的句子：frontmatter / 「时长:」行的帧数、
+   参数表数值、「动效核心」里写死的帧号或颜色描述。重设计让原来的实测数值整体失效时，动效核心 / 参数表 / 坑
+   这几节可以按新实现大幅重写；「一句话」若写了具体画面（如"灰色卡片"）可以改成新画面，但手法含义不变。
+   保留卡片的整体结构，frontmatter 格式不能坏（gallery 同步脚本要解析）。一张卡 md 对应多个 demo、而其中有的 demo
+   不归你时，只改写和你的 demo 相关的句子。
+
+## 5. 并发约束
+
+- 只改分配给你的 demo 目录（`demos/<类>/<卡>/`）和对应卡片 md。别的 agent 在同时改其他目录。
 - 不要 git commit / push / 切分支；不要 `git checkout` / `git stash` / `git reset` 任何文件。主控统一提交。
-- 渲染并发：check-demo.mjs 默认 `--concurrency 3`，不要调高。
-- 不要删除 `shot-polish/before/`。
+- check-demo.mjs 保持默认 `--concurrency 3`，不要调高；不要同时开多个渲染进程。
+- 不要删除 `shot-polish/before/`、`shot-polish/after-v1/`。
 
-## 5. 改版说明（对照页数据源，必写）
+## 6. 改版说明（对照页数据源，必写）
 
-每个 demo 完成后写 `shot-polish/notes/<Stem>.json`（UTF-8，对照页 index.html 直接展示）：
+每个 demo 完成后**覆盖写**（`look` 写你用的 LOOKS 名，自定义配色写 `custom`） `shot-polish/notes/<Stem>.json`（UTF-8）。对照页对比的是 **原版 vs 本轮**，所以
+issues 写原版的问题，changes 写本轮相对原版的改动：
 
 ```json
 {
   "stem": "CounterConfetti",
-  "issues": ["改版前的粗糙点，一句一条，3–6 条，具体到现象"],
-  "changes": ["改了什么，一句一条，3–6 条，具体到手法与数值"],
+  "issues": ["原版的问题，一句一条，3–5 条，具体到现象"],
+  "changes": ["本轮改了什么，一句一条，4–6 条，具体到设计决定与手法（look、版式、时间表、曲线、效果）"],
   "issuesEn": ["same in English"],
   "changesEn": ["same in English"],
-  "mdChanged": false
+  "look": "ember",
+  "mdChanged": true
 }
 ```
 
-## 6. 交付汇报（最终回复）
+## 7. 交付汇报（最终回复，简洁）
 
-按 demo 逐条：`<Stem>`：改了什么（3–5 条要点，具体到手法）、是否改动了 md、自检结论（渲染 OK / tsc OK）、
-任何没解决的问题。最后一行列出你改动的全部文件路径。
+按 demo 逐条：`<Stem>`：look / 新时长 / 3–4 条关键改动、md 是否改动、渲染 OK / tsc OK、遗留问题。
+最后一行列出你改动的全部文件路径。

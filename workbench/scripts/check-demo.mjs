@@ -10,7 +10,7 @@
 //   <Stem>.f<N>.jpg      --frames 指定帧的全尺寸单帧
 // 时长：demo 导出的 *_DURATION / *_DUR 优先，否则取 demo-index.ts 里 gen-index 的推断值。
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { bundle } from "@remotion/bundler";
@@ -95,6 +95,8 @@ try {
   });
   const chromiumOptions = { gl: "angle" };
   for (const d of demos) {
+    // 清掉这个 stem 上一轮迭代留下的单帧图，免得新旧帧混看
+    for (const f of readdirSync(out)) if (f.startsWith(`${d.stem}.f`) && f.endsWith(".jpg")) rmSync(path.join(out, f));
     const composition = await selectComposition({ serveUrl, id: d.stem, chromiumOptions });
     const n = composition.durationInFrames;
     for (const f of stills) {

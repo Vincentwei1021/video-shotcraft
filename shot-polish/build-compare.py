@@ -5,13 +5,16 @@
   workbench/src/cards/demo-index.ts   demo 清单（stem → demos/ 相对路径，gen-index 生成）
   workbench/src/cards/demoMeta.ts     中英文名 / 分类 / 一句话（gen-index 生成）
   shot-polish/notes/<Stem>.json       每个 demo 的改版说明（改版 agent 写）
-  shot-polish/before|after/<Stem>.mp4 改版前 / 后渲染
+  shot-polish/before/<Stem>.mp4       原版渲染
+  shot-polish/after-v1/<Stem>.mp4     第一轮（保守打磨）渲染
+  shot-polish/after/<Stem>.mp4        第二轮（重设计）渲染
 
 用法（仓库根）：python3 shot-polish/build-compare.py
 预览：cd shot-polish && python3 -m http.server 8765 → http://localhost:8765/
 """
 import json
 import re
+import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -44,15 +47,14 @@ def load_index():
 
 
 def probe_frames(p):
-    log = p.parent / 'render-log.json'
-    if log.exists():
-        try:
-            v = json.loads(log.read_text()).get(p.stem)
-            if v and v.get('ok'):
-                return v.get('frames')
-        except json.JSONDecodeError:
-            pass
-    return None
+    if not p.exists():
+        return None
+    try:
+        out = subprocess.run(['ffprobe', '-v', 'error', '-select_streams', 'v:0', '-show_entries',
+                              'stream=nb_frames', '-of', 'csv=p=0', str(p)], capture_output=True, text=True)
+        return int(out.stdout.strip())
+    except ValueError:
+        return None
 
 
 def main():
@@ -63,6 +65,7 @@ def main():
         note_p = HERE / 'notes' / f"{d['stem']}.json"
         note = json.loads(note_p.read_text(encoding='utf-8')) if note_p.exists() else {}
         before = HERE / 'before' / f"{d['stem']}.mp4"
+        v1 = HERE / 'after-v1' / f"{d['stem']}.mp4"
         after = HERE / 'after' / f"{d['stem']}.mp4"
         items.append({
             **d,
@@ -71,8 +74,9 @@ def main():
             'summary': m.get('summary', ''),
             'summaryEn': m.get('summaryEn', ''),
             'before': f"before/{d['stem']}.mp4" if before.exists() else None,
+            'v1': f"after-v1/{d['stem']}.mp4" if v1.exists() else None,
             'after': f"after/{d['stem']}.mp4" if after.exists() else None,
-            'frames': probe_frames(after) or probe_frames(before),
+            'fBefore': probe_frames(before), 'fV1': probe_frames(v1), 'fAfter': probe_frames(after),
             'issues': note.get('issues', []), 'changes': note.get('changes', []),
             'issuesEn': note.get('issuesEn', []), 'changesEn': note.get('changesEn', []),
         })

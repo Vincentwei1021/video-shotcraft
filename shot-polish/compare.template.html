@@ -84,6 +84,10 @@
       <div class="brand">ShotCraft · Shot Polish<small data-i18n="subtitle"></small></div>
       <div class="stats" id="stats"></div>
       <div class="spacer"></div>
+      <div class="seg" id="base">
+        <button data-v="before" class="on" data-i18n="vsBefore"></button>
+        <button data-v="v1" data-i18n="vsV1"></button>
+      </div>
       <div class="seg" id="mode">
         <button data-v="side" class="on" data-i18n="side"></button>
         <button data-v="wipe" data-i18n="wipe"></button>
@@ -98,6 +102,7 @@
     <div class="bar2">
       <div id="cats" style="display:flex; gap:8px; flex-wrap:wrap"></div>
       <div class="spacer"></div>
+      <label class="tog"><input type="checkbox" id="onlydone" /> <span data-i18n="onlydone"></span></label>
       <label class="tog"><input type="checkbox" id="autoplay" checked /> <span data-i18n="autoplay"></span></label>
       <input class="search" id="q" />
     </div>
@@ -108,17 +113,21 @@
 const DATA = /*__DATA__*/null;
 const FPS = 30;
 const T = {
-  zh: { subtitle: '216 个镜头改版前后对照', side: '并排', wipe: '划像', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
-        all: '全部', before: '改版前', after: '改版后', issues: '改版前的问题', changes: '改版做了什么', nonotes: '（暂无说明）',
-        notyet: '尚未渲染', play: '播放', pause: '暂停', shots: '个镜头', polished: '已改版', empty: '没有匹配的镜头',
+  zh: { subtitle: '216 个镜头改版对照', side: '并排', wipe: '划像', autoplay: '进入视野自动播放', search: '搜索卡名 / 组件名…',
+        all: '全部', before: '原版', v1: '第一轮', after: '第二轮', issues: '原版的问题', changes: '第二轮做了什么', nonotes: '（暂无说明）',
+        vsBefore: '对比原版', vsV1: '对比第一轮', onlydone: '只看第二轮已完成',
+        notyet: '尚未渲染', play: '播放', pause: '暂停', shots: '个镜头', polished: '第二轮已完成', empty: '没有匹配的镜头',
         cats: { opening: '开场', camera: '运镜与空间', transition: '转场', typography: '文字排版', 'ui-entrance': 'UI 入场',
                 interaction: '交互演示', data: '数据', effects: '特效', rhythm: '节奏', outro: '收尾' } },
-  en: { subtitle: 'before / after for 216 shots', side: 'Side by side', wipe: 'Wipe', autoplay: 'Autoplay in view', search: 'Search card / component…',
-        all: 'All', before: 'Before', after: 'After', issues: 'What was rough', changes: 'What changed', nonotes: '(no notes yet)',
-        notyet: 'not rendered yet', play: 'Play', pause: 'Pause', shots: 'shots', polished: 'polished', empty: 'No matching shots',
+  en: { subtitle: 'redesign comparison for 216 shots', side: 'Side by side', wipe: 'Wipe', autoplay: 'Autoplay in view', search: 'Search card / component…',
+        all: 'All', before: 'Original', v1: 'Pass 1', after: 'Pass 2', issues: 'What was rough', changes: 'What pass 2 changed', nonotes: '(no notes yet)',
+        vsBefore: 'vs original', vsV1: 'vs pass 1', onlydone: 'Pass 2 done only',
+        notyet: 'not rendered yet', play: 'Play', pause: 'Pause', shots: 'shots', polished: 'pass 2 done', empty: 'No matching shots',
         cats: Object.fromEntries(DATA.cats.map(c => [c.key, c.en])) },
 };
-const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: '', mode: 'side', speed: 1, autoplay: true };
+const state = { lang: localStorage.getItem('sp-lang') || 'zh', cat: 'all', q: '', mode: 'side', speed: 1, autoplay: true, base: 'before', onlyDone: false };
+const baseSrc = i => i[state.base];
+const baseFrames = i => state.base === 'v1' ? i.fV1 : i.fBefore;
 const t = k => T[state.lang][k];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -126,7 +135,7 @@ function applyI18n() {
   document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.getElementById('q').placeholder = t('search');
-  const done = DATA.items.filter(i => i.before && i.after).length;
+  const done = DATA.items.filter(i => i.after).length;
   document.getElementById('stats').innerHTML = `<b>${DATA.items.length}</b> ${t('shots')} · <b>${done}</b> ${t('polished')}`;
 }
 
@@ -141,7 +150,7 @@ function renderCats() {
 
 function filtered() {
   const q = state.q.trim().toLowerCase();
-  return DATA.items.filter(i => (state.cat === 'all' || i.cat === state.cat) &&
+  return DATA.items.filter(i => (state.cat === 'all' || i.cat === state.cat) && (!state.onlyDone || i.after) &&
     (!q || [i.name, i.nameEn, i.stem, i.card].some(s => String(s).toLowerCase().includes(q))));
 }
 
@@ -153,11 +162,11 @@ function stageHtml(i) {
   const v = (src, cls) => src ? `<video class="${cls}" data-src="${src}" muted loop playsinline preload="none"></video>` : `<div class="missing">${t('notyet')}</div>`;
   if (state.mode === 'wipe') {
     return `<div class="stage wipe"><div class="vbox single" style="--cut:50%">
-      ${v(i.before, 'v-before')}${v(i.after, 'v-after topv')}
-      <span class="tag b">${t('before')}</span><span class="tag a r">${t('after')}</span><div class="handle"></div></div></div>`;
+      ${v(baseSrc(i), 'v-before')}${v(i.after, 'v-after topv')}
+      <span class="tag b">${t(state.base)}</span><span class="tag a r">${t('after')}</span><div class="handle"></div></div></div>`;
   }
   return `<div class="stage">
-    <div class="vbox">${v(i.before, 'v-before')}<span class="tag b">${t('before')}</span></div>
+    <div class="vbox">${v(baseSrc(i), 'v-before')}<span class="tag b">${t(state.base)}</span></div>
     <div class="vbox">${v(i.after, 'v-after')}<span class="tag a">${t('after')}</span></div></div>`;
 }
 
@@ -181,11 +190,11 @@ function renderList() {
     const sub = zh ? i.nameEn : i.name;
     html += `<section class="card" data-stem="${i.stem}" id="${i.stem}">
       <div class="chead"><span class="idx">${String(n).padStart(3, '0')}</span><h3>${esc(name)}</h3><span class="en">${esc(sub)}</span>
-        <span class="stem"><a href="#${i.stem}">${esc(i.path)}</a>${i.frames ? ` · ${i.frames}f` : ''}</span></div>
+        <span class="stem"><a href="#${i.stem}">${esc(i.path)}</a> · ${baseFrames(i) ?? '–'}f → ${i.fAfter ?? '–'}f</span></div>
       ${(zh ? i.summary : i.summaryEn) ? `<div class="summary">${esc(zh ? i.summary : i.summaryEn)}</div>` : ''}
       ${stageHtml(i)}
       <div class="ctrl"><button class="pp">${t('pause')}</button><button class="fb">◀ 1f</button><button class="ff">1f ▶</button>
-        <input type="range" class="scrub" min="0" max="1000" value="0" /><span class="tc">0 / ${i.frames ?? '–'}f</span></div>
+        <input type="range" class="scrub" min="0" max="1000" value="0" /><span class="tc">0 / ${i.fAfter ?? baseFrames(i) ?? '–'}f</span></div>
       <div class="notes"><div class="iss"><h4>${t('issues')}</h4>${list(zh ? i.issues : (i.issuesEn.length ? i.issuesEn : i.issues))}</div>
         <div class="chg"><h4>${t('changes')}</h4>${list(zh ? i.changes : (i.changesEn.length ? i.changesEn : i.changes))}</div></div>
     </section>`;
@@ -203,6 +212,8 @@ function renderList() {
 function setupCard(card) {
   const a = card.querySelector('.v-after'), b = card.querySelector('.v-before');
   const master = a || b, slave = a && b ? b : null;
+  // 时长相同 → before 逐帧跟随 after；时长不同（第二轮改了节奏）→ 各自循环，进度条按比例同时定位
+  const sameLen = baseFrames(DATA.items.find(x => x.stem === card.dataset.stem)) === DATA.items.find(x => x.stem === card.dataset.stem).fAfter;
   card._vids = [a, b].filter(Boolean);
   card._playing = state.autoplay;
   const pp = card.querySelector('.pp'), scrub = card.querySelector('.scrub'), tc = card.querySelector('.tc');
@@ -211,12 +222,13 @@ function setupCard(card) {
   const playAll = () => { card._playing = true; setPP(); card._vids.forEach(v => { v.playbackRate = state.speed; v.play().catch(() => {}); }); };
   const pauseAll = () => { card._playing = false; setPP(); card._vids.forEach(v => v.pause()); };
   const seek = s => { card._vids.forEach(v => { if (v.readyState) v.currentTime = Math.max(0, Math.min(s, (v.duration || s) - 0.001)); }); };
+  const seekFrac = (fr, step) => card._vids.forEach(v => { if (!v.readyState || !v.duration) return; const tt = step != null ? v.currentTime + step : fr * v.duration; v.currentTime = Math.max(0, Math.min(tt, v.duration - 0.001)); });
   card._play = playAll; card._pause = pauseAll;
   pp.onclick = () => (card._playing ? pauseAll() : playAll());
   card.querySelectorAll('.vbox').forEach(vb => vb.addEventListener('click', ev => { if (!vb.querySelector('.handle')) pp.onclick(); }));
-  card.querySelector('.fb').onclick = () => { pauseAll(); seek((master?.currentTime || 0) - 1 / FPS); };
-  card.querySelector('.ff').onclick = () => { pauseAll(); seek((master?.currentTime || 0) + 1 / FPS); };
-  scrub.oninput = () => { pauseAll(); if (master?.duration) seek((scrub.value / 1000) * master.duration); };
+  card.querySelector('.fb').onclick = () => { pauseAll(); sameLen ? seek((master?.currentTime || 0) - 1 / FPS) : seekFrac(0, -1 / FPS); };
+  card.querySelector('.ff').onclick = () => { pauseAll(); sameLen ? seek((master?.currentTime || 0) + 1 / FPS) : seekFrac(0, 1 / FPS); };
+  scrub.oninput = () => { pauseAll(); if (master?.duration) sameLen ? seek((scrub.value / 1000) * master.duration) : seekFrac(scrub.value / 1000); };
   if (master) {
     const tick = () => {
       if (!card._active) return;
@@ -224,7 +236,7 @@ function setupCard(card) {
         scrub.value = Math.round((master.currentTime / master.duration) * 1000);
         tc.textContent = `${Math.round(master.currentTime * FPS)} / ${Math.round(master.duration * FPS)}f`;
       }
-      if (slave && slave.readyState && Math.abs(slave.currentTime - master.currentTime) > 1.5 / FPS) slave.currentTime = master.currentTime;
+      if (sameLen && slave && slave.readyState && Math.abs(slave.currentTime - master.currentTime) > 1.5 / FPS) slave.currentTime = master.currentTime;
       requestAnimationFrame(tick);
     };
     card._tick = tick;
@@ -261,6 +273,8 @@ function seg(id, key, cb) {
   });
 }
 seg('mode', 'mode', renderList);
+seg('base', 'base', () => { applyI18n(); renderList(); });
+document.getElementById('onlydone').onchange = e => { state.onlyDone = e.target.checked; renderList(); };
 seg('speed', 'speed', () => document.querySelectorAll('video').forEach(v => { v.playbackRate = state.speed; }));
 seg('lang', 'lang', () => { localStorage.setItem('sp-lang', state.lang); applyI18n(); renderCats(); renderList(); });
 document.getElementById('q').oninput = e => { state.q = e.target.value; renderList(); };
