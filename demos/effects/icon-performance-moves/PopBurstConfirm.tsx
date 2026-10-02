@@ -1,172 +1,236 @@
-// 爆花确认（pop-burst-confirm）——确认时刻的三连爆
-// 半屏大对勾 icon（圆底+勾）：先缩 0.6x 蓄力 3f → 弹 1.35x 过冲 → 落回 1x，
-// 释放帧同帧中心射出 10 根短线粒子（径向飞出后消失）+ 一圈描边圆环从
-// icon 边缘扩到 2.5 倍直径淡出；随后 "Deployed" 小标签弹出。
-// 节拍：0–20 静置（空心圆待确认）→ 20–23 缩 0.6x → 23–27 蓄力 3f →
-// 27 释放（勾画出+粒子+圆环）→ 27–44 过冲落回 → 42–52 标签弹出 → 55 后真静止 65f。
-// 帧确定，无随机源（粒子角度/长度/距离抖动用 sin 散列）。
+// 爆花确认（pop-burst-confirm）——确认时刻的三连爆：蓄力缩 → 弹大过冲 → 同帧炸粒子 + 扩散环。
 //
-// 质感升级：待确认态从"白底黑粗描边"改为安静的浅色凹槽圆 + 缓慢旋转的虚线进度环（读作"进行中"）；
-// 释放帧圆底同帧"通电"成翡翠绿渐变实心盘（顶部高光 + 两层软阴影，阴影随缩放抬升），白色对勾
-// 画出；10 根粒子改为两色（主色 / 浅薄荷）、长度与飞行距离按散列错落、尾部随速度收短的锥形线段；
-// 冲击环外再叠一层很淡的柔光环；释放帧背后一次极短的径向柔光（只给主角一次）；标签换成出版级
-// 深色胶囊（对勾图标 + Deployed + 等宽版本号），比 icon 晚 2f 带上浮弹出；全程柔光底 + 颗粒。
+// 第二轮重设计（石墨夜 · 一颗翡翠绿）：
+// - look = graphite（近单色暗场），唯一的颜色是成功那一刻"通电"的翡翠绿——之前全画面没有一点彩色，
+//   绿只在释放帧出现，颜色本身就是爆点。主角是一枚 380px 的部署状态盘（半屏特写）：
+//   待确认态 = 石墨凹盘 + 外圈白色进度环 + 盘心等宽大号百分比；释放态 = 翡翠绿釉面盘 + 白色粗对勾。
+// - 节奏「涨—缩—停—爆—落—亮字」：进度环 0–22f 加速冲到 100%（ease-in，越来越急，观众在等）→
+//   22–25f 盘子缩到 0.62x（exit）→ 停 3f 蓄力 → 28f 释放：5f 弹到 1.3x，再一记弹簧落回 1（damping 13，
+//   一次可见回弹）。粒子 / 冲击环 / 绿色泛光与释放同帧齐发（三件套同帧是"爆花"成立条件）。
+// - 粒子按空气阻力减速（指数衰减），线长 = 速度 × 系数：飞得快时是长划痕、慢下来收成短点，不是匀速平移；
+//   12 根白 / 绿两色交错，外圈再撒 10 颗细小火花点做"粒子细响"。
+// - 余波：盘子 40–62f 上移让位，标题「Live in production.」逐词从线下升起（120px / 700，句点是绿色），
+//   等宽副行 32px 交代服务名 / 版本 / 用时；地面一圈反光由冷白转绿。
+// - 镜头：释放帧整体 +2% 冲击推一下再回落（不抖），hold 段 1→1.02 极缓推进。
+//
+// 时间表（30fps，共 120f）：
+//   0–22    预备：进度环 82% → 100% 加速；盘心百分比滚动（第 1 帧画面里就有盘和环）
+//   22–28   蓄力：缩 0.62x（3f）+ 停 3f，百分比淡出
+//   28–48   主动作：弹 1.3x → 弹簧落回；粒子 18f / 冲击环 22f / 泛光 20f；对勾 30–40f 画出
+//   40–80   跟随：盘子上移让位（40–62f）、标题逐词升起（46f 起）、副行（60f 起）
+//   80–120  hold：极缓推进，尾帧是一张完整的"已上线"海报
 import React from 'react';
-import { useCurrentFrame, interpolate, Easing } from 'remotion';
-import { Backdrop, FONT, Grain, innerHighlight, softShadow } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, springAt, type } from '../../_fixtures/Look';
 
-const POP = 27; // 释放帧
 const DUR = 120;
 export const POP_BURST_CONFIRM_DURATION = DUR; // 4s
 
-const C0 = '#2fd27c'; // 成功主色（渐变亮端）
-const C1 = '#12a150'; // 成功主色（渐变暗端）
-const MINT = '#a6f0c6'; // 辅助：浅薄荷
-const clampX = { extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const };
-const hs = (n: number) => Math.abs(Math.sin(n * 12.9898) * 43758.5453) % 1; // sin 散列
+const L = LOOKS.graphite;
+const G0 = '#5ef2a6'; // 翡翠绿亮端（釉面顶）
+const G1 = '#10b765'; // 翡翠绿暗端（釉面底）
+const GLOW = '#2ee48a'; // 泛光 / 冲击环
+
+const POP = 28; // 释放帧
+const R = 190; // 盘半径（直径 380 = 半屏特写）
+const CX = 960;
+
+const hs = (n: number) => {
+  const x = Math.sin(n * 91.345 + 47.853) * 43758.5453;
+  return x - Math.floor(x);
+};
+const easeInProgress = bezier(0.5, 0, 0.9, 0.55); // 进度环：越来越急
+
+// 盘子缩放：蓄力 → 过冲 → 弹簧落回
+const discScale = (f: number) => {
+  if (f < 22) return 1;
+  if (f < 25) return mix(1, 0.62, ramp(f, 22, 3, EASE.exit));
+  if (f < POP) return 0.62;
+  if (f < POP + 5) return mix(0.62, 1.3, ramp(f, POP, 5, EASE.snappy));
+  return mix(1.3, 1, springAt(f, POP + 5, { damping: 13, stiffness: 210 }));
+};
 
 export const PopBurstConfirm: React.FC = () => {
   const f = useCurrentFrame();
 
-  // icon 缩放：蓄力→过冲→落回
-  const scale = (() => {
-    if (f <= 20) return 1;
-    if (f <= 23) return interpolate(f, [20, 23], [1, 0.6], { easing: Easing.in(Easing.quad) });
-    if (f <= POP) return 0.6;
-    if (f <= 33) return interpolate(f, [POP, 33], [0.6, 1.35], { easing: Easing.out(Easing.cubic) });
-    return interpolate(f, [33, 44], [1.35, 1], { extrapolateRight: 'clamp', easing: Easing.out(Easing.back(2)) });
-  })();
+  const s = discScale(f);
+  const progress = mix(0.82, 1, easeInProgress(Math.min(1, f / 22)));
+  const pct = Math.round(progress * 100);
+  const pendFade = 1 - ramp(f, POP - 1, 2, EASE.linear); // 待确认内容（百分比 / 进度环）释放前一帧才熄
+  const charge = ramp(f, 21, 7, EASE.out); // 蓄力：盘内泛起绿色，等着被点燃
+  const fill = ramp(f, POP, 3, EASE.out); // 釉面通电
+  const check = ramp(f, POP + 2, 10, EASE.snappy); // 对勾画出
 
-  // 圆底"通电"：释放帧起 4f 从凹槽浅色切到翡翠绿实心
-  const fill = interpolate(f, [POP, POP + 4], [0, 1], { ...clampX, easing: Easing.out(Easing.quad) });
-  // 对勾：释放帧起 8f 内画出（dashoffset 滑窗）
-  const checkT = interpolate(f, [POP, POP + 8], [0, 1], { ...clampX, easing: Easing.out(Easing.cubic) });
-  // 待确认进度环：缓慢旋转，蓄力时收紧、释放时消失
-  const spin = f * 3.2;
-  const pendOp = interpolate(f, [POP - 2, POP + 2], [1, 0], clampX);
+  // 盘子上移让位（为标题腾位置）
+  const lift = ramp(f, 40, 22, EASE.swift);
+  const CY = mix(500, 382, lift);
 
-  // 粒子：释放帧起 14f 径向飞出（幅度加码到 190px 保半屏可感）
-  const pt = interpolate(f, [POP, POP + 14], [0, 1], clampX);
-  const pe = Easing.out(Easing.cubic)(pt);
+  // 镜头：释放帧 +2% 冲击（6f 回落）+ hold 段极缓推进
+  const punch = f >= POP ? 0.02 * Math.exp(-(f - POP) / 4) * ramp(f, POP, 2, EASE.out) : 0;
+  const cam = 1 + punch + 0.02 * ramp(f, 46, DUR - 46, EASE.smooth);
 
-  // 圆环：释放帧起 20f 从 icon 边缘扩到 2.5 倍直径淡出
-  const rt = interpolate(f, [POP, POP + 20], [0, 1], clampX);
-  const re = Easing.out(Easing.cubic)(rt);
-  const ringR = 200 + 300 * re;
-  const ringO = 0.85 * (1 - rt);
-  const ringW = 16 - 12 * rt;
+  // 冲击环：盘缘 → 2.5 倍直径
+  const ringT = ramp(f, POP, 22, EASE.linear);
+  const ringR = mix(R * 1.05, R * 2.5, EASE.snappy(ringT));
+  // 泛光：只此一次
+  const bloom = f >= POP ? Math.exp(-(f - POP) / 9) * ramp(f, POP, 2, EASE.out) : 0;
+  // 地面反光：冷白 → 绿
+  const floorGreen = ramp(f, POP, 10, EASE.out);
 
-  // 释放柔光：6f 内亮起又散去（只此一次）
-  const bloom = interpolate(f, [POP, POP + 2, POP + 12], [0, 1, 0], clampX);
-
-  // 标签：42f 弹出（back 超调），比 icon 落回晚 2f
-  const tagT = interpolate(f, [42, 52], [0, 1], { ...clampX, easing: Easing.out(Easing.back(2.2)) });
-
-  const CX = 960;
-  const CY = 470;
-  const elev = 8 + 26 * Math.max(0, scale - 0.6); // 阴影随缩放抬升
+  // 粒子：阻力减速 pos = D(1 - e^{-t/τ})，速度 = D/τ · e^{-t/τ}
+  const pt = f - POP;
+  const TAU = 4.5;
+  const sparks = pt >= 0 && pt < 20 ? Array.from({ length: 12 }, (_, i) => {
+    const ang = ((i * 30 + 11 * (hs(i + 3) - 0.5)) * Math.PI) / 180;
+    const D = 170 + 120 * hs(i + 11);
+    const r0 = R * 1.12;
+    const d = r0 + D * (1 - Math.exp(-pt / TAU));
+    const v = (D / TAU) * Math.exp(-pt / TAU);
+    const len = Math.max(4, v * 2.1);
+    const w = i % 2 === 0 ? 9 : 6;
+    const op = 1 - ramp(pt, 8, 12, EASE.linear);
+    return { ang, d, len, w, op, c: i % 3 === 1 ? G0 : '#ffffff' };
+  }) : [];
+  const motes = pt >= 2 && pt < 30 ? Array.from({ length: 10 }, (_, i) => {
+    const ang = ((i * 36 + 18 + 14 * (hs(i + 40) - 0.5)) * Math.PI) / 180;
+    const D = 260 + 130 * hs(i + 50);
+    const t = pt - 2;
+    const d = R * 1.2 + D * (1 - Math.exp(-t / 7));
+    return { ang, d, r: 3 + 3 * hs(i + 60), op: (1 - ramp(t, 10, 18, EASE.linear)) * 0.9 };
+  }) : [];
 
   return (
-    <div style={{ width: 1920, height: 1080, position: 'relative', overflow: 'hidden', background: '#ecece9' }}>
-      <Backdrop tone="light" light={{ x: 0.5, y: 0.3 }} grain={0} vignette={0.14} />
+    <AbsoluteFill style={{ background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: 0.02 }} fill={null} horizon={0.8} intensity={0.75} />
 
-      {/* 释放柔光：主角背后一次 */}
-      {bloom > 0 && (
+      <AbsoluteFill style={{ transform: `scale(${cam})`, transformOrigin: `${CX}px 470px` }}>
+        {/* 地面反光：盘子正下方一圈椭圆光（冷白 → 翡翠绿），盘子上移时变淡 */}
         <div style={{
-          position: 'absolute', left: CX - 520, top: CY - 520, width: 1040, height: 1040, borderRadius: 520,
-          background: 'radial-gradient(circle, rgba(47,210,124,0.22) 0%, rgba(47,210,124,0.08) 35%, rgba(47,210,124,0) 65%)',
-          opacity: bloom,
+          position: 'absolute', left: CX - 520, top: 820, width: 1040, height: 150, borderRadius: '50%',
+          background: `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha('#d8dce4', 0.12 * (1 - floorGreen))} 0%, transparent 70%), ` +
+            `radial-gradient(ellipse 50% 50% at 50% 50%, ${alpha(GLOW, (0.2 + 0.25 * bloom) * floorGreen * (1 - 0.5 * lift))} 0%, transparent 70%)`,
         }} />
-      )}
 
-      {/* 扩散圆环（不随 icon 缩放）：主环 + 外层柔光环 */}
-      {rt > 0 && rt < 1 && (
-        <svg width={1400} height={1400} style={{ position: 'absolute', left: CX - 700, top: CY - 700 }}>
-          <circle cx={700} cy={700} r={ringR + 10} fill="none" stroke={C0} strokeWidth={ringW * 3} opacity={ringO * 0.18} />
-          <circle cx={700} cy={700} r={ringR} fill="none" stroke={C1} strokeWidth={ringW} opacity={ringO} />
-        </svg>
-      )}
+        {/* 释放泛光：盘后一次 */}
+        {bloom > 0.01 && (
+          <div style={{
+            position: 'absolute', left: CX - 640, top: CY - 640, width: 1280, height: 1280, borderRadius: '50%',
+            background: `radial-gradient(circle, ${alpha(GLOW, 0.5 * bloom)} 0%, ${alpha(GLOW, 0.16 * bloom)} 30%, transparent 62%)`,
+          }} />
+        )}
+        {/* 落定后的常驻绿色余光（很淡，让主角一直有光） */}
+        <div style={{
+          position: 'absolute', left: CX - 520, top: CY - 520, width: 1040, height: 1040, borderRadius: '50%', opacity: fill,
+          background: `radial-gradient(circle, ${alpha(GLOW, 0.13)} 0%, ${alpha(GLOW, 0.04)} 38%, transparent 64%)`,
+        }} />
 
-      {/* 粒子：10 根锥形短线径向飞出，角度/距离/长度按散列错落，速度降下来时尾巴收短 */}
-      {pt > 0 && pt < 1 && (
-        <svg width={1400} height={1400} style={{ position: 'absolute', left: CX - 700, top: CY - 700 }}>
-          {Array.from({ length: 10 }).map((_, i) => {
-            const ang = ((i * 36 + 9 * Math.sin(i * 7.31)) * Math.PI) / 180;
-            const reach = 190 * (0.8 + 0.4 * hs(i + 1));
-            const d = 210 + reach * pe;
-            const vel = 1 - pe; // 归一化速度
-            const len = (30 + 36 * hs(i + 7)) * (0.5 + 0.5 * vel) * (1 - pt * 0.5);
-            const w = (i % 3 === 0 ? 14 : 10) * (1 - pt * 0.5);
-            const x1 = 700 + Math.cos(ang) * (d - len);
-            const y1 = 700 + Math.sin(ang) * (d - len);
-            const x2 = 700 + Math.cos(ang) * d;
-            const y2 = 700 + Math.sin(ang) * d;
+        {/* 冲击环 + 粒子 + 火花点 */}
+        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+          {ringT > 0 && ringT < 1 && (
+            <g>
+              <circle cx={CX} cy={CY} r={ringR} fill="none" stroke={GLOW} strokeWidth={mix(26, 2, EASE.out(ringT))} opacity={0.18 * (1 - ringT)} />
+              <circle cx={CX} cy={CY} r={ringR} fill="none" stroke="#c9ffe2" strokeWidth={mix(10, 1, EASE.out(ringT))} opacity={0.9 * (1 - ringT) ** 1.4} />
+            </g>
+          )}
+          {sparks.map((p, i) => {
+            const cx = Math.cos(p.ang), sy = Math.sin(p.ang);
             return (
-              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke={i % 5 < 2 ? MINT : C1} strokeWidth={w} strokeLinecap="round" opacity={1 - pt * pt} />
+              <line key={i} x1={CX + cx * (p.d - p.len)} y1={CY + sy * (p.d - p.len)} x2={CX + cx * p.d} y2={CY + sy * p.d}
+                stroke={p.c} strokeWidth={p.w} strokeLinecap="round" opacity={p.op} />
             );
           })}
+          {motes.map((m, i) => (
+            <circle key={i} cx={CX + Math.cos(m.ang) * m.d} cy={CY + Math.sin(m.ang) * m.d} r={m.r} fill={i % 2 ? G0 : '#ffffff'} opacity={m.op} />
+          ))}
         </svg>
-      )}
 
-      {/* 主体 icon：圆底 + 对勾（半屏特写 ~480px） */}
-      <div style={{
-        position: 'absolute', left: CX - 240, top: CY - 240, width: 480, height: 480,
-        transform: `scale(${scale})`, transformOrigin: '50% 50%',
-      }}>
-        {/* 待确认态：浅色凹槽圆 */}
-        <div style={{
-          position: 'absolute', left: 50, top: 50, width: 380, height: 380, borderRadius: 190,
-          background: 'linear-gradient(180deg, #f2f2ef 0%, #e6e6e2 100%)',
-          boxShadow: 'inset 0 3px 8px rgba(20,22,28,0.10), inset 0 -1px 0 rgba(255,255,255,0.9), 0 1px 0 rgba(255,255,255,0.8)',
-        }} />
-        {/* 释放后：翡翠绿实心盘（顶部高光 + 两层软阴影） */}
-        <div style={{
-          position: 'absolute', left: 50, top: 50, width: 380, height: 380, borderRadius: 190, overflow: 'hidden',
-          opacity: fill, transform: `scale(${0.92 + 0.08 * fill})`,
-          background: `linear-gradient(160deg, ${C0} 0%, ${C1} 100%)`,
-          boxShadow: `${innerHighlight(0.45)}, inset 0 -8px 18px rgba(0,70,30,0.25), ${softShadow(elev, { color: '#06301a', strength: 1.4 })}`,
-        }}>
+        {/* 主角：状态盘 */}
+        <div style={{ position: 'absolute', left: CX - 260, top: CY - 260, width: 520, height: 520, transform: `scale(${s})` }}>
+          {/* 待确认：石墨凹盘 */}
           <div style={{
-            position: 'absolute', left: 30, top: -120, width: 320, height: 300, borderRadius: '50%',
-            background: 'radial-gradient(ellipse at 45% 65%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 65%)',
+            position: 'absolute', left: 260 - R, top: 260 - R, width: R * 2, height: R * 2, borderRadius: '50%',
+            background: 'radial-gradient(circle at 50% 30%, #25272c 0%, #17181b 70%, #121315 100%)',
+            boxShadow: `inset 0 2px 0 rgba(255,255,255,0.06), inset 0 -10px 30px rgba(0,0,0,0.5), inset 0 0 ${60 * charge}px ${alpha(GLOW, 0.55 * charge)}, ` +
+              `0 0 0 1px ${alpha(charge > 0 ? GLOW : '#ffffff', 0.07 + 0.3 * charge)}, 0 0 ${50 * charge}px ${alpha(GLOW, 0.3 * charge)}, 0 40px 80px -30px rgba(0,0,0,0.9)`,
           }} />
-        </div>
-        <svg width={480} height={480} viewBox="0 0 480 480" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-          {/* 待确认：虚线进度环，缓慢旋转 */}
-          {pendOp > 0 && (
-            <circle cx={240} cy={240} r={206} fill="none" stroke="#9b9da3" strokeWidth={8} strokeLinecap="round"
-              strokeDasharray="2 24" opacity={0.75 * pendOp} transform={`rotate(${spin} 240 240)`} />
-          )}
-          {checkT > 0 && (
-            <path d="M 150 245 L 215 310 L 340 175" fill="none" stroke="#ffffff" strokeWidth={36}
-              strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - checkT}
-              style={{ filter: 'drop-shadow(0 4px 6px rgba(0,60,25,0.25))' }} />
-          )}
-        </svg>
-      </div>
-
-      {/* Deployed 标签：深色胶囊 + 对勾 + 版本号 */}
-      {tagT > 0 && (
-        <div style={{
-          position: 'absolute', left: CX, top: CY + 300, display: 'flex', alignItems: 'center', gap: 14, whiteSpace: 'nowrap',
-          transform: `translate(-50%, ${(1 - Math.min(1, tagT)) * 16}px) scale(${tagT})`, transformOrigin: '50% 0%',
-          opacity: Math.min(1, tagT * 1.6), padding: '16px 26px 16px 20px', borderRadius: 40,
-          background: 'linear-gradient(180deg, #24262d 0%, #17181d 100%)', color: '#ffffff', fontFamily: FONT.sans,
-          boxShadow: `${innerHighlight(0.1)}, ${softShadow(14, { strength: 1.3 })}`,
-        }}>
-          <svg width={30} height={30} viewBox="0 0 30 30">
-            <circle cx={15} cy={15} r={15} fill={C1} />
-            <path d="M9 15.5l4 4 8-9" fill="none" stroke="#fff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+          {/* 通电：翡翠绿釉面盘（顶部高光 + 底部暗沿 + 接触影） */}
+          <div style={{
+            position: 'absolute', left: 260 - R, top: 260 - R, width: R * 2, height: R * 2, borderRadius: '50%', overflow: 'hidden',
+            opacity: fill, transform: `scale(${0.9 + 0.1 * fill})`,
+            background: `radial-gradient(circle at 50% 22%, ${G0} 0%, #27d47f 48%, ${G1} 86%, #0c9a55 100%)`,
+            boxShadow: `inset 0 3px 0 rgba(255,255,255,0.45), inset 0 -16px 36px rgba(0,60,30,0.45), 0 30px 70px -20px ${alpha('#00331a', 0.9)}`,
+          }}>
+            {/* 柔和顶光（closest-side 收到 0，不留硬边）+ 底部一道反射光弧 */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse closest-side at 50% 14%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.08) 60%, rgba(255,255,255,0) 100%)',
+            }} />
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              boxShadow: `inset 0 -3px 0 ${alpha('#b8ffd9', 0.35)}, inset 0 0 0 1.5px ${alpha('#c9ffe2', 0.35)}`,
+            }} />
+          </div>
+          <svg width={520} height={520} viewBox="0 0 520 520" style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+            {pendFade > 0 && (
+              <g opacity={pendFade}>
+                {/* 进度环：轨道 + 白色进度（从 12 点顺时针） */}
+                <circle cx={260} cy={260} r={232} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={10} />
+                <circle cx={260} cy={260} r={232} fill="none" stroke="#f4f4f2" strokeWidth={10} strokeLinecap="round"
+                  pathLength={1} strokeDasharray={`${progress} 1`} transform="rotate(-90 260 260)"
+                  style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.35))' }} />
+                {/* 进度头：一颗发光亮点领跑 */}
+                <circle cx={260 + 232 * Math.sin(progress * Math.PI * 2)} cy={260 - 232 * Math.cos(progress * Math.PI * 2)} r={9} fill="#ffffff"
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.9)) drop-shadow(0 0 22px rgba(255,255,255,0.5))' }} />
+              </g>
+            )}
+            {check > 0 && (
+              <path d="M 172 266 L 233 326 L 352 200" fill="none" stroke="#ffffff" strokeWidth={38}
+                strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - check}
+                style={{ filter: 'drop-shadow(0 6px 10px rgba(0,70,30,0.35))' }} />
+            )}
           </svg>
-          <span style={{ fontSize: 40, fontWeight: 650, letterSpacing: '-0.02em' }}>Deployed</span>
-          <span style={{
-            fontFamily: FONT.mono, fontSize: 24, color: 'rgba(255,255,255,0.55)', padding: '4px 10px', borderRadius: 8,
-            background: 'rgba(255,255,255,0.08)',
-          }}>v2.14.0</span>
+          {/* 盘心百分比（待确认态） */}
+          {pendFade > 0 && (
+            <div style={{
+              position: 'absolute', left: 0, right: 0, top: 196, textAlign: 'center', opacity: pendFade,
+              fontFamily: FONT.mono, fontSize: 92, fontWeight: 500, color: L.ink, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums',
+            }}>
+              {pct}<span style={{ fontSize: 46, color: L.ink3, marginLeft: 4 }}>%</span>
+            </div>
+          )}
         </div>
-      )}
-      <Grain opacity={0.045} />
-    </div>
+
+        {/* 待确认说明：盘下等宽一行，蓄力时淡出 */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 800, textAlign: 'center', opacity: pendFade * ramp(f, 0, 8, EASE.out),
+          fontFamily: FONT.mono, fontSize: 32, color: L.ink3, letterSpacing: '0.02em',
+        }}>
+          deploying orrery-api<span style={{ opacity: Math.floor(f / 6) % 2 ? 1 : 0.25 }}>_</span>
+        </div>
+
+        {/* 标题：逐词从线下升起；句点是唯一的绿 */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 650, textAlign: 'center' }}>
+          <TextReveal
+            text="Live in production"
+            by="word" variant="rise" start={46} each={20} gap={4}
+            style={{ ...type(120, 700), letterSpacing: '-0.03em', wordSpacing: '0.08em', color: L.ink }}
+          />
+          {/* 句点：标题落定后单独"落"进来（绿色小弹一下，呼应爆点） */}
+          <span style={{
+            ...type(120, 700), color: G0, display: 'inline-block',
+            opacity: ramp(f, 64, 3, EASE.linear),
+            transform: `translateY(${mix(-0.5, 0, ramp(f, 64, 12, EASE.overshoot)).toFixed(3)}em)`,
+          }}>.</span>
+        </div>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 812, textAlign: 'center' }}>
+          <TextReveal
+            text="orrery-api  ·  v4.2.0  ·  shipped in 38s"
+            by="word" variant="blur" start={62} each={16} gap={2}
+            style={{ fontFamily: FONT.mono, fontSize: 32, fontWeight: 450, color: L.ink2, letterSpacing: '0.01em' }}
+          />
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
   );
 };

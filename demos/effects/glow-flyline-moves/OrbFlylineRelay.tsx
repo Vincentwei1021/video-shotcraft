@@ -1,33 +1,39 @@
-// orb-flyline-relay｜光斑飞线接力
-// 组合变异 = glow-orb-ambient + flyline-arc。
-// 近黑底（#1d1d1b）+ 两团 blur(100px) 灰亮光斑多正弦漂移当氛围层；
-// 三张深色描边卡三角布局、初始半暗(0.55)。飞线 A→B 落点帧：卡 B 亮起
-// (opacity→1 + 描边亮白脉冲) 且邻近光斑同帧涨亮一拍（组合共振证明点）；
-// 线二 B→C 接力，C 亮起收束。光斑 95–120f out-sine 减速收敛，
-// 全部动画 f120 前结束，末 35f 真静止。
+// orb-flyline-relay｜光斑飞线接力——氛围层（光斑）与事件层（飞线）同帧共振：飞线落点那一帧，
+// 节点背后的光斑一起涨亮一拍，背景给前景"搭腔"。
 //
-// 质感升级：底色换带冷色相的近黑 + 点阵台面；光斑由灰白改为靛蓝/淡紫克制色对（峰值、漂移、
-// surge 节拍不变）；三张灰条骨架卡换成一条数据管线的三站（Sources → Transform → Warehouse，
-// 图标 + 指标 + 状态），半暗→点亮时状态点与指标一起"通电"；飞线改为白芯 + 靛蓝辉光衬底、
-// butt 端分段不再叠出珠串，光头带彗尾光晕；落点帧加一圈扩散冲击环（与卡脉冲、光斑 surge 同帧）；
-// 暗角 + 颗粒防色带。
-import React, { useId } from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
-import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+// 第二轮重设计（午夜接力 · 三颗玻璃节点）：
+// - look = midnight（深蓝夜 · 电光蓝 · 青）。三张灰卡换成一条语音 AI 工作流的三颗 240px 玻璃节点
+//   「Listen → Understand → Act」（产品名 Tessel），横向起伏排布（中间高、两边低），飞线是节点之间的
+//   一跳一跳的弧——读作"接力"而不是连线图。每颗节点背后各有一团 720–820px 的光斑（电光蓝 / 青 / 堇蓝），
+//   连同节点一起轻微漂移。
+// - 共振（组合命门）：飞线落点帧 = 节点点亮帧 = 背后光斑 surge 起点帧（同一个常量），光斑 5f 涨到
+//   1+1.6 倍亮度并放大 12%、15f 消散；节点同帧描边脉冲 + 一圈冲击环。错开 ≥2f 就读不出"搭腔"。
+// - 飞线：白芯 + 青蓝两层辉光，亮头领跑带彗尾，生长曲线起步蓄力、进站减速；到站 4f 后整条线 14f 消散
+//   成一串细点虚线（能量已经交出去，只留下路径），与 flyline-arc 的"常驻线"区分。
+// - 收束：C 点亮后 72px 标题「Say it once. Tessel does the rest.」逐词升起（Tessel 用青色），
+//   光斑 110–140f out-sine 收敛冻结，末 25f 真静止。
+// - 镜头：全程 1→1.04 极缓推进，焦点随接力从 A 漂到 C（起止无速度突变）。
+//
+// 时间表（30fps，共 165f）：
+//   0–20     光斑亮起，三颗节点错峰升起（0 / 4 / 8f）；A 10f 点亮（自带光斑）
+//   22–48    线 1 A→B（26f）
+//   48       B 点亮 = B 光斑 surge（同帧）
+//   58–82    线 2 B→C（24f）
+//   82       C 点亮 = C 光斑 surge（同帧）
+//   92–122   标题逐词升起；两条线已消散为细点虚线
+//   110–140  光斑漂移 out-sine 收敛冻结
+//   140–165  真静止 hold
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, type } from '../../_fixtures/Look';
 
-export const ORB_FLYLINE_RELAY_DURATION = 155; // ~5.2s：动作 f98 前结束、光斑 f120 冻结、末 35f 真静止
+export const ORB_FLYLINE_RELAY_DURATION = 165; // 5.5s：动作 f98 前结束、光斑 f140 冻结、末 25f 真静止
 
-// 库内标准伪随机（帧确定）
-const h = (n: number) => {
-  const s = Math.sin(n * 127.3) * 43758.5453;
-  return s - Math.floor(s);
-};
-
+const L = LOOKS.midnight;
 const TAU = Math.PI * 2;
 
 type Pt = { x: number; y: number };
-
-// 手写 cubic bezier 采样
 const bez = (p0: Pt, p1: Pt, p2: Pt, p3: Pt, t: number): Pt => {
   const u = 1 - t;
   return {
@@ -35,295 +41,200 @@ const bez = (p0: Pt, p1: Pt, p2: Pt, p3: Pt, t: number): Pt => {
     y: u * u * u * p0.y + 3 * u * u * t * p1.y + 3 * u * t * t * p2.y + t * t * t * p3.y,
   };
 };
-
-const N = 100;
-
-// ===== 布局：三张 420×250 深色卡呈三角 =====
-const CARD_W = 420;
-const CARD_H = 250;
-const CARDS = {
-  A: { x: 230, y: 170 },   // 左上（center 440, 295）
-  B: { x: 1270, y: 300 },  // 右中（center 1480, 425）
-  C: { x: 700, y: 740 },   // 下中（center 910, 865）
+const h = (n: number) => {
+  const s = Math.sin(n * 127.3) * 43758.5453;
+  return s - Math.floor(s);
 };
-const center = (c: { x: number; y: number }) => ({ x: c.x + CARD_W / 2, y: c.y + CARD_H / 2 });
+const grow = bezier(0.45, 0, 0.2, 1);
 
-// ===== 光斑（氛围层）=====
-type Orb = {
-  size: number; peak: number;
-  bx: number; by: number;
-  p1: number; p2: number;
-  ax1: number; ax2: number; ay1: number; ay2: number;
-  seed: number;
-  surgeAt: number; // 与哪个落点帧共振
-  rgb: string; // 光色
-};
-const ORBS: Orb[] = [
-  // 邻近卡 B —— 线1落点(f42)同帧涨亮
-  { size: 720, peak: 0.26, bx: 1500, by: 330, p1: 104, p2: 138, ax1: 130, ax2: 95, ay1: 120, ay2: 92, seed: 1, surgeAt: 42, rgb: '128,138,255' },
-  // 邻近卡 C —— 线2落点(f76)同帧涨亮
-  { size: 640, peak: 0.2, bx: 900, by: 830, p1: 122, p2: 94, ax1: 125, ax2: 88, ay1: 128, ay2: 90, seed: 2, surgeAt: 76, rgb: '178,150,245' },
+// 漂移时间：0–110 同速，110–140 out-sine 收敛（起始斜率 = 1），之后冻结
+const T0 = 110, TS = 30;
+const drift = (f: number) => (f <= T0 ? f : T0 + (2 * TS / Math.PI) * Math.sin((Math.PI / 2) * Math.min(1, (f - T0) / TS)));
+
+// ───────────── 节点 ─────────────
+const R = 120;
+const LIT_B = 48; // 线 1 落点 = B 点亮 = B 光斑 surge
+const LIT_C = 82; // 线 2 落点 = C 点亮 = C 光斑 surge
+
+type NodeDef = { x: number; y: number; label: string; sub: string; litAt: number; inAt: number; orb: string; orbSize: number; seed: number; icon: React.ReactNode };
+const ICON_STROKE = { fill: 'none', strokeWidth: 7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+const NODES: NodeDef[] = [
+  {
+    x: 400, y: 470, label: 'Listen', sub: 'Stand-up · 14 min', litAt: 10, inAt: 0, orb: '#3d63ff', orbSize: 820, seed: 1,
+    icon: <g {...ICON_STROKE}><rect x={-18} y={-44} width={36} height={60} rx={18} /><path d="M-34 0 C -34 22 -18 34 0 34 C 18 34 34 22 34 0 M0 34 V48" /></g>,
+  },
+  {
+    x: 960, y: 380, label: 'Understand', sub: '3 decisions · 5 tasks', litAt: LIT_B, inAt: 4, orb: L.accent2, orbSize: 760, seed: 2,
+    icon: <g {...ICON_STROKE}><path d="M0 -44 C 4 -14 14 -4 44 0 C 14 4 4 14 0 44 C -4 14 -14 4 -44 0 C -14 -4 -4 -14 0 -44 Z" /><path d="M30 -38 v14 M23 -31 h14" /></g>,
+  },
+  {
+    x: 1520, y: 470, label: 'Act', sub: 'Sent to #launch', litAt: LIT_C, inAt: 8, orb: '#7f74ff', orbSize: 720, seed: 3,
+    icon: <g {...ICON_STROKE}><path d="M-40 4 L 38 -34 L 14 40 L 2 12 Z M2 12 L 38 -34" /></g>,
+  },
 ];
 
-const orbPos = (o: Orb, t: number) => {
-  const f1 = h(o.seed * 7 + 1) * TAU;
-  const f2 = h(o.seed * 7 + 2) * TAU;
-  const f3 = h(o.seed * 7 + 3) * TAU;
-  const f4 = h(o.seed * 7 + 4) * TAU;
-  const x = o.bx + o.ax1 * Math.sin((TAU * t) / o.p1 + f1) + o.ax2 * Math.sin((TAU * t) / o.p2 + f2);
-  const y = o.by + o.ay1 * Math.sin((TAU * t) / o.p2 + f3) + o.ay2 * Math.sin((TAU * t) / o.p1 + f4);
-  return { x, y };
-};
+// 涨亮一拍：5f out 起升，15f 消散
+const surge = (f: number, at: number) => (f < at ? 0 : f <= at + 5 ? ramp(f, at, 5, EASE.out) : 1 - ramp(f, at + 5, 15, EASE.swift));
 
-// 涨亮一拍：起升 5f out-cubic，消散 15f 线性 → 落点帧 +20f 内结束
-const surge = (frame: number, at: number) => {
-  if (frame < at || frame > at + 20) return 0;
-  return frame <= at + 5
-    ? interpolate(frame, [at, at + 5], [0, 1], {
-        easing: Easing.out(Easing.cubic),
-        extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-      })
-    : interpolate(frame, [at + 5, at + 20], [1, 0], {
-        extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-      });
-};
+const edge = (n: NodeDef, deg: number): Pt => ({ x: n.x + R * Math.cos((deg * Math.PI) / 180), y: n.y + R * Math.sin((deg * Math.PI) / 180) });
 
-// ===== 发光飞线：亮头领跑 + 渐隐尾，到达后整线线性消散并摘罩 =====
-const Flyline: React.FC<{
-  frame: number;
-  start: number; // 生长起始帧
-  haloId: string; // 光头径向渐变 ID（父组件按实例生成）
-  p0: Pt; p1: Pt; p2: Pt; p3: Pt;
-}> = ({ frame, start, haloId, p0, p1, p2, p3 }) => {
-  const DUR = 24;      // 生长
-  const HOLD = 4;      // 到达后停一拍
-  const FADE = 14;     // 消散（线性，帧时间解耦）
-  if (frame < start || frame >= start + DUR + HOLD + FADE) return null; // 条件挂载=摘罩
+const LINES = [
+  { start: LIT_B - 26, dur: 26, p0: edge(NODES[0], -48), p3: edge(NODES[1], 200), lift: 170 },
+  { start: LIT_C - 24, dur: 24, p0: edge(NODES[1], -20), p3: edge(NODES[2], 228), lift: 170 },
+].map((l) => {
+  const dx = l.p3.x - l.p0.x;
+  const top = Math.min(l.p0.y, l.p3.y) - l.lift;
+  return { ...l, p1: { x: l.p0.x + dx * 0.22, y: top }, p2: { x: l.p0.x + dx * 0.78, y: top } };
+});
 
-  const e = interpolate(frame, [start, start + DUR], [0, 1], {
-    easing: Easing.out(Easing.cubic),
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
-  const growing = frame < start + DUR;
-  const fade = interpolate(frame, [start + DUR + HOLD, start + DUR + HOLD + FADE], [1, 0], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
-
+const N = 80;
+const Flyline: React.FC<{ f: number; ln: typeof LINES[number] }> = ({ f, ln }) => {
+  const { start, dur, p0, p1, p2, p3 } = ln;
+  if (f < start) return null;
+  const e = grow(Math.min(1, (f - start) / dur));
+  const growing = f < start + dur;
+  const fade = 1 - ramp(f, start + dur + 4, 14, EASE.swift); // 到站 4f 后整条消散
+  const dots = ramp(f, start + dur + 6, 14, EASE.out); // 留下细点虚线路径
   const pts: Pt[] = [];
-  const nDrawn = Math.max(2, Math.ceil(e * N) + 1);
-  for (let i = 0; i < nDrawn; i++) {
-    const t = Math.min(i / N, e);
-    pts.push(bez(p0, p1, p2, p3, t));
-  }
+  const n = Math.max(2, Math.ceil(e * N) + 1);
+  for (let i = 0; i < n; i++) pts.push(bez(p0, p1, p2, p3, Math.min(i / N, e)));
   const head = bez(p0, p1, p2, p3, e);
   pts[pts.length - 1] = head;
-
   const poly = pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
-  // 亮头暗尾：段 opacity 随离头距离衰减（渐隐尾）
   const segs = [];
-  for (let i = 0; i < pts.length - 1; i++) {
-    const tSeg = Math.min(i / N, e) / Math.max(e, 0.001); // 0 尾 → 1 头
-    const grad = 0.12 + 0.88 * tSeg * tSeg;
-    segs.push(
-      <line
-        key={i}
-        x1={pts[i].x} y1={pts[i].y} x2={pts[i + 1].x} y2={pts[i + 1].y}
-        stroke="#f6f6ff" strokeWidth={3.5} strokeLinecap="butt"
-        strokeOpacity={grad * fade}
-      />
-    );
+  if (fade > 0) {
+    for (let i = 0; i < pts.length - 1; i++) {
+      const k = Math.min(i / N, e) / Math.max(e, 0.001);
+      segs.push(<line key={i} x1={pts[i].x} y1={pts[i].y} x2={pts[i + 1].x} y2={pts[i + 1].y} stroke="#f2f7ff" strokeWidth={3.2} strokeLinecap="butt" strokeOpacity={(0.12 + 0.88 * k * k) * fade} />);
+    }
   }
-  // 彗尾：光头后方一小段加粗的亮段（只在生长期）
-  const tailFrom = Math.max(0, pts.length - 9);
-  const comet = pts.slice(tailFrom).map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
+  const comet = pts.slice(Math.max(0, pts.length - 9)).map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const full = Array.from({ length: 23 }, (_, i) => bez(p0, p1, p2, p3, (i + 1) / 24));
   return (
     <g>
-      {/* 靛蓝辉光衬底：宽幅低透明 + 次宽中透明两层（暗底上读作发光而不是灰边） */}
-      <polyline points={poly} fill="none" stroke="rgb(128,138,255)" strokeWidth={18} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.10 * fade} />
-      <polyline points={poly} fill="none" stroke="rgb(150,160,255)" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.22 * fade} />
-      {segs}
-      {/* 亮点头领跑 + 彗尾：仅生长期挂载 */}
+      {dots > 0 && full.map((p, i) => <circle key={`d${i}`} cx={p.x} cy={p.y} r={2.6} fill={L.accent} opacity={dots * 0.55} />)}
+      {fade > 0 && (
+        <g>
+          <polyline points={poly} fill="none" stroke={L.accent} strokeWidth={20} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.12 * fade} />
+          <polyline points={poly} fill="none" stroke={L.accent2} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.3 * fade} />
+          {segs}
+        </g>
+      )}
       {growing && (
         <g>
-          <polyline points={comet} fill="none" stroke="#ffffff" strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.55} />
-          <circle cx={head.x} cy={head.y} r={40} fill={`url(#${haloId})`} />
-          <circle cx={head.x} cy={head.y} r={7} fill="#ffffff" />
+          <polyline points={comet} fill="none" stroke="#ffffff" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" strokeOpacity={0.6} />
+          <circle cx={head.x} cy={head.y} r={44} fill="url(#relayHalo)" />
+          <circle cx={head.x} cy={head.y} r={7.5} fill="#ffffff" />
         </g>
       )}
     </g>
   );
 };
 
-// ===== 管线三站：半暗 → 落点帧亮起 + 描边亮白脉冲 =====
-const STATIONS: Record<number, { title: string; sub: string; value: string; unit: string; icon: string }> = {
-  1: { title: 'Sources', sub: '14 connectors', value: '12.4k', unit: 'events / s', icon: 'M3 4.5h10M3 8h10M3 11.5h6' },
-  2: { title: 'Transform', sub: 'dbt · 38 models', value: '212', unit: 'ms p95', icon: 'M4 3v4.5a2 2 0 0 0 2 2h6M9.5 7 12 9.5 9.5 12' },
-  3: { title: 'Warehouse', sub: 'us-east · 3 replicas', value: '4.8', unit: 'TB synced', icon: 'M3 4.5c0-1 2.2-1.8 5-1.8s5 .8 5 1.8v7c0 1-2.2 1.8-5 1.8s-5-.8-5-1.8zM3 4.5c0 1 2.2 1.8 5 1.8s5-.8 5-1.8M3 8c0 1 2.2 1.8 5 1.8s5-.8 5-1.8' },
-};
-
-const DarkCard: React.FC<{
-  frame: number;
-  litAt: number; // 亮起帧（Infinity = 一直半暗；A 用 8 表示开场自亮）
-  x: number; y: number; seed: number;
-}> = ({ frame, litAt, x, y, seed }) => {
-  const lit = interpolate(frame, [litAt, litAt + 8], [0, 1], {
-    easing: Easing.out(Easing.cubic),
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
-  const op = 0.55 + 0.45 * lit;
-  // 描边亮白脉冲：起升 6f out-cubic → 消散 16f 线性，残余 0.3 常量
-  const pulse =
-    frame < litAt
-      ? 0
-      : frame <= litAt + 6
-        ? interpolate(frame, [litAt, litAt + 6], [0, 1], {
-            easing: Easing.out(Easing.cubic),
-            extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-          })
-        : interpolate(frame, [litAt + 6, litAt + 22], [1, 0.3], {
-            extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-          });
-  const st = STATIONS[seed];
-  const ring = `rgba(${Math.round(255 - 60 * (1 - pulse))},${Math.round(255 - 50 * (1 - pulse))},255,${(0.08 + 0.62 * pulse).toFixed(3)})`;
-  const glow = pulse > 0 ? `, 0 0 ${(28 * pulse).toFixed(1)}px ${(4 * pulse).toFixed(1)}px rgba(150,160,255,${(0.32 * pulse).toFixed(3)})` : '';
+const Node: React.FC<{ f: number; n: NodeDef; ox: number; oy: number }> = ({ f, n, ox, oy }) => {
+  const enter = ramp(f, n.inAt, 22, EASE.snappy);
+  const lit = ramp(f, n.litAt, 8, EASE.out);
+  const pulse = f < n.litAt ? 0 : f <= n.litAt + 6 ? ramp(f, n.litAt, 6, EASE.out) : mix(1, 0.35, ramp(f, n.litAt + 6, 16, EASE.out));
+  const ring = n.litAt > 20 ? ramp(f, n.litAt, 20, EASE.linear) : 0;
+  const x = n.x + ox, y = n.y + oy + (1 - enter) * 40;
+  const c = n.orb;
   return (
-    <div
-      style={{
-        position: 'absolute', left: x, top: y, width: CARD_W, height: CARD_H,
-        boxSizing: 'border-box', borderRadius: 16, opacity: op, overflow: 'hidden',
-        background: 'linear-gradient(180deg, #1d1e25 0%, #15161b 100%)',
-        boxShadow: `inset 0 0 0 1px ${ring}, inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 4px rgba(0,0,0,0.45), 0 26px 50px -18px rgba(0,0,0,0.75)${glow}`,
-        padding: '24px 26px', display: 'flex', flexDirection: 'column', fontFamily: FONT.sans,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ position: 'absolute', left: 0, top: 0, opacity: enter }}>
+      {/* 冲击环 */}
+      {ring > 0 && ring < 1 && (
         <div style={{
-          width: 34, height: 34, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: `rgba(128,136,240,${(0.06 + 0.1 * lit).toFixed(3)})`, boxShadow: `inset 0 0 0 1px rgba(128,136,240,${(0.12 + 0.16 * lit).toFixed(3)})`,
+          position: 'absolute', left: x, top: y, width: 0, height: 0,
         }}>
-          <svg width={17} height={17} viewBox="0 0 16 16" fill="none" stroke={lit > 0.5 ? '#a3aaff' : '#6f7280'} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-            <path d={st.icon} />
-          </svg>
+          <div style={{
+            position: 'absolute', left: -R * mix(1, 2.3, EASE.snappy(ring)), top: -R * mix(1, 2.3, EASE.snappy(ring)),
+            width: 2 * R * mix(1, 2.3, EASE.snappy(ring)), height: 2 * R * mix(1, 2.3, EASE.snappy(ring)), borderRadius: '50%',
+            border: `${mix(4, 1, ring).toFixed(2)}px solid ${alpha('#e9f6ff', 0.8 * (1 - ring))}`, boxSizing: 'border-box',
+          }} />
         </div>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#ececf0', letterSpacing: '-0.01em' }}>{st.title}</div>
-          <div style={{ fontSize: 13, color: '#7a7d87', marginTop: 3 }}>{st.sub}</div>
-        </div>
-        {/* 状态点：亮起时"通电" */}
-        <div style={{
-          marginLeft: 'auto', width: 9, height: 9, borderRadius: 5,
-          background: lit > 0.02 ? `rgba(154,161,255,${(0.35 + 0.65 * lit).toFixed(3)})` : '#3a3b44',
-          boxShadow: lit > 0.02 ? `0 0 ${(8 * lit).toFixed(1)}px rgba(154,161,255,${(0.9 * lit).toFixed(3)})` : 'none',
-        }} />
+      )}
+      {/* 玻璃节点 */}
+      <div style={{
+        position: 'absolute', left: x - R, top: y - R, width: 2 * R, height: 2 * R, borderRadius: '50%',
+        background: `radial-gradient(circle at 50% 28%, ${alpha('#2a3a66', 0.92)} 0%, ${alpha('#121a30', 0.94)} 62%, ${alpha('#0b1122', 0.96)} 100%)`,
+        boxShadow: `inset 0 0 0 1.5px ${alpha(lit > 0 ? c : '#a0beff', 0.14 + 0.66 * pulse)}, inset 0 2px 0 rgba(255,255,255,0.12), ` +
+          `inset 0 0 ${(50 * lit).toFixed(1)}px ${alpha(c, 0.28 * lit)}, 0 0 ${(70 * pulse).toFixed(1)}px ${alpha(c, 0.5 * pulse)}, 0 40px 80px -30px rgba(0,0,0,0.9)`,
+      }}>
+        <svg width={2 * R} height={2 * R} viewBox="-120 -120 240 240" style={{ position: 'absolute', inset: 0 }}>
+          <g stroke={lit > 0.5 ? '#ffffff' : L.ink3} style={{ filter: lit > 0.5 ? `drop-shadow(0 0 10px ${alpha(c, 0.8)})` : undefined }}>{n.icon}</g>
+        </svg>
       </div>
-      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'baseline', gap: 10 }}>
-        <span style={{ fontSize: 46, fontWeight: 650, letterSpacing: '-0.035em', color: '#f1f1f4', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{st.value}</span>
-        <span style={{ fontSize: 15, color: '#8a8d97' }}>{st.unit}</span>
-      </div>
-      {/* 吞吐条：亮起后填到位 */}
-      <div style={{ marginTop: 16, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
-        <div style={{ width: `${(30 + 52 * lit + seed * 4).toFixed(1)}%`, height: '100%', borderRadius: 2, background: 'linear-gradient(90deg, rgba(128,136,240,0.5), #9aa1ff)' }} />
+      {/* 标签 */}
+      <div style={{ position: 'absolute', left: x - 260, width: 520, top: y + R + 34, textAlign: 'center' }}>
+        <div style={{ ...type(52, 650), color: lit > 0.5 ? L.ink : L.ink3 }}>{n.label}</div>
+        <div style={{ ...type(32, 450), color: lit > 0.5 ? L.ink2 : alpha(L.ink3, 0.7), marginTop: 10, ...(n.label === 'Act' ? { fontFamily: FONT.mono, letterSpacing: '0em' } : null) }}>{n.sub}</div>
       </div>
     </div>
   );
 };
 
-// 落点冲击环：落点帧起 14f 扩散变淡（与卡脉冲、光斑 surge 同帧，共振的第三个声部）
-const ImpactRing: React.FC<{ frame: number; at: number; c: Pt }> = ({ frame, at, c }) => {
-  if (frame < at || frame > at + 14) return null;
-  const k = interpolate(frame, [at, at + 14], [0, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  return <circle cx={c.x} cy={c.y} r={10 + 70 * k} fill="none" stroke="#c9ceff" strokeWidth={2.5 * (1 - k) + 0.5} strokeOpacity={0.75 * (1 - k)} />;
-};
-
 export const OrbFlylineRelay: React.FC = () => {
-  const frame = useCurrentFrame();
-  // 渐变 ID 按实例生成，多实例同场不串引（useId 的 «:» 在 url() 里非法，需清洗）
-  const haloId = `orbHeadHalo-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
+  const f = useCurrentFrame();
+  const t = drift(f);
+  const cam = 1 + 0.04 * ramp(f, 0, 140, EASE.smooth);
+  const fx = mix(700, 1200, ramp(f, 10, 100, EASE.smooth));
+  const orbIn = 0.3 + 0.7 * ramp(f, 0, 20, EASE.out);
 
-  // 光斑有效时间：0–95f 匀速漂移，95–120f out-sine 减速收敛，f≥120 恒定 → 末 35f 真静止
-  const t =
-    frame <= 95
-      ? frame
-      : 95 +
-        interpolate(frame, [95, 120], [0, 15], {
-          easing: Easing.out(Easing.sin),
-          extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-        });
-
-  // 光斑淡入 0–18f
-  const fadeIn = interpolate(frame, [0, 18], [0, 1], {
-    easing: Easing.out(Easing.cubic),
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+  // 节点与光斑一起轻漂（节点漂得少 = 视差：光斑在后）
+  const offs = NODES.map((n) => {
+    const a = h(n.seed * 7 + 1) * TAU, b = h(n.seed * 7 + 2) * TAU;
+    return {
+      ox: 120 * Math.sin((TAU * t) / (118 + n.seed * 9) + a), oy: 90 * Math.sin((TAU * t) / (134 - n.seed * 11) + b),
+    };
   });
 
-  // 时间轴：卡A f8 自亮(发起) → 线1 f18–42 A→B → f42 卡B亮+光斑1涨 →
-  // 线2 f52–76 B→C → f76 卡C亮+光斑2涨 → 全部动画 f98 前结束，光斑 f120 冻结
-  const cA = center(CARDS.A);
-  const cB = center(CARDS.B);
-  const cC = center(CARDS.C);
-  // 飞线锚在卡片边沿（不从卡中心穿过文字）：A 上沿 → B 上沿；B 下沿 → C 右沿
-  const L1 = { p0: { x: cA.x + 110, y: CARDS.A.y }, p1: { x: 820, y: 40 }, p2: { x: 1380, y: 110 }, p3: { x: cB.x, y: CARDS.B.y } };
-  const L2 = { p0: { x: cB.x + 60, y: CARDS.B.y + CARD_H }, p1: { x: 1580, y: 820 }, p2: { x: 1380, y: 880 }, p3: { x: CARDS.C.x + CARD_W, y: cC.y } };
+  const nodeOffs = offs.map((o) => ({ ox: o.ox * 0.22, oy: o.oy * 0.22 })); // 节点只漂 22%：光斑在后、节点在前的视差
 
   return (
-    <AbsoluteFill style={{ background: 'linear-gradient(180deg,#0e0f14 0%,#0a0b0f 100%)', overflow: 'hidden' }}>
-      {/* 极淡点阵台面 */}
-      <div style={{
-        position: 'absolute', inset: 0, opacity: 0.4,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1.2px)', backgroundSize: '36px 36px',
-        WebkitMaskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, #000 20%, transparent 100%)',
-        maskImage: 'radial-gradient(ellipse 65% 65% at 50% 50%, #000 20%, transparent 100%)',
-      }} />
-      {/* 氛围层：两团大 blur 光斑，落点帧同帧涨亮（组合共振） */}
-      {ORBS.map((o, i) => {
-        const pos = orbPos(o, t);
-        const s = surge(frame, o.surgeAt);
-        const a = Math.min(0.85, o.peak * (1 + 1.6 * s));
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: pos.x - o.size / 2,
-              top: pos.y - o.size / 2,
-              width: o.size,
-              height: o.size,
-              borderRadius: '50%',
-              background: `radial-gradient(circle, rgba(${o.rgb},${a.toFixed(3)}) 0%, rgba(${o.rgb},${(a * 0.5).toFixed(3)}) 42%, rgba(${o.rgb},0) 70%)`,
-              filter: 'blur(100px)',
-              opacity: fadeIn,
-            }}
-          />
-        );
-      })}
+    <AbsoluteFill style={{ background: L.bg[2] }}>
+      <Stage look={L} keyLight={{ x: 0.5, y: -0.05 }} fill={null} intensity={0.8} />
 
-      {/* 三张深色描边卡：A 开场自亮发起，B/C 随落点亮起 */}
-      <DarkCard frame={frame} litAt={8} x={CARDS.A.x} y={CARDS.A.y} seed={1} />
-      <DarkCard frame={frame} litAt={42} x={CARDS.B.x} y={CARDS.B.y} seed={2} />
-      <DarkCard frame={frame} litAt={76} x={CARDS.C.x} y={CARDS.C.y} seed={3} />
+      <AbsoluteFill style={{ transform: `scale(${cam})`, transformOrigin: `${fx}px 470px` }}>
+        {/* 光斑：每颗节点背后一团；点亮后常亮，落点帧同帧 surge */}
+        {NODES.map((n, i) => {
+          const s = surge(f, n.litAt);
+          const base = n.litAt <= 10 ? 0.4 + 0.6 * ramp(f, n.litAt, 10, EASE.out) : 0.35 + 0.65 * ramp(f, n.litAt, 8, EASE.out);
+          const k = (0.5 * base) * (1 + 1.6 * s);
+          const sz = n.orbSize * (1 + 0.12 * s);
+          const x = n.x + offs[i].ox, y = n.y + offs[i].oy;
+          return (
+            <div key={i} style={{
+              position: 'absolute', left: x - sz / 2, top: y - sz / 2, width: sz, height: sz, borderRadius: '50%', mixBlendMode: 'screen', opacity: orbIn,
+              background: `radial-gradient(circle closest-side, ${alpha(n.orb, Math.min(1, k))} 0%, ${alpha(n.orb, Math.min(1, k * 0.55))} 25%, ${alpha(n.orb, k * 0.22)} 52%, ${alpha(n.orb, k * 0.06)} 76%, ${alpha(n.orb, 0)} 100%)`,
+            }} />
+          );
+        })}
 
-      {/* 飞线接力层 */}
-      <svg
-        width={1920} height={1080} viewBox="0 0 1920 1080"
-        style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
-      >
-        <defs>
-          <radialGradient id={haloId}>
-            <stop offset="0%" stopColor="rgba(255,255,255,0.6)" />
-            <stop offset="30%" stopColor="rgba(170,178,255,0.3)" />
-            <stop offset="100%" stopColor="rgba(128,138,255,0)" />
-          </radialGradient>
-        </defs>
-        <Flyline frame={frame} start={18} haloId={haloId} {...L1} />
-        <Flyline frame={frame} start={52} haloId={haloId} {...L2} />
-        <ImpactRing frame={frame} at={42} c={L1.p3} />
-        <ImpactRing frame={frame} at={76} c={L2.p3} />
-      </svg>
+        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+          <defs>
+            <radialGradient id="relayHalo">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.75)" />
+              <stop offset="30%" stopColor={alpha(L.accent2, 0.35)} />
+              <stop offset="100%" stopColor={alpha(L.accent, 0)} />
+            </radialGradient>
+          </defs>
+          {/* 飞线坐标跟随节点漂移：端点按节点偏移整体平移 */}
+          {LINES.map((ln, i) => {
+            const a = nodeOffs[i], b = nodeOffs[i + 1];
+            const shift = (p: Pt, w: number) => ({ x: p.x + mix(a.ox, b.ox, w), y: p.y + mix(a.oy, b.oy, w) });
+            const moved = { ...ln, p0: shift(ln.p0, 0), p1: shift(ln.p1, 0.25), p2: shift(ln.p2, 0.75), p3: shift(ln.p3, 1) };
+            return <Flyline key={i} f={f} ln={moved} />;
+          })}
+        </svg>
 
-      <Vignette strength={0.55} inner={0.4} color="#030408" />
-      <Grain opacity={0.08} blend="soft-light" />
+        {NODES.map((n, i) => <Node key={i} f={f} n={n} ox={nodeOffs[i].ox} oy={nodeOffs[i].oy} />)}
+      </AbsoluteFill>
+
+      {/* 收束标题（不随镜头推进，稳在画面下缘） */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 862, textAlign: 'center' }}>
+        <TextReveal text="Say it once. Tessel does the rest." by="word" variant="rise" start={92} each={18} gap={3.5}
+          style={{ ...type(72, 700), color: L.ink }}
+          unitStyle={(i) => (i === 3 ? { color: L.accent2 } : {})} />
+      </div>
     </AbsoluteFill>
   );
 };

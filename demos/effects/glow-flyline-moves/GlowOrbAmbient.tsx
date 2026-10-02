@@ -1,205 +1,204 @@
-// glow-orb-ambient｜暗场光斑呼吸
-// 近黑底上三团大光斑（radial-gradient + blur100）用 seed hash 驱动
-// 多正弦叠加做有机漂移；中央深色描边卡的边缘辉光随最近光斑距离呼吸。
-// 0–20f 光斑淡入，中段正常速度漂移，90–120f 缓动收敛到静止，末 30f 真静止。
+// glow-orb-ambient｜暗场光斑呼吸——三团大光斑有机漂移，中央卡的边缘随最近的光斑靠近而泛光。
 //
-// 质感升级：底色换带冷色相的近黑 + 极淡点阵台面；光斑由三团同色灰改为"靛蓝主光 + 淡紫 + 冷白"
-// 的克制色对（明度关系与峰值不变）；中央卡换成出版级深色卡（图标、标题、实时指标、sparkline、
-// 成员头像），边缘辉光除了原有的外扩 box-shadow，再加一道朝向最近光斑的定向轮廓光
-// （发丝线宽、角度随光斑位置转动、只在受光一侧亮），卡片真正"认识"光斑；暗角 + 颗粒防色带。
+// 第二轮重设计（深海潮汐 · 磨砂玻璃卡）：
+// - look = custom「abyss」：带青色相的深海黑底，三团光斑 = 潮青（主光）/ 深海蓝 / 一小团珊瑚（唯一暖色点缀）。
+//   光斑不再是 blur(100px) 的灰团，而是 1200 / 1000 / 760px 的多段径向渐变（screen 叠加，不用实时模糊）。
+// - 主角是一张 1100×600 的磨砂玻璃卡（backdrop 模糊 + 提饱和）：光斑从卡后游过时，颜色真的透过玻璃
+//   染进卡面——卡和光斑"认识"彼此不再只靠外发光。外缘辉光取最近光斑的颜色与距离，另有一道发丝线宽的
+//   定向轮廓光，角度跟着主导光斑转、只在受光一侧亮。
+// - 内容是一款助眠白噪音 app「Nocta」的正在播放卡：160px 标题「Low tide」、36px 声景说明、
+//   64 根随潮汐缓慢起伏的声波条 + 64px 等宽剩余时间（每秒跳一次）——画面在呼吸，但都是慢动作。
+// - 节奏：快入场、长呼吸、缓收敛。卡片 8–34f 由虚到实升起（snappy），字逐行跟进；光斑与声波共享一条
+//   "潮汐时间"，115–145f 按 out-sine 减速收敛（起始斜率 = 1，速度连续），之后真静止 25f。
+//
+// 时间表（30fps，共 170f）：
+//   0–24     光斑从暗处亮起（第 1 帧就有微光）
+//   8–34     卡片升起：translateY 48→0、scale 0.96→1、淡入
+//   18–56    卡内文字：标题逐字 blur 揭示（18f 起）→ 说明（32f）→ 声波条从左到右长出（36–60f）
+//   0–115    正常速度漂移（周期 96–150f 交叉不等，振幅合计 ≥ 260px）
+//   115–145  潮汐时间 out-sine 收敛冻结；镜头 1→1.03 极缓推进同步落定
+//   145–170  真静止 hold
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
-import { FONT, Grain, Vignette } from '../../_fixtures/Polish';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, Grain, Vignette, ramp } from '../../_fixtures/Polish';
+import { TextReveal, alpha, type } from '../../_fixtures/Look';
 
-export const GLOW_ORB_AMBIENT_DURATION = 150; // ~5s：淡入 → 漂移 → 90–120f 收敛 → 末 30f 真静止
+export const GLOW_ORB_AMBIENT_DURATION = 170; // ~5.7s：亮起 → 漂移 → 115–145f 收敛 → 末 25f 真静止
 
-// 库内标准伪随机（帧确定）
-const h = (n: number) => {
-  const s = Math.sin(n * 127.3) * 43758.5453;
-  return s - Math.floor(s);
+// 自定义 look「abyss」：深海青黑 + 潮青 / 深海蓝 / 珊瑚
+const C = {
+  bg: ['#071a1e', '#041114', '#02090b'],
+  ink: '#eefaf7', ink2: '#a3c2bd', ink3: '#5f807b',
+  teal: '#1fd1b2', blue: '#2f6bff', coral: '#ff7059',
 };
 
 const W = 1920;
 const H = 1080;
 const CX = W / 2;
-const CY = H / 2;
-const CARD_W = 560;
-const CARD_H = 330;
+const CY = H / 2 + 10;
+const CARD_W = 1100;
+const CARD_H = 600;
 
-type Orb = {
-  size: number;      // 直径 500–700
-  peak: number;      // 亮度峰值
-  rgb: string;       // 光色（克制色对：靛蓝主光 / 淡紫 / 冷白）
-  bx: number; by: number; // 基准中心
-  p1: number; p2: number; // 两个正弦周期 90–140f
-  ax1: number; ax2: number; ay1: number; ay2: number; // 振幅（合计 ≥240px）
-  seed: number;
+const h = (n: number) => {
+  const s = Math.sin(n * 127.3) * 43758.5453;
+  return s - Math.floor(s);
 };
-
-const ORBS: Orb[] = [
-  { size: 680, peak: 0.32, rgb: '128,138,255', bx: 600, by: 400, p1: 96, p2: 134, ax1: 170, ax2: 115, ay1: 160, ay2: 120, seed: 1 },
-  { size: 580, peak: 0.22, rgb: '178,150,245', bx: 1360, by: 560, p1: 110, p2: 92, ax1: 160, ax2: 120, ay1: 175, ay2: 105, seed: 2 },
-  { size: 500, peak: 0.18, rgb: '215,222,242', bx: 940, by: 860, p1: 128, p2: 98, ax1: 150, ax2: 125, ay1: 145, ay2: 118, seed: 3 },
-];
-
 const TAU = Math.PI * 2;
 
+type Orb = { size: number; peak: number; c: string; bx: number; by: number; p1: number; p2: number; ax: number; ay: number; seed: number };
+const ORBS: Orb[] = [
+  { size: 1200, peak: 0.55, c: C.teal, bx: 560, by: 360, p1: 118, p2: 150, ax: 300, ay: 200, seed: 1 },
+  { size: 1000, peak: 0.5, c: C.blue, bx: 1420, by: 660, p1: 132, p2: 96, ax: 280, ay: 190, seed: 2 },
+  { size: 760, peak: 0.42, c: C.coral, bx: 1240, by: 220, p1: 104, p2: 142, ax: 300, ay: 160, seed: 3 },
+];
+
 const orbPos = (o: Orb, t: number) => {
-  const f1 = h(o.seed * 7 + 1) * TAU;
-  const f2 = h(o.seed * 7 + 2) * TAU;
-  const f3 = h(o.seed * 7 + 3) * TAU;
-  const f4 = h(o.seed * 7 + 4) * TAU;
-  const x = o.bx + o.ax1 * Math.sin((TAU * t) / o.p1 + f1) + o.ax2 * Math.sin((TAU * t) / o.p2 + f2);
-  const y = o.by + o.ay1 * Math.sin((TAU * t) / o.p2 + f3) + o.ay2 * Math.sin((TAU * t) / o.p1 + f4);
-  return { x, y };
+  const f1 = h(o.seed * 7 + 1) * TAU, f2 = h(o.seed * 7 + 2) * TAU, f3 = h(o.seed * 7 + 3) * TAU, f4 = h(o.seed * 7 + 4) * TAU;
+  return {
+    x: o.bx + o.ax * (0.62 * Math.sin((TAU * t) / o.p1 + f1) + 0.38 * Math.sin((TAU * t) / o.p2 + f2)),
+    y: o.by + o.ay * (0.6 * Math.sin((TAU * t) / o.p2 + f3) + 0.4 * Math.sin((TAU * t) / o.p1 + f4)),
+  };
 };
 
-// 中央卡 sparkline（确定性）
-const SPARK = Array.from({ length: 24 }, (_, i) => 0.45 + 0.22 * Math.sin(i * 0.55 + 0.8) + 0.12 * Math.sin(i * 1.3) + 0.012 * i);
-// Catmull-Rom → 三次贝塞尔，折线变顺滑曲线
-const sparkPath = (w: number, hh: number) => {
-  const lo = Math.min(...SPARK), hi = Math.max(...SPARK);
-  const P = SPARK.map((v, i) => [(i / (SPARK.length - 1)) * w, hh - ((v - lo) / (hi - lo)) * hh]);
-  let d = `M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`;
-  for (let i = 0; i < P.length - 1; i++) {
-    const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)];
-    d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ` +
-      `${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
-  }
-  return d;
+// 潮汐时间：0–115 与帧同速；115–145 out-sine 减速（A = 60/π 使起始斜率 = 1，速度连续）；之后冻结
+const T0 = 115, TS = 30;
+const tide = (f: number) => (f <= T0 ? f : T0 + (2 * TS / Math.PI) * Math.sin((Math.PI / 2) * Math.min(1, (f - T0) / TS)));
+
+// 声波条高度（潮汐时间的纯函数 → 收敛时一起停）
+const BARS = 64;
+const barH = (i: number, t: number) => {
+  const x = i / (BARS - 1);
+  const env = 0.35 + 0.65 * Math.sin(Math.PI * Math.min(1, x * 1.05)) ** 0.8;
+  const w = 0.5 + 0.28 * Math.sin(i * 0.42 + t / 9) + 0.16 * Math.sin(i * 1.13 - t / 14) + 0.06 * Math.sin(i * 2.7 + t / 5);
+  return Math.max(0.08, env * w);
 };
+
+const MoonMark: React.FC = () => (
+  <div style={{
+    width: 52, height: 52, borderRadius: 16, position: 'relative', overflow: 'hidden',
+    background: `linear-gradient(145deg, ${C.teal} 0%, ${C.blue} 100%)`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.4), 0 6px 18px ${alpha(C.teal, 0.35)}`,
+  }}>
+    <div style={{ position: 'absolute', left: 13, top: 11, width: 26, height: 26, borderRadius: 13, background: '#f4fffc' }} />
+    <div style={{ position: 'absolute', left: 21, top: 7, width: 24, height: 24, borderRadius: 12, background: `linear-gradient(145deg, #27b8b6 0%, #2b7fe6 100%)` }} />
+  </div>
+);
 
 export const GlowOrbAmbient: React.FC = () => {
   const f = useCurrentFrame();
+  const t = tide(f);
 
-  // 有效时间：0–90f 匀速，90–120f 用 out-sine 减速收敛（起始斜率≈0.94，近似连续），
-  // f≥120 clamp 恒定 => 末 30f 所有位置/阴影完全静止。
-  const t =
-    f <= 90
-      ? f
-      : 90 + interpolate(f, [90, 120], [0, 18], { easing: Easing.out(Easing.sin), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const orbIn = 0.35 + 0.65 * ramp(f, 0, 24, EASE.out);
+  const cardIn = ramp(f, 8, 26, EASE.snappy);
+  const cam = 1 + 0.03 * ramp(f, 0, 145, EASE.smooth);
 
-  // 淡入 0–20f（在末 30f 之前早已结束）
-  const fadeIn = interpolate(f, [0, 20], [0, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  // 卡片自身淡入稍晚 4f（氛围先到、主体后到）
-  const cardIn = interpolate(f, [4, 24], [0, 1], { easing: Easing.out(Easing.cubic), extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+  const pos = ORBS.map((o) => orbPos(o, t));
 
-  const positions = ORBS.map((o) => orbPos(o, t));
-
-  // 卡缘呼吸：最近光斑距离 -> 辉光强度（按光斑峰值加权取最大）；记下主导光斑做定向轮廓光
-  let glow = 0;
-  let lead = 0;
+  // 卡缘：最近光斑距离 → 辉光强度（按峰值加权取 max）；主导光斑决定轮廓光方向与颜色
+  let glowK = 0, lead = 0;
   ORBS.forEach((o, i) => {
-    const d = Math.hypot(positions[i].x - CX, positions[i].y - CY);
-    const p = interpolate(d, [180, 720], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-    const g = p * (o.peak / 0.32);
-    if (g > glow) {
-      glow = g;
-      lead = i;
-    }
+    const d = Math.hypot(pos[i].x - CX, pos[i].y - CY);
+    const p = Math.min(1, Math.max(0, (760 - d) / 520));
+    const g = p * (o.peak / 0.55);
+    if (g > glowK) { glowK = g; lead = i; }
   });
-  const shadowBlur = 28 * glow;
-  const shadowSpread = 10 * glow;
-  const shadowAlpha = 0.25 * glow;
-  const leadRgb = ORBS[lead].rgb;
-  // 轮廓光朝向：卡中心 → 主导光斑（CSS linear-gradient 角度：0deg 朝上、顺时针）
-  const lp = positions[lead];
+  const leadC = ORBS[lead].c;
+  const lp = pos[lead];
   const ang = (Math.atan2(lp.x - CX, -(lp.y - CY)) * 180) / Math.PI;
-  // 渐变起点（0%）要落在朝光一侧 → 渐变方向取反向
-  const gAng = (ang + 180).toFixed(1);
+  const gAng = (ang + 180).toFixed(1); // 渐变 0% 落在朝光一侧
+
+  // 剩余时间：每秒跳一次（收敛后停在 41:08）
+  const secs = 41 * 60 + 12 - Math.floor(Math.min(f, 145) / 30);
+  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
+
+  const barsIn = (i: number) => ramp(f, 36 + i * 0.36, 14, EASE.snappy);
 
   return (
-    <AbsoluteFill style={{ background: 'linear-gradient(180deg,#0e0f14 0%,#0a0b0f 100%)', overflow: 'hidden' }}>
-      {/* 极淡点阵台面（中心可见、四周隐去） */}
-      <div style={{
-        position: 'absolute', inset: 0, opacity: 0.45,
-        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1.2px)', backgroundSize: '36px 36px',
-        WebkitMaskImage: 'radial-gradient(ellipse 60% 62% at 50% 50%, #000 15%, transparent 100%)',
-        maskImage: 'radial-gradient(ellipse 60% 62% at 50% 50%, #000 15%, transparent 100%)',
-      }} />
-      {ORBS.map((o, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute', left: positions[i].x - o.size / 2, top: positions[i].y - o.size / 2,
-            width: o.size, height: o.size, borderRadius: '50%',
-            background: `radial-gradient(circle, rgba(${o.rgb},${o.peak}) 0%, rgba(${o.rgb},${o.peak * 0.5}) 42%, rgba(${o.rgb},0) 70%)`,
-            filter: 'blur(100px)', opacity: fadeIn,
-          }}
-        />
-      ))}
-
-      {/* 中央深色卡 */}
-      <div style={{
-        position: 'absolute', left: CX - CARD_W / 2, top: CY - CARD_H / 2, width: CARD_W, height: CARD_H, borderRadius: 18,
-        opacity: cardIn, transform: `translateY(${(1 - cardIn) * 10}px)`,
-        boxShadow:
-          `0 0 ${shadowBlur.toFixed(1)}px ${shadowSpread.toFixed(1)}px rgba(${leadRgb},${shadowAlpha.toFixed(3)}), ` +
-          '0 2px 4px rgba(0,0,0,0.45), 0 30px 60px -20px rgba(0,0,0,0.75)',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0, borderRadius: 18, overflow: 'hidden',
-          background: 'linear-gradient(180deg, rgba(30,31,38,0.92) 0%, rgba(20,21,26,0.94) 100%)',
-          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.075), inset 0 1px 0 rgba(255,255,255,0.07)',
-          padding: '30px 32px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: FONT.sans,
-        }}>
-          {/* 卡面上的受光余晖：主导光斑方向一侧微亮 */}
-          <div style={{
-            position: 'absolute', inset: 0, opacity: 0.6 * glow,
-            background: `linear-gradient(${gAng}deg, rgba(${leadRgb},0.10) 0%, rgba(${leadRgb},0) 55%)`,
+    <AbsoluteFill style={{ background: `linear-gradient(180deg, ${C.bg[0]} 0%, ${C.bg[1]} 55%, ${C.bg[2]} 100%)`, overflow: 'hidden' }}>
+      <AbsoluteFill style={{ transform: `scale(${cam})`, transformOrigin: `${CX}px ${CY}px` }}>
+        {/* 光斑：多段径向渐变（不做实时 blur），screen 叠加 */}
+        {ORBS.map((o, i) => (
+          <div key={i} style={{
+            position: 'absolute', left: pos[i].x - o.size / 2, top: pos[i].y - o.size / 2, width: o.size, height: o.size, borderRadius: '50%',
+            background: `radial-gradient(circle closest-side, ${alpha(o.c, o.peak)} 0%, ${alpha(o.c, o.peak * 0.62)} 22%, ${alpha(o.c, o.peak * 0.3)} 48%, ${alpha(o.c, o.peak * 0.1)} 72%, ${alpha(o.c, 0)} 100%)`,
+            opacity: orbIn, mixBlendMode: 'screen',
           }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, position: 'relative' }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(128,136,240,0.14)', boxShadow: 'inset 0 0 0 1px rgba(128,136,240,0.25)',
-            }}>
-              <svg width={18} height={18} viewBox="0 0 16 16" fill="none" stroke="#9aa1ff" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 8.5h2.5L6.5 4l3 8 2-3.5H14" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 19, fontWeight: 600, color: '#ededf0', letterSpacing: '-0.01em' }}>Realtime sync</div>
-              <div style={{ fontSize: 14, color: '#7d808a', marginTop: 3 }}>All regions · last 24h</div>
-            </div>
-            <div style={{
-              marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 500, color: '#b5b9ff',
-              padding: '5px 10px', borderRadius: 999, background: 'rgba(128,136,240,0.12)', boxShadow: 'inset 0 0 0 1px rgba(128,136,240,0.22)',
-            }}>
-              <div style={{ width: 6, height: 6, borderRadius: 3, background: '#9aa1ff', boxShadow: '0 0 6px rgba(154,161,255,0.9)' }} />
-              Live
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 'auto', position: 'relative' }}>
-            <div>
-              <div style={{ fontSize: 54, fontWeight: 650, color: '#f2f2f5', letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-                99.98<span style={{ fontSize: 30, color: '#9a9ca6', marginLeft: 2 }}>%</span>
-              </div>
-              <div style={{ fontSize: 14, color: '#7d808a', marginTop: 10 }}>Uptime · 1.2M events synced</div>
-            </div>
-            <svg width={200} height={62} style={{ marginLeft: 'auto', overflow: 'visible' }}>
-              <defs>
-                <linearGradient id="goa-fill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgba(128,136,240,0.28)" />
-                  <stop offset="100%" stopColor="rgba(128,136,240,0)" />
-                </linearGradient>
-              </defs>
-              <path d={`${sparkPath(200, 56)} L200,62 L0,62 Z`} fill="url(#goa-fill)" transform="translate(0,3)" />
-              <path d={sparkPath(200, 56)} fill="none" stroke="#9aa1ff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" transform="translate(0,3)" />
-            </svg>
-          </div>
-        </div>
-        {/* 定向轮廓光：发丝线宽的渐变边，只在朝向主导光斑的一侧亮（mask 镂空出 1px 边） */}
+        ))}
+        {/* 远景细点阵（随镜头一起推，给深度一个参照） */}
         <div style={{
-          position: 'absolute', inset: 0, borderRadius: 18, padding: 1.2, boxSizing: 'border-box', pointerEvents: 'none',
-          background: `linear-gradient(${gAng}deg, rgba(${leadRgb},${(0.15 + 0.75 * glow).toFixed(3)}) 0%, rgba(255,255,255,${(0.10 * glow).toFixed(3)}) 35%, rgba(255,255,255,0) 60%)`,
-          WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-          WebkitMaskComposite: 'xor',
-          maskComposite: 'exclude',
+          position: 'absolute', inset: -40, opacity: 0.5,
+          backgroundImage: `radial-gradient(circle, ${alpha('#cffff4', 0.12)} 1.2px, transparent 1.6px)`, backgroundSize: '40px 40px',
+          WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 85%)', maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 85%)',
         }} />
-      </div>
 
-      <Vignette strength={0.55} inner={0.4} color="#030408" />
-      <Grain opacity={0.08} blend="soft-light" />
+        {/* 主角：磨砂玻璃卡 */}
+        <div style={{
+          position: 'absolute', left: CX - CARD_W / 2, top: CY - CARD_H / 2, width: CARD_W, height: CARD_H, borderRadius: 44,
+          // 注意：玻璃卡的祖先不能带 filter / opacity<1（会成为 backdrop root，玻璃里看不到光斑）——
+          // 入场的透明度放在玻璃层自身，外层只做 transform
+          transform: `translateY(${(1 - cardIn) * 48}px) scale(${0.96 + 0.04 * cardIn})`,
+          boxShadow: `0 0 ${(90 * glowK).toFixed(1)}px ${(8 * glowK).toFixed(1)}px ${alpha(leadC, 0.32 * glowK)}, 0 50px 120px -30px rgba(0,0,0,0.85)`,
+        }}>
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: 44, overflow: 'hidden', opacity: Math.min(1, cardIn * 1.3),
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.05) 100%)',
+            backdropFilter: 'blur(44px) saturate(1.5)', WebkitBackdropFilter: 'blur(44px) saturate(1.5)',
+            boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.10), inset 0 1.5px 0 rgba(255,255,255,0.18)',
+          }}>
+            {/* 卡面受光余晖：主导光斑方向一侧 */}
+            <div style={{ position: 'absolute', inset: 0, opacity: 0.7 * glowK, background: `linear-gradient(${gAng}deg, ${alpha(leadC, 0.16)} 0%, ${alpha(leadC, 0)} 55%)` }} />
+
+            {/* 顶栏 */}
+            <div style={{ position: 'absolute', left: 64, right: 64, top: 56, display: 'flex', alignItems: 'center', gap: 18, opacity: ramp(f, 14, 14, EASE.out) }}>
+              <MoonMark />
+              <div style={{ ...type(36, 650), color: C.ink }}>Nocta</div>
+              <div style={{
+                marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, padding: '10px 22px', borderRadius: 40,
+                background: 'rgba(255,255,255,0.07)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)', ...type(32, 550), color: C.ink2,
+              }}>
+                <div style={{ width: 12, height: 12, borderRadius: 6, background: C.teal, boxShadow: `0 0 12px ${C.teal}` }} />
+                Now playing
+              </div>
+            </div>
+
+            {/* 标题 + 说明 */}
+            <div style={{ position: 'absolute', left: 60, top: 150 }}>
+              <TextReveal text="Low tide" by="char" variant="blur" start={18} each={20} gap={2.2} style={{ ...type(160, 650), letterSpacing: '-0.045em', color: C.ink }} />
+            </div>
+            <div style={{ position: 'absolute', left: 66, top: 334 }}>
+              <TextReveal text="Brown noise · distant swell · 38 dB" by="word" variant="blur" start={32} each={16} gap={2.5} style={{ ...type(36, 450), color: C.ink2 }} />
+            </div>
+
+            {/* 声波条 + 剩余时间 */}
+            <div style={{ position: 'absolute', left: 66, bottom: 64, width: 700, height: 96, display: 'flex', alignItems: 'center', gap: 5 }}>
+              {Array.from({ length: BARS }, (_, i) => {
+                const k = barsIn(i);
+                const played = i < 22;
+                return (
+                  <div key={i} style={{
+                    width: 6, height: Math.max(6, 96 * barH(i, t) * k), borderRadius: 3,
+                    background: played ? C.ink : alpha(C.ink, 0.28), opacity: k,
+                  }} />
+                );
+              })}
+            </div>
+            <div style={{ position: 'absolute', right: 64, bottom: 58, textAlign: 'right', opacity: ramp(f, 40, 16, EASE.out) }}>
+              <div style={{ fontFamily: FONT.mono, fontSize: 64, fontWeight: 500, color: C.ink, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                {mm}:{ss}
+              </div>
+              <div style={{ ...type(28, 500, { caps: true }), letterSpacing: '0.14em', color: C.ink3, marginTop: 12 }}>Remaining</div>
+            </div>
+          </div>
+          {/* 定向轮廓光：发丝线宽渐变边，只在朝向主导光斑的一侧亮 */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: 44, padding: 1.5, boxSizing: 'border-box', pointerEvents: 'none', opacity: cardIn,
+            background: `linear-gradient(${gAng}deg, ${alpha(leadC, 0.2 + 0.75 * glowK)} 0%, rgba(255,255,255,${(0.14 * glowK).toFixed(3)}) 35%, rgba(255,255,255,0) 62%)`,
+            WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude',
+          }} />
+        </div>
+      </AbsoluteFill>
+      <Vignette strength={0.5} inner={0.4} color="#010506" />
+      <Grain opacity={0.1} blend="soft-light" />
     </AbsoluteFill>
   );
 };

@@ -1,32 +1,31 @@
 {
   "stem": "AttentionBounce",
   "issues": [
-    "图标是白底 + 18px 黑描边的线稿方块，像占位草图，不是一个'表演者'",
-    "地面是一根 8px 灰色实心条，影子单层且只缩不分层",
-    "落地挤压线性 6f 回弹，铃铛本身全程僵硬不动，没有跟随动作",
-    "尘点是实心灰圆点，像掉渣；面板是灰阶骨架 Card + Helvetica 800 'New'",
-    "没有导出时长常量（工作台按 150f 默认）"
+    "白底黑描边线稿图标站在一条 8px 灰色地面上，画面像占位图，看不出是 Dock 里的 app",
+    "四跳时长只按帧数拍，和高度没有物理关系；落地压扁是线性回弹，缺重量",
+    "\"镜头被吸引\"只是整体放大 8%，周围没有任何被压下去的东西，注意力的转移读不出来",
+    "收尾面板的文字 13–20px，读不清，结尾帧不成海报"
   ],
   "changes": [
-    "图标换出版级 app icon：琥珀三段渐变 squircle + 顶部玻璃高光 + 底部内阴影 + 白色铃铛字形（投影），两层软阴影随离地高度变大变虚",
-    "铃铛在空中绕挂点做跟随摆动（幅度随跳高 8°→16° 递增），落定后阻尼余摆收敛；落地挤压改为 exp·cos 阻尼回弹（压扁→轻回拉→稳住），宽 1.2x 高 0.8x 峰值不变",
-    "灰色地面条换成极淡地台渐变 + 两端渐隐的地平线；接触阴影分两层：近地小而实（离地即淡）+ 远地大而虚",
-    "尘点改柔焦烟团（膨胀 + 平方衰减淡出）；镜头 8% 推近改 smooth 缓动",
-    "落地同帧右上弹出红色数字角标；面板换'Smart notifications'出版级通知面板（标题、开关、三条通知行错峰 3f 上浮入场）；补导出 ATTENTION_BOUNCE_DURATION = 150"
+    "look 换成 sand（米色午后 · 赤陶）：背景墙斜打两道百叶窗光，画面下缘是一条两端被画框裁掉的磨砂奶油色 Dock，左右是低饱和的邻居图标",
+    "主角换成 360px 日历图标「Daybook」（赤陶页眉 FRI + 大号 17），比通用铃铛更有辨识度",
+    "4 跳按真实抛体：0.35→1.2 倍图标高，每跳时长按 √高度（14/18/22/26f）；空中按竖向速度拉伸，落地 2f 接触压扁递增到宽 1.2x 高 0.8x，末跳阻尼余弦回稳；每次落点一圈柔化涟漪 + 溅点",
+    "\"被吸引\"演出来：第二跳起邻居图标逐渐失焦、降饱和（rack focus），最高那跳镜头 smooth 推近 8%",
+    "落定同帧弹出赤陶角标、亮起运行点，功能面板从图标右上角弹簧展开，68px 标题 +三条 32–36px 日程行错峰入场；156f，尾帧是完整的新功能海报"
   ],
   "issuesEn": [
-    "The icon was a white square with an 18px black outline — a placeholder sketch, not a performer",
-    "The ground was a solid 8px grey bar and the shadow was a single layer that only shrank",
-    "Landing squash recovered linearly over 6f and the bell itself never moved — no follow-through",
-    "Dust puffs were solid grey dots like crumbs; the panel was a grey skeleton Card with a Helvetica 800 'New' tag",
-    "No duration constant was exported (workbench defaulted to 150f)"
+    "A white line-art icon with a black outline stood on an 8px grey floor bar; it looked like a placeholder, not an app in a Dock",
+    "The four hops were timed by frame count with no relation to height, and the landing squash sprang back linearly with no weight",
+    "The 'camera is drawn in' beat was just an 8% global zoom; nothing around the icon receded, so the shift of attention did not read",
+    "The closing panel used 13–20px text that could not be read, and the last frame was not a poster"
   ],
   "changesEn": [
-    "Icon is now a publication-grade app icon: three-stop amber squircle, glassy top highlight, bottom inner shadow and a white bell glyph with drop shadow; a two-layer soft shadow grows and softens with height",
-    "The bell swings from its hanger in the air (amplitude rising 8°→16° with each jump) and settles with a damped sway after the last landing; landing squash is now an exp·cos damped rebound (squash → slight pull-back → settle) with the same 1.2x / 0.8x peak",
-    "The grey ground bar became a faint floor gradient with an edge-faded horizon; contact shadow split into a tight near layer that fades as soon as the icon lifts and a wide soft far layer",
-    "Dust became soft smoke puffs that expand and fade quadratically; the 8% camera push uses a smooth ease",
-    "A red count badge pops on the final landing frame; the panel is a publication-grade 'Smart notifications' panel (title, toggle, three notification rows staggered 3f with a rise); ATTENTION_BOUNCE_DURATION = 150 exported"
+    "Sand look (warm afternoon beige, terracotta): two slanted blind-light shafts on the back wall, a frosted cream Dock cropped by both frame edges, and desaturated neighbour icons",
+    "The hero is now a 360px calendar icon 'Daybook' (terracotta FRI header, big 17), far more recognisable than a generic bell",
+    "Four hops follow real ballistics: 0.35 to 1.2 icon heights with airtime proportional to the square root of height (14/18/22/26f); velocity stretch in the air, a 2f contact squash that grows to 1.2x wide by 0.8x tall, a damped-cosine settle on the last landing, and a soft ripple plus specks at each touchdown",
+    "Being drawn in is acted out: from the second hop the neighbours rack out of focus and desaturate, and the highest hop gets a smooth 8% push-in",
+    "On landing a terracotta badge pops and the running dot lights, then the feature panel springs out of the icon's top-right with a 68px title and three staggered 32–36px agenda rows; 156f, ending on a complete feature poster"
   ],
-  "mdChanged": false
+  "look": "sand",
+  "mdChanged": true
 }
