@@ -1,32 +1,31 @@
 {
   "stem": "FontWeightPump",
   "issues": [
-    "没有导出时长常量，工作台按 md 抓成 10f，改版前视频只有静止的标题，第一拍（帧 30）都没到",
-    "字重 400↔900 离散跳变，加上整行居中排版，每次变粗整行都跟着变宽重排，字在左右晃",
-    "Helvetica 常规字重配灰平底，标题没有分量，也没有任何蹦迪的氛围",
-    "底部节拍点是 G.line 浅灰，压在 G.bg 上几乎看不见，静音预览读不出在跟拍",
-    "重音拍只靠 scaleX 区分，和普通拍几乎一样"
+    "168px 常规字重灰字在浅灰底上，字重变化幅度小，缩略图上几乎看不出在\"泵\"",
+    "五拍从头到尾一样强，没有递进也没有高潮，结尾回到原样",
+    "节拍参照是 5 个 16px 小圆点，静帧里读不出\"在跟拍\"",
+    "画面只有一行字，没有舞台、光和品牌信息"
   ],
   "changes": [
-    "导出 FONT_WEIGHT_PUMP_DURATION = 140（五拍 30–110，末拍回弹到 f122，之后真静止 18f）",
-    "每个字符钉在常规字重排好的槽位里原位变粗：字重 400+500·env 连续插值（SF Pro 可变字重）+ 6px·env 描边，整行不重排",
-    "全员同帧命中，回弹从中间 9f 到边缘 12f 错开收，读作冲击向两侧散开的跟随",
-    "改成带色相的暗场，标题近白 #eef0f6，身后一小片强调色柔光随包络呼吸；重音拍额外 scaleX 1.08 并把字色染向强调色",
-    "节拍点重做：命中点亮强调色放大 1.7 倍带辉光，已过的拍保留暗亮，重音拍点更大"
+    "look 换成 aurora 夜店海报：深紫夜 + 紫粉霓虹，240px「LOUDER」，字后柔光随拍明暗（不做整画面逐拍泵）",
+    "字重幅度拉满且换了排法：每个字钉在 900 字重的槽位里，静止是 250 细体、字间留缝，鼓点一到笔画撑满槽位\"合拢\"，再按中间先收、两边后收（9→13f）弹回",
+    "节奏改为 128 BPM 两小节 + drop：第 1 小节只有主字脉冲；第 2 小节上下长出描边回声行，晚 2f 跟拍并被推开（跟随）；第 9 拍 drop 冲到 900 后定格在 780 字重 + 紫→粉渐变 + 一道横向光带",
+    "每小节第 1 拍重音：scaleX +6% 并染粉；参照物改成 8+1 格步进音序器（含 DROP 格），亮哪格 = 第几拍",
+    "补全版式：PULSE AUDIO 眉题、128 BPM / BAR n/2 读数、drop 后 40px 副标题逐词升起，时长 165f，尾帧是完整海报"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench took 10f from the md, so the before video shows only the static title and never reaches the first beat at frame 30",
-    "Weight jumped between 400 and 900 in one step, and because the line was centered, every pulse made the whole line wider and reflow, so the letters slid sideways",
-    "Regular-weight Helvetica on a flat gray ground gave the title no weight and none of the club energy the move is about",
-    "The beat dots were light G.line gray on G.bg, nearly invisible, so a silent preview could not show that the text follows the beat",
-    "Accent beats differed from normal beats only by a scaleX change and looked almost the same"
+    "168px regular-weight grey text on light grey; the weight swing was small and barely visible in thumbnails",
+    "All five beats hit equally hard with no build or climax, and it ended where it started",
+    "The beat reference was five 16px dots that did not read as following a beat in a still",
+    "One line of text with no stage, light or brand context"
   ],
   "changesEn": [
-    "Exported FONT_WEIGHT_PUMP_DURATION = 140 (five beats from 30 to 110; the last rebound ends at f122, followed by 18f of true stillness)",
-    "Each character is pinned to a slot laid out at regular weight and thickens in place: weight interpolates continuously as 400+500·env (SF Pro variable weight) plus a 6px·env stroke, so the line never reflows",
-    "All characters hit on the same frame, but they rebound outward from the center (9f in the middle to 12f at the edges), so the impact visibly spreads to both sides",
-    "Moved to a hue-tinted dark scene: near-white #eef0f6 title with a small accent glow behind it that breathes with the envelope; accent beats add scaleX 1.08 and tint the letters toward the accent color",
-    "Rebuilt the beat dots: the dot for the current beat lights in the accent color, scales up 1.7× and glows, past beats stay dimly lit, and accent-beat dots are larger"
+    "Aurora club-poster look: deep violet night with violet-pink neon, a 240px LOUDER, and a glow behind it that pulses with the beat (no full-frame pumping)",
+    "Full weight range with a new layout: every letter sits in a slot sized for weight 900, so at rest the 250-weight letters leave gaps and each kick fills the slots shut, then releases centre-first with edges trailing (9→13f)",
+    "128 BPM, two bars plus a drop: bar 1 pumps the word alone; in bar 2 outlined echo rows grow above and below, follow 2f late and get pushed apart; beat 9 drops to weight 900 and settles at 780 with a violet-to-pink gradient and one horizontal light streak",
+    "Each bar's downbeat is accented with +6% scaleX and a pink tint; the reference is now an 8+1 step sequencer with a DROP pad that lights the current beat",
+    "Complete layout: PULSE AUDIO kicker, 128 BPM / BAR n/2 readout, and a 40px tagline that rises after the drop; 165f, ending on a finished poster"
   ],
+  "look": "aurora",
   "mdChanged": true
 }

@@ -1,30 +1,31 @@
 {
   "stem": "ScrambleDecode",
   "issues": [
-    "没有导出时长常量，工作台按 md 抓成 66f，改版前视频停在 \"DECODE S6604\"，最后 5 个字符没锁完",
-    "亮灰平底配灰字，看不出技术产品要的终端/解码气质；字体回退 ui-monospace，乱码和真字只差颜色",
-    "所有乱码字亮度一样，看不出解码头在哪、正往哪推进",
-    "锁定反色闪是一块直角黑块，锁定后没有任何落定动作；进度条是 10px 灰块按字数一格一格跳"
+    "132px 灰白等宽字在浅灰底上，乱码与锁定字只是深浅差，没有终端感也没有光",
+    "锁定匀速 6f/字，从头到尾一个速度，节奏平",
+    "解码头只有一道细下划线，\"扫描波前\"读不出来；进度条和计数是 3px 细线 + 小字",
+    "画面只有一行字，上下大片空白，结尾帧不成画面"
   ],
   "changes": [
-    "导出 SCRAMBLE_DECODE_DURATION = 130（帧 86 锁完最后一个字符，静止 44f）",
-    "改成带色相的暗场（Backdrop dark + 靛蓝余光 + 暗角 + 颗粒），锁定字近白 #eef0f6、乱码用低透明冷灰，0–10f 乱码自左向右渐显",
-    "乱码亮度按到解码头的距离分级（0.3→0.75），解码头下有强调色短下划线，每次锁定后 4f snappy 跳到下一个真字符（跳过空格）",
-    "保留帧 20+i×6 锁定和 2f 反色闪，闪块改成浅色圆角块带柔光；锁定后字形 6f 从 1.14 收回 1，叠 14f 衰减的强调色底光",
-    "底部 HUD：3px 细轨 + 平滑推进的渐变填充 + 32px 等宽状态（DECODING→DECODED）与 tabular-nums 计数"
+    "look 换成 lime 荧光终端：石墨底 + 荧光黄绿，背景是虚化、缓慢上滚的十六进制转储 + CRT 扫描线，标题 176px 等宽粗体「ZERO LATENCY」占画宽 66%",
+    "解码波前做成可见的光：一束竖向荧光光柱 + 下划线光标扫过，离波前越近的乱码越亮、染荧光、改 1f/次跳动并带色差错位",
+    "节奏改「慢起—加速—急停」：锁定间隔按曲线 8.3f → 3.4f 越来越快，锁定瞬间荧光反色块 2f + 字形 1.16→1 + 衰减底光；标题锁完副标题 0.8f/字瀑布解码",
+    "补全终端版式：DECRYPTING 状态胶囊 → ✓ VERIFIED 翻转、文件名 / 算法眉题、48px 副标题（4 ms 高亮）、按字分段的 11 格进度轨 + 跳动的区块地址定格为 0xC0DE + 计数",
+    "时长 140f：14–72f 标题锁定、74–98f 副标题、100f 验证完成、之后 hold，整幅 1.00→1.02 极缓推近"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench took 66f from the md, so the before video stops at \"DECODE S6604\" with the last five characters still unlocked",
-    "Gray text on a flat light-gray ground has none of the terminal, code-breaking feel a tech product needs; the font fell back to ui-monospace, and scrambled and real glyphs differed only in color",
-    "Every scrambled glyph had the same brightness, so there was no visible decode head or direction of progress",
-    "The lock flash was a square black block with no settle afterward, and the 10px gray progress bar jumped one character at a time"
+    "132px pale mono type on a light grey background; scrambled and locked characters differed only in shade, with no terminal feel and no light",
+    "Characters locked at a flat 6f each from start to finish, so the rhythm never changed",
+    "The decode head was a thin underline, so the scanning wavefront did not read; the progress bar and counter were a 3px line and small text",
+    "One line of text with empty space above and below; the end frame was not a composition"
   ],
   "changesEn": [
-    "Exported SCRAMBLE_DECODE_DURATION = 130 (last character locks at frame 86, then 44f of stillness)",
-    "Moved to a hue-tinted dark scene (dark Backdrop, faint indigo glow, vignette, grain); locked glyphs are near-white #eef0f6, scrambled glyphs a low-opacity cool gray, and the scramble fades in from left to right over frames 0–10",
-    "Scramble brightness now rises with proximity to the decode head (0.3→0.75); an accent underline marks the head and makes a 4f snappy jump to the next real character after each lock, skipping the space",
-    "Kept the 20+i×6 lock timing and the 2f inverse flash, now drawn as a light rounded cell with a soft glow; each locked glyph settles from 1.14 to 1 over 6f under an accent underglow that fades over 14f",
-    "Bottom HUD: a 3px track with a smoothly advancing gradient fill, a 32px monospace status (DECODING→DECODED) and a tabular-nums counter"
+    "Lime phosphor-terminal look: graphite and fluorescent yellow-green, over a defocused, slowly scrolling hex dump and CRT scanlines, with a 176px bold mono ZERO LATENCY spanning 66% of the frame",
+    "The decode wavefront is now visible light: a vertical phosphor beam and underline cursor sweep across, and glyphs near it brighten, take the accent, flicker every frame and split chromatically",
+    "Rhythm is slow start, speed-up, hard stop: lock intervals shrink from 8.3f to 3.4f; each lock gets a 2f phosphor inverse block, a 1.16→1 pop and a fading underglow; then the subtitle cascades at 0.8f per character",
+    "Full terminal layout: a DECRYPTING pill that flips to ✓ VERIFIED, file and cipher kicker, a 48px subtitle with 4 ms highlighted, an 11-segment per-character progress rail, a churning block address that freezes on 0xC0DE, and a counter",
+    "140f: title locks at 14–72f, subtitle at 74–98f, verified at 100f, then hold; the whole frame pushes in 1.00→1.02"
   ],
+  "look": "lime",
   "mdChanged": true
 }

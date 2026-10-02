@@ -1,34 +1,31 @@
 {
   "stem": "LetterDropPhysics",
   "issues": [
-    "没有导出时长常量，工作台按 md 抓成 66f，改版前视频在字母还歪着时就结束，帧 110 的集体回正一拍根本没演到",
-    "字母只是刚体平移：下落没有拉伸、触地没有挤压、空中没有运动模糊，看起来像贴纸在滑，不像有重量的东西砸下来",
-    "地面是一根 6px 灰条，字母和地面之间没有任何接触影，落地没有落到实处",
-    "字符塞进 150px 等宽槽位，I 两侧空一大块、W 型字挤在一起，字距忽松忽紧；字体回退成 Helvetica",
-    "起跳间隔 i×5 等差，回正一拍从 1 直接跳到 1.06，有一帧突变"
+    "176px 深灰字落在浅灰底上，没有配色和版式，整幅画面只有一个词和一条细线，像引擎测试截图",
+    "字从画面内 720px 高处出现、而不是从画外落进来，开场几帧是空白死帧",
+    "弹跳与挤压只在字身上，地面是一条不受力的发丝线，砸地没有\"重量\"",
+    "副标题 36px 灰字，结尾帧没有层级，算不上一张海报"
   ],
   "changes": [
-    "导出 LETTER_DROP_PHYSICS_DURATION = 150（帧 110 回正，116–150 真静止 34f）",
-    "下落按速度纵向拉伸（最多 10%），三次触地各给一次阻尼挤压（强度 1 / 0.45 / 0.18，保体积反向撑宽），下落段加速度驱动的竖向 SpeedBlur",
-    "每个字脚下加接触影：离地越高越大越虚越淡，落地收成小而实的一抹；歪着站时按歪角把字抬起，底角贴地不穿地面",
-    "字行改为 SF Pro 800 按自然字宽 flex 排版（运动全走 transform），起跳帧改成 4+36·(1−(1−i/6)^1.5)，间隔 8.6→2.5f 越来越密",
-    "回正一拍先 2f 吸气撑到 1.06，再 6f snappy 回 1，歪角用 overshoot 回正；随后浮出 36px 副标题作句号",
-    "背景换成柔光渐变 + 地平线发丝线 + 向下渐淡的台面，叠 0.05 颗粒"
+    "look 换成 paper，做成粗黑体瑞士海报：290px Black 字重「GRAVITY」+ 朱红句号压在 6px 墨色地平线上，四角是 N°07 / FALL·BOUNCE·SETTLE 相位指示 / g = 9.81 m/s² 等网格信息，第一帧就有完整版式",
+    "物理按真实比例重写：字从画外 980px 落下（重力加速 + 按速度拉伸与竖向运动模糊），弹跳高度 22% / 6%、每跳时长 ∝ √h，落地挤压回弹 + ±5° 歪斜站定",
+    "地平线改成弹性绳：每次触地在落点按高斯包络做阻尼下陷振荡，字始终踩在线上；首次触地两侧扬起纸灰，接触影随离地高度变大变虚",
+    "朱红句号当\"最后的笑点\"：最晚起跳、最弹（34% / 11% / 3% 三跳），左缘高度标尺的朱红游标实时读出它的高度；它停稳后全体 3f 吸气 + 9f 立正（overshoot 一次）",
+    "时间表 160f：6–36f 起落越来越密 → 弹跳 → 110f 立正 → 副标题 64px 逐词升起 + 32px 注释 → hold，整幅 1.00→1.025 极缓推近"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench took 66f from the md, so the before video ends while the letters are still tilted and never reaches the frame-110 snap to attention",
-    "Letters moved as rigid sprites: no stretch while falling, no squash on impact, no motion blur in the air, so they slid like stickers instead of landing with weight",
-    "The floor was a 6px gray bar with no contact shadows, so nothing actually touched the ground",
-    "Characters sat in fixed 150px slots, leaving gaps around the I while wide letters crowded each other; the font fell back to Helvetica",
-    "Drop starts were evenly spaced at i×5, and the snap jumped from scale 1 to 1.06 in a single frame"
+    "A 176px dark-grey word on a pale grey background with no colour or layout: one word and a hairline, like an engine test capture",
+    "Letters appeared 720px up inside the frame instead of falling in from off-screen, and the opening frames were empty",
+    "Bounce and squash lived only on the letters; the floor was a hairline that never reacted, so impacts had no weight",
+    "The 36px grey tagline gave the end frame no hierarchy; it never became a poster"
   ],
   "changesEn": [
-    "Exported LETTER_DROP_PHYSICS_DURATION = 150 (snap at frame 110, true stillness for the final 34f, 116–150)",
-    "Letters stretch vertically with fall speed (up to 10%), each of the three impacts gets a damped, volume-preserving squash (strength 1 / 0.45 / 0.18), and the fall uses a velocity-driven vertical SpeedBlur",
-    "Each letter casts a contact shadow that grows larger, softer and fainter with height and tightens to a small dense patch on landing; tilted letters are raised by their tilt so the lower corner rests on the floor instead of sinking into it",
-    "The word is now set in SF Pro 800 at natural advance widths (all motion through transforms), and drop starts follow 4+36·(1−(1−i/6)^1.5), so gaps tighten from 8.6f to 2.5f",
-    "The snap is now a 2f inhale to 1.06 followed by a 6f snappy return to 1, with tilt straightening on an overshoot curve; a 36px subtitle then fades up as the full stop",
-    "The background is now a soft-lit gradient with a hairline horizon and a floor plane that fades downward, plus 0.05 grain"
+    "Paper look as a bold Swiss poster: a 290px Black-weight GRAVITY plus a vermilion full stop on a 6px ink baseline, with N°07, a FALL·BOUNCE·SETTLE phase readout and g = 9.81 m/s² on the grid; the full layout is there from frame 1",
+    "Physics rebuilt to real proportions: letters drop 980px from off-frame (gravity, speed stretch, vertical motion blur), bounce to 22% / 6% with durations ∝ √h, squash on impact and settle tilted ±5°",
+    "The baseline is now an elastic rope: every impact sags it locally with a damped Gaussian dip and the letters ride on it; first impacts kick up paper dust, and contact shadows grow and soften with height",
+    "The vermilion full stop is the punchline: last to drop and bounciest (34% / 11% / 3%), tracked live by a vermilion marker on a left-edge height ruler; once it rests, everyone inhales for 3f and snaps upright in 9f with one overshoot",
+    "160f timeline: drops tighten from 6–36f, bounces, 110f snap, then a 64px tagline rises word by word with a 32px note, hold; the whole poster pushes in 1.00→1.025"
   ],
+  "look": "paper",
   "mdChanged": true
 }

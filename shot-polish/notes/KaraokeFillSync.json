@@ -1,32 +1,31 @@
 {
   "stem": "KaraokeFillSync",
   "issues": [
-    "没有导出时长常量，工作台按 md 抓成 10f，改版前视频是两行灰字，一个词都没开始填",
-    "填色前沿是 clip-path 硬切口，正在读的词和读完的词同一个深色，看不出哪个词是此刻",
-    "读指是一根 8px 直角黑条，读完一帧消失，没有收尾动作",
-    "标语靠左 240px 内边距排，构图偏左；Helvetica 字体，灰平底",
-    "静音预览没有任何旁白参照，变色读起来没头没脑"
+    "150px 全大写黑字在浅灰底上居中，填色只是从浅灰变靛蓝再变黑，没有光也没有质感",
+    "画面只有标语和一条小波形，交代不出\"有人在念\"的语境",
+    "填色前沿是柔边遮罩，正在读的位置不够醒目",
+    "结尾帧就是两行黑字，不像发布会画面"
   ],
   "changes": [
-    "导出 KARAOKE_FILL_SYNC_DURATION = 150（末词 f130 填完，f140 前退色 / 收线完毕，静止到 150）",
-    "揭开改用 mask 线性渐变带 ±4% 柔边前沿，词内仍按语速线性推进；正在读的词填强调色 #5b63d3，读完 10f 退成主墨色",
-    "读指改成 8px 强调色圆角条带柔影，右缘跟随前沿，读完 6f 从左往右收掉",
-    "标语两行居中，SF Pro 800 / 150px 负字距，未读字用 13% 墨色；柔光背景加颗粒",
-    "底部加 48 根竖条的旁白波形：词内起伏、换气处回落，已播部分着强调色，作静音预览的参照"
+    "look 换成 ember 发布会开场：暖黑舞台、主光从字后左上打来、几粒余烬火星缓慢上飘；176px 句子大小写两行左对齐「Ship faster. / Break nothing.」",
+    "填色改成\"引信\"：background-clip:text 渐变按词内进度揭开，前沿是一道金白热边、已读区橙色，读中叠同形泛光、前沿每 2.5f 迸一粒火星，读完 14f 冷却成奶白",
+    "补全语境：左上眉题（Ferrum Keynote — Opening）、左下讲者署名条（头像 + Maya Okafor + 职位）、右下 72 条旁白波形 + 播放头 + 时间码，已播部分着橙色",
+    "词级时间表跟语速：短词 14f、长词 28f，词间换气 4f、行间换气 16f；读指改 6px 橙→金渐变带泛光，读完 8f 收线",
+    "时长 160f：126f 末词读完、140f 前冷却完成，之后 hold，整幅 1.00→1.03 极缓推近"
   ],
   "issuesEn": [
-    "No exported duration constant: the workbench took 10f from the md, so the before video shows two lines of gray text without a single word filled",
-    "The fill edge was a hard clip-path cut, and words being read and words already read used the same dark color, so it was unclear which word was current",
-    "The reading pointer was an 8px square-cornered black bar that vanished in a single frame when a word finished",
-    "The tagline was laid out flush left with 240px of padding, pulling the composition left; Helvetica on a flat gray ground",
-    "A silent preview had no narration cue at all, so the color changes looked unmotivated"
+    "150px all-caps black text centred on light grey; the fill only went pale grey to indigo to black, with no light or texture",
+    "Just the slogan and a small waveform, with nothing to say someone was speaking",
+    "The fill front was a soft mask edge, so the current reading position was not prominent",
+    "The end frame was two lines of black text, nothing like a keynote shot"
   ],
   "changesEn": [
-    "Exported KARAOKE_FILL_SYNC_DURATION = 150 (the last word finishes filling at f130, color settle and pointer retract finish before f140, then hold to 150)",
-    "The reveal now uses a linear-gradient mask with a ±4% soft leading edge, still advancing linearly at speaking pace; the current word fills in the accent #5b63d3 and settles to the main ink over 10f once read",
-    "The pointer is now an 8px rounded accent bar with a soft shadow; its right edge tracks the fill, and once the word is read it retracts left to right over 6f",
-    "Both lines are centered in SF Pro 800 at 150px with negative tracking, unread words in 13% ink; soft-lit backdrop with grain",
-    "Added a 48-bar narration waveform at the bottom that rises during words, drops at the breath pauses and colors the played portion in the accent, as a cue for silent previews"
+    "Ember keynote-opening look: a warm dark stage lit from behind the text at upper left, with a few embers drifting up; two left-aligned 176px sentence-case lines, Ship faster. / Break nothing.",
+    "The fill is now a fuse: a background-clip:text gradient reveals each word with a gold-white hot edge over orange, adds a matching bloom while reading, throws a spark every 2.5f, and cools to cream 14f after the word ends",
+    "Context added: a Ferrum Keynote — Opening kicker, a speaker lower-third (avatar, Maya Okafor, title), and a 72-bar narration waveform with playhead and timecode, coloured orange as it plays",
+    "Word timing follows speech: 14f short words, 28f long words, 4f breaths between words and 16f between lines; the reading underline is a 6px orange-to-gold glow that retracts over 8f",
+    "160f: the last word finishes at 126f and cools by 140f, then hold; the whole frame pushes in 1.00→1.03"
   ],
+  "look": "ember",
   "mdChanged": true
 }
