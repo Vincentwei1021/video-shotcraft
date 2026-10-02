@@ -1,32 +1,31 @@
 {
   "stem": "UiStripAwayOutro",
   "issues": [
-    "编辑器是灰色骨架条 + 2px 实色灰边，看不出这是个设计工具，蒸发前没有任何\"复杂性\"可以被减掉",
-    "Publish 是灰白小胶囊 + Helvetica，按钮起点 top=30 压在 60px 工具条的下沿上，没对齐",
-    "蒸发层只有 fade + 位移，读作\"调透明度\"；黑场是平的 #111110",
-    "字标是大写占位 WORDMARK；130f 里字标 spring 落定后只剩约 15f 就结束，品牌没 hold 住",
-    "光标直线滑向按钮，点击时没有按压反馈"
+    "编辑器是灰阶占位 UI：侧栏、卡片全是灰条，画布里没有可读的内容，看不出在编辑什么",
+    "蒸发是整块面板一起淡出，中段出现一大块半透明灰色画布，读作调透明度而不是\"复杂性蒸发\"",
+    "Publish 只是一颗 150px 的白色小按钮，迁移到屏心后在黑场上分量不够，升格感弱",
+    "按钮直接淡出交给「WORDMARK」占位字，没有结果的那一拍，结尾海报空洞"
   ],
   "changes": [
-    "编辑器重做为出版级假 UI：深色图层栏（11 个真实图层名、选中态）、属性面板真实字段（X/Y/W/H/Gap/Fill/Shadow）、点阵画布、带交通灯与地址栏的浏览器预览框里放升级后的 fixture 卡片，全部发丝线 + 双层软阴影",
-    "Publish 改为强调色靛蓝渐变按钮（内高光 + 同色外发光），按中心定位垂直居中在工具条里；迁移最快段按每帧位移加最多 3px 拖影，黑场上背后一盘同色柔光随压黑增强",
-    "每个蒸发层加 0→7px 渐增模糊，ease-in 加速离场的错峰顺序与位移量保持原值；黑场换带冷色相的 #0b0c10 + 中心微光 + 随压黑加深的暗角与颗粒",
-    "字标换成图形标 + Acme 的 lockup，spring 定版同时 9px→0 对焦，字标晚 3f 跟随；时长 130→144f，字标落定后 hold 满 1s（R1，md 同步）",
-    "光标 x/y 用不同缓动走手腕弧线，点击前后 4f 笔尖压下 0.88"
+    "look 用 custom 群青：前半是冷白亮场的建站编辑器 Tessel（为镜头设计的大字 UI，画布里是一张正在编辑的咖啡品牌落地页，92px 标题被选中带控制柄），后半是带群青色相的近黑暗场",
+    "蒸发改成逐行 / 逐块 / 逐图标的单元，外围先走（侧栏 → 属性 → 工具条 → 画布区块），每单元 ease-in 离心位移 + 上飘 + 模糊，透明度近线性不留灰色残影",
+    "画布底切成 8×5 镶嵌瓦片，按到屏心的距离从四角向中心逐块收缩并被暗场吸暗——压黑也有秩序，呼应品牌名 Tessel",
+    "按钮 26f 不对称 in-out 滑到屏心并按布局放大到 2.5×（字边锐利）带速度拖影，群青光晕 + 地面光斑；到位后标签上卷成「✓ Live」+ 一次裁进圆角的扫光",
+    "字标接棒：图形标弹簧落定、Tessel 196px 逐字由虚到实、口号逐词升起、网址淡入；开场相机朝按钮缓推 4%，时长 144f → 176f"
   ],
   "issuesEn": [
-    "The editor was grey skeleton bars with 2px solid grey borders, not recognisable as a design tool, so there was no complexity to strip away",
-    "Publish was a small grey-white pill in Helvetica, starting at top=30 so it sat on the bottom edge of the 60px toolbar",
-    "Layers only faded and shifted, reading as an opacity tweak; the black field was flat #111110",
-    "The wordmark was the placeholder WORDMARK, and in 130f only about 15f remained after its spring settled, so the brand never held",
-    "The cursor slid in a straight line and the click had no press feedback"
+    "The editor was grey placeholder UI: grey bars in the sidebar and cards, nothing readable on the canvas, no sense of what was being edited",
+    "Whole panels faded out together, leaving a big semi-transparent grey canvas mid-shot that read as an opacity change rather than complexity evaporating",
+    "Publish was a small 150px white button; once it reached the centre it had too little weight on the black to feel promoted",
+    "The button simply faded to a 'WORDMARK' placeholder with no payoff beat, so the end frame felt empty"
   ],
   "changesEn": [
-    "The editor is now a publication-grade mock: dark layers panel (11 real layer names, selected state), properties panel with real fields (X/Y/W/H/Gap/Fill/Shadow), dotted canvas, and a browser preview with traffic lights and address bar holding the upgraded fixture cards, all hairlines and two-layer soft shadows",
-    "Publish is an indigo gradient button (inner highlight, same-hue glow) centred vertically in the toolbar; the fastest part of its migration gets up to 3px of speed blur, and on black a soft same-colour halo grows with the darkening",
-    "Each evaporating layer gains a 0→7px rising blur while the staggered ease-in order and offsets stay as specified; the black field is cool-tinted #0b0c10 with a faint centre glow plus vignette and grain that deepen with the fade",
-    "The wordmark is a mark + Acme lockup: spring settle with a 9px→0 focus pull, wordmark trailing 3f; duration 130→144f so the settled lockup holds a full second (R1, md updated)",
-    "The cursor follows a wrist arc via separate x/y easing and dips to 0.88 for 4f around the click"
+    "Custom ultramarine look: first a cool-white site builder, Tessel, with large camera-ready UI and a coffee landing page being edited on the canvas (a selected 92px headline with handles), then a near-black void tinted ultramarine",
+    "Evaporation now works per row, block and icon, outside in (sidebar, inspector, toolbar, canvas blocks); each unit leaves with ease-in outward drift, a slight rise and blur, and near-linear opacity so no grey ghosts remain",
+    "The canvas background is cut into 8x5 tiles that shrink and darken into the void from the corners toward the centre, so even the blackout is ordered and echoes the Tessel name",
+    "The button glides to centre on a 26f asymmetric in-out with speed blur and is laid out at 2.5x so the text stays sharp, with an ultramarine halo and floor glow; it then rolls its label to '✓ Live' with one sheen clipped to its corners",
+    "Logo handoff: the mark springs in, 'Tessel' at 196px resolves letter by letter from blur, the tagline rises word by word and the URL fades in; a 4% push toward the button opens the shot; 144f to 176f"
   ],
+  "look": "custom",
   "mdChanged": true
 }

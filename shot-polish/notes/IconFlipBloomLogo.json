@@ -1,32 +1,31 @@
 {
   "stem": "IconFlipBloomLogo",
   "issues": [
-    "wordmark 是 translateX −70→0 + blur 横向扫出，卡片 md 自己标注为待改项（应逐字由大变小落位）",
-    "背景是死平的 G.bg 灰，图标悬在空中没有任何接地感，晃动与翻扁看不出重量",
-    "花形 mark 是五片平涂 teal 椭圆，没有体积和受光",
-    "字体回落到 Helvetica 700、字距外放；mark 让位 −420px 后 lockup 整组偏左约 50px",
-    "没有导出时长常量"
+    "浅灰死平底 + 灰黑线性小图标，画面空，像图标库截图而不是品牌收尾",
+    "翻转是 scaleX 压扁的 2D 假翻，没有透视，最薄处也没有任何\"变身\"的瞬间",
+    "花形 mark 是 5 个椭圆叠成的海星形，单层、平涂，缺少品牌感",
+    "字标直接用了真实品牌名，且落定后画面完全静止"
   ],
   "changes": [
-    "wordmark 改为逐字由大变小落位：scale 1.9→1 + blur 14→0 联动（snappy 12f），原点钉基线，错峰 2.2→2.6f 让每字的落位读得清（md 同步去掉待改项）",
-    "背景换柔光 Backdrop（顶部主光 + 一抹 teal 余光 + 暗角 + 颗粒）；图标下方加接地软影，随晃动偏移、翻扁时收窄，绽放后淡去",
-    "花瓣改为沿长轴的三段渐变（瓣根深、瓣尖亮）+ 0.5px 白色高光边，花心加细亮边；anticipation、翻扁、spring 绽放的参数全部保持原值",
-    "字标换系统字体 650 重、−0.035em 字距；mark 让位改 −350px、字标起点 mark+200，整组视觉居中（md 同步）",
-    "补导出 ICON_FLIP_BLOOM_LOGO_DURATION=130，字标 f104 落定后 hold 约 26f"
+    "look 用 custom 温室：带绿色相的近黑舞台 + 顶部淡薄荷天光 + 杏色地面光池 + 浮尘；全片唯一强调是珊瑚→杏色花瓣，品牌改为虚构 AI 问答产品 Pollen",
+    "主角改成 300px 象牙白 app 图标（深绿笑脸笔记本字形）带接触影；预备三次倾斜幅度递增，接触影跟随",
+    "翻身改为 perspective 下真 3D rotateY 0→90°（t³ 加速甩过去）+ 两层残影，侧成一线的那帧亮起象牙色竖线 + 纵向光芒（全片唯一光效）",
+    "绽放改成内外两层 5 瓣泪滴花瓣（SVG 贝塞尔，瓣根珊瑚瓣尖杏色 + 瓣脊高光），闭合态上下交替正好是那条竖线，外层 spring 张开、内层晚 4f 错开 36° 跟随",
+    "mark 让位（位置先到、缩放晚 3f），Pollen 200px 逐字 scale+blur 落定，口号逐词升起；落定后花瓣极缓自转 + 相机推近 2.5%，时长 130f → 150f"
   ],
   "issuesEn": [
-    "The wordmark swept in with translateX −70→0 plus blur, which the card md itself flagged as a to-do (letters should land big-to-small one by one)",
-    "The background was flat G.bg grey and the icon floated with no grounding, so the wobble and flip had no weight",
-    "The flower mark was five flat teal ellipses with no volume or light",
-    "The font fell back to Helvetica 700 with loose tracking, and after the −420px shift the lockup sat about 50px left of centre",
-    "No exported duration constant"
+    "Flat light-grey background with a small grey line icon; the frame was empty and looked like an icon-set screenshot, not a brand ending",
+    "The flip was a 2D scaleX squash with no perspective, and nothing happened at the thinnest moment to sell the transformation",
+    "The flower mark was five flat ellipses in a starfish shape: single layer, no brand feel",
+    "The wordmark used a real brand name, and the frame went completely still after it landed"
   ],
   "changesEn": [
-    "Wordmark letters now land big-to-small: scale 1.9→1 with blur 14→0 (snappy, 12f), origin pinned to the baseline, stagger widened 2.2→2.6f so each landing reads (md to-do removed)",
-    "Background is a soft-light Backdrop (top key light, a hint of teal, vignette, grain); a grounding contact shadow under the icon shifts with the wobble, narrows with the flip and fades after the bloom",
-    "Petals have a three-stop gradient along their length (dark root, bright tip) plus a 0.5px white rim, and the centre gets a fine bright edge; anticipation, flip and spring bloom values unchanged",
-    "Wordmark in the system font at 650 weight with −0.035em tracking; mark shift −350px with the word starting at mark+200, so the lockup is optically centred (md updated)",
-    "Added ICON_FLIP_BLOOM_LOGO_DURATION=130; the wordmark settles at f104 and holds about 26f"
+    "Custom 'conservatory' look: a near-black green stage with a pale mint top light, an apricot floor pool and dust; the only accent is the coral-to-apricot petals, and the brand is now a fictional AI answer product, Pollen",
+    "The hero is a 300px ivory app icon with a dark green smiling-laptop glyph and a contact shadow; the anticipation is three tilts of growing size, with the shadow following",
+    "The flip is a true 3D rotateY 0 to 90 degrees in perspective (t-cubed acceleration) with two lagging ghosts; on the edge-on frame an ivory line and vertical flare light up, the shot's only light effect",
+    "The bloom has two layers of five teardrop SVG petals (coral roots, apricot tips, a ridge highlight); the closed state alternates up and down to form that exact line, the outer ring springs open and the inner ring follows 4f later, offset 36 degrees",
+    "The mark steps aside (position first, scale 3f later), 'Pollen' at 200px lands letter by letter with scale and blur, and the tagline rises word by word; after landing the petals turn very slowly and the camera pushes in 2.5%; 130f to 150f"
   ],
+  "look": "custom",
   "mdChanged": true
 }
