@@ -82,6 +82,8 @@ try {
   serveUrl = await bundle({
     entryPoint: path.join(dir, "index.tsx"),
     publicDir: path.join(ROOT, "public"),
+    // 每次入口路径都不同，webpack 持久缓存永远命中不了，只会在 node_modules/.cache 里堆积（实测 19GB）
+    enableCaching: false,
     webpackOverride: (c) => ({
       ...c,
       resolve: {
