@@ -1,0 +1,28 @@
+{
+  "stem": "MultiplaneReal",
+  "issues": [
+    "背景整页与中景卡几乎同尺寸，只隔一层 2px 模糊，读起来像两份重复的卡片叠在一起，纵深不成立",
+    "前景搜索条细得像一根穿帮的线、前景卡与中景卡同大，近景没有“贴着镜头”的体量",
+    "各层单层阴影深浅一致，没有随深度变化的落影与空气透视",
+    "中景卡的纵向错落是机械的奇偶 40px"
+  ],
+  "changes": [
+    "远景整页缩小一档（2100→1820 宽）+ blur 3px + 降饱和 0.85，上面罩一层上浓下淡的同色空气薄雾（0.42–0.62）",
+    "前景放大一档（搜索条 960 宽、高清卡 560 宽）+ 景深虚化 6px + elevation 40–48 的深远落影，并按 velocity() 求速度给横向 SpeedBlur，掠过时才拖影",
+    "中景卡改两层软影（elevation 14）保持绝对清晰作为主阅读层，纵向错落改为缓和的波形 [10,46,0,38,14,50]",
+    "整体加暗角 0.14 + 颗粒 0.035，底色与页面留白同色，横移不露边"
+  ],
+  "issuesEn": [
+    "The background page and midground cards are nearly the same size, separated only by 2px blur, so it reads as two copies of the same cards stacked; depth doesn't hold",
+    "The foreground search bar is so thin it looks like a stray line, and the foreground card is the same size as the midground ones, with no 'right against the lens' mass",
+    "Every layer has the same single shadow, with no depth-dependent shadows or atmospheric perspective",
+    "Midground vertical offsets are a mechanical odd/even 40px"
+  ],
+  "changesEn": [
+    "The far page is one size smaller (2100→1820 wide) with 3px blur and 0.85 saturation, under a same-colour atmospheric haze that is denser at the top (0.42–0.62)",
+    "The foreground is one size larger (960-wide search bar, 560-wide hi-res card) with 6px defocus and deep elevation-40–48 shadows, plus horizontal SpeedBlur driven by velocity(), so it only smears while passing",
+    "Midground cards get two-layer elevation-14 soft shadows and stay perfectly sharp as the reading layer; the vertical stagger is now a gentle wave [10,46,0,38,14,50]",
+    "Added vignette 0.14 and grain 0.035; the base colour matches the page margin so the pan never exposes an edge"
+  ],
+  "mdChanged": true
+}

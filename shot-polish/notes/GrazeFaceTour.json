@@ -1,0 +1,30 @@
+{
+  "stem": "GrazeFaceTour",
+  "issues": [
+    "UI 是灰阶骨架：Helvetica 回退字体、5–6px 粗边框方块图标、CSS 三角箭头、4px 灰边，整体像线框稿",
+    "每段相机 easeIO 起止都刹停，且交叉淡化窗口里 t 被钳住——每次接力都有 7f 画面冻结",
+    "悬浮元素的影子是灰色重影字，读成“文字重复”而不是投影；全屏暗角把亮面 UI 压成脏灰",
+    "背景霓虹框是整块模糊的粗描边，焦点带在段间突然跳位；没有导出时长常量"
+  ],
+  "changes": [
+    "UI 重做为出版级浅色产品界面：系统字体栈 + 字重层级、统一线性 SVG 图标、3px 发丝线（界面约 2.7x 排版，等效 1px）、单一靛紫强调色（选中 Home 行 / List 视图 / TODAY 徽章 / 当前 tab 下划线），任务行补头像、进度条、到期日；品牌名换成虚构的 Orbit",
+    "运镜改巡航曲线：首段二次缓起、末段缓落、中段匀速，交叉淡化窗口内相机按端点斜率继续外推，接力处不再冻结；每段带 ±1° 缓慢滚转",
+    "同形软影改 brightness(0) 纯色压暗 + 随高度变大变虚变淡（≤0.22），落地收成接触影消失",
+    "暗角改带色相的 #06040e 且跟随焦点，远端压暗减轻，加暗场颗粒；焦点带段间 10f 平滑移动；霓虹框改发光细描边并随相机反向视差漂移",
+    "补导出 GRAZE_FACE_TOUR_DURATION = 150"
+  ],
+  "issuesEn": [
+    "The UI is a greyscale skeleton: Helvetica fallback, 5–6px thick-bordered square icons, CSS triangle arrows and 4px grey borders, like a wireframe",
+    "Each segment's camera brakes to a stop with easeIO, and t is clamped during the crossfade, so every hand-off has a 7-frame freeze",
+    "Floating elements cast grey duplicate text that reads as 'repeated words' rather than shadow, and the full-screen vignette muddies the light UI to grey",
+    "Background neon frames are thick fully blurred strokes, the focus band jumps between segments, and no duration constant was exported"
+  ],
+  "changesEn": [
+    "The UI is rebuilt as a publication-grade light product interface: system font stack with weight hierarchy, a unified line SVG icon set, 3px hairlines (the UI is laid out at ~2.7x, so ≈1px), and a single indigo-violet accent (selected Home row, List view, TODAY badge, active tab underline); task rows gain avatars, progress bars and due dates; the brand is a fictional 'Orbit'",
+    "The camera follows a cruise curve: quadratic ease-in on the first segment, ease-out on the last, constant speed in between; during crossfades it keeps extrapolating along the end slope, so hand-offs never freeze; each segment has a slow ±1° roll",
+    "The same-shape shadow is now a solid brightness(0) darkening that grows larger, softer and fainter with height (≤0.22) and collapses into a contact shadow on landing",
+    "The vignette uses a hued #06040e and follows the focus point, far-side darkening is lighter, dark-scene grain is added, the focus band moves smoothly over 10 frames between segments, and neon frames are thin glowing strokes drifting with counter-parallax",
+    "Exported GRAZE_FACE_TOUR_DURATION = 150"
+  ],
+  "mdChanged": false
+}

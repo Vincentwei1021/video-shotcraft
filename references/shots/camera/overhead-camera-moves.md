@@ -25,11 +25,11 @@ name: overhead-camera-moves
 ## 参数表
 | 参数 | 典型值 | 调节手感 |
 |------|--------|----------|
-| A 俯角 | rotateX 关键帧 [-80, 2.6, -0.9, 0]（f25→68→72→76），transformOrigin 50% 0% | 首版 -55° 太弱：f0 仍见半页，无"窄带"悬念（实渲判例） |
+| A 俯角 | rotateX -80°（f0–25 极缓 creep 到 -77°）→ +2.6°（f68，速度归零）→ 0°（f76），主段不对称 in-out、过冲回落 smooth，transformOrigin 50% 0% | 首版 -55° 太弱：f0 仍见半页，无"窄带"悬念（实渲判例）；分段各用 out-cubic 会在接缝处速度突变 |
 | A 联动 | perspective 600→1200、perspectiveOrigin 5%→40% 随进度插值；scale 3.2→1 + translateY 200→0 | perspective 不联动则俯角初始见不到"只露顶栏" |
 | A 收尾 | 全部动画 f76 结束，145f 留 69f 真静止 | 过冲幅度 ≤3°，再大读作弹簧不是机位 |
 | B pan 段 | 0–55f 只改 translateX +700→-650（in-out cubic），角度不动 | pan 段动角度 = 两段职责糊掉（判例：pan 巡视、drop 表态） |
-| B drop 段 | 55–85f 三通道同跑：rotateX 62→-1.8→0.6→0（out-cubic 过冲）、scale 1→2.04→2.0、translateX -650→0 | 三通道必须同跑；分先后读作两个动作 |
+| B drop 段 | 55–85f 三通道同跑：rotateX 62→-1.8→0.6→0（零速起步的不对称曲线 + smooth 回落过冲）、scale 1→2.04→2.0（起步带 ~5% 预备回缩）、translateX -650→0 | 三通道必须同跑；分先后读作两个动作；pan 静止后直接 out-cubic 起跳是速度突变 |
 | B 卡阵 | 卡片 996×560（16:9 精确比），落版 scale 2.0 恰满屏正视；transform 顺序 translateX→rotateX→scale | 顺序错了 pan 会带出弧线轨迹 |
 | B 地板 | 浅灰网格地板 | 无地板参照，横滑段读不出"相机在动" |
 | B 收尾 | 全部动画 f93 结束，140f 留 47f 真静止 | — |

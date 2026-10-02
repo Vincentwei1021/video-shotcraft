@@ -1,0 +1,32 @@
+{
+  "stem": "Basic3DScene",
+  "issues": [
+    "四张卡各用一种高饱和色相（蓝/紫/绿/橙）堆成彩虹，卡内只有标题 + 两根彩色骨架条",
+    "总览卡 2.2 预除后仍偏大，被前景 STEP 01 卡压住 “See everything” 的字",
+    "相机飞行在空无一物的径向渐变里进行，没有任何空间参照，旋转站读不出“世界在转”",
+    "三段飞行 inOutCubic 对称、无运动模糊，落位后卡片完全静止",
+    "DesignStage 默认 transform 放大，卡内小字按 480 宽栅格化再放大 4 倍"
+  ],
+  "changes": [
+    "统一深色材质卡（上亮下暗微渐变、0.5px 发丝线、顶部内高光、两层深色软影）+ 单一靛蓝强调色；卡内改出版级内容：步号徽标、标题、一句说明、该站 pose 读数 chip（x 520 / ry −40° …）、三点进度路径",
+    "总览卡内容预除改 2.9、总览站 x 220→235，四卡同框互不压字；总览卡内放三步目录",
+    "世界里铺一张 translateZ(−1100) 的远景点阵平面（径向遮罩淡出），飞行与 90° 翻转时有视差和方位感；背景换暗场 Backdrop + 颗粒",
+    "飞行曲线改不对称 bezier(0.62,0,0.22,1)，飞行段做时间采样运动模糊（快门 0.5f，子帧数按相机位移自适应 4–12）；落位后当前卡沿法线浮起 10px、影子变大",
+    "DesignStage 改 raster=\"zoom\"，卡内文字按目标尺寸栅格化"
+  ],
+  "issuesEn": [
+    "Each of the four cards uses its own saturated hue (blue/purple/green/orange), forming a rainbow, and each holds only a title plus two coloured skeleton bars",
+    "Even with the 2.2 pre-divide the overview card is too big and the foreground STEP 01 card covers the 'See everything' text",
+    "The camera flies through an empty radial gradient with no spatial reference, so the rotation stops never read as 'the world turning'",
+    "The three flights use symmetric inOutCubic with no motion blur, and cards sit completely still after landing",
+    "DesignStage's default transform scaling rasterises small card text at 480 wide and then magnifies it 4x"
+  ],
+  "changesEn": [
+    "Unified dark material cards (subtle top-to-bottom gradient, 0.5px hairline, top inner highlight, two-layer dark soft shadow) with a single indigo accent; content is publication-grade: step badge, title, one-line note, pose readout chips for that stop (x 520 / ry −40° …) and a three-dot progress path",
+    "The overview pre-divide is now 2.9 and its stop moves from x 220 to 235, so all four cards share the frame without covering text; the overview card holds a three-step index",
+    "A distant dot-grid plane at translateZ(−1100) with a radial fade gives parallax and orientation during flights and the 90° roll; the background is a dark Backdrop with grain",
+    "Flights use an asymmetric bezier(0.62,0,0.22,1) with temporal-sampling motion blur (0.5f shutter, 4–12 samples adaptive to camera travel); after landing the active card lifts 10px along its normal with a larger shadow",
+    "DesignStage now uses raster=\"zoom\" so card text rasterises at target size"
+  ],
+  "mdChanged": true
+}

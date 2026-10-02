@@ -1,0 +1,32 @@
+{
+  "stem": "OverheadTabletopDrop",
+  "issues": [
+    "工作台按源码第一个数字把时长猜成 55f，只渲到横滑结束，扎入与落版整段缺失",
+    "扎入段 out-cubic 从横滑的静止瞬间满速起跳，三通道过冲关键帧各自重新加速，速度多处突变",
+    "桌面是 2px 灰线网格平铺 + 平灰背景，远端露出“桌子尽头”的硬边，没有光与材质",
+    "页面卡是 2px 灰边 + 单层硬阴影，扎入满屏时卡内容是 1x 栅格化后放大 2 倍，文字发糊（Q2）",
+    "“巡视一圈，就选这张”的选择没有任何表态，目标卡与其它卡完全同等"
+  ],
+  "changes": [
+    "补导出 OVERHEAD_TABLETOP_DROP_DURATION = 140（93f 动作 + 47f 真静止），完整演完横滑→扎入→落版",
+    "扎入改零速起步的不对称曲线 bezier(0.36,0,0.12,1)，scale 通道带 ~5% 预备回缩（先抬机位再扎），f85 过冲顶点速度归零后 smooth 回落到 0° / 2.0",
+    "卡片按落版尺寸 1992×1120 布局（内容 zoom 1.037）再平面内 scale(0.5) 摆上桌，满屏时文字是原生分辨率；边框改 1px 发丝线，阴影改随离桌高度变化的两层软影",
+    "桌面改暖中性哑光台面 + 80/400 两级发丝网格 + 世界内顶灯光池，铺到地平线附近；屏幕空间远端薄雾随俯角收起 + 暗角 + 颗粒",
+    "目标卡在横滑将停时（44–58f）离桌 14px、影子变大变虚，扎入后半程落回槽位，落版严丝合缝"
+  ],
+  "issuesEn": [
+    "The workbench guessed 55f from the first number in the source, so only the pan rendered and the dive and landing were missing",
+    "The dive's out-cubic jumps to full speed from the pan's rest, and each overshoot keyframe re-accelerates, breaking velocity in several places",
+    "The table is a tiled 2px grey grid on flat grey, with a hard 'end of table' edge in the distance and no light or material",
+    "Page cards have 2px grey borders and a single hard shadow, and at full screen their content is a 1x raster magnified 2x, so text blurs (Q2)",
+    "The 'look around, pick this one' choice is never expressed: the target card is treated exactly like the others"
+  ],
+  "changesEn": [
+    "Exported OVERHEAD_TABLETOP_DROP_DURATION = 140 (93f of motion + 47f true hold), so pan, dive and landing all play",
+    "The dive uses a zero-velocity-start asymmetric curve bezier(0.36,0,0.12,1); the scale channel has a ~5% anticipation dip (camera lifts before plunging), and after reaching the overshoot at f85 with zero velocity it eases smoothly back to 0° / 2.0",
+    "Cards are laid out at the landing size 1992×1120 (content zoom 1.037), then scaled 0.5 in-plane onto the table, so full-screen text is native resolution; borders are 1px hairlines and shadows are two-layer, varying with height above the table",
+    "The table is a warm-neutral matte surface with an 80/400 two-level hairline grid and an in-world overhead light pool, extended to near the horizon; screen-space far haze fades with the tilt, plus vignette and grain",
+    "As the pan settles (44–58f) the target lifts 14px with a larger, softer shadow, then drops back into its slot during the second half of the dive, so the landing lines up exactly"
+  ],
+  "mdChanged": true
+}

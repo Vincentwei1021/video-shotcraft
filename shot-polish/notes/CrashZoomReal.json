@@ -1,0 +1,32 @@
+{
+  "stem": "CrashZoomReal",
+  "issues": [
+    "急推前 40f 全景完全死帧，机位没有任何生命感，急推缺少蓄力",
+    "CameraMotionBlur 在急推前后的近静止帧把底色压灰、卡片偏黄，出现一拍色闪",
+    "回弹段沿用 ease-in 曲线，回收到 2.45 时速度骤停，读作硬刹而不是弹性",
+    "到位后周边卡与目标卡同等亮度，没有“点名”焦点，视线不集中",
+    "快速段固定采样，最快帧回波间距大于字高，出现台阶状重影"
+  ],
+  "changes": [
+    "全景段加 1→1.02 的 smooth 极缓 creep，急推前 8f 预备回拉到 0.99（先退后冲）",
+    "急推改 quart-in 级 EASE.exit，速度峰值落在到位帧；回弹改阻尼余弦（τ=2.2f、半周期 5.2f），一次可见回弹、下冲 <1%",
+    "自写时间采样运动模糊替代 CameraMotionBlur：快门 0.55f，逐层 opacity 1/(i+1) 等权平均，子帧数按画面位移/14px 自适应（上限 40），只在 40–47f 生效",
+    "到位后 14f 内目标卡外一圈周边压暗 7%，目标卡生出 elevation 8 的两层软影，视线按在目标卡上",
+    "暗角随急推从 0.08 加深到 0.24，落定后退到 0.12 收边"
+  ],
+  "issuesEn": [
+    "The 40-frame wide hold before the push is completely dead, with no life in the camera and no wind-up",
+    "CameraMotionBlur greys the background and yellows the cards on near-static frames around the push, causing a colour flash",
+    "The rebound reuses the ease-in curve, so it slams to a stop at 2.45 and reads as a hard brake rather than elasticity",
+    "After landing, neighbour cards are as bright as the target, so there is no 'call-out' focus",
+    "A fixed sample count leaves echo spacing larger than the text height on the fastest frames, causing stepped ghosting"
+  ],
+  "changesEn": [
+    "Added a smooth 1→1.02 creep during the wide hold and an 8-frame wind-up pull-back to 0.99 before the crash",
+    "The crash now uses a quart-in EASE.exit with peak speed at the hit frame; the rebound is a damped cosine (τ=2.2f, half-period 5.2f) with one visible bounce and <1% undershoot",
+    "Replaced CameraMotionBlur with custom temporal sampling: 0.55f shutter, layers at opacity 1/(i+1) for an exact average, sample count adaptive to on-screen travel/14px (max 40), only on frames 40–47",
+    "Within 14 frames of landing the surroundings dim by 7% and the target card gains a two-layer elevation-8 soft shadow, pinning the eye on it",
+    "Vignette deepens from 0.08 to 0.24 during the push and relaxes to 0.12 after landing"
+  ],
+  "mdChanged": true
+}

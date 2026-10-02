@@ -1,0 +1,28 @@
+{
+  "stem": "DollyZoomReal",
+  "issues": [
+    "整页与卡群锁在同一层统一 scale 1→2.25，层间没有速度差，读作“背景放大”而不是 dolly-zoom 的空间拉伸",
+    "背景卡群位置随手摆放，互相叠压、还压到主体边缘，开场构图拥挤",
+    "所有层同一 blur，景深没有远近层次；单层硬阴影，主体“钉住感”弱",
+    "背景平底色无暗角与颗粒，推拉的压迫感只靠缩放"
+  ],
+  "changes": [
+    "按真实 dolly-zoom 光学分层：机位后退 R 倍时各层缩放 R(1+δ)/(R+δ)——整页 δ=6 → 1.91x、卡群 δ=1.2 → 1.43x、贴身搜索条 δ=0.3 → 1.17x，越远膨胀越猛",
+    "卡群重排成围绕主体的六卡环（互不重叠、不压主体），主体身后加一条近景搜索条做速度参照",
+    "景深按深度渐浅：整页 blur 1→6px、卡群 0→2.6px、近景 0→0.8px；整页与卡群之间加同色空气薄雾（0.38→0.5）",
+    "主体与卡片改两层软影，主体 elevation 14→40 随进程加深；暗角 0.1→0.32 随推拉收紧 + 极弱颗粒"
+  ],
+  "issuesEn": [
+    "The page and card cluster share one layer with a uniform 1→2.25 scale, so there is no speed difference between layers; it reads as 'background zooms' rather than dolly-zoom spatial stretching",
+    "Background cards are placed ad hoc, overlapping each other and the subject's edges, so the opening composition is crowded",
+    "Every layer has the same blur, so depth of field has no near/far layering; a single hard shadow weakens the 'pinned subject' feel",
+    "The flat background has no vignette or grain, so the push-pull pressure comes from scaling alone"
+  ],
+  "changesEn": [
+    "Layers follow real dolly-zoom optics: when the camera pulls back R×, each layer scales by R(1+δ)/(R+δ) — page δ=6 → 1.91x, card ring δ=1.2 → 1.43x, close search bar δ=0.3 → 1.17x — so farther layers swell harder",
+    "Cards are rearranged into a six-card ring around the subject (no overlaps, clear of the subject), with a near search bar behind the subject as a speed reference",
+    "Depth of field shallows with depth: page blur 1→6px, ring 0→2.6px, near layer 0→0.8px; a same-colour atmospheric haze (0.38→0.5) sits between page and cards",
+    "Subject and cards use two-layer soft shadows, with the subject's elevation deepening 14→40; the vignette tightens 0.1→0.32 with the move, plus very light grain"
+  ],
+  "mdChanged": true
+}
