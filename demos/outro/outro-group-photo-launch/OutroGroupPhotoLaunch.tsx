@@ -9,6 +9,7 @@
 // 景深；落定后 sign-off hold 30f。outro 不加解说 caption 保持干净。
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { PageCam2D } from '../../_fixtures/PageCam2D';
+import { EASE, Grain, SpeedBlur, ramp, velocity } from '../../_fixtures/Polish';
 import layout from '../../_textures/live-layout.json';
 
 export const OUTRO_GROUP_PHOTO_LAUNCH_DURATION = 145;
@@ -41,8 +42,8 @@ type FlyEl = {
 // render order = cue order, so later arrivals stack on top
 const ELS: FlyEl[] = [
   { key: 'nav', file: 'nav.png', w: 1920, h: 61, cx: 960, cy: 84, scale: 0.62, rot: 0, dx: 0, dy: -120, radius: 10, cue: 4 },
-  { key: 'card4', file: 'card4-hires.png', w: 358, h: 312, cx: 300, cy: 400, scale: 0.72, rot: -5, dx: -500, dy: 0, radius: 16, cue: 7 },
-  { key: 'card1', file: 'card1.png', w: 358, h: 288, cx: 1630, cy: 380, scale: 0.68, rot: 4, dx: 500, dy: 0, radius: 16, cue: 10 },
+  { key: 'card4', file: 'card4-hires.png', w: 358, h: 312, cx: 280, cy: 300, scale: 0.72, rot: -5, dx: -500, dy: 0, radius: 16, cue: 7 },
+  { key: 'card1', file: 'card1.png', w: 358, h: 288, cx: 1640, cy: 318, scale: 0.68, rot: 4, dx: 500, dy: 0, radius: 16, cue: 10 },
   { key: 'paper1', file: 'paper1.png', w: 1104, h: 225, cx: 1460, cy: 730, scale: 0.5, rot: -3, dx: 450, dy: 260, radius: 12, cue: 13 },
   { key: 'card7', file: 'card7.png', w: 358, h: 312, cx: 260, cy: 800, scale: 0.6, rot: 3, dx: -400, dy: 300, radius: 16, cue: 16 },
   { key: 'paper3', file: 'paper3.png', w: 1104, h: 225, cx: 620, cy: 930, scale: 0.48, rot: 2, dx: 0, dy: 320, radius: 12, cue: 19 },
@@ -52,6 +53,7 @@ const ELS: FlyEl[] = [
 ];
 
 // 20 gold dust motes, all parameters index-derived (deterministic)
+// 质感：每颗带一圈暖光晕（亮场上才看得见"金"），另加 6 颗前景失焦大光斑（bokeh）做景深层
 const DUST = Array.from({ length: 20 }, (_, i) => ({
   x: (i * 439 + 137) % 1920,
   y0: (i * 613 + 271) % 1080,
@@ -59,8 +61,15 @@ const DUST = Array.from({ length: 20 }, (_, i) => ({
   swayAmp: 9 + (i % 4) * 5,
   swayFreq: 0.022 + (i % 3) * 0.008,
   phase: (i * 0.83) % (Math.PI * 2),
-  size: 2 + (i % 3) * 0.5,
-  opacity: 0.15 + ((i * 7) % 5) * 0.05,
+  size: 2.4 + (i % 3) * 0.9,
+  opacity: 0.35 + ((i * 7) % 5) * 0.09,
+}));
+const BOKEH = Array.from({ length: 6 }, (_, i) => ({
+  x: (i * 701 + 260) % 1920,
+  y0: (i * 389 + 640) % 1080,
+  rise: 0.55 + (i % 3) * 0.2,
+  size: 14 + (i % 3) * 7,
+  opacity: 0.1 + (i % 2) * 0.06,
 }));
 
 export const OutroGroupPhotoLaunch: React.FC = () => {
@@ -73,10 +82,9 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
   const rule = interpolate(frame, [58, 70], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.bezier(0.3, 0, 0.2, 1),
   });
-  const tag = interpolate(frame, [68, 80], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-  const fadeOut = interpolate(frame, [duration - 12, duration], [1, 0], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
+  const tag = ramp(frame, 68, 12, EASE.out);
+  // 收尾淡到暖墨色（显式底色，不淡到透明），ease-in：先慢后快地"熄灯"
+  const fadeOut = 1 - ramp(frame, duration - 12, 11, EASE.exit); // 末帧恰好全暗，定格尾帧干净
   const recede = interpolate(frame, [42, 50], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
   });
@@ -85,9 +93,8 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
   const craneT = interpolate(frame, [0, 40], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: CRANE_EASE,
   });
-  const pushT = interpolate(frame, [40, duration], [0, 1], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
+  // 缓推从零速起步（与 crane 的减速收尾衔接，避免 f40 处速度突变）
+  const pushT = ramp(frame, 36, duration - 36, EASE.smooth);
   const camScale = 1.06 - 0.06 * craneT + 0.035 * pushT;
   const camTilt = 4 * (1 - craneT);
 
@@ -100,7 +107,7 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
   });
 
   // stage light behind the wordmark
-  const stageLight = interpolate(frame, [42, 50, 58], [0, 0.5, 0.25], {
+  const stageLight = interpolate(frame, [42, 50, 58], [0, 0.55, 0.32], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
   });
   const vignette = interpolate(frame, [42, 54], [0, 0.1], {
@@ -121,6 +128,7 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
   });
 
   return (
+    <AbsoluteFill style={{ background: '#0f0d0a' }}>
     <AbsoluteFill style={{ opacity: fadeOut }}>
       {/* group-photo layer under a slow crane-in camera */}
       <AbsoluteFill
@@ -163,57 +171,37 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
                   border: '1px solid oklch(90% .008 82)',
                 }
               : null;
-            const linT = interpolate(frame, [el.cue, el.cue + 12], [0, 1], {
+            // 方向性运动模糊：按屏幕速度（px/帧）沿飞行方向拖影，落地后为 0（替代滞后 ghost 残影）
+            const posAt = (fr: number) => {
+              const tt = interpolate(fr, [el.cue, el.cue + 12], [0, 1], {
+                extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: FLY_EASE,
+              });
+              return [el.dx * (1 - tt), el.dy * (1 - tt)];
+            };
+            const vx = velocity((fr) => posAt(fr)[0], frame);
+            const vy = velocity((fr) => posAt(fr)[1], frame);
+            // 落地压实：过冲回落的那 4f 里接触影收紧、元素 1.5% 轻压
+            const land = interpolate(frame, [el.cue + 9, el.cue + 12, el.cue + 16], [0, 1, 0], {
               extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
             });
-            const showGhost = linT > 0.05 && linT < 0.95;
-            const glow = interpolate(frame, [el.cue + 12, el.cue + 18], [0.35, 0], {
-              extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-            });
-            const showGlow = frame >= el.cue + 12 && frame < el.cue + 18;
-            const glowR = el.w * el.scale * 0.5;
 
             return (
-              <div key={el.key}>
-                {showGhost ? (
-                  <div
-                    style={{
-                      position: 'absolute', left: el.cx - el.w / 2, top: el.cy - el.h / 2,
-                      width: el.w, height: el.h,
-                      transform: `translate(${x + el.dx * 0.08}px, ${y + el.dy * 0.08}px) rotate(${rot}deg) scale(${scale})`,
-                      transformOrigin: 'center center', borderRadius: el.radius, overflow: 'hidden',
-                      opacity: 0.2 * Math.max(0, 1 - linT), filter: 'blur(8px)', ...texture,
-                    }}
-                  >
-                    {el.wbrCrop ? null : (
-                      <Img src={staticFile(`textures/live/${el.file}`)} style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }} />
-                    )}
-                  </div>
-                ) : null}
+              <SpeedBlur key={el.key} vx={vx} vy={vy} amount={0.3} max={22}>
                 <div
                   style={{
                     position: 'absolute', left: el.cx - el.w / 2, top: el.cy - el.h / 2,
                     width: el.w, height: el.h,
-                    transform: `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale})`,
+                    transform: `translate(${x}px, ${y}px) rotate(${rot}deg) scale(${scale * (1 - 0.015 * land)})`,
                     transformOrigin: 'center center', borderRadius: el.radius, overflow: 'hidden',
-                    boxShadow: shadow, opacity: settledOpacity, filter: `saturate(${saturate})`, ...texture,
+                    boxShadow: land > 0.01 ? `0 ${10 - 5 * land}px ${24 - 12 * land}px rgba(30,25,18,${0.16 + 0.06 * land}), 0 2px 6px rgba(30,25,18,${0.08 + 0.06 * land})` : shadow,
+                    opacity: settledOpacity, filter: `saturate(${saturate})`, ...texture,
                   }}
                 >
                   {el.wbrCrop ? null : (
                     <Img src={staticFile(`textures/live/${el.file}`)} style={{ position: 'absolute', inset: 0, width: el.w, height: el.h, display: 'block' }} />
                   )}
                 </div>
-                {showGlow ? (
-                  <div
-                    style={{
-                      position: 'absolute', left: el.cx - glowR, top: el.cy - glowR,
-                      width: glowR * 2, height: glowR * 2, borderRadius: '50%',
-                      background: 'radial-gradient(circle, oklch(78% 0.13 70 / 0.9), oklch(78% 0.13 70 / 0) 70%)',
-                      opacity: glow, mixBlendMode: 'multiply',
-                    }}
-                  />
-                ) : null}
-              </div>
+              </SpeedBlur>
             );
           })}
         </AbsoluteFill>
@@ -224,12 +212,28 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
         {DUST.map((d, i) => {
           const y = (((d.y0 - frame * d.rise) % 1080) + 1080) % 1080;
           const x = d.x + Math.sin(frame * d.swayFreq + d.phase) * d.swayAmp;
+          const twinkle = 0.7 + 0.3 * Math.sin(frame * 0.21 + d.phase * 3);
           return (
             <div
               key={i}
               style={{
                 position: 'absolute', left: x, top: y, width: d.size, height: d.size,
-                borderRadius: '50%', background: 'oklch(75% 0.08 85)', opacity: d.opacity,
+                borderRadius: '50%', background: 'oklch(78% 0.085 80)', opacity: d.opacity * twinkle,
+                boxShadow: `0 0 ${d.size * 2.5}px ${d.size * 0.6}px oklch(84% 0.08 82 / 0.6)`,
+              }}
+            />
+          );
+        })}
+        {/* 前景失焦光斑：大而虚、上飘更快，压在合影最前面做景深 */}
+        {BOKEH.map((b, i) => {
+          const y = (((b.y0 - frame * b.rise) % 1180) + 1180) % 1180 - 50;
+          return (
+            <div
+              key={`b${i}`}
+              style={{
+                position: 'absolute', left: b.x, top: y, width: b.size, height: b.size, borderRadius: '50%',
+                background: 'radial-gradient(circle, oklch(86% 0.1 82 / 0.9) 0%, oklch(86% 0.1 82 / 0.35) 55%, oklch(86% 0.1 82 / 0) 72%)',
+                opacity: b.opacity, filter: 'blur(2px)',
               }}
             />
           );
@@ -274,7 +278,11 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
       {/* wordmark sign-off */}
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', pointerEvents: 'none' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontFamily: SERIF, fontSize: 148, fontWeight: 600, color: 'oklch(18% 0.006 82)', letterSpacing: `${wordSpacing}em`, display: 'flex' }}>
+          <div style={{
+            fontFamily: SERIF, fontSize: 148, fontWeight: 600, color: 'oklch(18% 0.006 82)', letterSpacing: `${wordSpacing}em`, display: 'flex',
+            // letterpress：下沿 1px 纸面高光 + 一层极软的环境影，让字标"压"在合影之上而不是浮在纸上
+            textShadow: '0 1px 0 rgba(255,253,248,0.75), 0 14px 36px rgba(60,44,24,0.14)',
+          }}>
             {LETTERS.map((ch, i) => {
               const delay = Math.round(42 + i * 1.8);
               const t = interpolate(frame, [delay, delay + 8], [0, 1], {
@@ -302,11 +310,17 @@ export const OutroGroupPhotoLaunch: React.FC = () => {
               </>
             ) : null}
           </div>
-          <div style={{ fontFamily: MONO, fontSize: 25, letterSpacing: '0.14em', color: 'oklch(50% 0.006 82)', marginTop: 30, opacity: tag, textTransform: 'uppercase' }}>
+          <div style={{
+            fontFamily: MONO, fontSize: 32, letterSpacing: '0.16em', color: 'oklch(42% 0.008 82)', marginTop: 30, textTransform: 'uppercase',
+            opacity: tag, transform: `translateY(${(1 - tag) * 6}px)`,
+          }}>
             Team Research Console
           </div>
         </div>
       </AbsoluteFill>
+      {/* 极弱胶片颗粒：大面积奶白纸面防色带 */}
+      <Grain opacity={0.045} />
+    </AbsoluteFill>
     </AbsoluteFill>
   );
 };

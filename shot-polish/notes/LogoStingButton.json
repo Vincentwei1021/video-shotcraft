@@ -1,0 +1,32 @@
+{
+  "stem": "LogoStingButton",
+  "issues": [
+    "收黑与 LOGO 段是大面积纯 #000，没有任何空气感，像黑屏而不是片尾卡",
+    "LOGO 是白方块套黑方块 + Helvetica 800 粗体 ACME，字距外放，像占位图标",
+    "LOGO 入场只有 opacity+scale 同时出现，图形与字标同帧到位，没有跟随",
+    "彩蛋是把灰骨架 dashboard 放大 2.4 倍的局部，读不出是什么按钮，tick 是一颗悬空的灰圆",
+    "上一镜尾巴是静止截图，压暗时画面完全不动"
+  ],
+  "changes": [
+    "深场改为带冷色相的 #0a0b0f + 随 LOGO 亮起的中心柔光斑 + 暗角，黑场与 LOGO 段共用同一张底，硬切回来像素一致",
+    "LOGO 重做：深钢色圆角方块（顶部内高光、面光渐变、双层阴影）里白方块与靛蓝圆片错叠，字标 Acme 系统字体 650 重 112px、负字距",
+    "入场是对焦：blur 8→0px + scale 0.96→1（snappy 曲线 10f），字标晚 2f 并自左 14px 滑入落定",
+    "彩蛋换成按目标尺寸布局的微距按钮行（v2.0 / Join the beta / Not now），焦外前景虚化、12f 内前推 3.5%，光标 f2–3 按下按钮压缩 3%，tick 圆点仍只亮第 4–5f",
+    "上一镜尾巴继续缓推 1.0→1.03，f14–24 用 ease-in 压暗到深场；补导出 LOGO_STING_BUTTON_DURATION=142"
+  ],
+  "issuesEn": [
+    "The fade-to-black and logo sections were flat pure #000 with no atmosphere, reading as a dead screen rather than an end card",
+    "The logo was a white square inside a black square plus Helvetica 800 ACME with loose tracking, like a placeholder icon",
+    "The logo entrance was opacity+scale only, with mark and wordmark landing on the same frame and no follow-through",
+    "The easter egg was a 2.4x crop of the grey skeleton dashboard, unreadable as a button, with a floating grey tick dot",
+    "The tail of the previous shot was a frozen still while it darkened"
+  ],
+  "changesEn": [
+    "Dark field is now a cool-tinted #0a0b0f with a soft centre glow that lights with the logo plus a vignette; black gap and logo share one background so the hard cut back is pixel-identical",
+    "Logo rebuilt: a dark steel rounded square (inner top highlight, face light gradient, two-layer shadow) with an overlapping white square and indigo disc, wordmark Acme in the system font at 650 weight, 112px, negative tracking",
+    "The entrance is a focus pull: blur 8→0px + scale 0.96→1 on a snappy 10f curve, with the wordmark 2f behind sliding in 14px from the left",
+    "The egg is now a macro button row laid out at final pixel size (v2.0 / Join the beta / Not now) with a defocused foreground, a 3.5% push over 12f, the cursor pressing the button at f2–3 (3% squash) and the tick dot still lit only on f4–5",
+    "The previous shot's tail keeps pushing 1.0→1.03 and darkens with ease-in over f14–24; added LOGO_STING_BUTTON_DURATION=142"
+  ],
+  "mdChanged": true
+}

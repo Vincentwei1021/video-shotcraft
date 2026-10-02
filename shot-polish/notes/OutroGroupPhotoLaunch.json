@@ -1,0 +1,32 @@
+{
+  "stem": "OutroGroupPhotoLaunch",
+  "issues": [
+    "每个元素落地都放一团 multiply 琥珀色径向光，在奶白纸面上读作一块块脏污渍，而且 9 个元素逐个发光（Q4 群发）",
+    "飞行拖影是滞后 8% 的单层模糊副本，读作重影而不是速度",
+    "字标 148px 横跨画面，左右两张卡片的文字直接压在 \"AI\" 和 \"Lab\" 下面，信息打架",
+    "金尘是 2–3px、最高 0.35 透明度的小点，在亮场上几乎看不见；缓推在 f40 从静止直接以匀速起步",
+    "副标题 TEAM RESEARCH CONSOLE 只有 25px（<3% 帧高）；结尾淡到透明，末帧是一张半灰的脏画面"
+  ],
+  "changes": [
+    "去掉逐个落地光斑，改为落地压实：过冲回落 cue+9→16f 内接触影收紧、元素 1.5% 轻压，靠运动本身表达到位",
+    "飞行段改用按屏幕速度计算的方向性运动模糊（SpeedBlur，0.3×px/帧、封顶 22），落地自动归零",
+    "左右两张卡片上移到 y≈300/318，给字标留出干净的横带；字标加 letterpress 下沿纸面高光 + 极软环境影，舞台光余量 0.25→0.32",
+    "金尘 2.4–4.2px 带暖光晕、0.35–0.7 透明度并微闪，另加 6 颗前景失焦光斑做景深；缓推改为 36f 起 in-out 零速起步，接 crane 不突变",
+    "副标题提到 32px 并带 6px 上移落座；收尾显式淡到暖墨色 #0f0d0a（ease-in，末帧恰好全暗），全片叠极弱颗粒"
+  ],
+  "issuesEn": [
+    "Every element landed with a multiply amber radial glow that read as dirty stains on the cream paper, and all 9 elements flashed one by one (a Q4 mass-glow violation)",
+    "The flight trail was a single blurred copy lagging 8%, reading as a double image rather than speed",
+    "The 148px wordmark spanned the frame and the side cards' text sat directly under \"AI\" and \"Lab\", so the two fought",
+    "Gold dust was 2–3px dots at most 0.35 opacity, almost invisible on the bright field; the slow push started at constant speed from rest at f40",
+    "The TEAM RESEARCH CONSOLE subtitle was only 25px (<3% of frame height); the ending faded to transparent, leaving a murky half-grey last frame"
+  ],
+  "changesEn": [
+    "Removed the per-element landing glow in favour of a landing settle: over cue+9→16f the contact shadow tightens and the element squashes 1.5%, so arrival is told by motion alone",
+    "Flight now uses speed-driven directional motion blur (SpeedBlur, 0.3×px/frame, capped at 22) that drops to zero on landing",
+    "The two side cards moved up to y≈300/318 to leave a clean band for the wordmark; the wordmark gets a letterpress paper highlight plus a very soft ambient shadow, and the stage-light hold rises 0.25→0.32",
+    "Gold dust is now 2.4–4.2px with a warm halo at 0.35–0.7 opacity and a gentle twinkle, plus 6 defocused foreground bokeh for depth; the push eases in from rest at 36f so it hands off from the crane without a kink",
+    "Subtitle raised to 32px with a 6px settle; the ending fades explicitly to warm ink #0f0d0a (ease-in, fully dark on the last frame), with faint grain over the whole shot"
+  ],
+  "mdChanged": true
+}

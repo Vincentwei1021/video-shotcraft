@@ -1,0 +1,32 @@
+{
+  "stem": "LogoShrinkWordmarkLockup",
+  "issues": [
+    "背景是死平的近黑，霓虹大环的能量收束后画面里没有任何余韵",
+    "大环只做缩放，双弧缺口全程不动，高速缩小段没有速度感",
+    "落位刹车只有 6% 过冲，没有\"盖章\"的冲击读数",
+    "红色标语 #e0342c 和紫色霓虹撞色，字体回落到 Helvetica 800",
+    "lockup 整组偏左约 20px（图标左移量与字标宽度没对齐），标语却按全幅居中"
+  ],
+  "changes": [
+    "深场改为冷色纵向渐变 + 暗角 + 原生像素颗粒，加一团随大环同步坍缩（半径 150→34）的紫色能量光晕，落位后回落成图标背后的微光",
+    "收束途中双弧减速自转 150°（outCubic），高速段按每帧缩放量叠上 1f/2f 两层缩放残影当运动模糊，静止时为 0",
+    "刹车回弹瞬间（t=0.28）放一圈细冲击波：细亮环 + 外圈柔光，扩散 32→140px 时变细变淡，只一次",
+    "字母滑入加 2.5px→0 的对焦模糊，字标换系统字体 760 重并收紧字距；标语改用与霓虹同色相的 #9d94ff，并上移 3px 落座",
+    "左移量 −68→−62px、字母行 50%−40→−32px，lockup 整组视觉居中；改用 zoom 栅格化保证字边锐利（md 同步）"
+  ],
+  "issuesEn": [
+    "The background was flat near-black; once the neon ring collapsed nothing lingered on screen",
+    "The ring only scaled, its gapped arcs never moved, and the fast shrink had no sense of speed",
+    "The landing brake was only a 6% overshoot with no stamp-like impact",
+    "The red tagline #e0342c clashed with the violet neon, and the font fell back to Helvetica 800",
+    "The lockup sat about 20px left of centre (icon shift not matched to wordmark width) while the tagline was centred to the frame"
+  ],
+  "changesEn": [
+    "Dark field is now a cool vertical gradient with vignette and native-pixel grain, plus a violet energy halo that collapses with the ring (radius 150→34) and settles into a faint glow behind the icon",
+    "The arcs spin 150° with outCubic deceleration while shrinking, and the fast section gets 1f/2f scale ghosts sized by per-frame scale change as motion blur, zero at rest",
+    "At the brake rebound (t=0.28) a single thin shockwave ring (bright core plus soft halo) expands 32→140px while thinning and fading",
+    "Letters slide in with a 2.5px→0 focus blur; wordmark in the system font at 760 weight with tighter tracking; tagline now #9d94ff from the neon's hue family, settling up 3px",
+    "Icon shift −68→−62px and letter row 50%−40→−32px so the lockup is optically centred; zoom rasterisation keeps glyph edges sharp (md updated)"
+  ],
+  "mdChanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "stem": "NeonTripleMarquee",
+  "issues": [
+    "灯管只有一层彩色描边 + drop-shadow，亮行读作“彩色描边字”而不是通电的霓虹",
+    "词距按字符数估宽，BETTER 后面空出半屏、STRONGER 却挤在一起，三行节奏不齐",
+    "背景死平的 #050308，亮行的光对墙面没有任何影响，三行像贴在虚空里",
+    "开场与结尾只是整组 opacity 线性淡入淡出，没有霓虹灯牌的通电/断电性格",
+    "没有导出时长常量，工作台靠卡片 md 推断"
+  ],
+  "changes": [
+    "灯管拆成两层：外层彩色玻璃管（暗态 0.35 常亮，亮态加粗并保留 30/70px 双层辉光）+ 内层同色相近白热芯，只在通电时亮",
+    "词距改为 canvas measureText 实测宽度排版：词 + 0.42 倍字号间隔 + 分隔点 + 间隔，三行处处等距、回绕仍无缝",
+    "墙面换成冷紫纵向渐变 + 暗角 + 颗粒，每行身后一条同色柔光带随亮度呼吸（0.03→0.115），亮行把光溢到墙上",
+    "开场 10f 改为确定性的通电闪烁序列，结尾 128–140f 先 ease-in 断电降亮 60%，再整组 20f ease-in 淡出",
+    "滚速、45f 轮唱周期、字号与行距全部保持原值；补导出 NEON_TRIPLE_MARQUEE_DURATION=150"
+  ],
+  "issuesEn": [
+    "The tubes were a single coloured stroke plus drop-shadow, so the lit row read as coloured outline text rather than a powered neon sign",
+    "Word spacing came from a character-count estimate: half a screen of gap after BETTER while STRONGER was cramped, so the rows' rhythm was uneven",
+    "The background was flat #050308 and the lit row cast no light on it; the rows floated in a void",
+    "Entry and exit were plain linear opacity fades with none of a neon sign's power-on/power-off character",
+    "No exported duration constant; the workbench inferred it from the card md"
+  ],
+  "changesEn": [
+    "Each tube is now two layers: an outer coloured glass tube (0.35 when idle, thicker when lit with the original 30/70px double glow) and an inner near-white hot core of the same hue that only lights when powered",
+    "Spacing uses canvas measureText widths: word + 0.42em gap + bullet + gap, so every gap is equal and the wrap stays seamless",
+    "Wall is now a cool violet vertical gradient with vignette and grain, and each row has a soft same-colour light band behind it breathing with brightness (0.03→0.115)",
+    "The first 10f are a deterministic power-on flicker; at 128–140f the sign browns out 60% with ease-in before the 20f ease-in group fade",
+    "Scroll speeds, the 45f round-robin cycle, font size and row spacing are unchanged; added NEON_TRIPLE_MARQUEE_DURATION=150"
+  ],
+  "mdChanged": true
+}
