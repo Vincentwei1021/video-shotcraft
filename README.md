@@ -34,6 +34,23 @@ beat-synced cuts, and film-grade SFX included.
 
 ## ✨ What's new
 
+> [!IMPORTANT]
+> ### 🎬 2026-10 · Library overhaul: every shot re-crafted, the best version kept
+> All 216 demo shots went through two redesign passes: a texture polish, and a
+> full launch-film-grade redesign built on a new visual system
+> (`demos/_fixtures/Look.tsx`: 8 lit stage looks, a type scale, text reveals,
+> light and grain). Every shot was then reviewed side by side (original /
+> polish / redesign) and the strongest version kept: 92 redesigns, 50 polished,
+> 8 originals. 66 weaker shots were retired, so the library is now
+> **124 cards / 150 shots**, all freshly re-rendered in the Gallery.
+>
+> The demos now star video-shotcraft itself: its Frame Chisel mark, wordmark
+> and promo copy. The mark and name come from one shared file,
+> `demos/_fixtures/Brand.tsx`; when the skill builds your film, the agent swaps
+> in your logo and rewrites the copy for your product.
+>
+> 🖼️ [**See the new previews in the Gallery »**](https://vincentwei1021.github.io/video-shotcraft/)
+
 - **One-click film themes:** switch the template between Ink Press, Modern Light, Midnight, Sage, Coral, Iris, Deep Ocean, Obsidian Violet, and Vintage Kraft in the workbench while keeping your edits. [Theme guide](template/THEMES.md).
 
 > [!IMPORTANT]
@@ -71,8 +88,8 @@ beat-synced cuts, and film-grade SFX included.
   into the regular Gallery categories with full recipe cards, native Remotion
   components (`demos/<category>/<name>/<Component>.tsx`, deterministic and
   driven by the normalized progress `t` — see demos/README.md for the wiring
-  snippet), and motion previews. All de-branded: neutral placeholder copy and a
-  single swappable `ACCENT` color variable.
+  snippet), and motion previews. Shipped de-branded (neutral placeholder copy and
+  a swappable `ACCENT` color); since 2026-10 they carry video-shotcraft's own branding.
 - 🎞️ **2026-08 · JianYing (CapCut CN) project export** — after final delivery
   the film can be exported as an editable JianYing draft: the plate is cut per
   shot (retime/reorder/grade), captions are rebuilt as native text tracks
