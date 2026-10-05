@@ -1,0 +1,31 @@
+{
+  "stem": "CardFlipReveal",
+  "issues": [
+    "浅灰底上三张小卡（440×300）只占画面中部一条，正面是灰阶占位线条，背面数字周围大片空白",
+    "左上角留着「CARD FLIP REVEAL」调试标题，没有真正的标题和叙事",
+    "翻转只是匀速转过去再小幅过冲，没有预备、没有抬离桌面的重量感",
+    "正反两面都是白卡，翻面前后画面亮度不变，「揭示」没有冲击"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色暗场 · 香槟金点缀）；正面暗色功能卡、背面瓷白结论卡，翻面 = 从暗到亮的反相，三张翻完变成一排白色数字海报",
+    "内容重编为虚构写作工具 Quill：Compose / Summaries / Search 三张 480×620 竖版 bento 卡（大字 UI ≥28px），背面 158px 数字 3.2× / −41% / 0.2s + 34px 结论 + 「之前 / 用上之后」对照条",
+    "左上金色眉题 + 84px 标题「Three features. Three outcomes.」逐词升起；三卡 1536px 宽占画宽 80%",
+    "翻转三段式：4f 反向后仰预备 → 16f 加速翻到 194° → 弹簧回落 180°；翻转中抬离地面 60px，面随偏离角度压暗，侧棱附近一道随角度走的窄受光",
+    "卡片立在暗色镜面地板上，每张卡有同步翻转的倒影 + 随投影宽度收放的接地影；错峰 12f，全部落定后 hold 78f、相机极缓推近 3%"
+  ],
+  "issuesEn": [
+    "Three small cards (440×300) on a light grey stage occupied only a thin strip mid-frame; the fronts were grey placeholder lines and the backs had large empty areas around the number",
+    "A debug title 'CARD FLIP REVEAL' sat in the top-left corner; there was no real headline or story",
+    "The flip just rotated at an even pace with a small overshoot: no anticipation and no sense of weight lifting off the table",
+    "Both faces were white, so brightness never changed through the flip and the reveal had no punch"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark, champagne-gold accent): dark feature fronts flip to porcelain-white result backs, so each flip is a dark-to-light inversion and the row ends as three white number posters",
+    "Content rewritten for a fictional writing tool, Quill: Compose / Summaries / Search on 480×620 portrait bento cards with large UI (≥28px); backs carry 158px figures 3.2× / −41% / 0.2s, a 34px result line and a before/after comparison bar",
+    "A gold kicker and an 84px headline, 'Three features. Three outcomes.', rise word by word top-left; the three cards span 1536px, 80% of the frame",
+    "Three-phase flip: 4f lean-back anticipation, 16f accelerating turn to 194°, spring settle to 180°; cards lift 60px mid-flip, faces darken with angle, and a narrow edge light tracks the rotation near 90°",
+    "The cards stand on a dark mirror floor with synchronised flipping reflections and contact shadows that track the projected width; 12f stagger, a 78f hold after the last card lands, and a slow 3% push-in"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "CelFlashStomp",
+  "issues": [
+    "浅灰底 + 深灰字，底闪只在 #ececea 与 #cfcfca 两个灰之间切，几乎看不出闪，\"必杀技字卡\"的冲击完全没有",
+    "字是普通无衬线粗体、只占画宽一半左右，三个词大小一样，没有海报感",
+    "左上角留着调试标题「CEL FLASH STOMP」，底部标签条是空的占位色块",
+    "三拍等距 30f，节奏平均，收尾段除了字以外画面完全空"
+  ],
+  "changes": [
+    "look 换成 ember：静息底是带主光的暖黑舞台，落定帧起整块空气在余烬橙 ↔ 暖黑之间每 2f 硬切，末词 8f 且橙更亮、暗更深",
+    "字换成 Avenir Next Condensed Heavy Italic 全大写，按词长定字号（560 / 470 / 520px）铺满画宽 62–72%，奶白字面 + 18 层赤褐挤出厚度，暗底和橙底上都清楚，闪切时文字一个像素不变",
+    "砸落加码：1.32× 悬空 + 两层缩放残影 + 离地投影从大而虚收到贴实，4f 砸到 0.97 再 2f 回正，歪角 ±3° 交替、末词归正",
+    "节拍改成越来越紧：SHIP 30f → FASTER 26f → TODAY，像鼓点加速推向末拍",
+    "删掉调试标题，换成随词更新的 01/03 拍号与版本号；末闪结束同帧起底部发布信息（橙色版本胶囊 + 40px 文案 + 域名）逐块升起，hold 50f 并极缓推近 1.5%"
+  ],
+  "issuesEn": [
+    "Light grey background with dark grey text, and the flash only swapped between two greys (#ececea / #cfcfca), so it barely registered and had none of an anime finisher card's punch",
+    "The words were a plain bold sans at about half the frame width, all the same size, with no poster quality",
+    "A debug title 'CEL FLASH STOMP' sat in the top-left and the bottom label bar was an empty placeholder block",
+    "Three evenly spaced 30f beats made the rhythm flat, and the closing hold had nothing on screen but the word"
+  ],
+  "changesEn": [
+    "Ember look: the resting background is a warm-black lit stage, and from each landing frame the whole background hard-cuts between ember orange and warm black every 2f; the last word gets 8f with a brighter orange and deeper black",
+    "Type is now Avenir Next Condensed Heavy Italic caps, sized per word (560 / 470 / 520px) to fill 62-72% of the width, with a cream face and an 18-layer rust extrusion that reads on both dark and orange, so the text never changes during the flash",
+    "A heavier slam: each word starts at 1.32x with two scaled ghost trails and a lift shadow that tightens from wide and soft to tight, drops to 0.97 in 4f, settles in 2f, alternating +/-3 degrees and squaring up on the last word",
+    "The beats tighten, SHIP 30f, FASTER 26f, then TODAY, like drums accelerating into the final hit",
+    "The debug title is replaced by a 01/03 beat counter and version tag; when the last flash ends, a release line (orange version pill, 40px copy, domain) rises in pieces, followed by a 50f hold with a 1.5% slow push"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

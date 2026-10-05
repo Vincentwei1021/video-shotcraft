@@ -1,0 +1,31 @@
+{
+  "stem": "InvisibleCut",
+  "issues": [
+    "前后两页是灰色占位线框 dashboard，换景前后没有内容与因果，\"无痕\"无从谈起",
+    "遮挡物是一张放大的深色卡片，靠 CameraMotionBlur 12 倍采样 + 4 层残影糊满，贵且读作一块灰影",
+    "背景推挤后要靠延展边补色，画面本身没有空间感，全程浅灰底",
+    "横扫前没有任何动作做铺垫，切换没有动机"
+  ],
+  "changes": [
+    "look 换成 sand（米色 · 赤陶），做成旅行 App：A 沙漠营地详情（860px 程序绘制沙丘日落照片 + 92px 衬线标题 + 价格 + 赤陶 Reserve 大按钮），B 预订成功（168px 衬线「You're going.」+ 票根卡 + 赤陶对勾印章）",
+    "因果一条线：24f 按下 Reserve（缩放 + 压暗 + Reserving… 转圈）→ 失焦前景一晃 → 已订好；版式左右互换，换景幅度大但画面连续（票根顶部还是那张沙丘照片）",
+    "遮挡物改为贴镜头掠过的失焦深棕前景：纯渐变实心核 2600px + 340px 软边（软边即失焦与运动模糊），前缘赤陶轮廓光、前方软投影；去掉 CameraMotionBlur，渲染快数倍",
+    "一条 take：内容全程 +40→−40px 慢横移贯穿切点，切前被风拖左、切后从右 14f 回稳；39f 实心核盖满画幅时硬切",
+    "切后余波：印章弹簧落座（damping 13）+ 对勾描画、说明与确认码错峰升起，hold 40f"
+  ],
+  "issuesEn": [
+    "Both pages were grey wireframe placeholder dashboards with no content and no cause and effect, so there was nothing to make \"seamless\"",
+    "The occluder was an enlarged dark card smeared by 12-sample CameraMotionBlur plus four ghost layers: expensive, and it read as a grey smudge",
+    "The background needed bleed strips to cover the shove; there was no sense of depth, just a flat light-grey page",
+    "Nothing happened before the swipe, so the change had no motive"
+  ],
+  "changesEn": [
+    "Sand look (beige and terracotta) as a travel app: A is a desert-camp listing (860px procedural dune-sunset photo, 92px serif title, price, big terracotta Reserve button); B is the booking confirmation (168px serif \"You're going.\", a ticket stub and a terracotta check seal)",
+    "One causal line: Reserve is pressed at 24f (press scale, darken, Reserving… spinner), a defocused foreground object whips past, and the trip is booked; the layout flips sides, a big change that still reads as continuous (the ticket header reuses the dune photo)",
+    "The occluder is now an out-of-focus dark-brown foreground object grazing the lens: a gradient-only 2600px solid core with 340px soft edges (the edges are the defocus and motion blur), a terracotta rim on the leading edge and a soft shadow ahead; CameraMotionBlur is gone and the render is several times faster",
+    "One take: the content pans slowly from +40 to −40px across the cut; before the cut the wind drags it left, after it B settles from the right over 14f; the hard cut lands at 39f when the core covers the frame",
+    "After the cut the seal springs in (damping 13) and its check draws on, the details and confirmation code rise in stagger, then a 40f hold"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

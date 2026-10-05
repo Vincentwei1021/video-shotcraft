@@ -1,0 +1,33 @@
+{
+  "stem": "PillChipSlotCycleHandled",
+  "issues": [
+    "句子只有 30px 设计坐标（放大后仍只占画宽 ~40%），四周大片空白，像一行 UI 文案而不是主视觉",
+    "冷白底 + 近黑胶囊 + 系统 emoji，没有配色倾向，emoji 字形廉价且跨平台宽度漂移",
+    "三次切换等间距，从头到尾同一个节拍，最后一个词和前面没有任何档次差，没有收束",
+    "幽灵项居中于胶囊而词是左对齐的，滚动时上下项和胶囊内的词对不上列"
+  ],
+  "changes": [
+    "look 换成 sand（米色 · 赤陶 · 浓缩咖啡色）：句子 150px/800 负字距占画宽 ~70%，胶囊 148px 高，配眉题、左下品牌字标、右下 01/04 序号，成一张完整海报",
+    "内容改成虚构财务产品 Tally：Payroll → Invoices → Taxes → Finances，最后一词是结论——胶囊转赤陶实心、图标块反白、地面一次暖色泛光，随后副标题逐词升起",
+    "节奏改渐快：切换起点 44/74/100f，持词 24→12→8f 越换越快，末词落定后长 hold；时长 150→180f",
+    "开场胶囊先以圆形图标块弹出、再展开到首词宽，两侧大字第一次被推开即预告手法；之后宽度用不过冲曲线晚 2f 跟随词（父先动子跟随）",
+    "滚轮缓动加 ~2% 预备回拉 + ~5% 过冲卡入，按滚速竖向运动模糊、胶囊阴影随滚速抬起；幽灵项改为与词左缘对齐 + 半速视差 + 柱面压扁",
+    "图标换成自绘线性 SVG 放进赤陶色圆形图标块，替代系统 emoji"
+  ],
+  "issuesEn": [
+    "The sentence was 30px in design space (still only ~40% of frame width after scaling) in a sea of empty white; it read as a UI string, not a key visual",
+    "Cold white stage, near-black pill and system emoji: no colour direction, and the emoji looked cheap and drift in width across platforms",
+    "Three evenly spaced switches on one flat beat; the last word had no step-up over the others, so nothing concluded",
+    "Ghost items were centred on the pill while the words were left-aligned, so the rows above and below never lined up with the active word"
+  ],
+  "changesEn": [
+    "Sand look (beige, terracotta, espresso): a 150px/800 tight-tracked sentence spans ~70% of the frame with a 148px pill, plus kicker, bottom-left wordmark and a 01/04 index for a complete poster",
+    "Content is a fictional finance product, Tally: Payroll, Invoices, Taxes, then Finances as the conclusion; the pill turns solid terracotta, the icon tile inverts, a single warm floor glow lands and a subline rises word by word",
+    "Accelerating rhythm: switches at 44/74/100f with holds shrinking 24, 12, 8f, then a long hold after the last word; duration 150 to 180f",
+    "The pill first pops as a round icon tile, then opens to the first word, pushing the side words apart as a preview of the technique; width then follows the word 2f late on a non-overshooting curve",
+    "The wheel ease gets ~2% anticipation and a ~5% ratchet overshoot, with speed-based vertical motion blur and a shadow that lifts with roll speed; ghosts are aligned to the word column with half-speed parallax and cylinder squash",
+    "System emoji replaced by custom line icons in terracotta round tiles"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "LightLeakBurn",
+  "issues": [
+    "前后两页是灰色占位线框 dashboard，还压着一行 \"Next Page\" 调试标题",
+    "白底页面上 screen 漏光几乎不显色，只在深色侧栏上读成一块脏棕",
+    "光峰时旧页仍清晰可读，切点没有被真正藏住",
+    "漏光和画面内容无关，光只是叠在页面上的装饰"
+  ],
+  "changes": [
+    "look 换成 ember 暗场，做成相机 App「Ondo」的取景器：A 夜景（星点、新月、山脊剪影、一盏暖窗灯）「Made for the dark.」→ B 黄昏（赤橙天空、半落的太阳）「Made for the light.」，漏光本身就是\"天亮了\"",
+    "取景器 UI 让它像产品：四角取景框、等宽曝光参数（ISO 3200 → ISO 100）、底部模式拨轮，光峰后高亮滑块从 NIGHT 滑到 GOLDEN HOUR",
+    "漏光三段色温（白热核 / 琥珀 / 余烬橙 / 赭红外缘）的拉长椭圆渐变 + 右上缘片门溢光光带，全部 screen 叠加、不用 blur 滤镜",
+    "峰值烧穿加重：brightness +85% / contrast −50% / 40% 暖罩 + 热核 intensity³，A 标题随光强淡到 25%，峰值帧七成以上画面烧白再硬切",
+    "节奏：标题逐词升起 → 24–52f ease-in 蓄力 → 52f 藏切 → 43f ease-out 余温里 B 镜头 1.04→1 落定、B 标题逐词升起，hold 35f"
+  ],
+  "issuesEn": [
+    "Both pages were grey wireframe placeholder dashboards, with a leftover \"Next Page\" debug title on top",
+    "On the white page the screen-blended leak barely showed colour and only read as a muddy brown patch on the dark sidebar",
+    "At the peak the old page was still clearly legible, so the cut wasn't really hidden",
+    "The leak had nothing to do with the content; it was just decoration laid over a page"
+  ],
+  "changesEn": [
+    "Dark ember look as the viewfinder of a camera app, \"Ondo\": A is a night scene (stars, crescent moon, ridge silhouettes, one warm cabin light) with \"Made for the dark.\", B is golden hour (orange sky, setting sun) with \"Made for the light.\", so the leak itself is the sunrise",
+    "Viewfinder UI makes it a product: corner frame marks, mono exposure readout (ISO 3200 → ISO 100) and a mode dial whose highlight slides from NIGHT to GOLDEN HOUR after the peak",
+    "A three-temperature leak (white-hot core, amber, ember orange, rust fringe) built from elongated elliptical gradients plus a gate-flare band along the top-right edge, all screen-blended with no blur filters",
+    "Heavier burn at the peak: brightness +85%, contrast −50%, a 40% warm wash and a core at intensity³; A's title fades to 25% with the light, so over 70% of the frame is blown out on the cut frame",
+    "Rhythm: the title rises word by word, the leak builds with ease-in over 24–52f, the cut hides at 52f, then during the 43f ease-out afterglow B settles from 1.04 to 1 and its title rises word by word, followed by a 35f hold"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

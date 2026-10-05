@@ -1,0 +1,31 @@
+{
+  "stem": "Carousel3D",
+  "issues": [
+    "卡面是红 / 紫 / 蓝的高饱和渐变块 + 「CARD 01」占位字，像配色样卡，读不出是什么产品内容",
+    "整环死匀速自转 5.6s，没有任何一张卡被看清的停顿，也没有主角",
+    "环只占画面左上一小块（设计坐标 92×124 卡），四周大片空黑，没有字幕或信息层",
+    "背景是平的深底，地面与倒影几乎不可见，环像悬在空中"
+  ],
+  "changes": [
+    "look 换成 lime 石墨 + 荧光黄绿：卡片放大到 340×460、半径 700px，整环占画宽约 70%；卡面重做成训练计划卡（mono 编号、生成式图形、72px 大数字、32px 名称）",
+    "转角改为 50% 匀速底 + 50% 分步（每 21f = 8f 停靠 + 13f smooth 换位），整环永远在走但每 45° 推一把再停靠；8 步正好一圈，首尾帧仍可无缝 loop",
+    "正前方的卡按方位角 ±26° 被点亮：荧光描边、图形由石墨灰插值到荧光色、沿法向外推 44px（只平移不旋转，仍永远正立）",
+    "环下方加 mono 编号 + 72px 名称字幕，在裁切窗里随步进上滚换字；左上眉题 + 右上周次做画框",
+    "地面加 2.7 倍半径反光盘 + 随环同转的 96 格刻度环，倒影降到 8% 并加长渐隐，空气透视压暗到 70%；相机仍固定浅俯角"
+  ],
+  "issuesEn": [
+    "The card faces were saturated red / purple / blue gradient blocks with 'CARD 01' placeholder text, like colour swatches with no readable product content",
+    "The ring spun at a dead-constant rate for 5.6s with no pause where any card could be read and no hero",
+    "The ring filled only a small patch of the frame (92×124 cards in design units) surrounded by empty black, with no caption or information layer",
+    "A flat dark ground with barely visible floor and reflection left the ring floating in mid-air"
+  ],
+  "changesEn": [
+    "Switched to the lime look (graphite with neon yellow-green): cards scaled to 340×460 on a 700px radius so the ring spans about 70% of the frame; faces rebuilt as training-plan cards (mono index, generative graphic, 72px stat, 32px name)",
+    "Rotation is now 50% constant base plus 50% stepped (every 21f = 8f dwell + 13f smooth move), so the ring never stops but gets a push-and-dock every 45°; 8 steps make exactly one turn, so the first and last frames still loop seamlessly",
+    "The card facing the camera lights up within ±26° of azimuth: neon outline, graphic colour interpolated from graphite grey to neon, and a 44px push out along its normal (translation only, so it stays upright)",
+    "Added a caption under the ring with a mono index and a 72px name that rolls up in a clipping window on each step; an eyebrow top-left and week counter top-right frame the shot",
+    "The floor gains a 2.7×-radius reflective disc and a 96-tick ring that turns with the carousel, the reflection drops to 8% with a longer fade, and aerial-perspective darkening goes up to 70%; the camera stays locked at a shallow overhead angle"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

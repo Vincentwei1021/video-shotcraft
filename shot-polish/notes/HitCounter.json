@@ -1,0 +1,33 @@
+{
+  "stem": "HitCounter",
+  "issues": [
+    "卡片和背景都是灰白占位块，伤害数字 +1.2k 之类没有意义，连招讲不出功能的价值",
+    "三张卡只占画面中段一条细带，上下大片空灰，计数器是右上角一个小黑块",
+    "灰底 + 靛蓝 + 橙的配色平淡，游戏化的打击感完全没有出来",
+    "命中冲击只有一圈描边环，第三击和第一击力度几乎一样"
+  ],
+  "changes": [
+    "look 自定义「cobalt arcade」：满版高饱和钴蓝色场 + 白卡 + 街机黄，借格斗游戏 combo UI 的语言（黄色斜体 900 字重 + 漫画式硬投影）",
+    "内容改成虚构构建工具 Brickyard 3.0 的三项更新，伤害数字 = 每次推送省下的时间（−48s / −3 min / −12 min），飘走后落进卡片页脚，收尾一行 Up to 16 min back on every push.",
+    "卡片 480×330、标题 48px，槽位预先以虚线 + 大号 01/02/03 立预期；计数器 140→196px 斜体 ×N + 三格热度条逐击点亮",
+    "全局顿帧保留并更可感：背景斜纹滚动、卡片、特效都由同一 remap 时间驱动，命中时整幅一起冻 2f；只有闪白与槽底受光走真实帧",
+    "逐击加码：伤害数字字号 88/104/124、火花数 10/13/16、冲击环外扩递增，计数器脉冲 1.3/1.45/1.6 + 倾斜 −2/−4/−6°；伤害数字改为打在卡面上再上浮，不与计数器撞位",
+    "节奏：间隔 28f 的均匀连招节拍 → 末击后 14f 收尾行逐词升起 → ~2.4s 海报 hold，总长 176f"
+  ],
+  "issuesEn": [
+    "Cards and background were grey placeholder blocks and damage numbers like +1.2k meant nothing, so the combo said nothing about feature value",
+    "The three cards sat in a thin band mid-frame with empty grey above and below; the counter was a small black chip in the corner",
+    "Grey, indigo and orange read flat; there was no game-style punch at all",
+    "Impacts were just one outline ring, and the third hit felt about as strong as the first"
+  ],
+  "changesEn": [
+    "Custom cobalt arcade look: a saturated cobalt colour field, white cards and arcade yellow, borrowing fighting-game combo UI (yellow italic 900 weight with comic hard shadows)",
+    "Content is three updates of a fictional build tool, Brickyard 3.0; each damage number is time saved per push (−48s / −3 min / −12 min) and settles into the card footer, ending on Up to 16 min back on every push.",
+    "480×330 cards with 48px titles; dashed slots with big 01/02/03 set up the expectation; the counter is a 140→196px italic ×N with a three-segment heat bar",
+    "Global hitstop is kept and easier to feel: the scrolling background stripes, cards and effects all run on one remapped clock, so the whole frame freezes 2f per hit; only the flash and slot glow use real frames",
+    "Each hit escalates: damage text 88/104/124px, 10/13/16 sparks, a wider shock ring, counter pulse 1.3/1.45/1.6 and tilt −2/−4/−6°; damage numbers now pop on the card face and rise, so they never collide with the counter",
+    "Rhythm: an even 28f combo beat, the closing line rising word by word 14f after the last hit, then a ~2.4s poster hold; 176f total"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

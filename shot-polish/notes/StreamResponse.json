@@ -1,0 +1,31 @@
+{
+  "stem": "StreamResponse",
+  "issues": [
+    "面板里的字普遍 16–24px，结论句 34px 也只占画面一小块，1080p 小窗里几乎读不出\"结论先到\"",
+    "近黑底 + 深灰面板 + 灰字，整片对比低、没有层次，背景是一张重虚化的参考截图（含真实产品界面）",
+    "结论句一次整句 wipe，没有语义重点，观众不知道该先读哪几个词",
+    "证据行文案是泛泛的 \"Indexed the workspace\" 一类日志，不构成一条可信的因果链"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红，墨绿做完成态），去掉参考截图背景；面板 1440×888 正视居中，身后一抹暖光 + 一张错后的底页做前后景",
+    "为镜头重写内容：虚构研究助手「Wren」回答\"Why did checkout conversion drop last week?\"，结论 54px 衬线大字，6 条证据行 32px + 28px 等宽来源数据，组成可信因果链",
+    "结论按三个语义块依次由虚到实升起，落定后朱红记号笔划过关键短语「release 4.18」，再 hold 12f 才起首条证据",
+    "证据行 cue 56+[0,10,19,27,34,40]，间隔逐渐收紧；图标晚 3f 走 pending 虚环 → 朱红缺口弧 → 墨绿实心勾，正在处理的行底色微暖",
+    "完成态只做一次面板级墨绿描边脉冲，chip Thinking → Done · 38s、页脚换成 Analysis complete；相机 1.04→1.0 微退，尾段静止 28f"
+  ],
+  "issuesEn": [
+    "Most text in the panel was 16–24px and even the 34px summary occupied a small patch of the frame, so \"answer first\" was barely legible in a small 1080p window",
+    "Near-black stage, dark grey panel, grey text: low contrast and no depth, over a heavily blurred reference screenshot that contained a real product's UI",
+    "The summary arrived as one whole-sentence wipe with no semantic emphasis, so viewers didn't know which words to read first",
+    "The evidence rows were generic log lines like \"Indexed the workspace\" that didn't add up to a believable chain of reasoning"
+  ],
+  "changesEn": [
+    "Paper look (warm white paper, ink, vermilion, with deep green for the done state) and no reference-screenshot background; a 1440×888 panel centred and front-on, with a warm glow and an offset under-sheet behind it for depth",
+    "Content rewritten for camera: a fictional research assistant \"Wren\" answers \"Why did checkout conversion drop last week?\" with a 54px serif conclusion and six 32px evidence rows with 28px mono source data that form a believable causal chain",
+    "The conclusion rises out of blur in three semantic chunks; once it lands, a vermilion marker strokes under the key phrase \"release 4.18\", and the first evidence row waits a further 12f",
+    "Evidence rows cue at 56+[0,10,19,27,34,40] with tightening gaps; icons lag 3f and go from a dashed pending ring to a vermilion spinner arc to a solid green check, and the row being processed gets a warm tint",
+    "Completion is a single panel-level green border pulse; the chip changes from Thinking to Done · 38s and the footer to Analysis complete; the camera eases back from 1.04 to 1.0 and the last 28f are still"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

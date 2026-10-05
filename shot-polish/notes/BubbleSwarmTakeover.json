@@ -1,0 +1,31 @@
+{
+  "stem": "BubbleSwarmTakeover",
+  "issues": [
+    "两个场景都是灰色占位 dashboard，转场前后讲不出任何东西，i18n 胶囊和画面内容没有关系",
+    "气泡是均匀的粉紫珠光球，浅灰底上发灰发闷，峰值时整屏是一片模糊的白色色块",
+    "胶囊夹在中层气泡里，峰值时被巨型泡盖成半透明，读不清",
+    "散开直接外推，没有预备，力度平；新场景落定后没有任何揭示动作"
+  ],
+  "changes": [
+    "look 换成 porcelain（冷白 · 钴蓝），转场被赋予语义：虚构本地化产品 Verbatim 的英文落地页被「Hallo! / ¡Hola! / こんにちは」漫过，散开后同一页面已是德文版（EN → DE、语言进度全部 100% ✓）",
+    "页面按镜头重做：1600×900 浏览器窗，104px 两行标题 + 36px 说明 + CTA，右栏语言覆盖率卡；德文版标题逐词由虚到实、状态条错峰亮起",
+    "气泡改成真正的肥皂膜：中心近透明、外缘 conic 薄膜虹彩环（钴蓝 / 紫 / 粉 / 青 / 金）、窗格形镜面反光 + 回光、钴蓝发丝外缘；6 颗巨型泡更厚，按网格兜底遮满",
+    "节奏：涨潮 ease-out 68f → 74f 藏切 → 6f 全体向心内收 3%（预备）→ 30f 径向 ease-in 飞散 + 沿速度拉伸；洗白峰值提到 0.95",
+    "胶囊画在最上层、50px 大字 + 钴蓝语言代码，峰值也读得清；时长 130f → 150f，尾段 26f 干净的德文版海报"
+  ],
+  "issuesEn": [
+    "Both scenes were grey placeholder dashboards, so the transition said nothing, and the i18n capsules had no link to what was on screen",
+    "Bubbles were uniform pink-purple pearls that looked dull and grey on the light background; at the peak the screen was just a blurry white mass",
+    "Capsules sat inside the middle layer and were half-covered by the giant bubbles at the peak, so they were hard to read",
+    "The dispersal pushed straight out with no anticipation and little force, and nothing was revealed after the new scene landed"
+  ],
+  "changesEn": [
+    "Porcelain look (cool white, cobalt) and a transition with meaning: the English landing page of a fictional localisation product, Verbatim, is swamped by 'Hallo! / ¡Hola! / こんにちは', and when the swarm clears the same page is in German (EN → DE, every language at 100% ✓)",
+    "Page rebuilt for the shot: a 1600×900 browser window, a 104px two-line headline, a 36px line and CTA, with a language-coverage card on the right; the German headline resolves word by word from blur and status items light up in sequence",
+    "Bubbles are now real soap film: a nearly clear centre, a conic thin-film iridescent rim (cobalt, violet, pink, cyan, gold), a window-pane specular highlight plus bounce light, and a hairline cobalt edge; the six giant bubbles are denser and grid-placed to guarantee full cover",
+    "Rhythm: 68f ease-out swell → hidden cut at 74f → 6f inward gather of 3% (anticipation) → 30f radial ease-in burst with velocity stretch; the whiteout peak is raised to 0.95",
+    "Capsules draw on top with 50px type and cobalt language codes, legible even at the peak; 130f → 150f with a 26f clean German-page poster at the end"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

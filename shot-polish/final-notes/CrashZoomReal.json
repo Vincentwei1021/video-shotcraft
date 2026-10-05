@@ -1,0 +1,16 @@
+{
+  "stem": "CrashZoomReal",
+  "changed": true,
+  "brand": [
+    "浏览器地址栏虚构域名「foundation.lab/projects」→「localhost:3000/projects」（不编不存在的品牌域名）",
+    "右栏读数（−41% inference cost）讲的是被急推的那张真实卡，数据是镜头主角，保留",
+    "截图纹理页头的站点名「AI Foundation Lab / AI Field Lab」→ 镜刻标志 + video-shotcraft 字标（主控直接改了纹理图，导航项顺延）"
+  ],
+  "brandEn": [
+    "Made-up domain 'foundation.lab/projects' in the URL bar → 'localhost:3000/projects' (no invented brand domain)",
+    "The right-column readout (−41% inference cost) describes the real card being pushed into; that data is the subject, so it stays",
+    "The site name 'AI Foundation Lab / AI Field Lab' in the screenshot textures' header → Frame Chisel mark + video-shotcraft wordmark (the coordinator edited the texture images directly; nav items shifted to fit)"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "BraceExpand",
+  "issues": [
+    "占位文案「Your title」小字（约 1/8 画宽）居中在纯黑底上，画面空、没有层级",
+    "括号与文字字号接近、没有强调色，括号的符号感很弱",
+    "弹开曲线短促，文字不是被括号\"拉\"出来，揭示瞬间就完成",
+    "没有任何背景光、配套信息，落定后就是一张静态小字卡"
+  ],
+  "changes": [
+    "look = midnight 开发者发布会字卡：等宽 300px 电光蓝花括号（带泛光）夹住 164px 800 字重「Edge Functions」，眉题 `// new in Nimbus 3` + 副标逐词浮现",
+    "开场第 0 帧是闪烁的输入光标，6f 被一对内缘相贴的 0.4 倍「{}」硬切替换，先建立符号",
+    "主动作改物理弹簧（≈9% 过冲、一次回弹）：幕布半宽 = (HALF−内缘)·ex·sc、括号中心再外移内缘·sc，clip 宽度严格 = 2x；标题宽度贴满 1224px 内腔，拉到头才露全",
+    "快速段括号按水平速度加方向性运动模糊，泛光峰值跟着过冲走再回落；落定后字距 −0.05→−0.03em 松弛",
+    "背景：编辑器点阵网格（径向渐隐）+ 顶光 + 地平线光带 + 随弹开展宽的冷光反射；尾段 1→1.012 缓推，时长 114→120f"
+  ],
+  "issuesEn": [
+    "Placeholder 'Your title' in small type (about 1/8 of frame width) centred on flat black — empty frame, no hierarchy",
+    "Braces and text are nearly the same size with no accent colour, so the symbol barely registers",
+    "The expand curve is short and the text isn't pulled open by the braces — the reveal is over instantly",
+    "No background light or supporting info; once settled it's a static small title card"
+  ],
+  "changesEn": [
+    "Look = midnight developer-launch title card: 300px mono electric-blue braces with glow framing a 164px 800-weight 'Edge Functions', with a mono eyebrow '// new in Nimbus 3' and a word-by-word subline",
+    "Frame 0 is a blinking text caret; at 6f it hard-cuts to a 0.4× '{}' pair touching at their inner edges, establishing the symbol first",
+    "Main move is a physical spring (~9% overshoot, one bounce): curtain half-width = (HALF−inner)·ex·sc, brace centres offset by inner·sc, clip width exactly 2x; the title fills the 1224px cavity so it's only fully revealed at full stretch",
+    "Braces get directional motion blur from their horizontal speed, glow peaks with the overshoot then decays; letter-spacing relaxes −0.05→−0.03em after landing",
+    "Backdrop: editor dot grid with radial falloff, top key light, horizon band and a cool reflection that widens with the braces; slow 1→1.012 push at the end, duration 114→120f"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

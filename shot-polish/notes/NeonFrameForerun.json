@@ -1,0 +1,31 @@
+{
+  "stem": "NeonFrameForerun",
+  "issues": [
+    "面板内容是 12–17px 的小字工作台，透视压缩后基本读不清",
+    "背景是 18 个随机斜框，与主框没有空间关系，读作杂乱底纹",
+    "悬空\"抬起\"是面板平面内的 2D 位移假象，透视下没有真实的层次视差",
+    "框奔画是匀速描边，没有起跑与相撞的节奏点"
+  ],
+  "changes": [
+    "look 改 aurora：紫→粉渐变灯管用四层描边叠出辉光（宽晕 / 中晕 / 色芯 / 白热芯），两颗白热亮头加速—制动地上下分头奔跑，在右缘中点相撞闪光",
+    "背景重做成同一个框在纵深里的 5 层回声隧道：框合拢后由近到远逐层\"打火\"亮起，终段中段先熄、两端后熄让位",
+    "组件真 3D 悬空（preserve-3d + translateZ 120–170px），面板上落同形剪影软影；按侧栏→主区自上而下错峰 24f 贴落，比点亮晚 ~20f 收尾",
+    "页面重做成为镜头设计的工作台首页：66px 问候、84px 大数字卡、31–32px 导航与任务行，只留 14 个组件",
+    "页面在框合拢后才从黑里浮出，再由暗转亮并带一层自左缘退去的冷紫暗罩；机位 rotateY −30°→−12° 长减速，hold 段续转 1.5°；时长 135→140f"
+  ],
+  "issuesEn": [
+    "Panel content was a workspace in 12–17px type that became unreadable under perspective",
+    "The background was 18 random skewed frames with no spatial relation to the main frame, reading as noise",
+    "The 'lift' was a 2D in-plane offset, so there was no real parallax between layers under perspective",
+    "The frame trace ran at constant speed with no launch or collision beat"
+  ],
+  "changesEn": [
+    "Switched to the aurora look: a violet-to-pink tube built from four stacked strokes (wide halo, mid halo, color core, white-hot core), with two white-hot heads that accelerate and brake around the frame and collide with a flash at the right midpoint",
+    "The background is now a 5-layer echo tunnel of the same frame receding in depth; the layers strike on near-to-far once the frame closes and go out middle-first at the end to hand focus to the panel",
+    "Components really float in 3D (preserve-3d, translateZ 120–170px) with matching silhouette shadows on the panel, and land in 24f drops staggered sidebar then main area, top to bottom, finishing ~20f after the light-up",
+    "The page is a workspace home designed for the lens: a 66px greeting, 84px stat numbers, 31–32px nav and task rows, only 14 parts",
+    "The page emerges from black only after the frame closes, then brightens with a cool violet veil receding from the left edge; the camera eases from rotateY −30° to −12° with a long deceleration and keeps drifting 1.5° in the hold; duration 135→140f"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

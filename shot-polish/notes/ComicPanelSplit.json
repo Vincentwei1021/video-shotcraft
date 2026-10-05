@@ -1,0 +1,31 @@
+{
+  "stem": "ComicPanelSplit",
+  "issues": [
+    "主体是灰白占位 dashboard，三格只是同一张截图的不同裁切，看不出\"同一主体三个机位\"在讲什么",
+    "浅灰纸底 + 灰色卡片，整片没有光、没有强调色，暂停任一帧都不像设计过的画面",
+    "定格期三格只是各自缓推几个百分点，读作截图拼贴",
+    "吃屏后落在一张放大的 1,284 数字卡上，没有结尾海报与文案"
+  ],
+  "changes": [
+    "look 改为自定义「漫画墨」：带红相的墨黑 + 奶油纸色缝线 + 朱砂红强调，格内铺半调网点，像印刷漫画",
+    "主体换成 SVG 矢量绘制的虚构定焦镜头 SAROS 35mm f/1.2：三格 = 3/4 侧拍全身 / 对焦环特写 / 镜片微距，放大到 2.45x 字边依然锐利",
+    "节奏改为 4f 一刀：三刀斜缝 3f 从上往下劈出，同帧硬切弹入 + 白闪，被劈开的区域保留压暗原画面；每格晚 7f 盖章一个漫画旁白框",
+    "保活改为主体自己在工作：对焦环转 26°（距离刻度滑过红色指示）、11 片光圈叶片收拢",
+    "末格 2f 反向回拉后 14f 扫屏，镜片机位同步滑到海报构图并按速度横向拖影；落定后左侧 150px 大标题「See in / the dark.」逐行升起，收尾 hold 50f"
+  ],
+  "issuesEn": [
+    "The subject was a grey placeholder dashboard; the three panels were crops of one screenshot and never read as one subject from three cameras",
+    "Pale grey paper and grey cards with no light or accent; no frame looked designed",
+    "During the hold the panels only crept in by a few percent, reading as a screenshot collage",
+    "The expansion landed on an enlarged '1,284' card with no end poster or copy"
+  ],
+  "changesEn": [
+    "Custom 'comic ink' look: red-tinted ink black, cream paper gutters, a single vermilion accent and halftone dots in each panel",
+    "Subject is a fictional SAROS 35mm f/1.2 lens drawn in SVG: 3/4 full body, focus-ring close-up and glass macro, all vector so text stays sharp at 2.45x",
+    "Cuts land every 4f: each slanted gutter draws top to bottom in 3f, its panel hard-cuts in with a white flash over the darkened original; comic caption boxes stamp in 7f later",
+    "Panels stay alive through the product itself: the focus ring turns 26 degrees past the red index and eleven aperture blades close",
+    "The last panel pulls back 2f then sweeps the screen in 14f with horizontal motion blur, landing on a poster with a 150px 'See in / the dark.' headline and a 50f hold"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

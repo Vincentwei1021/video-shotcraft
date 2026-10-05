@@ -1,0 +1,35 @@
+{
+  "stem": "ValueStaggerGradient",
+  "issues": [
+    "柱群只有画面高度的三分之一，挤在下半屏，上方大片死黑，构图没有重心",
+    "\"值梯度\"只能靠肉眼比高矮去猜：画面里没有任何数字告诉观众每根柱拿到的值",
+    "代码字幕是 9.5px 设计坐标放大的灰色小字，几乎读不出，换句时也看不清换了什么",
+    "第二拍 from:'center' 的原点没有任何视觉标记，中心脉冲读作整排随机抖动",
+    "蓝→紫的霓虹色带和平底配色是最常见的模板味，柱子没有地面、空间与光"
+  ],
+  "changes": [
+    "look 换成 lime（石墨底 · 荧光黄绿），色相梯度改为 80°→30° 的热度色带（黄绿 → 琥珀 → 橙），落在带倒影的镜面地板与地平线光带上",
+    "构图放大：16 根柱占画宽 83%、最高 560px，左侧值刻度 + 底部索引刻度，代码字幕升格为 44px 语法着色主标题 + 拍号眉题",
+    "每根柱头一枚 32px 等宽数值标签：拍一随柱升起计数到 92…32，换拍时从中心向两端逐个滚换成脉冲幅度 +06…+42…+06——值梯度变成可读证据",
+    "第二拍原点可视化：中心脚下亮起原点三角与 FROM CENTER，基线上一道光从中心向两端跑，前沿与脉冲波前同一函数驱动",
+    "时间表重写为 165f：33f 时间错峰 + 26f expo-out 入场、13f hold、10f 字幕上卷交换、38f 中心脉冲、41f 静止；柱群裁在基线上方，行程读作从地板槽升起",
+    "全程 1.000→1.025 极缓推镜；脉冲只加高度与外发光，不把暖色柱洗白"
+  ],
+  "issuesEn": [
+    "The bars filled only a third of the frame height, crammed into the lower half under a large dead black area, with no visual centre of gravity",
+    "The value gradient could only be guessed by comparing heights; no number on screen told you what value each bar received",
+    "The code caption was tiny grey text scaled up from 9.5px design units, barely legible, so the line swap didn't say what had changed",
+    "The from:'center' origin of beat two had no visual marker, so the centre pulse read as random ripples across the row",
+    "The blue-to-purple neon ramp on a flat background was template-generic; the bars had no floor, space or light"
+  ],
+  "changesEn": [
+    "Lime look (graphite with fluorescent yellow-green); the hue gradient becomes an 80°→30° heat ramp (lime → amber → orange) standing on a reflective floor with a horizon glow",
+    "Scaled-up composition: 16 bars span 83% of the frame width and up to 560px tall, with a value axis and index ticks; the code caption becomes a 44px syntax-highlighted headline with a beat-number eyebrow",
+    "A 32px mono value tag on every bar: in beat one it counts up to 92…32 as the bar rises, and at the switch it rolls over from the centre outward to the pulse amplitudes +06…+42…+06, so the value gradient becomes readable evidence",
+    "Beat two's origin is visualised: an origin caret and FROM CENTER light up under the middle, and a light runs along the baseline from the centre outward, its front driven by the same function as the pulse wavefront",
+    "Timeline rewritten to 165f: 33f time stagger with 26f expo-out entrances, 13f hold, 10f caption roll, 38f centre pulse, 41f still; bars are clipped above the baseline so their travel reads as rising out of a floor slot",
+    "A very slow 1.000→1.025 push for the whole shot; the pulse adds height and outer glow only, without washing the warm bars out to white"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

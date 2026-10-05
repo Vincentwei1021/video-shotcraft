@@ -1,0 +1,31 @@
+{
+  "stem": "LineBoil",
+  "issues": [
+    "左上角打着调试标题「LINE BOIL」，右下是粗描边的「boil on / boil off」胶囊，像调试面板",
+    "被沸腾的卡片里是实心灰条，沸腾起来读作发糊，不像重描",
+    "平铺浅灰底 + 一个居中小字「ALIVE」，主体只占画面一小块，没有设计",
+    "工作台在 105f 截断，正好切在摘罩那一帧，「沸腾 → 回到真静止」的对比后半段看不到"
+  ],
+  "changes": [
+    "look 换成 midnight 派生的蓝晒纸：钴蓝渐变底 + 静态蓝图网格与双线图框，线是蓝图白，唯一强调色是琥珀黄圈注",
+    "画面重做成一张工业设计概念稿：左侧 200px 大标题「Start」实心 +「rough.」描边空心字的字重对比，右侧一只手绘圆柱音箱（透视网罩孔点阵、旋钮、背光排线、尺寸线、中轴构造虚线）",
+    "每条线稿画两遍（主线 + 偏 2px 的细淡复描），静止时也是手稿感；沸腾只作用于标题与线稿，眉题、副标题、网格不进滤镜，当静止参照物",
+    "新时间表 150f：0–40f 线稿按「构造线 → 轮廓 → 网罩 → 尺寸 → 圈注」描出、标题从线下升起；40–112f 沸腾（seed 每 3 帧一换）；112f 摘罩后真静止 38f；相机全程 smooth 极缓推进 2.2%，尾 10f 静止",
+    "调试胶囊换成画面里的状态标：左下「● LIVE SKETCH」，摘罩同帧换成「✓ INKED」"
+  ],
+  "issuesEn": [
+    "A debug title \"LINE BOIL\" sat top-left and a thick-bordered \"boil on / boil off\" pill bottom-right, like a debug panel",
+    "The boiled card held solid grey bars, which read as blur rather than redrawn lines",
+    "Flat light grey with a small centred \"ALIVE\": the subject filled a tiny part of the frame and there was no real design",
+    "The workbench cut it at 105f, exactly on the unmount frame, so the back half of the boil-then-truly-still contrast was missing"
+  ],
+  "changesEn": [
+    "Look switched to a blueprint derived from midnight: cobalt gradient, static blueprint grid and double-rule frame, blueprint-white lines, and amber as the only accent for the annotation",
+    "The frame is now an industrial-design concept sheet: a 200px headline with solid \"Start\" over outlined \"rough.\" for weight contrast on the left, and a hand-drawn cylindrical speaker on the right (perspective grille dots, knob, shadow hatching, dimension line, dashed construction axis)",
+    "Every stroke is drawn twice (main line plus a thin faint re-trace offset by 2px) so it reads as a sketch even when still; only the headline and drawing boil, while eyebrow, subtitle and grid stay outside the filter as still references",
+    "New 150f timeline: 0–40f the drawing traces on in order (construction, contour, grille, dimensions, annotation) while the headline rises; 40–112f boil (seed changes every 3 frames); 112f unmount, then 38f truly still; a smooth 2.2% camera push across the shot, last 10f static",
+    "The debug pills became an in-world status tag bottom-left: \"● LIVE SKETCH\" while boiling, switching to \"✓ INKED\" on the unmount frame"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

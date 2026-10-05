@@ -1,0 +1,33 @@
+{
+  "stem": "DiagramCascadeBuild",
+  "issues": [
+    "灰底小字 prompt 条 + 灰色骨架块，整屏像线框图，读不出生成了什么",
+    "前 2 秒只有画面顶上一条 prompt，下方大片空白",
+    "连线只是灰色细线跟着节点出现，\"线牵出节点\"的因果看不见",
+    "节点从中心缩放弹出，像弹窗而不是从结构里长出来",
+    "成树后没有落点，结尾画面平"
+  ],
+  "changes": [
+    "look 换 aurora 深紫夜：prompt 条做成 36px 大字 AI 命令条，提交后描边变流动紫粉渐变（生成中），完成后右侧落「7 tables · 6 links」",
+    "相机：开场 1.3× 推近 prompt 居中读字，提交后 72f smooth 拉远到 1.0，树长在镜头退出来的空间里",
+    "每条连线带一颗发光彗星头领跑（SVG 圆弧折线，按弧长取点），线头到达子端口那一帧子节点才从顶端口被拉出（缩放原点 = 顶边中点）",
+    "prompt 底部先滴下一条虚线接到根节点，根用紫粉渐变描边 + 泛光当主角；其余为深紫玻璃 ER 表卡（34px 表名 + mono 字段 + PK/FK 签）",
+    "打字改为不均匀人手节奏、空格停半拍；成树后以树心呼吸 1→1.03→1、背后极光亮一档，时长 160→180f"
+  ],
+  "issuesEn": [
+    "A small grey prompt bar over grey skeleton blocks; the whole frame looks like a wireframe and doesn't say what was generated",
+    "For the first 2 seconds there is only one prompt line at the top and a large empty area below",
+    "Edges are thin grey lines that appear with the nodes; the \"line pulls the node out\" causality isn't visible",
+    "Nodes scale up from their centre, reading like pop-ups rather than growing out of the structure",
+    "Once the tree is complete there is no landing beat; the end frame is flat"
+  ],
+  "changesEn": [
+    "Aurora deep-violet look: the prompt is a 36px AI command bar whose border turns into a flowing violet-pink gradient while generating, then settles with \"7 tables · 6 links\"",
+    "Camera opens at 1.3× on the centred prompt to read it, then smoothly pulls back to 1.0 over 72f after submit, so the tree grows into the space the camera reveals",
+    "Each edge is led by a glowing comet head (SVG arc elbows, sampled by arc length); the child node is pulled out of its top port the frame the head arrives (scale origin = top edge centre)",
+    "A dashed drip line falls from the prompt into the root; the root has a violet-pink gradient rim and glow as the hero, the rest are dark violet glass ER cards (34px table name, mono fields, PK/FK tags)",
+    "Typing has an uneven human rhythm with pauses at spaces; the finished tree breathes 1→1.03→1 around its centre while the aurora behind it brightens; 160→180f"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

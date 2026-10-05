@@ -1,0 +1,31 @@
+{
+  "stem": "AttentionBounce",
+  "issues": [
+    "白底黑描边线稿图标站在一条 8px 灰色地面上，画面像占位图，看不出是 Dock 里的 app",
+    "四跳时长只按帧数拍，和高度没有物理关系；落地压扁是线性回弹，缺重量",
+    "\"镜头被吸引\"只是整体放大 8%，周围没有任何被压下去的东西，注意力的转移读不出来",
+    "收尾面板的文字 13–20px，读不清，结尾帧不成海报"
+  ],
+  "changes": [
+    "look 换成 sand（米色午后 · 赤陶）：背景墙斜打两道百叶窗光，画面下缘是一条两端被画框裁掉的磨砂奶油色 Dock，左右是低饱和的邻居图标",
+    "主角换成 360px 日历图标「Daybook」（赤陶页眉 FRI + 大号 17），比通用铃铛更有辨识度",
+    "4 跳按真实抛体：0.35→1.2 倍图标高，每跳时长按 √高度（14/18/22/26f）；空中按竖向速度拉伸，落地 2f 接触压扁递增到宽 1.2x 高 0.8x，末跳阻尼余弦回稳；每次落点一圈柔化涟漪 + 溅点",
+    "\"被吸引\"演出来：第二跳起邻居图标逐渐失焦、降饱和（rack focus），最高那跳镜头 smooth 推近 8%",
+    "落定同帧弹出赤陶角标、亮起运行点，功能面板从图标右上角弹簧展开，68px 标题 +三条 32–36px 日程行错峰入场；156f，尾帧是完整的新功能海报"
+  ],
+  "issuesEn": [
+    "A white line-art icon with a black outline stood on an 8px grey floor bar; it looked like a placeholder, not an app in a Dock",
+    "The four hops were timed by frame count with no relation to height, and the landing squash sprang back linearly with no weight",
+    "The 'camera is drawn in' beat was just an 8% global zoom; nothing around the icon receded, so the shift of attention did not read",
+    "The closing panel used 13–20px text that could not be read, and the last frame was not a poster"
+  ],
+  "changesEn": [
+    "Sand look (warm afternoon beige, terracotta): two slanted blind-light shafts on the back wall, a frosted cream Dock cropped by both frame edges, and desaturated neighbour icons",
+    "The hero is now a 360px calendar icon 'Daybook' (terracotta FRI header, big 17), far more recognisable than a generic bell",
+    "Four hops follow real ballistics: 0.35 to 1.2 icon heights with airtime proportional to the square root of height (14/18/22/26f); velocity stretch in the air, a 2f contact squash that grows to 1.2x wide by 0.8x tall, a damped-cosine settle on the last landing, and a soft ripple plus specks at each touchdown",
+    "Being drawn in is acted out: from the second hop the neighbours rack out of focus and desaturate, and the highest hop gets a smooth 8% push-in",
+    "On landing a terracotta badge pops and the running dot lights, then the feature panel springs out of the icon's top-right with a 68px title and three staggered 32–36px agenda rows; 156f, ending on a complete feature poster"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

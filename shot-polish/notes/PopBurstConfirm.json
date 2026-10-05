@@ -1,0 +1,31 @@
+{
+  "stem": "PopBurstConfirm",
+  "issues": [
+    "浅灰底上一颗绿色圆钮 + 小号深色胶囊标签，画面像设置页里的成功提示，没有发布片的分量",
+    "待确认态是虚线圆，观众不知道在等什么；蓄力 3f 和爆点之间缺少情绪上的\"憋\"",
+    "粒子是匀速外推的短线，扩散环与泛光都偏弱，爆点读不出冲击",
+    "落定后只有一枚 40px 的 Deployed 胶囊，结尾帧不是一张完整的海报"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色石墨暗场），全片唯一的彩色是释放帧才\"通电\"的翡翠绿——颜色本身就是爆点",
+    "待确认态改成部署状态盘：白色进度环带发光头 0–22f 加速冲到 100%，盘心 92px 等宽百分比，盘下一行 deploying 说明；蓄力停顿时盘内泛起绿光",
+    "释放：0.62x 停 3f → 5f 弹到 1.3x → 弹簧落回（一次可见回弹）；12 根粒子按空气阻力指数减速、线长随速度收短，外加 10 颗细火花、冲击环扩到 2.5 倍直径、一次绿色泛光，镜头同帧 +2% 冲击推",
+    "余波：盘子上移让位，120px 标题「Live in production」逐词从线下升起，绿色句点最后单独落下，32px 等宽副行交代服务 / 版本 / 用时",
+    "时间表：0–22 涨 / 22–28 缩停 / 28–48 爆落 / 40–80 让位亮字 / 80–120 hold 极缓推进，尾帧是完整的上线海报"
+  ],
+  "issuesEn": [
+    "A green round button and a small dark pill on a light grey backdrop read like a settings-page toast, not a launch-film moment",
+    "The pending state was a dotted circle, so viewers did not know what they were waiting for, and the 3f wind-up had no emotional build",
+    "Particles pushed out at constant speed and the ring and bloom were weak, so the pop had no impact",
+    "After landing there was only a 40px Deployed pill; the last frame was not a finished poster"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark stage): the only colour in the shot is the emerald that switches on at the release frame, so the colour itself is the hit",
+    "The pending state is now a deploy dial: a white progress ring with a glowing head accelerates to 100% over 0–22f, a 92px mono percentage sits in the dial with a deploying line beneath, and the dial glows green while it holds",
+    "Release: 0.62x held 3f, 5f snap to 1.3x, spring back with one visible rebound; 12 sparks decelerate with exponential drag and shorten with speed, plus 10 fine motes, a ring out to 2.5x diameter, one green bloom and a 2% camera punch on the same frame",
+    "Follow-through: the dial lifts to make room, a 120px headline 'Live in production' rises word by word, a green full stop drops in last, and a 32px mono line gives service, version and time",
+    "Timing: 0–22 fill, 22–28 squash and hold, 28–48 pop and settle, 40–80 lift and title, 80–120 hold with a slow push; the last frame is a complete shipped poster"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

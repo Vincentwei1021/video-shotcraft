@@ -1,0 +1,31 @@
+{
+  "stem": "LetterDropPhysics",
+  "issues": [
+    "176px 深灰字落在浅灰底上，没有配色和版式，整幅画面只有一个词和一条细线，像引擎测试截图",
+    "字从画面内 720px 高处出现、而不是从画外落进来，开场几帧是空白死帧",
+    "弹跳与挤压只在字身上，地面是一条不受力的发丝线，砸地没有\"重量\"",
+    "副标题 36px 灰字，结尾帧没有层级，算不上一张海报"
+  ],
+  "changes": [
+    "look 换成 paper，做成粗黑体瑞士海报：290px Black 字重「GRAVITY」+ 朱红句号压在 6px 墨色地平线上，四角是 N°07 / FALL·BOUNCE·SETTLE 相位指示 / g = 9.81 m/s² 等网格信息，第一帧就有完整版式",
+    "物理按真实比例重写：字从画外 980px 落下（重力加速 + 按速度拉伸与竖向运动模糊），弹跳高度 22% / 6%、每跳时长 ∝ √h，落地挤压回弹 + ±5° 歪斜站定",
+    "地平线改成弹性绳：每次触地在落点按高斯包络做阻尼下陷振荡，字始终踩在线上；首次触地两侧扬起纸灰，接触影随离地高度变大变虚",
+    "朱红句号当\"最后的笑点\"：最晚起跳、最弹（34% / 11% / 3% 三跳），左缘高度标尺的朱红游标实时读出它的高度；它停稳后全体 3f 吸气 + 9f 立正（overshoot 一次）",
+    "时间表 160f：6–36f 起落越来越密 → 弹跳 → 110f 立正 → 副标题 64px 逐词升起 + 32px 注释 → hold，整幅 1.00→1.025 极缓推近"
+  ],
+  "issuesEn": [
+    "A 176px dark-grey word on a pale grey background with no colour or layout: one word and a hairline, like an engine test capture",
+    "Letters appeared 720px up inside the frame instead of falling in from off-screen, and the opening frames were empty",
+    "Bounce and squash lived only on the letters; the floor was a hairline that never reacted, so impacts had no weight",
+    "The 36px grey tagline gave the end frame no hierarchy; it never became a poster"
+  ],
+  "changesEn": [
+    "Paper look as a bold Swiss poster: a 290px Black-weight GRAVITY plus a vermilion full stop on a 6px ink baseline, with N°07, a FALL·BOUNCE·SETTLE phase readout and g = 9.81 m/s² on the grid; the full layout is there from frame 1",
+    "Physics rebuilt to real proportions: letters drop 980px from off-frame (gravity, speed stretch, vertical motion blur), bounce to 22% / 6% with durations ∝ √h, squash on impact and settle tilted ±5°",
+    "The baseline is now an elastic rope: every impact sags it locally with a damped Gaussian dip and the letters ride on it; first impacts kick up paper dust, and contact shadows grow and soften with height",
+    "The vermilion full stop is the punchline: last to drop and bounciest (34% / 11% / 3%), tracked live by a vermilion marker on a left-edge height ruler; once it rests, everyone inhales for 3f and snaps upright in 9f with one overshoot",
+    "160f timeline: drops tighten from 6–36f, bounces, 110f snap, then a 64px tagline rises word by word with a 32px note, hold; the whole poster pushes in 1.00→1.025"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

@@ -1,0 +1,12 @@
+{
+  "stem": "ReticleLockOn",
+  "changed": false,
+  "brand": [
+    "无需改：画面里的 logo / 品牌名都在 FakeDashboard 里（主控已改成 video-shotcraft），锁定标签「Top pages」是目标卡标题，不是品牌文案"
+  ],
+  "brandEn": [
+    "No change needed: the only logo/brand name lives in FakeDashboard (already rebranded to video-shotcraft by the lead); the lock label \"Top pages\" is the target card's title, not brand copy"
+  ],
+  "styleKey": "reticle-lock-on",
+  "mdChanged": true
+}

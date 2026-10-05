@@ -1,0 +1,31 @@
+{
+  "stem": "KaraokeFillSync",
+  "issues": [
+    "150px 全大写黑字在浅灰底上居中，填色只是从浅灰变靛蓝再变黑，没有光也没有质感",
+    "画面只有标语和一条小波形，交代不出\"有人在念\"的语境",
+    "填色前沿是柔边遮罩，正在读的位置不够醒目",
+    "结尾帧就是两行黑字，不像发布会画面"
+  ],
+  "changes": [
+    "look 换成 ember 发布会开场：暖黑舞台、主光从字后左上打来、几粒余烬火星缓慢上飘；176px 句子大小写两行左对齐「Ship faster. / Break nothing.」",
+    "填色改成\"引信\"：background-clip:text 渐变按词内进度揭开，前沿是一道金白热边、已读区橙色，读中叠同形泛光、前沿每 2.5f 迸一粒火星，读完 14f 冷却成奶白",
+    "补全语境：左上眉题（Ferrum Keynote — Opening）、左下讲者署名条（头像 + Maya Okafor + 职位）、右下 72 条旁白波形 + 播放头 + 时间码，已播部分着橙色",
+    "词级时间表跟语速：短词 14f、长词 28f，词间换气 4f、行间换气 16f；读指改 6px 橙→金渐变带泛光，读完 8f 收线",
+    "时长 160f：126f 末词读完、140f 前冷却完成，之后 hold，整幅 1.00→1.03 极缓推近"
+  ],
+  "issuesEn": [
+    "150px all-caps black text centred on light grey; the fill only went pale grey to indigo to black, with no light or texture",
+    "Just the slogan and a small waveform, with nothing to say someone was speaking",
+    "The fill front was a soft mask edge, so the current reading position was not prominent",
+    "The end frame was two lines of black text, nothing like a keynote shot"
+  ],
+  "changesEn": [
+    "Ember keynote-opening look: a warm dark stage lit from behind the text at upper left, with a few embers drifting up; two left-aligned 176px sentence-case lines, Ship faster. / Break nothing.",
+    "The fill is now a fuse: a background-clip:text gradient reveals each word with a gold-white hot edge over orange, adds a matching bloom while reading, throws a spark every 2.5f, and cools to cream 14f after the word ends",
+    "Context added: a Ferrum Keynote — Opening kicker, a speaker lower-third (avatar, Maya Okafor, title), and a 72-bar narration waveform with playhead and timecode, coloured orange as it plays",
+    "Word timing follows speech: 14f short words, 28f long words, 4f breaths between words and 16f between lines; the reading underline is a 6px orange-to-gold glow that retracts over 8f",
+    "160f: the last word finishes at 126f and cools by 140f, then hold; the whole frame pushes in 1.00→1.03"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

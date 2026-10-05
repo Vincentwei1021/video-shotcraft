@@ -1,0 +1,14 @@
+{
+  "stem": "ChipGridSingleSelectBlackout",
+  "changed": true,
+  "brand": [
+    "眉题「Tessel Pro · Billing cycle」→ video-shotcraft 标志 + 小写字标 +「· BILLING CYCLE」（字距收拢动画保留在标签上）",
+    "顺手修掉一个原有瑕疵：未升起的原价「$42.00」字顶从遮罩框底露出几道细痕压在第二行 chip 左侧，改为 108f 前隐藏"
+  ],
+  "brandEn": [
+    "Eyebrow \"Tessel Pro · Billing cycle\" -> video-shotcraft mark + lowercase wordmark + \"· BILLING CYCLE\" (tracking animation kept on the label)",
+    "Fixed a pre-existing glitch: the tops of the hidden \"$42.00\" glyphs peeked out under its mask next to the second chip row; it is now hidden until 108f"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "IntegrationHubMap",
+  "issues": [
+    "落定后的中枢面板 820×520，正文 11–13px，在 1080p 里只是一片灰色小字纹理",
+    "五个集成图标是真实品牌的字形（设计工具、代码托管、CRM、网盘），出现真实产品名",
+    "光管是五色彩虹渐变，背景又叠了多色霓虹矩形，色相太多、主次不清",
+    "正反两面都是浅色白页，翻面前后材质相同，\"换代\"只靠内容变化，读不出来"
+  ],
+  "changes": [
+    "look 换成 aurora（紫粉暗场）；正面旧页做成白纸文档「Weekly sync — manual export」（46px 标题、28px 清单，近景可读），背面新中枢做成深紫玻璃「Everything, connected.」（66px 标题 + 五行 30px 数据源），材质反差把换代做实",
+    "五个集成换成虚构的 Tracker / Canvas / Ledger / Inbox / Vault：120px 深色玻璃瓷贴 + 白色线性图标，皇冠形围住中枢，名字放在不压管线的一侧",
+    "光管收成单色系：粉（集成端）→ 紫（中枢端）渐变 + 暗色底轨 + 白热芯，彗星脉冲沿 集成→中枢 持续输送；远景换成失焦的幽灵瓷贴做弱视差",
+    "判例节奏全部保留：35f 快翻尾缓、90° 侧棱 2f 闪、两拍制（52f 五瓷贴同帧 → 62f 五管同帧、9f 齐长）；接通同帧五行状态一齐从 Waiting 翻成 Synced、徽章 Idle→Live",
+    "余波加一行 30px 等宽统计「5 SOURCES · 2.4M RECORDS · SYNCED IN REAL TIME」逐词升起，尾帧是完整的生态海报"
+  ],
+  "issuesEn": [
+    "The settled hub panel was 820×520 with 11–13px body text, just grey texture at 1080p",
+    "The five integration icons were glyphs of real brands (design tool, code host, CRM, cloud drive), putting real product names on screen",
+    "The pipes used a five-colour rainbow over multicolour neon rectangles: too many hues and no hierarchy",
+    "Both faces were light white pages, so the flip changed content but not material and the new-era beat didn't read"
+  ],
+  "changesEn": [
+    "Aurora look (violet-pink dark). The front is a white paper doc \"Weekly sync — manual export\" (46px title, 28px checklist, readable in close-up); the back is a deep-violet glass hub \"Everything, connected.\" (66px title + five 30px source rows), so the material contrast sells the new era",
+    "The integrations are now fictional Tracker / Canvas / Ledger / Inbox / Vault: 120px dark glass tiles with white line icons in a crown around the hub, labels placed on the side away from the pipes",
+    "Pipes are one colour family: pink at the app end to violet at the hub, with a dark groove and a white-hot core; comet pulses keep flowing app to hub, and the background is defocused ghost tiles with light parallax",
+    "All ruled timing is kept: 35f fast flip with soft landing, a 2f flash at 90°, two beats (52f all tiles at once, 62f all pipes at once, 9f grow); on connect all five rows flip from Waiting to Synced and the badge goes Idle to Live on the same frame",
+    "Follow-through adds a 30px mono stats line \"5 SOURCES · 2.4M RECORDS · SYNCED IN REAL TIME\" rising word by word, so the last frame is a complete ecosystem poster"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "WhiteFlashLogoSimplifyCut",
+  "issues": [
+    "占位字标「BRAND」是全大写宽字距的通用占位，没有品牌感，画面除一行字外全空",
+    "\"液态\"质感只是一条流动的线性渐变，没有材质感",
+    "白闪是整屏均匀淡入，读作剪辑软切而不是过曝",
+    "扁平字标在白底上淡入，像第二次揭示，降维的修辞不清楚"
+  ],
+  "changes": [
+    "look = aurora 暗场演出 → 冷白纸面定妆；虚构词标「Vela.」300px 800 字重、负字距，液态与扁平两版同字号同位置，读作同一个字标被净化",
+    "液态金属材质：虹彩底色缓流 + 纵向体积明暗 + 字腰镀铬反光带 + 一次斜向高光（裁进字形）+ bloom + 地面倒影，背后极光余光与浮尘",
+    "加蓄力段 34–46f：字标提亮 ×1.7、一条横向变形眩光从字心拉开；冲白改为从字心撑满的径向白团（t² ease-in），50–54f 纯白 hold",
+    "定妆改为\"曝光回落\"：白层 22f quint-out 退去，扁平字标早已在位只做 1.03→1 对焦，避免二次揭示",
+    "锁定画面：强调紫短线画出、副标「Interfaces, distilled.」逐词升起、眉题「VELA DESIGN SYSTEM · 2.0」，尾帧是完整品牌锁定页；时长 108→120f"
+  ],
+  "issuesEn": [
+    "The placeholder 'BRAND' is a generic all-caps, wide-tracked stand-in with no brand character; apart from that one line the frame is empty",
+    "The 'liquid' look is just one flowing linear gradient with no sense of material",
+    "The white flash is a uniform full-screen fade, reading as a soft edit rather than overexposure",
+    "The flat wordmark fades in on white like a second reveal, muddying the simplification idea"
+  ],
+  "changesEn": [
+    "Look = aurora dark show → cool-white paper sign-off; fictional wordmark 'Vela.' at 300px/800 with tight tracking, liquid and flat versions share size and position so it reads as the same mark being purified",
+    "Liquid-metal material: flowing iridescent base, vertical volume shading, chrome horizon band, one diagonal sheen clipped to the glyphs, bloom and a floor reflection over an aurora glow with dust",
+    "Added a charge-up beat 34–46f: the mark brightens ×1.7 and an anamorphic flare stretches out from its centre; the flash is now a radial white burst from the word (t² ease-in) with a 4f pure-white hold",
+    "Sign-off is an exposure recovery: the white layer recedes over 22f (quint-out) while the flat mark is already in place, only focusing 1.03→1 — no second reveal",
+    "Lock-up: an accent-violet rule draws, 'Interfaces, distilled.' rises word by word, eyebrow 'VELA DESIGN SYSTEM · 2.0'; last frame is a full brand lock-up; duration 108→120f"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

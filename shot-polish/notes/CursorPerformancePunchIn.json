@@ -1,0 +1,33 @@
+{
+  "stem": "CursorPerformancePunchIn",
+  "issues": [
+    "整片是灰白占位 dashboard，卡片里全是灰条，没有一个能读的字，看不出产品是什么",
+    "Deploy 按钮只有 18px 字、浮在卡片角上，推近 1.4x 后主体仍然很小，画面重心散",
+    "点击后的结果只是按钮里换个字，退镜后画面和开场几乎一样，因果没讲完",
+    "光标细小、路径短，甩腕过冲几乎看不出来"
+  ],
+  "changes": [
+    "look 换成 sand（暖沙 · 赤陶）：主体改为为镜头设计的旅宿预订卡「Quinta do Vale」，占画宽 78%，左半是程序绘制的山丘夕阳插画（五层山脊大气透视 + 柏树 + 别墅 + 飞鸟视差）",
+    "排版重做：92px 标题、132px 价格、36px 行程信息、26px 字距放宽的赤陶眉题，主按钮 560×112、42px 字，是暖色亮场里唯一的深墨色块（深底提亮才可见）",
+    "光标放大到 76px，贝塞尔路径从左下画外起步、f36 沿切线甩过按钮再 6f 拐回，横向速度前倾 + 方向拖影；点完退镜时光标向右让开露出结果",
+    "节奏：14f expo-out 推近 1→1.42 → 停 24f 讲因果（Holding your dates… 转圈 → Reserved ✓ 面色转赤陶、价格副字换成 due at check-in）→ 20f 对称 in-out 退回",
+    "退到位时底部一枚墨色确认条弹簧升起「Sep 14 – 17 is yours.」，尾帧是交代完结果的完整海报；hold 段极缓 1.5% 推进",
+    "涟漪改赤陶细环（扩散 out-cubic 24f / 消散线性 28f 解耦）+ 一次裁进圆角的按压光"
+  ],
+  "issuesEn": [
+    "The whole shot was a grey placeholder dashboard full of grey bars: no readable word, no sense of what the product is",
+    "The Deploy button had 18px text and floated on a card corner; even at 1.4x the subject stayed small and the frame had no centre of gravity",
+    "The click only swapped the button label; after the pull-back the frame looked like the opening, so cause and effect never landed",
+    "The cursor was small with a short path, so the wrist-flick overshoot barely read"
+  ],
+  "changesEn": [
+    "Sand look (warm beige, terracotta): the subject is now a purpose-built stay booking card, Quinta do Vale, spanning 78% of the frame, with a procedurally drawn hillside sunset (five ridges with aerial perspective, cypresses, a villa, drifting birds)",
+    "New typography: 92px title, 132px price, 36px trip details and a wide-tracked terracotta kicker; the 560x112 primary button with 42px text is the only dark block in a warm light frame, so its hover brightening reads",
+    "The cursor is 76px and enters on a Bezier from off-frame bottom-left, flicks past the button along its tangent at f36 and swings back in 6f, with speed tilt and directional blur; it moves aside during the pull-back to reveal the result",
+    "Rhythm: 14f expo-out punch-in 1 to 1.42, a 24f hold that plays out the consequence (Holding your dates spinner, then Reserved with the face turning terracotta and the price note changing), then a 20f symmetric pull-back",
+    "As the camera settles, an ink confirmation bar springs up (Sep 14 - 17 is yours.), so the last frame is a complete poster of the outcome; the hold keeps a slow 1.5% push",
+    "The ripple is a terracotta ring (24f out-cubic growth decoupled from a 28f linear fade) plus one press glow clipped to the button radius"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

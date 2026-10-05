@@ -1,0 +1,31 @@
+{
+  "stem": "PaperTitleCard",
+  "issues": [
+    "116px 衬线一句话居中，纸面上再无别的东西，画面像空白文档",
+    "8 个词同一种压印节奏一路压完，强调词只是换色，节奏上没有重音",
+    "副行 mono 只有 30px 且很浅、数字滚动小到几乎看不见",
+    "尾部 8f 把墨全部淡掉，单独展示时尾帧是一张空纸"
+  ],
+  "changes": [
+    "做成活版印刷打样稿：四角裁切标记生长、顶部套准靶、底部 mono 版权行（纹理层），中央两行 136px 衬线古典居中；纸面叠纸纤维噪声",
+    "双色套印重排节奏：第一版（墨）逐词压印 4→24f、强调词处留空，停 6f 后第二版（朱红）单独重压「one」（1.38× 起压、暗晕更大）",
+    "朱红版元素（强调词 / 短划线 / 套准靶红圈）从 (9,−6)px 的套准偏移 12f 内对版归零——套准标记因此成为手法的一部分",
+    "墨层过确定性'上墨不均'噪声滤镜 + 1px 凹印；每词落纸时词下方一圈受压暗晕 4–6f 回弹",
+    "look = paper（朱红强调）；副行 32px + DigitRoll 44→60f；时长 55→80f、hold 20f；尾部淡出改为常量 FADE_OUT 开关（默认关，尾帧保留完整海报）"
+  ],
+  "issuesEn": [
+    "One centred 116px serif sentence and nothing else on the paper — it looks like a blank document",
+    "All 8 words press in with the same rhythm; the accent word is only recoloured, with no rhythmic emphasis",
+    "The 30px mono subline is faint and the digit roll is almost invisible",
+    "The last 8f fade all ink out, so when shown on its own the final frame is blank paper"
+  ],
+  "changesEn": [
+    "Recast as a letterpress proof sheet: crop marks grow in the corners, a registration target at top, a mono slug line at the bottom (texture), two centred lines of 136px serif; paper fibre noise over the sheet",
+    "Two-colour printing drives the rhythm: the ink pass presses words 4→24f leaving a gap for the accent word, then after a 6f pause the vermilion pass stamps 'one' on its own (1.38× start, a bigger press halo)",
+    "Everything on the vermilion plate (accent word, rule, the red registration ring) slides from a (9,−6)px misregistration into register within 12f — the proof marks become part of the technique",
+    "Ink runs through a deterministic uneven-inking noise filter plus a 1px deboss; each word leaves a brief press halo under it that springs back in 4–6f",
+    "Look = paper (vermilion accent); 32px subline with DigitRoll 44→60f; duration 55→80f with a 20f hold; the ink fade-out is now a FADE_OUT constant (off by default, so the last frame is a full poster)"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

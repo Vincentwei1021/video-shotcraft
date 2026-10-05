@@ -1,0 +1,14 @@
+{
+  "stem": "PaperTitleCard",
+  "changed": true,
+  "brand": [
+    "标题「All your team's research, one place to go.」→ 品牌口号「Direct the film. / Let the agent shoot it.」（强调词 shoot，强制两行分行）",
+    "副行「5 of 31 fetched today」→「12 shots rendered today」（DigitRoll 滚到 12）"
+  ],
+  "brandEn": [
+    "Headline 'All your team's research, one place to go.' → brand tagline 'Direct the film. / Let the agent shoot it.' (accent on 'shoot', forced two-line break)",
+    "Subline '5 of 31 fetched today' → '12 shots rendered today' (DigitRoll to 12)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

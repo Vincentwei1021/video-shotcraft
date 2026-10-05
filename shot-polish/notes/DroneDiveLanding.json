@@ -1,0 +1,31 @@
+{
+  "stem": "DroneDiveLanding",
+  "issues": [
+    "浅灰底上一张灰色 dashboard，全景里看不出要降落在哪张卡上",
+    "全景时页面是一块悬在空白里的薄片，地面点阵太淡，俯冲时缺少速度参照",
+    "落地后 hero 卡只是周边轻压暗，没有\"到了\"的收束动作",
+    "全程 12 采样运动模糊，静止段也在多重渲染，渲染很慢"
+  ],
+  "changes": [
+    "look 换成 lime（石墨 · 荧光黄绿）：虚构跑团训练分析「Tempo」暗场 dashboard，全页只有 hero 卡（本周跑量 412 km）用荧光绿，俯瞰一眼就知道目标",
+    "页面悬停在一块\"停机坪\"上：点阵地面 + 以 hero 为圆心的四圈降落环，俯冲时向外涌开；页面下一圈荧光绿气垫光晕，越低越收紧、触地成卡片轮廓光",
+    "运镜加 FPV 航向：一条行程同时驱动俯角 62°→0、缩放 0.46→1.95、平移和 rotateZ −16°→0，边转边降；上提预备 3% → 26f ease-in 俯冲吃 80% → 22f poly5 气垫",
+    "落地收束：周边压暗、目标进度条 0→82% 一笔填满、+18% 徽标一次过冲弹出，hold 段极缓推近",
+    "运动模糊只在机动段开（8 采样），静止段单次渲染；hero 卡按 2× 布局，终点特写文字原生分辨率"
+  ],
+  "issuesEn": [
+    "A grey dashboard on a pale grey stage; in the wide shot nothing told you which card the camera would land on",
+    "In the wide shot the page was a thin sheet in empty space and the floor dots were too faint to give any sense of speed during the dive",
+    "After landing the hero card only got a light vignette, with no 'arrived' beat",
+    "12-sample motion blur ran for the whole shot, multi-rendering even the static frames, so renders were slow"
+  ],
+  "changesEn": [
+    "Lime look (graphite, neon yellow-green): a dark dashboard for a fictional running-club analytics product 'Tempo' where only the hero card (412 km this week) uses lime, so the target is obvious from above",
+    "The page hovers over a landing pad: a dot-grid floor with four landing rings centred on the hero that rush outward during the dive, and a lime hover glow under the page that tightens as it drops and becomes the card's rim light on touchdown",
+    "An FPV heading: one travel value drives pitch 62° to 0, scale 0.46 to 1.95, position and rotateZ −16° to 0, banking as it dives; 3% lift, a 26f ease-in dive covering 80%, then a 22f poly5 air-cushion",
+    "A landing payoff: the surroundings dim, the goal bar fills 0 to 82% in one stroke and a +18% badge pops with one overshoot, then a slow push-in",
+    "Motion blur only runs while the camera moves (8 samples) and static frames render once; the page is laid out at 2× so the close-up text is native resolution"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

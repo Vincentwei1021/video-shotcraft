@@ -1,0 +1,33 @@
+{
+  "stem": "SharedElementMorph",
+  "issues": [
+    "全屏特写和网格都是灰色占位卡（灰条代替文字），观众看不出飞回去的是什么",
+    "特写卡比例与画面不一致，全屏时内容被裁切",
+    "卡片无动机地自己飞走，落座也没有\"到家\"的反馈",
+    "整体浅灰底 + 默认靛蓝，没有光、没有材质"
+  ],
+  "changes": [
+    "look 改为 sand：虚构旅行手账 App「Wayfare」的「Saved trips」总览，3×2 张程序绘制的分层山景卡（天空渐变 + 太阳 + 三层山脊视差漂移），标题直接压在画面上",
+    "卡片改为 16:9（528×297），全屏特写就是这张卡 ×3.64（CSS zoom 布局级放大，132px 标题不糊），内容零重排",
+    "加叙事因果：特写左上「‹ Saved trips」返回键先按下（缩 8% + 提亮）、chrome 淡出，34f 卡片才起飞",
+    "位置/尺寸/圆角共用一条物理弹簧（~21f 到位），过冲段按 0.3 压缩成 ≈2% 尺寸回弹；投影从悬浮级收敛到贴地级，背景网格 1.035→1 后拉",
+    "落座余波：邻卡由近及远错峰提亮并被径向推开 11px、两拍收敛——网格被这张卡的落地轻轻撞了一下；落定后整幅 1→1.012 缓推",
+    "时长 130→140f"
+  ],
+  "issuesEn": [
+    "Both the fullscreen detail and the grid are grey placeholder cards (bars instead of text) — you can't tell what is flying home",
+    "The detail card's aspect ratio doesn't match the frame, so content gets cropped at fullscreen",
+    "The card flies away with no motivation and the landing gives no 'home' feedback",
+    "Flat light-grey background with default indigo; no light, no material"
+  ],
+  "changesEn": [
+    "Look switched to sand: the 'Saved trips' overview of a fictional travel journal app 'Wayfare', with 3×2 procedurally drawn layered landscape cards (sky gradient, sun, three parallax ridges) and titles set on the art",
+    "Cards are 16:9 (528×297) so the fullscreen detail is literally the same card ×3.64 via CSS zoom (crisp 132px title), zero relayout",
+    "Added cause and effect: the '‹ Saved trips' back button is pressed (8% squash + brighten), detail chrome fades, then the card takes off at 34f",
+    "Position/size/radius share one physical spring (~21f to land) with the overshoot compressed ×0.3 to a ~2% size bounce; shadow settles from hover to resting, grid pulls back 1.035→1",
+    "Landing aftermath: neighbours light up near-to-far and get pushed out radially by 11px, settling in two beats — the grid feels the card land; then a slow 1→1.012 push",
+    "Duration 130→140f"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

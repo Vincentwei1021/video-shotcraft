@@ -1,0 +1,31 @@
+{
+  "stem": "PageWaterfallWall",
+  "issues": [
+    "满屏居中的平墙 + 黑底，读作一张截图在滚，没有构图与视觉重心",
+    "墙从第一帧起匀速流动，没有起势，节奏平",
+    "暗场里的暖白截图卡像漂着的白块，与卡片本身的暖纸色调冲突",
+    "整镜没有任何要读的信息，暂停帧不是一张海报"
+  ],
+  "changes": [
+    "look 改 paper 暖纸：底色与卡片截图同色温，两层暖色软阴影 + 墙远端渐隐进纸色雾出纵深，墙像钉满项目卡的展墙",
+    "构图改为墙斜置在右侧 ~65%（rotateY −33° 后退 + rotateX 16° 后仰 + rotateZ 5°）朝右上远去，左侧留给 116px 粗黑体标题「Every project. / Still moving.」（朱红第三行）+ 眉题 + 数据行",
+    "节奏：开场墙以 ~4 倍巡航速度冲入，按 τ=11f 指数衰减到巡航（快速段竖向运动模糊），标题随墙减速逐行升起落定",
+    "三列差速反向（1.9 / −1.35 / 2.5 px/帧），每列按卡片真实宽高比算单副本周期取模，无缝循环；镜头全程 translateZ 缓推 + 极缓转角",
+    "真实截图素材保留（card1–10，列间不复用），文字只作纹理"
+  ],
+  "issuesEn": [
+    "A full-frame centered flat wall on black read as one screenshot scrolling, with no composition or focal point",
+    "The wall flowed at constant speed from frame one, with no build-up and a flat rhythm",
+    "The warm-white screenshot cards looked like floating white blocks in the dark, clashing with their own paper tone",
+    "Nothing on screen was meant to be read, so no paused frame worked as a poster"
+  ],
+  "changesEn": [
+    "Switched to the warm paper look: the background matches the cards' color temperature, with two warm soft shadows and the far end of the wall fading into paper-colored haze for depth, like a pinned project wall",
+    "The wall now sits angled across the right ~65% of frame (rotateY −33°, rotateX 16° lean, rotateZ 5°) receding to the upper right, leaving the left for a 116px heavy sans headline 'Every project. / Still moving.' (third line in vermilion) with an eyebrow and a stat line",
+    "Rhythm: the wall rushes in at ~4x cruise speed and decays exponentially (τ=11f) to cruise, with vertical motion blur during the fast part, while the headline rises line by line as the wall slows",
+    "Three columns at different speeds with the middle one reversed (1.9 / −1.35 / 2.5 px/frame); each column wraps on its exact single-copy period computed from the cards' real aspect ratios, so the loop is seamless; the camera pushes in on translateZ and turns very slightly throughout",
+    "The real screenshot textures stay (card1–10, never repeated across columns), with their text treated as texture"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

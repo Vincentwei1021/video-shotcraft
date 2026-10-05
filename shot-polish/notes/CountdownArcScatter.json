@@ -1,0 +1,33 @@
+{
+  "stem": "CountdownArcScatter",
+  "issues": [
+    "480×270 设计坐标放大，数字只有 40px 级、表盘半径 150，整只表盘挤在画面上缘一小块，下半屏全空",
+    "纯白底 + 黑字 + 靛蓝末词，没有任何舞台光或版式框，像一张没排版的测试页",
+    "33f 极限压缩：扫动 17f、落位 6f、三词各约 5f，读不完就结束，没有落定 hold",
+    "结尾只剩一行 40px 小字标题，海报感弱，产品信息缺失"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红）瑞士网格：原生 1920 作画，表盘半径 700、整条弧横跨画面 ~70%，数字 112px Helvetica 粗体 tabular，顶部发丝线 + SETUP TIME / HALYARD CLI 4.2 标签框住版面",
+    "扫动改成先 5f 反向蓄力 3°、再一记物理弹簧扫 99°→0°（~2° 表针回弹后急停），快速段每个数字按切向速度方向性模糊",
+    "盘面加两层：随盘转的细刻度（数字位加长）+ 0.35 倍差速的朱红指针；外侧静止发丝弧与朱红读数标在盘面散去后以 35% 留在海报上",
+    "\"5\" 回弹落定前即起飞，20f 不对称 in-out 平移并 112→150px 放大，落进标题首字符固定槽（严格对齐），其余数字原地失焦散去",
+    "标题「5 min to install」150px 逐词模糊成句，install 转朱红是唯一颜色事件；下方 mono 40px 命令行 `$ npx halyard init`",
+    "时长 33f → 100f：扫动 ~30f + 落位 20f + 成句 + hold 22f"
+  ],
+  "issuesEn": [
+    "Scaled up from 480x270 design space, the numbers were about 40px and the dial radius 150, so the whole dial sat cramped at the top edge with the lower half empty",
+    "Pure white background, black text and an indigo last word, with no stage light or layout frame, like an unstyled test page",
+    "Compressed to 33f: a 17f sweep, 6f hand-off and about 5f per word, ending before it could be read, with no settle hold",
+    "The ending was a single 40px title line, weak as a poster and with no product information"
+  ],
+  "changesEn": [
+    "Paper look (warm paper, ink, vermilion) on a Swiss grid: drawn natively at 1920 with a 700px dial radius whose arc spans ~70% of the frame, 112px bold tabular Helvetica numerals, and a top hairline with SETUP TIME / HALYARD CLI 4.2 labels framing the layout",
+    "The sweep starts with a 5f, 3-degree wind-back, then a physical spring sweeps 99 degrees to 0 (a ~2-degree needle rebound, then a hard stop), with tangential motion blur on each fast-moving numeral",
+    "The dial has two more layers: fine ticks that turn with the dial (longer at numerals) and a vermilion needle at 0.35x speed; the static outer hairline arc and vermilion index stay on the poster at 35% after the dial clears",
+    "The 5 lifts off just before the rebound settles, travels 20f on an asymmetric in-out while growing from 112px to 150px, and lands exactly in the title's fixed first-character slot as the other numerals defocus in place",
+    "The 150px title '5 min to install' forms word by word through blur, 'install' turning vermilion as the only colour event, with a 40px mono command line '$ npx halyard init' below",
+    "Duration goes from 33f to 100f: a ~30f sweep, 20f hand-off, the sentence forming, then a 22f hold"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

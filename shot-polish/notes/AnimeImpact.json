@@ -1,0 +1,31 @@
+{
+  "stem": "AnimeImpact",
+  "issues": [
+    "全景是灰白占位 dashboard，目标卡只有一个大写 IMPACT，看不出这一拳打在什么事情上",
+    "撞停后的特写是一张空白占位卡，持续近 3 秒只有一个单词可读，画面没有信息也没有设计",
+    "灰底 + 靛蓝描边，负片帧之外整条镜头没有色彩与层次",
+    "撞停后的恢复段只有震屏，没有给\"命中\"一个落定的视觉标点"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红），但走漫画分格：整幅是 5 格分镜页，7px 墨线格框 + 网点，讲一条虚构部署工具 Shiden 的流水线（Push → Tests 214/214 → Build 3.1 s → Deploy → 品牌格）",
+    "手法落到内容上：主格起初是 DEPLOYING + 92% 进度条，急推撞停同一帧翻成 140px 斜体 DEPLOYED.——负片打击帧就是部署成功的那一拳",
+    "打击帧保留 3f 负片 + 34 粗楔 22 细针集中线（每帧换形态）+ 红青 ±9px 错位；急推到 1.74x 让主格高≈画高 93%，带时间采样运动模糊与中心锐利遮罩",
+    "恢复帧加一枚朱红描墨的拟声字「ドン!」弹簧盖章砸上格角，进度条变朱红满格、14 regions · 0.8 s 随后升起",
+    "节奏：0–24 整页正视建立（进度条在走、6–20 朱红锁定框亮起）→ 6f 预备回拉 → 6f 急推 → 3f 打击 → 震屏衰减 → 2s+ 读格 hold（相机再推 2%），总长 135f"
+  ],
+  "issuesEn": [
+    "The wide shot was a grey placeholder dashboard and the target card only said IMPACT, so the punch landed on nothing in particular",
+    "After the hit the close-up was a blank placeholder card holding for almost 3 seconds with a single readable word",
+    "Grey background with an indigo outline: outside the negative frames the shot had no colour or depth",
+    "The recovery only had a screen shake; the hit never got a visual full stop"
+  ],
+  "changesEn": [
+    "Paper look (warm paper, ink, vermilion) done as a manga page: five panels with 7px ink borders and screentone telling a fictional deploy tool's pipeline (Push, Tests 214/214, Build 3.1 s, Deploy, brand panel)",
+    "The technique carries meaning: the hero panel reads DEPLOYING with a 92% bar and flips to a 140px italic DEPLOYED. on the exact stop frame, so the negative impact frame is the moment the deploy lands",
+    "The 3f negative, 34 thick wedges plus 22 needles of focus lines (new shape every frame) and ±9px red/cyan split are kept; the crash zoom to 1.74x makes the panel ~93% of frame height, with sub-frame motion blur and a sharp centre mask",
+    "On recovery a vermilion, ink-outlined ドン! sound effect stamps onto the panel corner on a spring, the bar fills vermilion and 14 regions · 0.8 s rises in",
+    "Rhythm: 0–24 frontal page establish (bar creeping, vermilion lock frame at 6–20), 6f wind-back, 6f crash zoom, 3f impact, decaying shake, then a 2s+ reading hold with a 2% push; 135f total"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

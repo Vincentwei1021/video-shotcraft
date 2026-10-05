@@ -1,0 +1,12 @@
+{
+  "stem": "JumpCutPunchIn",
+  "changed": false,
+  "brand": [
+    "画面只有 FakeDashboard（主控已统一换成 video-shotcraft 侧栏标志与名字），镜头本身没有其他 logo / 品牌名 / 文案"
+  ],
+  "brandEn": [
+    "The frame is only FakeDashboard (already rebranded to video-shotcraft by the lead); the shot has no other logos, brand names or copy"
+  ],
+  "styleKey": "jump-cut-punch-in",
+  "mdChanged": true
+}

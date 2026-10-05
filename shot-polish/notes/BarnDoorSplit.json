@@ -1,0 +1,31 @@
+{
+  "stem": "BarnDoorSplit",
+  "issues": [
+    "新旧两页都是灰阶占位 dashboard（灰条 + 空卡片），左上角还压着调试用的卡名大字 BARN DOOR SPLIT",
+    "两页内容毫无关系，门开了只是换了一张灰图，读不出\"新的取代旧的\"",
+    "门缝是一条暗线，开门没有光、没有能量，裂开像普通左右擦除",
+    "门开后 70 多帧全静止，没有任何跟随动作，后半段是死帧"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 橙）：旧页是冷灰金属板「Kiln 3」，新页是余烬舞台上的「Kiln 4」发布海报，两页同版式同槽位——门一开，\"3\"的位置站着\"4\"",
+    "门缝改成光缝：先一条带泛光的发丝亮线自中点向上下描出，再 ease-in 撑开 16px；门内缘 10px 切面被照亮、门面近缝处被光染暖，新页带一次过曝光束显影",
+    "节奏：建立 20f → 预告 10f → 预备 10f → 门 ease-in 加速 24f 滑出（按速度横向运动模糊）→ 新页 1.08→1 迎上",
+    "跟随：副题逐词升起，三枚数据从旧值滚到新值（64s→11.8s、12→0、6→32），用数字本身讲\"新版更快\"",
+    "排版：220px 字标、48px 副题、72px 数据 + 30px 标签；hold 段余烬缓慢上浮 + 相机极缓推近 1.8%"
+  ],
+  "issuesEn": [
+    "Both pages were greyscale placeholder dashboards (grey bars, empty cards) with a debug 'BARN DOOR SPLIT' label stamped top left",
+    "The two pages had nothing to do with each other, so opening the doors just swapped one grey image for another and never read as new replacing old",
+    "The seam was a dark line; the doors opened with no light and no energy, reading like an ordinary left/right wipe",
+    "After the doors opened, 70+ frames stood completely still with no follow-through, so the back half was dead"
+  ],
+  "changesEn": [
+    "Ember look (warm black, orange): the old page is a cold grey metal slab 'Kiln 3', the new one a 'Kiln 4' launch poster on an ember stage, in the same layout and slots, so when the doors part the '4' stands where the '3' was",
+    "The seam is now a light seam: a glowing hairline draws up and down from the centre, then eases open to 16px; the 10px door edges catch the light, the door faces warm near the gap, and the new page develops through one overexposed beam",
+    "Rhythm: 20f establish, 10f tease, 10f anticipation, a 24f ease-in slide with velocity-based horizontal motion blur, and the new page rising 1.08→1 to meet the camera",
+    "Follow-through: the subline rises word by word and three stats roll from old to new values (64s→11.8s, 12→0, 6→32), so the numbers themselves say 'faster'",
+    "Typography: 220px wordmark, 48px subline, 72px stats with 30px labels; during the hold embers drift up and the camera pushes in 1.8%"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

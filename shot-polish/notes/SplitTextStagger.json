@@ -1,0 +1,33 @@
+{
+  "stem": "SplitTextStagger",
+  "issues": [
+    "没有导出时长常量，工作台按 56f 推断，末字刚落定画面就结束，没有收尾",
+    "左上角调试标题 \"SPLIT TEXT STAGGER\" 直接上屏",
+    "#ececea 纯色平铺 + 120px Helvetica 单行，标题只占画宽 1/4，构图空、没有层级",
+    "字符走两段插值、等间隔 2f 错峰，全程锐利无速度感；基线是固定 920px 的灰线，与文字行宽对不上"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红），整屏做成杂志扉页：上下发丝线版心、眉题、页脚元信息",
+    "标题改两行 300px 巨字「Motion / System.」：第一行无衬线 900、第二行衬线斜体 400，朱红圆形句号是全画面唯一强调色",
+    "每行遮罩底边画成可见的墨色裁切线，比字符早 4f 生长（预备），字从线下升起，手法识别度更强",
+    "字符改物理弹簧（damping 15，~11% 一次过冲）+ 旋转晚 3f 收敛 + 按竖向速度的 y 向模糊；错峰间隔 3.8f→1.8f 收紧（越扫越快）",
+    "右栏补一张随第一行同步绘出的弹簧曲线规格图与 40px 正文，逐行同手法升起，填满右侧留白",
+    "时长 135f：70f 动作 + 65f hold，hold 段整版极缓推进 2.5% + 主光呼吸"
+  ],
+  "issuesEn": [
+    "No exported duration: the workbench guessed 56f, so the shot ended the instant the last letter landed",
+    "Debug label \"SPLIT TEXT STAGGER\" printed top-left",
+    "Flat #ececea fill with a single 120px Helvetica line covering a quarter of the frame: empty composition, no hierarchy",
+    "Letters used two-step interpolation on an even 2f stagger, razor sharp with no sense of speed; the baseline was a fixed 920px grey rule that did not match the text width"
+  ],
+  "changesEn": [
+    "New paper look (warm paper, ink, vermilion) staged as a magazine opener: hairline margins, kicker labels, footer meta",
+    "Two-line 300px headline \"Motion / System.\": heavy 900 sans over a 400 serif italic, with a round vermilion full stop as the only accent",
+    "Each line's mask edge is drawn as a visible ink cut line that grows 4f ahead of the letters, so the letters clearly rise out from under it",
+    "Letters ride a physical spring (damping 15, ~11% single overshoot) with rotation settling 3f later and speed-based vertical blur; the stagger tightens from 3.8f to 1.8f",
+    "Right column adds a spec plot of the same spring curve drawn in sync with line one, plus 40px body copy revealed line by line with the same technique",
+    "135f total: 70f of action and a 65f hold with a slow 2.5% push and breathing key light"
+  ],
+  "mdChanged": true,
+  "look": "paper"
+}

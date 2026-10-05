@@ -1,0 +1,31 @@
+{
+  "stem": "DropBlackoutSlam",
+  "issues": [
+    "铺垫是一张灰色小字假 dashboard 在轻微呼吸，和\"音乐要落拍\"毫无关系，观众看不出黑场前\"要来了\"",
+    "爆入后只有一个 Helvetica 白字「DROP」压在 #2f2f2f 平灰底上，像占位符而不是发布口号",
+    "冲击环是一根灰色实线圈，没有光感；落定后画面完全静死",
+    "没有品牌、没有副句，结尾帧讲不出是什么产品的发布"
+  ],
+  "changes": [
+    "look 改为自定义「信号红 · 暖黑」，铺垫换成为镜头设计的编曲视图（Quasar Studio：4 条音轨、小节标尺、红色 DROP 标记旗），播放头按 150BPM 匀速走、正好在切黑帧撞上 DROP 标记",
+    "铺垫张力：相机 1.0→1.1 ease-in 逼近标记；拍点只打元素层（节拍灯 / 电平条 / 标记旗），最后 12f 军鼓滚奏式加密 12→6→3→2f；Riser 轨的楔形波形把\"蓄力\"可视化",
+    "黑场保持 12f 纯 #0c0c0c 死寂；爆入三件事同帧：300px 字标「QUASAR 3」1.35→1 撞入（5f snappy + 两层缩放残影）、10px 指数衰减震屏、细亮芯红晕冲击环 80→1100px",
+    "加一帧中心曝光 + 背后整条红色声纹从中心 ~140px/f 向两侧炸开、逐柱弹簧落定，成为字标后的静态声纹",
+    "落定排版：红色宽字距眉题 THE DROP · 03.21、56px 副句逐词升起、32px 底注；hold 段 1.0→1.02 极缓推镜 + 声纹极轻呼吸，136f"
+  ],
+  "issuesEn": [
+    "The build-up was a grey, small-text fake dashboard gently breathing, unrelated to a music drop, so nothing signalled that something was coming before the blackout",
+    "After the slam there was only a plain white Helvetica 'DROP' on a flat #2f2f2f grey, reading as a placeholder rather than a launch line",
+    "The shock ring was a solid grey circle with no sense of light, and the frame went completely dead after landing",
+    "No brand and no supporting line, so the end frame did not say what was being launched"
+  ],
+  "changesEn": [
+    "Custom 'signal red on warm black' look; the build-up is now an arrangement view designed for the shot (Quasar Studio: 4 tracks, bar ruler, red DROP marker), with the playhead moving at a true 150BPM and hitting the DROP marker exactly on the blackout frame",
+    "Tension in the build: the camera pushes 1.0 to 1.1 with an ease-in toward the marker; beats hit only the element layer (beat LEDs, meters, marker flag), and the last 12f tighten like a snare roll, 12 to 6 to 3 to 2f; the riser track's wedge waveform makes the build visible",
+    "The blackout stays a dead 12f of pure #0c0c0c; three things fire on the same frame: a 300px 'QUASAR 3' wordmark slams 1.35 to 1 (5f snappy plus two scale echoes), a 10px exponentially decaying shake, and a thin bright-core red-glow ring from 80 to 1100px",
+    "Added a one-frame centre exposure and a full-width red waveform that bursts outward from the centre at about 140px/f, each bar settling on its own spring into a static waveform behind the wordmark",
+    "Settled layout: a wide-tracked red kicker 'THE DROP · 03.21', a 56px line rising word by word and a 32px footnote; the hold has a 1.0 to 1.02 slow push and a faint waveform breath, 136f total"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

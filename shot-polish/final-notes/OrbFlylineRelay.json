@@ -1,0 +1,16 @@
+{
+  "stem": "OrbFlylineRelay",
+  "changed": true,
+  "brand": [
+    "收束标题「Say it once. Tessel does the rest.」→「Say it once. video-shotcraft does the rest.」（品牌名仍是青色强调词）",
+    "三节点 Listen / Understand / Act → Brief / Storyboard / Ship（video-shotcraft 出片流程，图标不变）",
+    "副标 Stand-up · 14 min / 3 decisions · 5 tasks / Sent to #launch → One prompt · 1 page / 8 shots · beat-synced / launch-film.mp4"
+  ],
+  "brandEn": [
+    "Closing title \"Say it once. Tessel does the rest.\" → \"Say it once. video-shotcraft does the rest.\" (brand word keeps the teal accent)",
+    "Three nodes Listen / Understand / Act → Brief / Storyboard / Ship (the video-shotcraft production flow; icons unchanged)",
+    "Sublabels Stand-up · 14 min / 3 decisions · 5 tasks / Sent to #launch → One prompt · 1 page / 8 shots · beat-synced / launch-film.mp4"
+  ],
+  "styleKey": "orb-flyline-relay",
+  "mdChanged": true
+}

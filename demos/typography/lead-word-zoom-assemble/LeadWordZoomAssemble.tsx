@@ -7,7 +7,11 @@
 // 这两点是全程唯一不该移动的锚，挂载时实测一次（基线用零尺寸 inline-block 的
 // offsetTop 读出），否则缩放过程中字会逐帧抖基线。
 // 参数以 1920×1080 标定。
+// 质感层（改版）：四色 mesh 收成"靛蓝主光 + 一抹暖色余光"的低对比底 + 颗粒 + 暗角；
+// 首词入场带 8px→0 失焦（与淡入同 6f）；缩回段按 scale 速度给瞬时失焦（≤3.5px，停稳归零），
+// 大幅缩放不再"硬缩"；整行上移提前到 f32–46，品牌行静止 26f 再 crash；强调色统一为批次靛蓝。
 import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Grain, Vignette } from '../../_fixtures/Polish';
 import {
   AbsoluteFill,
   continueRender,
@@ -22,8 +26,8 @@ import {
 export const LEAD_WORD_ZOOM_ASSEMBLE_DURATION = 84; // 2.8s @30fps
 
 // ---- 编舞常量 ----
-const TEXT = 'Introducing Lumen Deck';
-const HIGHLIGHT_WORD = 'Lumen'; // 精确匹配的词换强调色：品牌词落位那一下自带高亮
+const TEXT = 'Introducing video-shotcraft';
+const HIGHLIGHT_WORD = 'video-shotcraft'; // 精确匹配的词换强调色：品牌词落位那一下自带高亮
 const FONT_SIZE = 96;
 const INITIAL_SCALE = 2.3; // 首词起手放大倍数
 const INTRO_DURATION = 6; // f：首词淡入
@@ -39,7 +43,7 @@ const WORD_FADE = 2; // f：后续词淡入（刻意极短——是被推进来�
 const LETTER_SPACING = '-0.03em';
 
 // ---- 场景层 ----
-const LIFT: [number, number] = [34, 50]; // f：整行上移 + 副行同帧出现
+const LIFT: [number, number] = [32, 46]; // f：整行上移 + 副行同帧出现（与左滑尾巴重叠 4f，读作一口气）
 const LIFT_DISTANCE = -56; // px
 const SUBLINE = 'One shot card, one motion recipe — copy, paste, render.';
 const CRASH_FRAMES = 12; // f：段尾 crash-zoom 占用的收尾帧数
@@ -47,15 +51,15 @@ const CRASH_SCALE = 0.2;
 const CRASH_BLUR = 9;
 
 const INK = '#1d1d1f';
-const INK_DIM = '#7a7a7a';
-const ACCENT = '#7A5AF8';
-const SANS = '-apple-system, "PingFang SC", BlinkMacSystemFont, sans-serif';
+const INK_DIM = '#6e6f76';
+const ACCENT = '#5b63d3';
+// 系统 Display 字栈在前（-apple-system 在无头 Chrome 里常解析不到，会落到 PingFang），中文回退 PingFang
+const SANS = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "PingFang SC", Inter, Arial, sans-serif';
 const MESH_BG =
-  'radial-gradient(52% 44% at 18% 22%, rgba(122,90,248,0.20) 0%, rgba(122,90,248,0) 70%),' +
-  'radial-gradient(46% 42% at 84% 18%, rgba(255,138,178,0.20) 0%, rgba(255,138,178,0) 70%),' +
-  'radial-gradient(58% 50% at 78% 84%, rgba(96,190,255,0.20) 0%, rgba(96,190,255,0) 70%),' +
-  'radial-gradient(50% 46% at 24% 88%, rgba(255,196,112,0.20) 0%, rgba(255,196,112,0) 70%),' +
-  'linear-gradient(180deg, #f7f6f9 0%, #f2f1f5 100%)';
+  'radial-gradient(56% 50% at 26% 24%, rgba(91,99,211,0.16) 0%, rgba(91,99,211,0) 72%),' +
+  'radial-gradient(50% 46% at 80% 82%, rgba(255,180,120,0.10) 0%, rgba(255,180,120,0) 72%),' +
+  'radial-gradient(70% 60% at 50% 46%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 70%),' +
+  'linear-gradient(180deg, #f6f6f8 0%, #efeff2 100%)';
 
 /** 首词向观众漂移：先快后停，峰值处挂住 */
 const PUSH_EASE = Easing.bezier(0.25, 1, 0.5, 1);
@@ -63,6 +67,19 @@ const PUSH_EASE = Easing.bezier(0.25, 1, 0.5, 1);
 const ZOOM_EASE = Easing.bezier(0.5, 0, 0.05, 1);
 /** 后续词推入槽位：起步快，落地长而软 */
 const WORD_EASE = Easing.bezier(0.22, 0.8, 0.36, 1);
+
+// 整行 scale：hold 推近 + 缩回两段相加（两段之间没有速度断点）
+const lineScale = (f: number) =>
+  interpolate(f, [0, HOLD_DURATION], [INITIAL_SCALE, INITIAL_SCALE * PUSH_SCALE], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: PUSH_EASE,
+  }) +
+  interpolate(f, [HOLD_DURATION, HOLD_DURATION + RECEDE_DURATION], [0, 1 - INITIAL_SCALE * PUSH_SCALE], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: ZOOM_EASE,
+  });
 
 const TextReveal: React.FC = () => {
   const frame = useCurrentFrame();
@@ -106,6 +123,12 @@ const TextReveal: React.FC = () => {
   const zoomStart = HOLD_DURATION;
   // 首词从"画面正中"走到"行内自己的位置"，位移就是这段偏心距
   const slideDistance = lineWidth * (0.5 - leadRatio);
+  // 首词入场失焦：与 6f 淡入同步 8px→0（scale 前单位，随 2.3× 放大）
+  const introBlur = interpolate(frame, [0, INTRO_DURATION], [8 / INITIAL_SCALE, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+    easing: Easing.out(Easing.cubic),
+  });
 
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -122,18 +145,13 @@ const TextReveal: React.FC = () => {
           whiteSpace: 'nowrap',
           fontFamily: SANS,
           transformOrigin: `${leadRatio * 100}% ${baseline}px`,
-          scale:
-            interpolate(frame, [0, HOLD_DURATION], [INITIAL_SCALE, INITIAL_SCALE * PUSH_SCALE], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-              easing: PUSH_EASE,
-            }) +
-            interpolate(
-              frame,
-              [zoomStart, zoomStart + RECEDE_DURATION],
-              [0, 1 - INITIAL_SCALE * PUSH_SCALE],
-              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: ZOOM_EASE },
-            ),
+          scale: lineScale(frame),
+          // 缩回段的瞬时失焦：按 scale 速度给（峰值约 0.3/帧 → ≈3px），停稳为 0
+          filter: (() => {
+            const v = Math.abs(lineScale(frame + 0.5) - lineScale(frame - 0.5));
+            const b = Math.min(3.5, v * 10) + introBlur;
+            return b > 0.05 ? `blur(${b.toFixed(2)}px)` : undefined;
+          })(),
           translate: `${interpolate(
             frame,
             [zoomStart, zoomStart + ASSEMBLE_DURATION],
@@ -225,7 +243,9 @@ export const LeadWordZoomAssemble: React.FC = () => {
             top: '50%',
             marginTop: 62,
             textAlign: 'center',
-            fontSize: 32,
+            fontSize: 34,
+            fontWeight: 400,
+            letterSpacing: '-0.005em',
             color: INK_DIM,
             opacity: lift,
             transform: `translateY(${(1 - lift) * 16}px)`,
@@ -234,6 +254,8 @@ export const LeadWordZoomAssemble: React.FC = () => {
           {SUBLINE}
         </div>
       </AbsoluteFill>
+      <Vignette strength={0.12} inner={0.5} color="#2a2c36" />
+      <Grain opacity={0.05} />
     </AbsoluteFill>
   );
 };

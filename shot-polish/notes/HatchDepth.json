@@ -1,0 +1,31 @@
+{
+  "stem": "HatchDepth",
+  "issues": [
+    "整张图表在 480×270 设计坐标里，标签与数值 10px 级小字放大后仍读不清，标签是 SERIES_A / GROUP_C 这类占位名",
+    "黑底 + 灰斜纹 + 蓝色柱，蜕变只是交叉淡化，「占位变真数据」的瞬间没有动作",
+    "五条柱全部同一蓝色，没有主角；表头用等宽小字挤在一行（METRICS ● LIVE TOTAL 875K），且合计与柱值不自洽",
+    "斜纹在柱伸长时会爬动，蜕变后整体平淡，没有落定的那一下"
+  ],
+  "changes": [
+    "look 换成 sand（米色 · 深墨棕 · 赤陶）制图台：整屏原生 1920 布局，40px 渠道名、72px 高柱（满幅 1180px）、44px 柱端读数、88px 标题，图表占画宽 ~85%",
+    "整张图先是草图：连标题都是一条铅笔斜纹占位条、右上角 DRAFT 虚线胶囊；斜纹改 18px 平铺细铅笔线 + 虚线描边，锚在条左端，伸长不爬动",
+    "蜕变改成「上墨」：每条柱一道 115° 斜切前沿从左扫到右（与斜纹平行），前沿后斜纹退场、实心墨色到位，前沿带一道细高光，读数同步从 0 滚到终值",
+    "强调色只给主角：最大值 Referral 上赤陶色，其余深墨棕；标题占位条虚化成真标题，DRAFT 翻成 ● LIVE，合计 1.45M 与柱值自洽",
+    "时间表：4–48 错峰生长（间隔递减）→ 48–60 草图 hold 一拍 → 60–96 逐条上墨 → 96–118 ±1.5% 阻尼微颤 → 118–150 hold 极缓推近；时长 132f → 150f"
+  ],
+  "issuesEn": [
+    "The whole chart lived in a 480×270 design space; 10px-class labels and values were still unreadable when scaled, and labels were placeholders like SERIES_A / GROUP_C",
+    "Black stage, grey hatching and blue bars; the morph was a plain crossfade, so the 'placeholder becomes real data' moment had no action",
+    "All five bars were the same blue with no hero; the header crammed mono microcopy into one line (METRICS ● LIVE TOTAL 875K) and its totals did not match the bars",
+    "Hatching crawled as bars grew, and after the morph the chart just sat there with no landing beat"
+  ],
+  "changesEn": [
+    "Sand look (warm beige, deep ink brown, terracotta) as a drafting table: native 1920 layout with 40px channel names, 72px bars (1180px full width), 44px end values and an 88px title; the chart fills ~85% of the frame",
+    "The whole chart starts as a sketch: even the title is a pencil-hatched placeholder bar, with a dashed DRAFT chip; hatching is now an 18px tile of fine pencil lines with a dashed outline, anchored at the bar's left so it never crawls",
+    "The morph is now 'inking': a 115° slanted front (parallel to the hatching) sweeps each bar left to right, hatching exits behind it and solid ink lands, with a thin highlight on the front and the value counting up from 0",
+    "Accent only on the hero: the largest bar (Referral) is terracotta, the rest deep ink; the title placeholder blurs into the real title, DRAFT flips to ● LIVE, and the 1.45M total matches the bars",
+    "Timeline: 4–48 staggered growth with shrinking gaps, 48–60 a sketch hold, 60–96 inking bar by bar, 96–118 a damped ±1.5% wobble, 118–150 hold with a slow push; 132f → 150f"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

@@ -13,18 +13,20 @@ const SERIF = 'ui-serif, Georgia, "Times New Roman", serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 
 // 每句恰好一个 accent：功能名/收益词（C2）
-const WORDS: { text: string; accent?: boolean }[] = [
-  { text: 'All' },
-  { text: 'your' },
-  { text: 'team’s' },
-  { text: 'research,' },
-  { text: 'one', accent: true },
-  { text: 'place' },
-  { text: 'to' },
-  { text: 'go.' },
+// br：该词后强制换行（让两行长度接近原版 "All your team’s research, / one place to go." 的分行，避免孤词）
+const WORDS: { text: string; accent?: boolean; br?: boolean }[] = [
+  { text: 'Direct' },
+  { text: 'the' },
+  { text: 'film.', br: true },
+  { text: 'Let' },
+  { text: 'the' },
+  { text: 'agent' },
+  { text: 'shoot', accent: true },
+  { text: 'it.' },
 ];
-const SUB = 'of 31 fetched today';
-const SUB_DIGITS = '5';
+// 副行：video-shotcraft 的渲染队列语境（示意数据）
+const SUB = 'shots rendered today';
+const SUB_DIGITS = '12';
 
 // 数字滚动列（odometer 风格，复制自 template DigitRoll，数字带双份拼接保证
 // 任何目标位都有滚感；tabular-nums 防横向抖）
@@ -125,19 +127,21 @@ export const PaperTitleCard: React.FC = () => {
               easing: Easing.bezier(0.2, 0.75, 0.3, 1),
             });
             return (
-              <span
-                key={i}
-                style={{
-                  opacity: t,
-                  transform: `scale(${1.28 - 0.28 * t})`,
-                  filter: `blur(${(1 - t) * 7}px)`,
-                  display: 'inline-block',
-                  fontStyle: w.accent ? 'italic' : 'normal',
-                  color: w.accent ? 'oklch(52% 0.115 65)' : undefined,
-                }}
-              >
-                {w.text}
-              </span>
+              <React.Fragment key={i}>
+                <span
+                  style={{
+                    opacity: t,
+                    transform: `scale(${1.28 - 0.28 * t})`,
+                    filter: `blur(${(1 - t) * 7}px)`,
+                    display: 'inline-block',
+                    fontStyle: w.accent ? 'italic' : 'normal',
+                    color: w.accent ? 'oklch(52% 0.115 65)' : undefined,
+                  }}
+                >
+                  {w.text}
+                </span>
+                {w.br && <span style={{ flexBasis: '100%', height: 0 }} />}
+              </React.Fragment>
             );
           })}
         </div>

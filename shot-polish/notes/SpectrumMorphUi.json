@@ -1,0 +1,31 @@
+{
+  "stem": "SpectrumMorphUi",
+  "issues": [
+    "冷调深蓝底 + 靛蓝下划线 + 居中 LAUNCH WEEK，和库里大量暗场标题卡同质",
+    "下划线只有 720×8px、副题 38px，画面中心以外大片空白",
+    "伪频谱只是 |sin| × 抖动，整排条高度接近，读作栅栏而不是音乐",
+    "跳动时只有条在动，画面里没有“正在播放”的语境"
+  ],
+  "changes": [
+    "look 换 sand：唱片封套式「正在播放」页（虚构 Lowlight FM），左对齐瑞士网格，200px 超粗标题「Night Shift」+ 14px × 1000px 赤陶标题线，下有曲名信息行与曲目表",
+    "右侧黑胶 33⅓ 转（盘面静止反光让唱纹流动）+ 唱臂；唱片和时间码只在播放时走，收拢时 18f 刹停——借用结束整幅一起“停播”",
+    "伪频谱改为有节拍：每 16f 底鼓（低频冲高后指数衰减）、每 8f 反拍镲（高频闪），叠摆动与 4f 换挡抖动；靛蓝峰值帽按重力回落，收拢时先撤",
+    "32 根条底边锁线只向上长（封顶 129px 不碰标题降部），gap 0↔8px，收拢 12f 精确拼回整线后条件挂载回直线",
+    "时间表 150f：标题逐词从线下升起、标题线由左画出、唱片滑入起转（0–24f），26f 裂开，90f 收拢，hold 48f 只留 1.5% 极缓推进"
+  ],
+  "issuesEn": [
+    "Cool navy backdrop, indigo underline and a centred LAUNCH WEEK: same as many dark title cards in the library",
+    "The underline is only 720 x 8px and the subtitle 38px; most of the frame is empty",
+    "The fake spectrum is just |sin| x jitter, so all bars sit at similar heights and read as a fence, not music",
+    "Only the bars move while dancing; nothing on screen says something is playing"
+  ],
+  "changesEn": [
+    "Sand look: a record-sleeve 'Now playing' page (fictional Lowlight FM) on a left-aligned Swiss grid, 200px ultra-bold 'Night Shift' over a 14 x 1000px terracotta rule, with track info and a track list",
+    "A vinyl record spins at 33 1/3 on the right (a fixed sheen makes the grooves flow) with a tonearm; record and timecode run only while playing and brake over 18f on collapse, so the whole frame stops when the loan ends",
+    "Rhythmic fake spectrum: a kick every 16f (bass bins jump then decay), an off-beat hat every 8f (treble bins flash), plus wobble and 4f jitter; navy peak caps fall with gravity and retract first on collapse",
+    "32 bars locked to the rule grow upward only (capped at 129px to clear the title's descenders), gap 0 <-> 8px, collapsing in 12f back into the exact line before remounting it",
+    "150f timeline: title rises word by word, rule draws from the left and the record slides in spinning (0-24f), split at 26f, collapse at 90f, 48f hold with a 1.5% creep"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

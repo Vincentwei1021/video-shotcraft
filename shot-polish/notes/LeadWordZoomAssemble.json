@@ -1,0 +1,31 @@
+{
+  "stem": "LeadWordZoomAssemble",
+  "issues": [
+    "浅灰四色 mesh 底 + 96px 灰黑字，像网页 hero 不像发布会开场，首词再大也没有'舞台'",
+    "落定后整行只占画宽一半、副行 34px 浅灰几乎读不清，结尾帧空而平",
+    "缩回 + 左滑是大位移却只有各向同性的轻微失焦，没有方向性运动模糊，滑行读不出速度",
+    "品牌词只是换了颜色，落位那一下没有任何光的强调"
+  ],
+  "changes": [
+    "look 换 midnight（深蓝夜 keynote）：顶部主光 + 地平线光带 + 浮尘；首词背后一团跟随 scale 收放的蓝色聚光，地平线发丝亮线随组句从中心拉开——'舞台开灯'",
+    "字号 96→124px / 700 / −0.04em，起手 2.3× ≈ 285px 占满画宽；副行 44px + mono 眉题与整行上移同窗出现",
+    "左滑段按 x 速度加横向方向性运动模糊（SVG 只在 x 轴模糊，≤7px），缩回段保留按 scale 速度的瞬时失焦，停稳归零",
+    "品牌词「Lumen」电光蓝 + 泛光渐起，f44 一道裁进字形的扫光（全镜头只此一次）",
+    "时间表放宽到 90f：hold 14f / 缩回 14f / 左滑 26f / 上移 f36–50 / hold 28f / crash 12f（scale 1.22 + blur 10 + 压暗）；支点实测机制不变"
+  ],
+  "issuesEn": [
+    "Light grey four-colour mesh with 96px dark-grey type — it reads like a web hero, not a keynote opener; no sense of a stage even when the lead word is huge",
+    "Once assembled the line only spans half the width and the 34px light-grey subline is barely readable; the end frame is empty and flat",
+    "The shrink + slide is a big move but only has a slight isotropic blur, no directional motion blur, so the slide carries no speed",
+    "The brand word is merely recoloured; there is no light accent when it lands"
+  ],
+  "changesEn": [
+    "Look switched to midnight (dark-blue keynote): top key light, horizon band, dust; a blue spotlight behind the lead word scales with it, and a hairline on the horizon opens from the centre as the sentence assembles — 'stage lights on'",
+    "Type 96→124px / 700 / −0.04em, the 2.3× start ≈ 285px fills the width; 44px subline plus a mono eyebrow arrive in the same window as the line lift",
+    "Directional horizontal motion blur driven by x velocity during the slide (SVG x-only blur, ≤7px), velocity-based defocus kept for the shrink; both settle to zero",
+    "Brand word 'Lumen' in electric blue with a glow that builds, plus one text-clipped glint at f44 (the only one in the shot)",
+    "Timeline loosened to 90f: hold 14f / shrink 14f / slide 26f / lift f36–50 / hold 28f / crash 12f (scale 1.22 + blur 10 + darken); measured-pivot mechanics unchanged"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

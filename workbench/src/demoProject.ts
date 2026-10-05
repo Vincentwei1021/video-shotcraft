@@ -18,22 +18,22 @@ export const demoProject = (): ProjectData => {
       {
         id: uid("track"),
         name: t("track.captions"),
-        clips: [clip("inkpress-caption", 70, 60, { text: "COUNT UP · CONFETTI" })],
+        clips: [clip("inkpress-caption", 70, 60, { text: "HIT COUNTER · COMBO" })],
       },
       {
         id: uid("track"),
         name: t("track.shots"),
         clips: [
           clip("inkpress-title-card", 0, 55, { text: "Every shot, *tuned* in one place." }),
-          clip("demo:CounterConfetti", 55, 138),
-          clip("demo:CrashImpactReal", 193, 120),
-          clip("inkpress-title-card", 313, 55, { text: "Drag a card. *Tweak* it. Export." }),
+          clip("demo:HitCounter", 55, 176),
+          clip("demo:CrashImpactReal", 231, 126),
+          clip("inkpress-title-card", 357, 55, { text: "Drag a card. *Tweak* it. Export." }),
         ],
       },
       {
         id: uid("track"),
         name: t("track.background"),
-        clips: [clip("bg-paper", 0, 368)],
+        clips: [clip("bg-paper", 0, 412)],
       },
     ],
   };

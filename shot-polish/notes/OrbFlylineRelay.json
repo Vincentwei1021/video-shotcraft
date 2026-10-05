@@ -1,0 +1,29 @@
+{
+  "stem": "OrbFlylineRelay",
+  "issues": [
+    "三张 420×250 深色卡的标题 14–19px、指标说明 12px，画面大半是空黑，读不出这条管线在干什么",
+    "两团光斑是很淡的靛蓝灰团，落点帧的 surge 涨亮幅度在暗底上几乎看不见，\"同帧共振\"这一组合命门没被看见",
+    "卡片三角布局 + 细飞线，读作连线图而不是\"接力\"",
+    "结尾没有收束信息，动作在 f98 结束后只剩半暗画面"
+  ],
+  "changes": [
+    "look 换成 midnight（深蓝夜 · 电光蓝 · 青）：三张卡换成语音 AI 工作流「Listen → Understand → Act」的三颗 240px 玻璃节点（产品名 Tessel），中间高两边低的起伏排布，飞线成了一跳一跳的接力弧；标签 52px、说明 32px",
+    "每颗节点背后一团 720–820px 光斑（电光蓝 / 青 / 堇蓝），节点只随光斑漂 22% 形成前后视差；落点帧 = 节点点亮帧 = 光斑 surge 起点（同一常量），光斑 5f 涨到 1+1.6 倍并放大 12%、15f 消散，节点同帧描边脉冲 + 冲击环",
+    "飞线白芯 + 青蓝两层辉光、亮头彗尾，生长起步蓄力、进站减速；到站 4f 后整条 14f 消散成细点虚线，只留下路径",
+    "收束：C 点亮后 72px 标题「Say it once. Tessel does the rest.」逐词升起；光斑 110–140f out-sine 收敛冻结，末 25f 真静止；镜头 1→1.04 推进、焦点随接力从 A 漂到 C"
+  ],
+  "issuesEn": [
+    "The three 420×250 dark cards had 14–19px titles and 12px captions in a mostly empty black frame, so you could not tell what the pipeline did",
+    "The two orbs were faint indigo-grey smudges and the surge on the landing frame barely registered, so the key same-frame resonance went unseen",
+    "A triangle of cards joined by thin lines read as a diagram, not a relay",
+    "There was no closing message; after f98 the frame just sat half-lit"
+  ],
+  "changesEn": [
+    "Midnight look (deep navy, electric blue, cyan): the cards became three 240px glass nodes of a voice-AI workflow 'Listen → Understand → Act' (product: Tessel) set high in the middle and lower at the sides, so the lines read as relay hops; 52px labels, 32px captions",
+    "Each node has a 720–820px orb behind it (electric blue, cyan, violet-blue) and the node drifts only 22% as far for parallax; the landing frame, the node's light-up frame and the orb's surge start share one constant: the orb rises to 1+1.6x brightness and 12% larger over 5f and fades over 15f while the node pulses its rim and throws a shock ring on the same frame",
+    "Lines have a white core with two cyan-blue glow layers and a leading comet head; growth winds up and brakes into the station; 4f after arrival the line dissolves over 14f into a fine dotted path",
+    "Close: after C lights, a 72px headline 'Say it once. Tessel does the rest.' rises word by word; orbs ease out with a sine over 110–140f and freeze for the last 25f; the camera pushes 1 to 1.04 while its focus follows the relay from A to C"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

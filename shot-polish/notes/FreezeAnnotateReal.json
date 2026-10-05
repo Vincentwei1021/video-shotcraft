@@ -1,0 +1,33 @@
+{
+  "stem": "FreezeAnnotateReal",
+  "issues": [
+    "米白页面平铺、14 张小卡排满一行，圈注对象只占画面很小一块",
+    "定格那一刻没有任何「暂停」信号，只有模糊消失，观众感觉不到画面停了",
+    "琥珀马克笔只有圈 + 箭头 + 46px 小标签，批注读起来像随手涂鸦而不是评审意见",
+    "解冻后卡流跑出画面，标注没有留下任何痕迹，尾帧是普通的一排卡"
+  ],
+  "changes": [
+    "look 换成 porcelain 瓷白：卡片放大到 600px 立在冷白展台上（顶光 + 两层软阴影 + 接地带），一屏三张，目标卡居中",
+    "定格做成「按下暂停」：快门白闪 3f、整帧钴蓝取景框四角弹簧弹入、左上时间码从「● LIVE」走字切到「❚❚ PAUSED」并停住，其余卡去饱和退淡",
+    "标注改钴蓝马克笔套组：超椭圆一笔圈 10f → 箭杆 6f + 箭头 3f → 68px 粗体批注「Ship this first.」逐词升起 + 手绘下划线 → 署名行",
+    "解冻后墨迹淡出，但目标卡右上角钉上一枚评论图钉「1」随卡离场——标注被存下来了",
+    "解冻改 smootherstep 一张卡行程 22f（ease-in 起步、刹停落位），带图钉的目标卡停在左侧留在尾帧海报里",
+    "时长 135f → 158f（流动 45f / 定格 67f / 解冻 22f / hold 24f）"
+  ],
+  "issuesEn": [
+    "A flat cream page with a row of fourteen small cards; the annotated card took up only a small part of the frame",
+    "Nothing signalled 'pause' at the freeze; the blur just disappeared, so viewers couldn't feel the frame stop",
+    "The amber marker was only a circle, an arrow and a 46px label, which read as a doodle rather than review feedback",
+    "After the thaw the rail ran off screen and left no trace of the annotation; the last frame was an ordinary row of cards"
+  ],
+  "changesEn": [
+    "Porcelain look: cards enlarged to 600px stand on a cool white stage (top light, two-layer soft shadows, a ground band), three to a screen with the target centred",
+    "The freeze is a real pause: a 3f shutter flash, cobalt viewfinder corners that spring in, a timecode that ticks under '● LIVE' then switches to '❚❚ PAUSED' and stops, and the other cards desaturate and fade",
+    "The annotation is a cobalt marker set: a one-stroke superellipse circle in 10f, then a 6f arrow shaft and 3f head, a 68px bold note 'Ship this first.' rising word by word with a hand-drawn underline, then a byline",
+    "On thaw the ink fades but a '1' comment pin sticks to the target card's corner and travels off with it, so the note is kept",
+    "The thaw is a one-card smootherstep move in 22f (ease-in start, soft stop), leaving the pinned target card on the left of the final poster",
+    "135f → 158f (flow 45f / freeze 67f / thaw 22f / hold 24f)"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "StrokeSegmentBuild",
+  "issues": [
+    "平灰底上一组方头白色粗线段，像调试用的像素字，没有材质也没有光",
+    "段间隔恒定 6f，从头到尾一个速度，悬念没有收紧也没有屏息",
+    "字只占画面一半宽、方块字形生硬，揭晓帧只是一下 6% 缩放，冲击力弱",
+    "角落打着卡名占位标题，画面里没有空间关系"
+  ],
+  "changes": [
+    "look 换为 aurora：深紫墙上的一块霓虹灯牌，SHIP 重画成 400px 高的单线几何字，拆成 16 根带电极缝的灯管（白热芯 + 粉色灯管 + 近/远两层辉光）",
+    "每根灯管的点亮改成 7f 霓虹起辉抖闪（亮—灭—亮—半亮—亮），悬念期以 0.58 半亮稳住，揭晓时全牌通电到满亮并涌起一次",
+    "节奏重排为疏→密（间隔 9f→3f）→ 14f 屏息 → 三根钥匙段三拍落下 → 揭晓；钥匙段固定为 S 下脊 / H 中横 / P 碗底",
+    "加入空间：墙面受光随已亮灯管数增长、地面交线有一条受光带、光亮地面倒映灯牌下半截；全程 1→1.035 极缓推近",
+    "删掉占位标题，揭晓后才升起副题「VERSION 4.0 ● AVAILABLE TODAY」；时长 150→165f"
+  ],
+  "issuesEn": [
+    "Square-capped white bars on a flat grey background look like a debug pixel font, with no material and no light",
+    "Segments light at a constant 6f interval from start to finish, so the suspense never tightens or pauses",
+    "The word spans only half the frame with stiff block letterforms, and the reveal is just a 6% scale bump",
+    "A placeholder title with the card name sits in the corner, and the frame has no sense of space"
+  ],
+  "changesEn": [
+    "Look switched to aurora: a neon sign on a deep violet wall. SHIP is redrawn as a 400px monoline geometric word split into 16 tubes with electrode gaps (white-hot core, pink tube, near and far glow layers)",
+    "Each tube strikes on with a 7f neon stutter (on-off-on-half-on) and settles at 0.58 brightness during the suspense; on the reveal the whole sign powers up to full and surges once",
+    "Re-timed as sparse to dense (9f down to 3f intervals), a 14f held breath, three key tubes on three beats, then the reveal; the keys are the S spine, the H crossbar and the P bowl",
+    "Added space: wall light grows with the number of lit tubes, a lit band sits on the floor line, and a glossy floor reflects the lower half of the sign; a slow 1 to 1.035 push runs throughout",
+    "Removed the placeholder title; the subline \"VERSION 4.0 * AVAILABLE TODAY\" rises only after the reveal; duration 150 to 165f"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

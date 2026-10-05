@@ -1,0 +1,31 @@
+{
+  "stem": "TerminalTypewriter",
+  "issues": [
+    "浅灰底上一只小终端窗，命令只有 22px 级，四周大面积空白，开场读不出\"开发者产品\"的分量",
+    "回车后急推只有 6f、幅度 3.2x，硬切过去的是通用灰条 dashboard，引信点着后没有\"结果\"",
+    "打字、光标、推镜都是同一种冷灰，没有光、没有色彩重心，暂停任何一帧都不像海报",
+    "切后场景内容是占位骨架，读不出任何信息"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 橙）：1240px 深色玻璃终端窗占画宽 65%，命令 64px 等宽，历史输出 30px 压暗作纹理，窗下沿一条橙色轮廓光",
+    "打字保留帧确定的真人间隔（1–4f、词首顿一拍），每个字落下 4f 由橙热到奶白（键击余温），打字全程相机 1→1.035 蓄力缓推",
+    "回车做成\"引信\"：命令行瞬间转橙、一道引信光 4f 烧过整行，整窗 8f 急推 1→4.8（t^2.3 加速）+ 末 4f 模糊 + 暖白曝光闪",
+    "硬切到为镜头设计的部署结果页：290px 渐变巨字「Live」+ 呼吸状态点、44px 副标题，右侧三个区域行错峰入场、进度条依次走满翻成 Live",
+    "切后只回稳 1.12→1 不再推（一棒只交一次），hold 段靠舞台光呼吸与状态点脉动；时长 145→150f"
+  ],
+  "issuesEn": [
+    "A small terminal on a light-grey stage with ~22px command text and lots of empty space; it carried no weight as a developer-product opener",
+    "The Enter push was only 6f and 3.2x, and it hard-cut to a generic grey-bar dashboard, so the fuse had no payoff",
+    "Typing, cursor and push were all the same cold grey with no light or colour focus; no frame read as a poster",
+    "The post-cut scene was a placeholder skeleton with no readable information"
+  ],
+  "changesEn": [
+    "Ember look (warm black, orange): a 1240px dark-glass terminal spanning 65% of the frame, 64px mono command, 30px dimmed history as texture, an orange rim light on the lower edge",
+    "Typing keeps deterministic human gaps (1–4f, a beat before each word); each key lands orange-hot and cools to cream over 4f, while the camera creeps 1→1.035 to build tension",
+    "Enter is a literal fuse: the command flashes orange, a spark burns along the line in 4f, then an 8f crash push 1→4.8 (t^2.3 acceleration) with 4f of blur and a warm exposure flash",
+    "Hard cut to a purpose-built deploy result: a 290px gradient 'Live' with a breathing status dot and a 44px subline; three region rows stagger in, fill their bars and flip to Live",
+    "After the cut it only settles 1.12→1 with no second push (one hand-off per shot); the hold stays alive through stage-light breathing and the pulsing dot; 145→150f"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

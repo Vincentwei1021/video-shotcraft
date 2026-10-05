@@ -1,0 +1,33 @@
+{
+  "stem": "NeedleSweepSelftest",
+  "issues": [
+    "三只 270° 小表并排塞在一张浅色卡片里，每只表只占画宽 ~8%，刻度和指针细到看不清",
+    "标题是调试文字「NEEDLE SWEEP SELF-TEST」，卡头只有一条灰色骨架条，没有任何内容",
+    "数值 30px 级小字只在落定后突然出现，自检过程中看不到读数，「先亮量程」的仪式感弱",
+    "浅灰底 + 白卡 + 橙色细针，没有光、没有材质，像控件截图而不是发布片镜头"
+  ],
+  "changes": [
+    "look 换成 graphite（石墨暗场 + 香槟金点缀）：座舱三表构图——中央 R322 大表 + 左右 R222 小表 rotateY ±16° 内倾环抱，仪表组占画宽 ~80%",
+    "表盘做成精密仪表：同心渐变表面 + 玻璃月牙反光、点火时外圈发丝线沿 270° 描出、刻度被指针扫过时点亮再回落、红区满弧时闪亮",
+    "指针改外圈锥形短针 + 盘心读数盘：去程 14f 快起急停甩满全弧、满量程挂 3f，再以按行程反算阻尼的弹簧回落（~7° 一次回摆），高速段画扇形运动拖尾",
+    "盘心读数（148px / 92px）全程跟随指针（自检期弱灰、满弧读到量程上限），落定瞬间转亮白 1.12→1 弹出 + 香槟单位；三表错峰 4f 成波浪",
+    "文案换成虚构品牌 Sable 推理节点：眉题 + 底部状态行 SELF-TEST 呼吸点 → 全部落定后「All systems nominal」逐词升起；hold 段整组 1.0→1.03 极缓推近",
+    "时长 140f → 150f：0–28 点火、16–44 扫针、~52–66 逐表落定、74–100 状态切换、100–150 hold"
+  ],
+  "issuesEn": [
+    "Three small 270° dials sat side by side in a pale card, each only ~8% of the frame wide; ticks and needles were too thin to read",
+    "The title was debug text (NEEDLE SWEEP SELF-TEST) and the card header was a grey skeleton bar with no content",
+    "The 30px-class values only popped in after settling; no readout during the self-test, so the 'light the full range first' ritual was weak",
+    "Light grey stage, white card and thin orange needles with no light or material: it read as a widget screenshot, not a launch-film shot"
+  ],
+  "changesEn": [
+    "Graphite look (dark charcoal with a champagne-gold accent) in a cockpit layout: a central R322 dial flanked by two R222 dials angled ±16° inward; the cluster spans ~80% of the frame",
+    "Precision-instrument dials: concentric gradient faces with a glass crescent, a hairline bezel that traces 270° on ignition, ticks that light up as the needle sweeps past, and a redline that flares at full scale",
+    "Outer tapered needles around a centre readout disc: 14f snap sweep to full scale, a 3f hang, then a spring return with damping solved from the travel (~7° single overshoot), plus a sector motion smear at speed",
+    "The centre readout (148px / 92px) tracks the needle live (dim during the test, reading full scale at the top), then turns bright and pops 1.12→1 with a gold unit on settle; dials stagger 4f as a wave",
+    "Copy for a fictional Sable inference node: kicker plus a SELF-TEST breathing dot that becomes 'All systems nominal' rising word by word; the cluster drifts 1.0→1.03 during the hold",
+    "140f → 150f: 0–28 ignition, 16–44 sweep, ~52–66 dials settle in turn, 74–100 status change, 100–150 hold"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

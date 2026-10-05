@@ -1,0 +1,31 @@
+{
+  "stem": "TextOnPath",
+  "issues": [
+    "浅灰平底 + 68px 黑字 + 细灰曲线，字小、对比弱，曲线没有语义（看不出是图表）",
+    "字符各自起跑、后面的字追越前面的字，曲线低段挤成一团读不出整句",
+    "摆正是原地 lerp 到水平线，没有轨迹和重量感；落定后画面只剩一行字一条线",
+    "左上角打着调试标题「TEXT ON PATH」"
+  ],
+  "changes": [
+    "look 换成 midnight（深蓝夜 · 电光蓝 · 青），曲线做成占满画面的营收增长线：5px 电光蓝描边 + 外发光 + 线下渐变面积 + 青色车头光点 + 网格与 mono 刻度",
+    "文案改为「UP AND TO THE RIGHT」92px / 800 全大写，字面意思就是这条线；整串按实测步进沿弧长刚性推进（缓起长尾 60f），行进中可读、带速度拖影",
+    "摆正改为逐字弧线抬升到左上标题位：y 快曲线带 ~4% 过冲、x in-out、旋转晚 2f 收敛，1.1f 错峰形成一道「剥离」波",
+    "余波：光点到顶一圈脉冲 → 数值牌「$48.6M ARR ▲312%」弹簧弹出、季度标记逐个点亮、眉题与副句逐词升起；hold 段 1.5% 极缓推近",
+    "时长 150f → 160f，尾帧是完整的年报数据海报"
+  ],
+  "issuesEn": [
+    "Flat light-grey background, 68px black type and a thin grey curve: small, low contrast, and the curve has no meaning (not readable as a chart)",
+    "Each character started on its own, so later letters overtook earlier ones and bunched up on the low part of the curve",
+    "Straightening was an in-place lerp to a baseline with no trajectory or weight; the settled frame was just one line of text and one curve",
+    "A debug title 'TEXT ON PATH' sat in the top-left corner"
+  ],
+  "changesEn": [
+    "Switched to the midnight look (deep navy, electric blue, cyan); the curve is now a full-frame revenue growth line with a 5px electric-blue stroke, outer glow, gradient area fill, cyan head dot, grid and mono ticks",
+    "Copy is now 'UP AND TO THE RIGHT' at 92px / 800 caps, literally describing the line; the string travels rigidly along arc length with measured spacing (slow-in, long-tail 60f), readable in motion with a speed trail",
+    "Straightening is now a per-letter arced lift into the top-left headline slot: fast y with ~4% overshoot, in-out x, rotation settling 2f later, staggered 1.1f into a peel-off wave",
+    "Follow-through: a pulse ring at the top of the line, then a spring-in value badge '$48.6M ARR ▲312%', quarter markers lighting up, eyebrow and subline rising word by word; 1.5% slow push in the hold",
+    "Duration 150f to 160f; the final frame is a complete annual-report data poster"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

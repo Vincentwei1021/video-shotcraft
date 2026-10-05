@@ -1,0 +1,33 @@
+{
+  "stem": "PaletteThemeRipple",
+  "issues": [
+    "原版是灰阶占位 dashboard + 小字命令面板，面板文字 19–25px 在 1080p 里读不清",
+    "面板收缩只是 5f 线性缩小到 0，亮点很小，'收缩点 = 涟漪起点'的因果不够醒目",
+    "涟漪 22f 就铺满，圆形几乎一闪而过",
+    "深浅两版都是中性灰，没有强调色和光，深色版落定后画面毫无变化"
+  ],
+  "changes": [
+    "主体换成满屏音乐库 Overtone：112px Library 标题、5 张 259px 程序化专辑封面、底部播放条（进度一直在走），封面在深浅两版里完全不变，只换 UI 外壳",
+    "custom look：浅版冷瓷灰白、深版近黑石墨，强调色珊瑚红只给选中行、播放进度和涟漪",
+    "命令面板放大到 980px，46px 输入字、32px 结果行，按人手不等间隔打 dark，首行进入珊瑚选中态，回车键帽按下",
+    "收缩改成 CRT 关机式：先纵向压成白热亮线、再横向收成亮点，亮点 + 横向余辉在原地钉 5f，再从该点起涟漪",
+    "涟漪 34f 强 ease-out 到 1260px（圆形全程读得出），3px 白热环 + 珊瑚外辉 + 晚 4f 回声环，深版 1.035→1 坐实，相机打字时推 1.03、涟漪时呼气退回",
+    "深色落定后每张封面在暗场里投下同色辉光，是只有深色模式才看得见的光"
+  ],
+  "issuesEn": [
+    "The original was a greyscale placeholder dashboard with a small-type palette; 19–25px text is unreadable at 1080p",
+    "The palette just scaled linearly to 0 in 5f with a tiny dot, so 'collapse point = ripple origin' did not register",
+    "The ripple filled the frame in 22f, so the circle barely read",
+    "Both themes were neutral grey with no accent or light, and nothing changed once dark mode settled"
+  ],
+  "changesEn": [
+    "The subject is a full-bleed music library, Overtone: a 112px Library title, five 259px procedural album covers and a now-playing bar whose progress keeps moving; covers stay identical across themes, only the UI shell changes",
+    "Custom look: cool porcelain grey-white for light, near-black graphite for dark, with a coral accent reserved for the selected row, playback progress and the ripple",
+    "The palette is 980px wide with a 46px query and 32px rows; 'dark' is typed at an uneven human rhythm, the top row turns coral and the return keycap presses",
+    "The collapse is a CRT power-off: it squashes into a white-hot line, then shrinks into a dot, and the dot plus a horizontal afterglow holds in place for 5f before the ripple starts there",
+    "The ripple runs 34f with a strong ease-out to 1260px so the circle reads throughout, with a 3px white-hot ring, coral outer glow and an echo ring 4f behind; dark settles 1.035→1, and the camera pushes to 1.03 while typing and exhales back on the ripple",
+    "Once dark settles each cover casts a matching glow onto the dark stage, light you only see in dark mode"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

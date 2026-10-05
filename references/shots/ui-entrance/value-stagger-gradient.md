@@ -21,13 +21,13 @@ stagger 通常只被用来错开时间。这张卡要说的是它还能错开**�
   ——首位柱要走 46px、糊 8px，末位只走 14px、糊 2px。**同一次入场里每根柱的行程都不同**
 - 第一拍时间错峰：`d = i*0.02`，`e = seg(t, 0.06+d, 0.28+d, E.outCubic)`——从首位起，
   16 根摊在 0.3 的窗上；`opacity = e`、`filter = blur((1-e)*b0)`、
-  `transform = translateY((1-e)*y0) scaleY(e)`，三者都被同一个 e 驱动
+  `translateY((1-e)*y0)` + 高度 `hMax*e`（底部锚定按 height 生长，圆角不被 scaleY 压扁），三者都被同一个 e 驱动
 - 第二拍换原点：`distC = |i - 7.5| / 7.5` 是到中心的归一化距离，
   `w = seg(t, 0.56 + distC*0.13, +0.18)`——中心柱先动，波向两端扩，这就是 `from:'center'`
 - 第二拍的幅度也是梯度：`amp = lerp(1-distC, 0.06, 0.42)`，中心柱脉冲 42%、末端只有 6%；
-  `pulse = sin(w*π)` 是纯脉冲，同时叠进 `scaleY(e*(1+pulse*amp))` 与
+  `pulse = sin(w*π)` 是纯脉冲，同时叠进高度 `hMax*e*(1+pulse*amp)` 与
   `brightness(1+pulse*0.55)`
-- 字幕在 t=0.52 硬切文案，从 `scale: stagger([1, 0.35])  hue: stagger([200, 320])`
+- 代码字幕是一条语法着色的代码条，在 t≈0.52 用约 5f 上下交叉换句（旧句上移淡出、新句自下替入），从 `scale: stagger([1, 0.35])  hue: stagger([200, 320])`
   换成 `pulse: stagger([.06, .42], { from: 'center' })`——正好卡在两拍之间
 
 ## 参数表

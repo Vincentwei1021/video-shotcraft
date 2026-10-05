@@ -1,0 +1,31 @@
+{
+  "stem": "RunwayGroundSkim",
+  "issues": [
+    "灰白占位风的 Home 页，终态整页缩成 0.37 倍，卡片标题与侧栏文字只有十几像素，读不清",
+    "地面亮灰、空域纯黑，没有地平线和跑道，低机位读不出“掠地”的速度感",
+    "悬空卡片和地面同色，空中只靠一层提亮区分，画面缺少强调色与视觉主角",
+    "侧栏与页面出现真实产品名，内容是通用占位文案"
+  ],
+  "changes": [
+    "look 换成 lime 酸柠暗场：地面重做为虚构产品 Tidewell 的「Launch week」KPI 仪表盘，3×2 张 84px 大数字卡，只有主角卡 Signups 是荧光黄绿实底",
+    "加入朝地平线延伸的黄绿网格跑道 + 地平线光带，开场机位贴地向前滑行，网格同步流动，掠地感成立",
+    "急雨贴落保留并收紧：起点差 1.6f、下落 10f 重力加速、零回弹，空中 4–5 张重叠并行，追光提亮 + 速度模糊 + 随高度收紧的地面投影",
+    "立起转正 60f（后半程很软），终态仪表盘正视居中占画宽 87%，场景按 1.5 倍布局保证终帧字形清晰",
+    "hold 段 Revenue 折线描出、主角卡数字再跳一档，结尾是一张可读的发布会海报"
+  ],
+  "issuesEn": [
+    "A grey placeholder Home page; at the end the whole page shrank to 0.37×, leaving card titles and sidebar text around a dozen pixels tall",
+    "Light-grey ground against a pure black sky with no horizon or runway, so the low angle never read as skimming at speed",
+    "Hovering cards shared the ground's colour and were separated only by a brightness lift; no accent colour or hero",
+    "A real product name appeared in the sidebar, and the content was generic placeholder copy"
+  ],
+  "changesEn": [
+    "Look switched to lime: the ground is rebuilt as a fictional Tidewell 'Launch week' KPI dashboard with six 84px-number cards, only the Signups hero in solid neon lime",
+    "Added a lime grid runway stretching to a glowing horizon; the camera skims forward low over it at the start with the grid flowing, so the ground-skim reads",
+    "The rain drop is kept and tightened: 1.6f start offsets, 10f gravity falls, zero bounce, 4–5 cards in the air at once, with spotlight lift, speed blur and shadows that tighten with height",
+    "A 60f stand-up with a soft second half ends on a centred frontal dashboard at 87% of frame width; the scene is laid out at 1.5× so the final type is crisp",
+    "During the hold the Revenue line draws and the hero number ticks up once, ending on a readable launch-film poster"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

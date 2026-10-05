@@ -1,0 +1,31 @@
+{
+  "stem": "JumpCutPunchIn",
+  "issues": [
+    "灰底占位 dashboard 全是灰条，三挡放大后画面里没有任何可读信息，看不出“为什么要推近”",
+    "左上角调试字「JUMP CUT PUNCH-IN」压在画面上",
+    "三挡只是同一画面越来越大，第三跳没有新信息，落点是一张空白虚线框卡片",
+    "跳切 tick 只有一次轻微压暗，观众容易读成丢帧"
+  ],
+  "changes": [
+    "look 换 ember：铺满画面的「结账接口 p99 延迟 · 24 小时」折线图（虚构 Pyrite Observe），全天暖灰平稳线里只有 03:10 一根橙色尖峰，强调色只给它",
+    "语义缩放：1.0× 尖峰画出时红点 ping；1.6× 展开异常时段色带 + 标签；2.6× 点亮逐个采样点、引线画出、读数卡升起并滚到 2,140 ms——每跳多给一层信息",
+    "origin 按末挡构图反推（screen = O + (base − O)·2.6），末挡尖峰、读数卡、SLO 800 ms 阈值线构成完整海报；CSS zoom 放大保证 2.6× 字和线锐利",
+    "镜头外 HUD：四角取景框、REPLAY 逐帧时间码、右上大号倍率读数 1.0×/1.6×/2.6× 每跳 pop + 2f 压暗 0.8，跳切读作有意的 tick",
+    "时间表 150f：0–26f 折线 ease-out 画出，40f / 80f 两次零补间硬切，挡内 1.2% in-out 漂移，末挡 46f hold 只留 1.5% 极缓推进"
+  ],
+  "issuesEn": [
+    "Grey placeholder dashboard made of grey bars: nothing readable at any of the three zoom steps, so there is no reason to punch in",
+    "Debug caption 'JUMP CUT PUNCH-IN' stamped in the top-left corner",
+    "All three steps show the same picture, just bigger; the third jump adds no information and lands on an empty dashed card",
+    "The jump tick is a faint darkening only, easily read as a dropped frame"
+  ],
+  "changesEn": [
+    "Ember look: a full-frame 'Checkout API p99 latency, last 24 h' chart (fictional Pyrite Observe); a calm warm-grey line with a single orange spike at 03:10, the only accent in the frame",
+    "Semantic zoom: at 1.0x a red dot pings as the spike draws; at 1.6x an anomaly band and label unfold; at 2.6x sample dots light up, a leader line draws and a readout card rises counting to 2,140 ms",
+    "Origin solved backwards from the final framing so the 2.6x frame is a finished poster (spike, readout card, SLO 800 ms threshold); CSS zoom keeps text and strokes crisp",
+    "Off-camera HUD: corner brackets, running REPLAY timecode and a large zoom readout 1.0x / 1.6x / 2.6x that pops on every jump with a 2-frame 0.8 darken",
+    "150f timeline: line draws ease-out over 0-26f, zero-tween hard cuts at 40f and 80f, 1.2% in-out drift inside each step, 46f final hold with only a 1.5% creep"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

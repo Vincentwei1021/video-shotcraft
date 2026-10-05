@@ -1,0 +1,31 @@
+{
+  "stem": "SegmentedThumbHero",
+  "issues": [
+    "浅灰底 + 白 thumb + 灰轨道，几乎没有对比，整个画面是灰色一片",
+    "控件只占画宽约 56%，标签 72px 但字重与颜色层次弱，上下大片留白没有内容",
+    "切换完成后只有一个小图标弹出，没有交代新模式意味着什么，结尾画面平",
+    "图标是细线小图（笑脸 laptop），奖励感不够"
+  ],
+  "changes": [
+    "look 换成 lime（石墨底 · 荧光黄绿）：1240×232 石墨下凹轨道占画宽 65%，thumb 是一颗带顶部高光、内阴影与泛光的荧光黄绿胶囊——全画面唯一的强调色，thumb 上 84px 墨色粗体字",
+    "浮入改为弹簧驱动的「上移 220px + 俯仰 26°→0」落平，落地影随之收紧；台面加 0.16 不透明度的镜面倒影，像发布会舞台上的实物",
+    "保留因果四拍与严格 8f 滑动：130px 白芯墨边光标 24f 从画外滑入 → 按下 0.86 + 荧光细环涟漪 → thumb 前后缘错开拉伸 + 速度拖影 + 1.5% 过冲 → 到位同帧 Agent 机器人图标弹簧弹出、Chat 图标塌缩且宽度归零",
+    "余波：thumb 一次泛光脉冲、台面光池转亮并移到 Agent 下方、眉题「WREN 2 · AGENT MODE」点亮；66f 起 60px 副句逐词升起「Now it doesn't just answer. It acts.」，It acts. 用强调色",
+    "新图标换成带笑脸的小机器人，落定后眨一次眼；时长 110→120f，尾段 hold 30f 带 1.5% 极缓推进"
+  ],
+  "issuesEn": [
+    "Light grey stage, white thumb, grey track: almost no contrast, the whole frame read as one grey",
+    "The control spanned about 56% of the width and its 72px labels had weak weight and colour hierarchy, with large empty areas above and below",
+    "After the switch only a small icon popped in; nothing said what the new mode means, so the ending was flat",
+    "The icons were thin small line drawings (a smiling laptop) with little sense of reward"
+  ],
+  "changesEn": [
+    "Lime look (graphite, fluorescent yellow-green): a 1240x232 recessed graphite track spans 65% of the frame, and the thumb is a glowing lime capsule with a top highlight and inner shadow, the only accent in the frame, carrying 84px bold ink labels",
+    "The float-in is a spring that lifts 220px and tilts from 26 degrees to flat while its contact shadow tightens; a 0.16-opacity mirror reflection makes it read as a physical object on a launch stage",
+    "The four causal beats and the strict 8f slide stay: a 130px white cursor glides in over 24f from off-frame, presses to 0.86 with a lime ring ripple, the thumb stretches with offset leading and trailing edges plus speed blur and a 1.5% overshoot, and on arrival the Agent robot icon springs in while the Chat icon collapses to zero width",
+    "Aftermath: one glow pulse on the thumb, the table light brightens and moves under Agent, the WREN 2 · AGENT MODE kicker lights up, and from 66f a 60px line rises word by word (Now it doesn't just answer. It acts.) with It acts. in the accent",
+    "The new icon is a smiling robot that blinks once after landing; duration goes from 110 to 120f with a 30f final hold and a slow 1.5% push"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

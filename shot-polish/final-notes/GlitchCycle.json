@@ -1,0 +1,16 @@
+{
+  "stem": "GlitchCycle",
+  "changed": true,
+  "brand": [
+    "部署控制台 → video-shotcraft 渲染控制台：状态行 DEPLOYING/DEPLOYED · halyard/web → RENDERING/RENDERED · shotcraft/launch-film",
+    "轮播短语 INITIALIZING / LOADING ASSETS / COMPILING SHADERS → STORYBOARDING / LOCKING BEAT GRID / RENDERING FRAMES（READY TO SHIP 保留，最长仍 17 字符）",
+    "收尾链接「Live at halyard.build/web →」→ 镜刻标志 +「Crafted with video-shotcraft」"
+  ],
+  "brandEn": [
+    "Deploy console → video-shotcraft render console: status DEPLOYING/DEPLOYED · halyard/web → RENDERING/RENDERED · shotcraft/launch-film",
+    "Cycled phrases INITIALIZING / LOADING ASSETS / COMPILING SHADERS → STORYBOARDING / LOCKING BEAT GRID / RENDERING FRAMES (READY TO SHIP kept; max still 17 chars)",
+    "Closing link \"Live at halyard.build/web →\" → Frame Chisel mark + \"Crafted with video-shotcraft\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

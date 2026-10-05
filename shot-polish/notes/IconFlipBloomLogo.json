@@ -1,0 +1,31 @@
+{
+  "stem": "IconFlipBloomLogo",
+  "issues": [
+    "浅灰死平底 + 灰黑线性小图标，画面空，像图标库截图而不是品牌收尾",
+    "翻转是 scaleX 压扁的 2D 假翻，没有透视，最薄处也没有任何\"变身\"的瞬间",
+    "花形 mark 是 5 个椭圆叠成的海星形，单层、平涂，缺少品牌感",
+    "字标直接用了真实品牌名，且落定后画面完全静止"
+  ],
+  "changes": [
+    "look 用 custom 温室：带绿色相的近黑舞台 + 顶部淡薄荷天光 + 杏色地面光池 + 浮尘；全片唯一强调是珊瑚→杏色花瓣，品牌改为虚构 AI 问答产品 Pollen",
+    "主角改成 300px 象牙白 app 图标（深绿笑脸笔记本字形）带接触影；预备三次倾斜幅度递增，接触影跟随",
+    "翻身改为 perspective 下真 3D rotateY 0→90°（t³ 加速甩过去）+ 两层残影，侧成一线的那帧亮起象牙色竖线 + 纵向光芒（全片唯一光效）",
+    "绽放改成内外两层 5 瓣泪滴花瓣（SVG 贝塞尔，瓣根珊瑚瓣尖杏色 + 瓣脊高光），闭合态上下交替正好是那条竖线，外层 spring 张开、内层晚 4f 错开 36° 跟随",
+    "mark 让位（位置先到、缩放晚 3f），Pollen 200px 逐字 scale+blur 落定，口号逐词升起；落定后花瓣极缓自转 + 相机推近 2.5%，时长 130f → 150f"
+  ],
+  "issuesEn": [
+    "Flat light-grey background with a small grey line icon; the frame was empty and looked like an icon-set screenshot, not a brand ending",
+    "The flip was a 2D scaleX squash with no perspective, and nothing happened at the thinnest moment to sell the transformation",
+    "The flower mark was five flat ellipses in a starfish shape: single layer, no brand feel",
+    "The wordmark used a real brand name, and the frame went completely still after it landed"
+  ],
+  "changesEn": [
+    "Custom 'conservatory' look: a near-black green stage with a pale mint top light, an apricot floor pool and dust; the only accent is the coral-to-apricot petals, and the brand is now a fictional AI answer product, Pollen",
+    "The hero is a 300px ivory app icon with a dark green smiling-laptop glyph and a contact shadow; the anticipation is three tilts of growing size, with the shadow following",
+    "The flip is a true 3D rotateY 0 to 90 degrees in perspective (t-cubed acceleration) with two lagging ghosts; on the edge-on frame an ivory line and vertical flare light up, the shot's only light effect",
+    "The bloom has two layers of five teardrop SVG petals (coral roots, apricot tips, a ridge highlight); the closed state alternates up and down to form that exact line, the outer ring springs open and the inner ring follows 4f later, offset 36 degrees",
+    "The mark steps aside (position first, scale 3f later), 'Pollen' at 200px lands letter by letter with scale and blur, and the tagline rises word by word; after landing the petals turn very slowly and the camera pushes in 2.5%; 130f to 150f"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

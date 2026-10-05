@@ -1,0 +1,16 @@
+{
+  "stem": "PortalWipeV2",
+  "changed": true,
+  "brand": [
+    "眉题「WORKSPACE」前加 video-shotcraft 字标（镜刻标志 + 小写字名）；右上「6 spaces · 2 updated today」→「6 projects · 2 rendered today」",
+    "六张空间卡（Atlas Search / Ledger / Relay / Quarry / Northwind Forecast / Harbor）→ 影片项目卡 Launch Film / Changelog Reel / Onboarding Tour / Ink Press Teaser / Premiere Forecast / Render Queue，元信息改为镜头数 / 任务数",
+    "窗内世界「SPACE · FORECASTING / Northwind Forecast / Demand」→「PROJECT · ANALYTICS / Premiere Forecast / Views」，浮卡「vs last quarter」→「vs last launch」"
+  ],
+  "brandEn": [
+    "video-shotcraft wordmark (mark + lowercase name) added before the WORKSPACE kicker; \"6 spaces · 2 updated today\" → \"6 projects · 2 rendered today\"",
+    "Six space tiles (Atlas Search / Ledger / Relay / Quarry / Northwind Forecast / Harbor) → film projects Launch Film / Changelog Reel / Onboarding Tour / Ink Press Teaser / Premiere Forecast / Render Queue, meta now shot / job counts",
+    "Portal world \"SPACE · FORECASTING / Northwind Forecast / Demand\" → \"PROJECT · ANALYTICS / Premiere Forecast / Views\"; chip \"vs last quarter\" → \"vs last launch\""
+  ],
+  "styleKey": "mask-wipe",
+  "mdChanged": true
+}

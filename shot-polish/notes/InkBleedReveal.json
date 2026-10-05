@@ -1,0 +1,31 @@
+{
+  "stem": "InkBleedReveal",
+  "issues": [
+    "新景是灰阶占位 dashboard（灰条 + 空卡片），旧景只有一个 BEFORE 大字，两景之间没有任何叙事",
+    "墨边是撕纸洞一样的锯齿黑圈，没有\"墨\"的浓淡层次，读作烧穿或普通 iris 擦除",
+    "没有墨滴落下的起因，圆从画面里凭空长出来",
+    "洇满后 30f 全静止，新景没有任何跟随动作"
+  ],
+  "changes": [
+    "look 用 paper（暖白纸 · 墨 · 朱红）：旧景是刊物《The Field Report》第 02 章扉页（150px 衬线标题 + 朱红斜体 + 正文双栏 + 书眉页码），新景是印在深靛墨底上的第 03 章——墨不是遮罩，而是新页的底色",
+    "墨的物理：墨滴从画外自由落体落下并按速度拉长 → 触纸溅出主墨团 + 7 粒卫星墨点 → 线性与 ease-out 各半的洇开 + 低频扰动，卫星被主墨团吞并",
+    "墨的层次：湿晕（极淡暖暗）/ 高频须状淡墨跑在最前 / 比墨底更浓的墨边 / 新景显影，四层同 seed 位移遮罩",
+    "跟随与收尾：106f 摘罩真静止，朱红细线描出、副题逐词由虚到实，相机极缓推近 1.5%；尾帧是完整的章节海报",
+    "落墨点放在右侧，让新章大标题最后被墨染到；时长 152f"
+  ],
+  "issuesEn": [
+    "The new scene was a greyscale placeholder dashboard (grey bars, empty cards) and the old scene was a single word, BEFORE, with no story between them",
+    "The ink edge was a jagged black ring like a hole torn in paper, with no light and dark in the ink, so it read as a burn-through or a plain iris wipe",
+    "Nothing caused it: no drop fell, the circle just grew out of the frame",
+    "After filling the frame it held completely still for 30f with no follow-through on the new scene"
+  ],
+  "changesEn": [
+    "Paper look (warm paper, ink, vermilion): the old scene is the Chapter 02 opener of a magazine, The Field Report (150px serif headline, vermilion italic, two body columns, running head and folio); the new scene is Chapter 03 printed on deep indigo ink, so the ink is the new page's ground rather than a mask",
+    "Ink physics: a drop free-falls in from off frame, stretching with speed, then hits the paper with a main splat and 7 satellite droplets, and spreads on a half-linear, half-ease-out curve with low-frequency wobble while the satellites are swallowed",
+    "Layered ink: a faint warm wet halo, a high-frequency diluted fringe running ahead, an edge denser than the ink ground, then the new scene developing, all four sharing one seeded displacement",
+    "Follow-through and ending: the mask comes off at 106f for a truly still frame, a vermilion rule draws in, the subline resolves word by word from blur and the camera pushes in 1.5%; the last frame is a finished chapter poster",
+    "The drop lands on the right so the new chapter headline is inked last; 152f total"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

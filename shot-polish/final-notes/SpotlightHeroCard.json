@@ -1,0 +1,16 @@
+{
+  "stem": "SpotlightHeroCard",
+  "changed": true,
+  "brand": [
+    "3D 注记文案「One card, / one project.」→ video-shotcraft 宣传语「Your product, / in motion.」（马克条落在 in motion.）",
+    "卡片与页面是真实截图纹理，保留原样",
+    "截图纹理页头的站点名「AI Foundation Lab / AI Field Lab」→ 镜刻标志 + video-shotcraft 字标（主控直接改了纹理图，导航项顺延）"
+  ],
+  "brandEn": [
+    "3D annotation \"One card, / one project.\" → video-shotcraft tagline \"Your product, / in motion.\" (marker bar on \"in motion.\")",
+    "The card and page are real screenshot textures and stay as they are",
+    "The site name 'AI Foundation Lab / AI Field Lab' in the screenshot textures' header → Frame Chisel mark + video-shotcraft wordmark (the coordinator edited the texture images directly; nav items shifted to fit)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

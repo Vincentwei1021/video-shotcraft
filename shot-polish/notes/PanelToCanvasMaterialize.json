@@ -1,0 +1,31 @@
+{
+  "stem": "PanelToCanvasMaterialize",
+  "issues": [
+    "面板和卡片全是灰色骨架条，没有任何可读内容，看不出\"什么被放上了画布\"",
+    "画布左侧大片空白，没有标题和上下文，落定画面不成海报",
+    "行一起飞就开始变形，位置和尺寸同步插值，没有重量感",
+    "光标只在最后走到按钮，打勾是自己发生的，因果不清"
+  ],
+  "changes": [
+    "look 换 sand 米色纸面 + 赤陶强调：右侧 Fieldnote「Highlights」面板列 5 条用户研究高光（32px 行标题 + 作者头像），左侧讨论板配 84px 衬线标题「Q3 discovery」",
+    "光标按真人操作逐个点中三个复选框（赤陶勾 spring 弹出 + 勾线描出）→ 按下「Add to board」，按钮计数随勾选跳动",
+    "三行先拔起 4f（放大 2% + 阴影加深）再沿二次贝塞尔上抛弧线错峰飞出；位置先到、宽高晚 3f 收敛，飞行中按速度方向性模糊，阴影随弧线抬高",
+    "落地倾角 −2.5/1.8/−1.2° + 6f 压扁回弹；卡形态是出版级洞察卡（标签 + 衬线标题 + 引语 + 作者），行槽塌成赤陶虚线「On board」",
+    "落定后板头「3 highlights pinned」从线下升起，相机缓推 2.5%，时长 130→150f"
+  ],
+  "issuesEn": [
+    "Panel rows and cards are all grey skeleton bars with nothing readable, so you can't tell what got placed on the canvas",
+    "The left canvas is a large empty area with no title or context; the settled frame isn't a poster",
+    "Rows start morphing the moment they lift, with position and size interpolating together, so there's no weight",
+    "The cursor only walks to the button at the end; the checkboxes tick on their own, so the causality is unclear"
+  ],
+  "changesEn": [
+    "Sand paper look with a terracotta accent: a Fieldnote \"Highlights\" panel lists five research highlights (32px titles, author avatars) beside a discussion board with an 84px serif title \"Q3 discovery\"",
+    "The cursor clicks three checkboxes like a real user (terracotta ticks spring in and draw on), then presses \"Add to board\"; the button count bumps with each tick",
+    "Each row lifts for 4f (2% scale, deeper shadow), then flies a quadratic arc in a staggered sequence; position leads and size settles 3f later, with directional motion blur and a shadow that grows with height",
+    "Cards land at −2.5/1.8/−1.2° with a 6f squash; the card form is a publication-grade insight card (tag, serif title, quote, author) and vacated rows collapse into terracotta dashed \"On board\" slots",
+    "After landing, \"3 highlights pinned\" rises beside the board title and the camera pushes in 2.5%; 130→150f"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

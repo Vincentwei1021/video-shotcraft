@@ -1,0 +1,31 @@
+{
+  "stem": "FontWeightPump",
+  "issues": [
+    "168px 常规字重灰字在浅灰底上，字重变化幅度小，缩略图上几乎看不出在\"泵\"",
+    "五拍从头到尾一样强，没有递进也没有高潮，结尾回到原样",
+    "节拍参照是 5 个 16px 小圆点，静帧里读不出\"在跟拍\"",
+    "画面只有一行字，没有舞台、光和品牌信息"
+  ],
+  "changes": [
+    "look 换成 aurora 夜店海报：深紫夜 + 紫粉霓虹，240px「LOUDER」，字后柔光随拍明暗（不做整画面逐拍泵）",
+    "字重幅度拉满且换了排法：每个字钉在 900 字重的槽位里，静止是 250 细体、字间留缝，鼓点一到笔画撑满槽位\"合拢\"，再按中间先收、两边后收（9→13f）弹回",
+    "节奏改为 128 BPM 两小节 + drop：第 1 小节只有主字脉冲；第 2 小节上下长出描边回声行，晚 2f 跟拍并被推开（跟随）；第 9 拍 drop 冲到 900 后定格在 780 字重 + 紫→粉渐变 + 一道横向光带",
+    "每小节第 1 拍重音：scaleX +6% 并染粉；参照物改成 8+1 格步进音序器（含 DROP 格），亮哪格 = 第几拍",
+    "补全版式：PULSE AUDIO 眉题、128 BPM / BAR n/2 读数、drop 后 40px 副标题逐词升起，时长 165f，尾帧是完整海报"
+  ],
+  "issuesEn": [
+    "168px regular-weight grey text on light grey; the weight swing was small and barely visible in thumbnails",
+    "All five beats hit equally hard with no build or climax, and it ended where it started",
+    "The beat reference was five 16px dots that did not read as following a beat in a still",
+    "One line of text with no stage, light or brand context"
+  ],
+  "changesEn": [
+    "Aurora club-poster look: deep violet night with violet-pink neon, a 240px LOUDER, and a glow behind it that pulses with the beat (no full-frame pumping)",
+    "Full weight range with a new layout: every letter sits in a slot sized for weight 900, so at rest the 250-weight letters leave gaps and each kick fills the slots shut, then releases centre-first with edges trailing (9→13f)",
+    "128 BPM, two bars plus a drop: bar 1 pumps the word alone; in bar 2 outlined echo rows grow above and below, follow 2f late and get pushed apart; beat 9 drops to weight 900 and settles at 780 with a violet-to-pink gradient and one horizontal light streak",
+    "Each bar's downbeat is accented with +6% scaleX and a pink tint; the reference is now an 8+1 step sequencer with a DROP pad that lights the current beat",
+    "Complete layout: PULSE AUDIO kicker, 128 BPM / BAR n/2 readout, and a 40px tagline that rises after the drop; 165f, ending on a finished poster"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

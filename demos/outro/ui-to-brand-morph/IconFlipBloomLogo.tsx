@@ -1,13 +1,19 @@
 // icon-flip-bloom-logo —— 图标 Y 轴翻转压扁成竖线，绽放成花形 mark + wordmark 扫出
 // 源：perplexity-promo 88–91.5s。笑脸 laptop 图标 anticipation 晃两下 →
 // 沿 Y 轴翻转压扁成竖线（拖影/模糊）→ 翻过最薄处绽放花形 mark（花瓣张开）→
-// wordmark 从 mark 右侧带方向模糊逐段扫出（字符从糊到锐利）。
+// wordmark 逐字由大变小落位（大时模糊、落位清晰，scale+blur 联动）。
+// 质感：柔光亮场背景 + 图标的接地软影（随晃动/翻扁变化）。
+// 品牌轮：终点 logo 换成 video-shotcraft「镜刻」标志——翻过最薄处，标志从竖线按同一个过冲 spring
+// 撑开（取景框），随后琥珀斜切沿 45° 划入（替代原花瓣张开的第二拍）；字标 video-shotcraft 全小写、
+// 品牌字体，逐字由大变小落定；全片唯一强调色是标志的琥珀斜切。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from 'remotion';
 import { G } from '../../_fixtures/Fixtures';
+import { Backdrop, EASE, ramp } from '../../_fixtures/Polish';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
-const FONT = 'Helvetica, Arial, sans-serif';
-const INK = '#20808d'; // 花形 mark 用一点 teal，其余灰阶
+export const ICON_FLIP_BLOOM_LOGO_DURATION = 130;
+const MARK = 300; // 标志尺寸（viewBox 128 → 可见取景框约 244×225）
 
 const SmileLaptop: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 40 40">
@@ -19,36 +25,7 @@ const SmileLaptop: React.FC<{ size: number }> = ({ size }) => (
   </svg>
 );
 
-// 5 瓣抽象花形 mark，bloom: 0(闭合竖线)→1(全开)
-const FlowerMark: React.FC<{ size: number; bloom: number }> = ({ size, bloom }) => {
-  const petals = 5;
-  return (
-    <svg width={size} height={size} viewBox="-50 -50 100 100">
-      {Array.from({ length: petals }).map((_, i) => {
-        // 从竖直方向(-90°)向两侧展开到均匀分布
-        const finalAngle = -90 + (i - (petals - 1) / 2) * (360 / petals);
-        const angle = interpolate(bloom, [0, 1], [-90, finalAngle]);
-        const len = interpolate(bloom, [0, 1], [20, 38]);
-        const wid = interpolate(bloom, [0, 1], [3, 15]);
-        return (
-          <ellipse
-            key={i}
-            cx={0}
-            cy={-len / 2}
-            rx={wid / 2}
-            ry={len / 2}
-            fill={INK}
-            opacity={0.92}
-            transform={`rotate(${angle + 90})`}
-          />
-        );
-      })}
-      <circle r={interpolate(bloom, [0, 1], [2, 9])} fill={G.ink} />
-    </svg>
-  );
-};
-
-const WORD = 'perplexity';
+const WORD = BRAND.name;
 
 export const IconFlipBloomLogo: React.FC = () => {
   const frame = useCurrentFrame();
@@ -58,7 +35,7 @@ export const IconFlipBloomLogo: React.FC = () => {
   // 0–10: 图标登场（淡入微弹）
   // 12–34: anticipation 倾斜蓄力晃两下
   // 34–46: Y 轴翻转压扁成竖线（scaleX -> 0.04，带拖影）
-  // 46–62: 翻过最薄处绽放花形（bloom 0->1 带过冲）
+  // 46–62: 翻过最薄处标志撑开（bloom 0->1 带过冲），53 起琥珀斜切划入
   // 64–100: mark 左移让位 + wordmark 逐字符方向模糊扫出
   const FLIP_START = 34;
   const FLIP_MID = 46;
@@ -93,6 +70,8 @@ export const IconFlipBloomLogo: React.FC = () => {
   const bloom = frame < FLIP_MID ? 0 : bloomSpring;
   // mark 从竖线厚度撑开：scaleX 0.04 -> 1
   const markScaleX = interpolate(bloom, [0, 1], [0.04, 1]);
+  // 第二拍：琥珀斜切沿自身 45° 方向划入（取景框撑开过半后起步）
+  const cut = frame < FLIP_MID + 7 ? 0 : spring({ frame: frame - FLIP_MID - 7, fps, config: { damping: 16, stiffness: 170 } });
 
   // mark 左移让位（wordmark 登场时）
   const shift = interpolate(frame, [WORD_START - 2, WORD_START + 16], [0, 1], {
@@ -100,7 +79,7 @@ export const IconFlipBloomLogo: React.FC = () => {
     extrapolateRight: 'clamp',
     easing: Easing.out(Easing.cubic),
   });
-  const markX = interpolate(shift, [0, 1], [0, -420]);
+  const markX = interpolate(shift, [0, 1], [0, -471]); // 与字标起点 +187 耦合：lockup 整组视觉居中
 
   const showIcon = frame < FLIP_MID;
 
@@ -109,6 +88,14 @@ export const IconFlipBloomLogo: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: G.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <Backdrop tone="light" light={{ x: 0.5, y: 0.36 }} accent={BRAND.amber} />
+      {/* 接地软影：图标阶段随晃动偏移、翻扁时收窄，绽放后淡去（logo 是平面符号，不需要落地影） */}
+      <div style={{
+        position: 'absolute', left: 960 + markX - 150 * (showIcon ? iconScaleX : markScaleX) + wobble * 2.2, top: 540 + 150,
+        width: 300 * (showIcon ? iconScaleX : markScaleX), height: 26, borderRadius: '50%',
+        background: 'radial-gradient(ellipse at center, rgba(20,22,28,0.22) 0%, rgba(20,22,28,0) 70%)',
+        opacity: inT * (1 - ramp(frame, FLIP_MID, 14, EASE.out)),
+      }} />
       <div style={{ position: 'relative', width: 1920, height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {/* 图标 / mark 容器 */}
         <div
@@ -152,40 +139,41 @@ export const IconFlipBloomLogo: React.FC = () => {
             </>
           ) : (
             <div style={{ transform: `scaleX(${markScaleX})` }}>
-              <FlowerMark size={340} bloom={bloom} />
+              <ShotcraftMark size={MARK} tone="light" cutProgress={cut} />
             </div>
           )}
         </div>
 
-        {/* wordmark：逐字符方向模糊扫出 */}
+        {/* wordmark：逐字由大变小落位——大时模糊、落位清晰（scale + blur 联动），原点钉在基线 */}
         <div
           style={{
             position: 'absolute',
-            left: 960 + markX + 230,
+            left: 960 + markX + 187,
             top: 200,
             transform: 'translateY(-50%)',
             display: 'flex',
-            fontFamily: FONT,
+            fontFamily: BRAND.font,
             fontWeight: 700,
-            fontSize: 150,
-            color: G.ink,
-            letterSpacing: 2,
+            fontSize: 112,
+            lineHeight: 1,
+            color: BRAND.ink,
+            letterSpacing: '0.03em',
+            whiteSpace: 'nowrap',
           }}
         >
           {WORD.split('').map((ch, i) => {
-            const cT = interpolate(frame, [WORD_START + i * 2.2, WORD_START + i * 2.2 + 10], [0, 1], {
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'clamp',
-              easing: Easing.out(Easing.cubic),
-            });
+            const st = WORD_START + i * 2.6; // 每字独立的"由大变小"动作，错峰拉到 2.6f 才读得清
+            const cT = ramp(frame, st, 12, EASE.snappy);
+            const op = ramp(frame, st, 5, EASE.out);
             return (
               <span
                 key={i}
                 style={{
                   display: 'inline-block',
-                  opacity: cT,
-                  transform: `translateX(${(1 - cT) * -70}px)`,
-                  filter: `blur(${(1 - cT) * 16}px)`,
+                  opacity: op,
+                  transform: `scale(${(1.9 - 0.9 * cT).toFixed(4)})`,
+                  transformOrigin: '50% 78%',
+                  filter: cT < 0.995 ? `blur(${((1 - cT) * 14).toFixed(2)}px)` : undefined,
                 }}
               >
                 {ch}

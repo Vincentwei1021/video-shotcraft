@@ -1,0 +1,31 @@
+{
+  "stem": "BottomPushStackWipe",
+  "issues": [
+    "三章底色是 slack 系绿 / 蓝 / 粉，但每章内容只是一张通用小字 dashboard 卡，章节之间没有可读的卖点",
+    "章内标题 46px、页码 22px，大面积色板上主体太小，构图空",
+    "整章完全静止：推入落定后没有任何章内动作，hold 段是死帧",
+    "第 0 章是浅灰中性底，与饱和色章对比弱，开场没有态度"
+  ],
+  "changes": [
+    "look 改 custom「瑞士海报」：近黑开场章 + 钴蓝 #2d4cff / 朱橙 #ff4d1f / 酸柠 #cdf23a 三块饱和色板，色相拉开 120° 级，换章一眼读作换了个世界",
+    "版式重做：左栏眉题（章号胶囊 + 大写名称）→ 116px 超粗两行标题 → 40px 说明，右栏一张为镜头设计的大字 UI 卡；虚构产品 Tandem，一章一个卖点（Channels / Huddles / Workflows）",
+    "推入保留 md 钉死的重 ease-out，收到 26f，整摞按速度纵向方向性模糊；接缝改用新章的带色相深色 56px 接触影 + 2px 受光边",
+    "章内表演全部错开推入窗口：标题在推入 95% 后从线下升起；hold 里有打字中→消息弹入、声波与发言人交接、自动化三步弹簧打勾",
+    "色板左上受光、右下压暗，与卡片两层带色相软阴影同一光向；时长 170f，尾段 28f 极缓推近落在完整章节海报"
+  ],
+  "issuesEn": [
+    "The chapters used Slack-like green, blue and pink, but each one only held a generic small-text dashboard card, so no chapter carried a readable selling point",
+    "A 46px chapter title and 22px page counter left the subject tiny on big colour fields; the composition felt empty",
+    "Every chapter was frozen: nothing moved inside a chapter after it landed, so the holds were dead frames",
+    "Chapter 0 was a light grey neutral that barely contrasted with the saturated chapters; the opening had no attitude"
+  ],
+  "changesEn": [
+    "Custom 'Swiss poster' look: a near-black opener plus three saturated fields, cobalt #2d4cff, vermilion #ff4d1f and acid lime #cdf23a, about 120° apart in hue so each push reads as a new world",
+    "New layout: left column with a kicker (chapter pill and caps name), a 116px extra-bold two-line title and a 40px line; right column holds a large-type UI card designed for the shot; fictional product Tandem, one selling point per chapter (Channels / Huddles / Workflows)",
+    "The md's heavy ease-out push is kept but tightened to 26f, with vertical speed blur on the whole stack; the seam is now a 56px tinted contact shadow plus a 2px lit edge on the incoming slab",
+    "Chapter-internal motion avoids the push window: titles rise from a mask once the push is 95% done; holds carry a typing indicator into a new message, a live waveform with a speaker hand-off, and three spring-checked workflow steps",
+    "Each field is lit top-left and darkened bottom-right, matching the cards' two-layer tinted shadows; 170f total, ending on a 28f slow push-in over a complete chapter poster"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

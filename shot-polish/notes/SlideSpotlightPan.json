@@ -1,0 +1,31 @@
+{
+  "stem": "SlideSpotlightPan",
+  "issues": [
+    "白底看板在黑场里被三段线性罩压成灰，紫光与白面板对比发脏",
+    "小字任务卡（22–30px 在超宽面板里）占满画面，没有主体，横摇不知道摇向哪里",
+    "匀速横摇在最后一帧戛然停住，没有终点也没有 hold",
+    "原片转角的彩虹色散没做，转角那一下没有记忆点"
+  ],
+  "changes": [
+    "look 换成 midnight：面板改成暗色路线图「Lodestar · Roadmap 2027」，120px 标题、四季度网格、三条甘特进度条与 TODAY 竖线；暗色 UI 只有被光照到才读得出",
+    "光的身份换成冰蓝白：四层辉光贴顶边走，光头下方一团青蓝光从顶边渗进界面，顶边发丝线本身被点亮一段",
+    "横摇有终点：Q4 发光发布卡「Lodestar 3 · Nov 12」是目的地；光头与面板共用一条 linear 时间轴，末 16f 同速刹停（速度连续降到 0），卡片描边亮起进 22f hold",
+    "补上转角色散：光头过左上角 ±2.4f 做红 / 蓝错位副本的 RGB 色散",
+    "开场就有戏：面板左缘在画内 420px，第 1 帧左缘竖直光线已在爬升"
+  ],
+  "issuesEn": [
+    "The white kanban was crushed to grey in the black void by a three-step linear mask, so the violet light against the white panel looked dirty",
+    "Small task cards (22-30px on a very wide panel) filled the frame with no subject, so the pan had nowhere to go",
+    "The uniform pan just stopped dead on the last frame, with no destination and no hold",
+    "The rainbow dispersion at the corner turn from the source film was missing, so the turn left no impression"
+  ],
+  "changesEn": [
+    "Midnight look: the panel is now a dark roadmap, 'Lodestar · Roadmap 2027', with a 120px title, a four-quarter grid, three Gantt bars and a TODAY line; the dark UI only reads where the light falls",
+    "The light becomes icy blue-white: a four-layer glow rides the top edge, a cyan-blue wash seeps in from the edge under the head, and the panel's top hairline itself lights up",
+    "The pan has a destination: a glowing Q4 launch card, 'Lodestar 3 · Nov 12'. Head and panel share one linear timeline, braking over the last 16f with continuous velocity down to zero, then the card's outline lights for a 22f hold",
+    "Corner dispersion added: as the head rounds the top-left corner, offset red and blue copies give a +/-2.4f RGB split",
+    "Something happens from frame 1: the panel's left edge starts 420px into frame with the vertical streak already climbing"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

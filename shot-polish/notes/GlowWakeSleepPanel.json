@@ -1,0 +1,33 @@
+{
+  "stem": "GlowWakeSleepPanel",
+  "issues": [
+    "看板界面字号 13–18px，斜置后整块面板读不出任何一个字",
+    "光池中心白得发灰，聚光像手电照在一张白纸上，光与内容没有关系",
+    "面板倾斜角度过大（rotateZ −17°）又被裁出画，构图失衡",
+    "结尾整屏沉黑，只剩一条右缘残光，尾帧没有可看的东西"
+  ],
+  "changes": [
+    "look = aurora：面板换成音频工作站「Cadenza」混音页，104px 曲名「Midnight Signal」、满宽 120 根波形、四轨电平、一颗 accent 播放键，斜置后大字仍可读",
+    "核心巧思：光心 = 播放头——光扫到的波形柱点亮成紫粉渐变并泛光，播放头细线与时间码跟光走，走过的波形留暗紫\"已播放\"，分轨电平随光跳一下",
+    "光头 sx 全程 linear（6–128f）不动命门；贴顶边四层辉光同行，经过 logo 描光，接近右缘点亮竖直残光；光身后紫雾 + 浮尘给空气感",
+    "构图收敛：倾斜改为 rotateX18/Y−12/Z−10 并 translateZ 后退，面板完整入画，后层重影面板给厚度",
+    "睡的段落有落点：100–134f 沉回黑暗，右缘残光转蓝紫，播放键自发光留到尾帧——暗场里唯一还醒着的东西",
+    "光是显影不是过曝：光池中心压一层 ~30% 紫调，被照亮的面板是可读的淡紫而不是白盘；泛光只给被照到的波形柱与贴边光线，光头眩光收小并染紫"
+  ],
+  "issuesEn": [
+    "The kanban UI used 13-18px type, so once tilted not a single word on the panel could be read",
+    "The pool centre was a greyish white, like a flashlight on blank paper; the light had nothing to do with the content",
+    "The tilt was too steep (rotateZ -17deg) and the panel was cropped off frame, unbalancing the composition",
+    "It ended in a fully black frame with only a thin right-edge glow, leaving nothing to look at"
+  ],
+  "changesEn": [
+    "Aurora look: the panel is now the mix view of an audio workstation, Cadenza, with a 104px track title 'Midnight Signal', a full-width 120-bar waveform, four stem meters and one accent play button, readable even when tilted",
+    "Core idea: the light centre is the playhead. Bars under the light glow violet-pink, a playhead line and timecode ride with it, played bars keep a dim violet tint, and stem meters kick as it passes",
+    "The light head stays strictly linear (6-128f); a four-layer glow streak rides the top edge, rings the logo as it passes and lights a vertical streak near the right edge, with violet haze and dust behind it for air",
+    "Tighter framing: the tilt is now rotateX 18 / Y -12 / Z -10 pushed back in Z, so the panel sits fully in frame, and a ghost panel behind it adds thickness",
+    "Sleep gets a landing: 100-134f it sinks back to dark, the right-edge streak turns blue-violet, and the self-lit play button stays to the last frame as the only thing still awake",
+    "The light reveals rather than overexposes: the pool centre keeps a ~30% violet tint, so the lit panel reads as legible lavender instead of a white disc; bloom is limited to the lit waveform bars and the edge streak, and the head glare is smaller and tinted violet"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

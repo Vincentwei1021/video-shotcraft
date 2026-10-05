@@ -1,0 +1,31 @@
+{
+  "stem": "VersusSlam",
+  "issues": [
+    "前 30 帧整段是 0.9 的白屏（白闪钳位错误），建立段什么都看不见",
+    "两半屏是同一张灰色占位 dashboard 的两种裁切，没有\"两方对峙\"",
+    "VS 是白底黑框小方块，斜缝是一根实心黑线，撞击读不出重量",
+    "没有任何文字说明在比什么，对阵语义缺失"
+  ],
+  "changes": [
+    "look 换成 paper，做成瑞士海报式对比：左墨黑「THE OLD WAY · 14 days」、右朱红「WITH TALLO · 9 min」，340px 粗黑体数字本身就是结论，44px 说明 + 32px 清单（旧方式划掉、新方式打勾）",
+    "建立段：纸面 124px 设问「How long does it take?」逐词升起，斜缝墨线从中点长出（字带处留空），两半屏 ease-in(cubic) 10f 对冲、按速度横向模糊，把设问吞掉",
+    "撞击同帧五件：纸白闪 3f、16px 指数衰减震屏、VS 纸白圆章弹簧压出（damping 12，一次过冲）、冲击环、12 根放射速度线",
+    "撞合斜缝改为 6px 纸白切口 + 两侧窄投影（两张卡纸压在一起）；数字晚 2f 1.05→1 回弹，说明左先右后错峰",
+    "收尾：54f 底部结论条「Close the month before lunch.」压在斜缝上升起，hold 35f 整机 1.5% 极缓推进"
+  ],
+  "issuesEn": [
+    "The first 30 frames were a 0.9 white screen (a clamped flash bug), so nothing was visible during the build-up",
+    "The two halves were two crops of the same grey placeholder dashboard, with no sense of two opposing sides",
+    "The VS was a small white box with a black border and the seam a solid black line; the impact had no weight",
+    "No text said what was being compared, so the versus meaning was missing"
+  ],
+  "changesEn": [
+    "Paper look as a Swiss-style comparison poster: ink-black \"THE OLD WAY · 14 days\" on the left, vermilion \"WITH TALLO · 9 min\" on the right; the 340px heavy numbers are the verdict, with 44px captions and 32px lists (old steps struck through, new ones checked)",
+    "Build-up: a 124px question on paper, \"How long does it take?\", rises word by word while an ink seam line grows from the centre (with a gap where the text is); the halves rush in with ease-in cubic over 10f, speed-blurred, and swallow the question",
+    "Five things fire on the impact frame: a 3f paper-white flash, a 16px exponentially decaying shake, a paper VS seal that springs in (damping 12, one visible overshoot), a shock ring and 12 radial speed lines",
+    "The joined seam is a 6px paper-white cut with narrow shadows on both sides, like two cards pressed together; the numbers rebound 1.05→1 two frames late and the captions stagger left then right",
+    "Ending: at 54f a verdict pill, \"Close the month before lunch.\", rises over the seam, then a 35f hold with a 1.5% slow push"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

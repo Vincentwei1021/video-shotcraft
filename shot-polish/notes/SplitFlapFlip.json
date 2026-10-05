@@ -1,0 +1,31 @@
+{
+  "stem": "SplitFlapFlip",
+  "issues": [
+    "黑色翻牌格摆在灰白虚化的假 dashboard 上，背景的方块和小字与翻牌格争抢，画面脏且没有主光",
+    "翻牌格偏小（整行约占画宽 55%），四周大片无意义的灰，读不出\"车站大屏\"的语境",
+    "每格都翻同样 3 次、同一节奏，级联像一段整齐的电子动画，缺少机械感",
+    "只有一行标题，全部停定后画面就死了，没有收尾的落点"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 橙）：整块夜间出发大屏做主体——暖黑外壳、上沿高光、内凹槽、落地暖光，顶光打在屏上，去掉背景假页面",
+    "版式重做：抬头 ◆ DEPARTURES + 本地时间，第 1 行 128×176 大翻牌格的 SHIP FASTER（字 132px，占画宽 ~75%），第 2 行小翻牌格的航班号 RELEASE 4.0 与强调橙状态 BOARDING",
+    "翻牌更机械：开场是空白叶片，每格翻牌次数按种子 3–6 次不等，单次 4f 重力掉落 + 明暗变化，落定 6px 咔哒",
+    "两层节奏：大行 3f/格级联、小行 44f 起 2f/格接力，状态组最后翻完；时长 140→150f",
+    "收尾：状态格背光一次强调色泛光、状态灯亮起后缓慢呼吸；全程推近 1→1.045 + 俯角 4°→1.2° 缓收"
+  ],
+  "issuesEn": [
+    "Black flap cells sat on a blurred grey fake dashboard whose blocks and small text competed with them; the frame was muddy with no key light",
+    "The cells were small (the row spanned ~55% of the frame) inside a lot of meaningless grey, so there was no sense of a station board",
+    "Every cell flipped exactly three times on the same beat, so the cascade read as a tidy digital animation rather than machinery",
+    "There was only one title row; once it settled the frame went dead with no closing beat"
+  ],
+  "changesEn": [
+    "Ember look (warm black, orange): a full night departure board is the subject, with warm black housing, top-edge highlight, inset recess, warm floor spill and a top light; the fake page background is gone",
+    "New layout: a DEPARTURES header with local time, a hero row of 128×176 flaps reading SHIP FASTER (132px glyphs, ~75% of frame width), and a second row of small flaps for flight RELEASE 4.0 and an orange BOARDING status",
+    "More mechanical flips: the board starts on blank leaves, each cell flips a seeded 3 to 6 times, every flip is a 4f gravity drop with shading, and each lands with a 6px clunk",
+    "Two-layer rhythm: the hero row cascades at 3f per cell, the small row relays in from 44f at 2f per cell with the status finishing last; duration 140 to 150f",
+    "Closing beat: the status cells bloom once in the accent and the status lamp lights and slowly breathes; a slow 1 to 1.045 push with a 4° to 1.2° tilt settling across the shot"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

@@ -1,0 +1,33 @@
+{
+  "stem": "OrbitRingTitleOpen",
+  "issues": [
+    "标题只有 64px 一行，被八张卡围着几乎没有分量，主张读不出层级",
+    "浅色 pastel 底 + 八张白卡 + 一块黄色便利贴，整体像模板陈列，没有光和空间",
+    "环只有 ±9% 缩放的纵深，远近卡同样清晰同样亮，环是扁的",
+    "卡内小动效颜色各异（紫、绿、黄），和标题抢视线，没有统一强调色",
+    "末段整行失焦退场，尾帧只剩一圈卡，停在工作台里不是完整画面"
+  ],
+  "changes": [
+    "look 换为 lime：石墨暗场 + 顶光，马克块成为暗场里唯一的荧光色块；八张卡重做成暗色产品卡，卡内动效统一只用荧光绿强调",
+    "标题拆成两级：64px 次级灰「让镜头卡替你想好」+ 156px 主角「每一个动效」，下行错峰更慢更重；马克块扫过时两层裁切让字由白反为墨，读作被荧光笔划过",
+    "纵深加强：缩放 ±12%，远处卡压暗并轻微失焦、近处带顶光；椭圆轨道画成一圈发丝线在入场时描出；标题与卡之间垫暗色 scrim 保证可读",
+    "节奏重排：环 24f expo-out 撑开 → f24 卡统一开播 → 标题两行逐字解糊 → f50 马克横扫（弹簧 damping 20）→ f60 mono 副行 → 2.9s 稳态巡回 + 整画面推近 2.5%",
+    "时长 130→150f，默认停在完整海报；原退场交棒逻辑保留为 HANDOFF_EXIT 开关"
+  ],
+  "issuesEn": [
+    "The headline is a single 64px line; surrounded by eight cards it has almost no weight and no hierarchy",
+    "Pale pastel background, eight white cards and a yellow sticky-note marker read like a template display, with no light or depth",
+    "Depth is only a +/-9% scale: near and far cards are equally sharp and bright, so the ring looks flat",
+    "Each tile animates in its own colour (purple, green, yellow), competing with the title instead of sharing one accent",
+    "The title blurs out at the end, so the final frame is just a ring of cards rather than a finished frame"
+  ],
+  "changesEn": [
+    "Look switched to lime: graphite stage with a top light, the marker becomes the only neon block in the frame; all eight tiles rebuilt as dark product cards that use the same lime as their only accent",
+    "Headline split into two levels: a 64px grey lead-in plus a 156px hero line, with slower, heavier staggering on the hero; as the marker sweeps, two clipped layers flip the glyphs from white to ink like a highlighter stroke",
+    "Stronger depth: +/-12% scale, far cards dimmed and slightly defocused, near cards top-lit; the elliptical orbit is drawn as a hairline on entry; a dark scrim between cards and title keeps it legible",
+    "Re-timed: ring opens in 24f expo-out, tiles start playing at f24, both title lines blur-slide in, marker springs across at f50 (damping 20), mono kicker at f60, then 2.9s of steady orbit with a 2.5% camera push",
+    "Duration 130 to 150f, ending on a complete poster; the original blur-out handoff is kept behind a HANDOFF_EXIT switch"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

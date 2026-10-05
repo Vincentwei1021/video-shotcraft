@@ -1,0 +1,31 @@
+{
+  "stem": "PaparazziFlash",
+  "issues": [
+    "素材是通用 FakeDashboard，三闪\"加冕\"的是一个看不出意义的 $48.2k，没有颁奖的仪式感",
+    "浅灰亮场让白闪不够爆，闪光和画面亮度差太小",
+    "闪前没有预备，三次闪光像随机发生；闪后定格与闪前活素材的反差弱",
+    "4x 数字特写裁到卡片边缘，构图偏、留白乱"
+  ],
+  "changes": [
+    "look = graphite：画面改成颁奖背板（OSTRA / GOLDEN PIXEL 砖砌字标墙）前的年度大奖卡「App of the Year · No.1 in 38 countries · Ostra Maps」，香槟金只给奖项信息",
+    "你就是那台相机：屏幕层取景器 HUD（四角框、1/250 F2.8 ISO 1600、张数 023→026、闪光灯充电环），白闪在暗场里爆点十足",
+    "加预备拍：每一闪前 8f 对焦框从 1.3 倍收到下一张要拍的裁切范围，闪前 3f 转香槟色锁定；闪后张数 +1、充电环清零重充",
+    "活 / 死反差：闪前 30f 背板上不断有别家相机的小星芒闪光、画面缓推；闪后每张定格微去饱和提对比读作照片",
+    "三裁切重排为 1.0 全景 / 1.6 卡片 / 2.8「No.1」，裁切边缘不切半行字；hold 70f 只有 1→1.015 极缓推近，84f 起「✓ SAVED」淡入"
+  ],
+  "issuesEn": [
+    "The footage was the generic FakeDashboard, so the three flashes 'crowned' a meaningless $48.2k with no sense of an awards moment",
+    "On a light grey stage the white flash barely popped; there was too little contrast between flash and picture",
+    "Nothing set up the flashes, so they felt random, and the frozen stills didn't contrast enough with the live footage before them",
+    "The 4x number close-up was cropped against the card edge, with an off-balance composition and messy negative space"
+  ],
+  "changesEn": [
+    "Graphite look: the scene is now an awards backdrop (a brick-tiled OSTRA / GOLDEN PIXEL step-and-repeat) behind an 'App of the Year · No.1 in 38 countries · Ostra Maps' card, with champagne gold reserved for the award details",
+    "You are the camera: a screen-space viewfinder HUD (corner frame, 1/250 F2.8 ISO 1600, shot counter 023 to 026, a flash charge ring), and the white flash hits hard on the dark stage",
+    "An anticipation beat: 8f before each flash the AF brackets shrink from 1.3x onto the next crop and lock champagne 3f before firing; after the flash the counter ticks and the charge ring resets",
+    "Live versus frozen: for 30f before the first flash, other photographers' star flashes pop across the backdrop under a slow push; every still afterwards is slightly desaturated and contrasty, so it reads as a photo",
+    "The three crops are rebuilt as 1.0 wide, 1.6 card and 2.8 'No.1', never cutting a line of text; the 70f hold has only a 1 to 1.015 push, with a 'SAVED' tick fading in from 84f"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

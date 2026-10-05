@@ -1,12 +1,12 @@
 // corner-spotlight-reveal —— 对标 clickup-30.mp4 41.5–44.6s：
-// 黑场上，左上角径向聚光从小到大扩张，把白色 Inbox 界面逐步"点亮"，
+// 黑场上，左上角径向聚光从小到大扩张，把白色 video-shotcraft 镜头库界面逐步"点亮"，
 // 照到的区域显影、照不到的沉黑，最终全屏亮起。光即转场。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
 
 const FONT = '"Avenir Next", "Helvetica Neue", Helvetica, sans-serif';
 
-// 灰阶 Inbox 界面（自绘，替代真 UI）
+// 灰阶镜头库界面（video-shotcraft 的 Shots 页，自绘，替代真 UI）
 const InboxPanel: React.FC = () => (
   <div
     style={{
@@ -20,7 +20,7 @@ const InboxPanel: React.FC = () => (
     }}
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
-      <div style={{ fontSize: 118, fontWeight: 700, letterSpacing: -2 }}>Inbox</div>
+      <div style={{ fontSize: 118, fontWeight: 700, letterSpacing: -2 }}>Shots</div>
       <div
         style={{
           width: 0, height: 0, marginTop: 26,
@@ -32,10 +32,10 @@ const InboxPanel: React.FC = () => (
     </div>
     <div style={{ display: 'flex', gap: 64, marginTop: 90, fontSize: 44, color: '#555' }}>
       <div style={{ background: '#e9e8f6', color: '#5b55c8', padding: '10px 34px', borderRadius: 14, fontWeight: 600 }}>All</div>
-      <div style={{ padding: '10px 0' }}>Tasks</div>
-      <div style={{ padding: '10px 0' }}>Docs</div>
-      <div style={{ padding: '10px 0' }}>People</div>
-      <div style={{ padding: '10px 0' }}>Chat</div>
+      <div style={{ padding: '10px 0' }}>Camera</div>
+      <div style={{ padding: '10px 0' }}>Effects</div>
+      <div style={{ padding: '10px 0' }}>Data</div>
+      <div style={{ padding: '10px 0' }}>Outro</div>
     </div>
     {[0, 1, 2].map((row) => (
       <div key={row} style={{ display: 'flex', alignItems: 'center', gap: 30, marginTop: row === 0 ? 96 : 64 }}>
@@ -119,3 +119,5 @@ export const CornerSpotlightReveal: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+export const CORNER_SPOTLIGHT_REVEAL_DURATION = 130;

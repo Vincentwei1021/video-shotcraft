@@ -1,0 +1,18 @@
+{
+  "stem": "ScanlineAnnotateFocus",
+  "changed": true,
+  "brand": [
+    "被分析的陶器工作室官网「Hollis」→ video-shotcraft 官网：H 字母印章 + Hollis → 镜刻标志 + video-shotcraft 字标；网址 / 状态行 hollis.studio → 仓库地址 / video-shotcraft",
+    "H1「Made slowly. Used daily.」→「Your product, in motion.」；正文 → 「Cinematic product videos, crafted by your agent. From screenshot to showreel.」；CTA「Shop the collection」→「Render a launch film」",
+    "导航 Shop/Studio/Journal/Cart → Recipes/Gallery/Docs/GitHub；产品图陶瓶保留为样片封面「▶ Tide Vase launch film · 0:30」",
+    "机器标签：LOGO · Frame Chisel、HERO · Sample film、PALETTE · 4 swatches；LOGO / H1 / CTA 取景框 bbox 按新文字重测"
+  ],
+  "brandEn": [
+    "Analysed site \"Hollis\" pottery studio → the video-shotcraft site: H monogram + Hollis → Frame Chisel mark + video-shotcraft wordmark; URL / status hollis.studio → repo URL / video-shotcraft",
+    "H1 \"Made slowly. Used daily.\" → \"Your product, in motion.\"; body → \"Cinematic product videos, crafted by your agent. From screenshot to showreel.\"; CTA \"Shop the collection\" → \"Render a launch film\"",
+    "Nav Shop/Studio/Journal/Cart → Recipes/Gallery/Docs/GitHub; the vase art stays as a sample-film cover \"▶ Tide Vase launch film · 0:30\"",
+    "Machine tags: LOGO · Frame Chisel, HERO · Sample film, PALETTE · 4 swatches; LOGO / H1 / CTA bracket boxes re-measured for the new copy"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

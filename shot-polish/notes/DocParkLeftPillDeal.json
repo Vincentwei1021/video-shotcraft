@@ -1,0 +1,31 @@
+{
+  "stem": "DocParkLeftPillDeal",
+  "issues": [
+    "整镜头在 480×270 设计坐标里排版再放大，文档是灰色骨架条、药丸名称 12px 级，说明句只有 11px，全片几乎没有能读的字",
+    "浅灰底 + 白卡 + 灰字，没有强调色和光，画面平且空，右侧一半画面长时间空着",
+    "药丸只是在原位弹出，和左侧文档没有任何联系，\"结论从文档里来\"这件事看不出来",
+    "说明句淡出后画面只剩三个药丸，尾帧没有信息落点"
+  ],
+  "changes": [
+    "look 换成 porcelain（冷白 + 钴蓝 + 青绿点缀），原生 1920 排版：出版级\"客户档案\"文档（标题 52px / 正文 30px）、128px 高结论药丸（名称 54px + 渐变图标 + 匹配度 chip）、说明句 44px",
+    "开场加\"在读\"的交代：文档居中，一道钴蓝扫描光带自上而下扫过整页（裁在纸面圆角内），眉题 ANALYZING · 12 SOURCES",
+    "因果链：每张药丸先让依据句被钴蓝荧光笔划出，再从这句话的位置飞出、overshoot 14f 落进右栏槽位（飞行按速度模糊），最后一条钴蓝细线从句尾连到药丸",
+    "保留节奏骨架：驻留 18→46f（只露约 40%、scale 0.92）、发牌间隔 38f、透明度先到位移后到；文档全程 1.4px/f 连续滚动，纸面上下渐隐",
+    "说明句逐词由灰到墨 + 上浮，下一张前上移淡出；末句留到底，尾帧是三条结论 + 一句理由的完整画面（时长 174f → 180f）"
+  ],
+  "issuesEn": [
+    "The whole shot was laid out in 480x270 design units and scaled up: the document was grey skeleton bars, pill labels were ~12px class and captions 11px, so almost nothing was readable",
+    "Light grey floor, white cards and grey text with no accent or light: flat and empty, with the right half of the frame idle for long stretches",
+    "Pills simply popped in place with no link to the document, so \"the conclusions come from the document\" never showed",
+    "After the captions faded only three pills remained, leaving the last frame without a point"
+  ],
+  "changesEn": [
+    "Porcelain look (cool white, cobalt, a teal accent) with native 1920 layout: a publication-grade account review document (52px title, 30px body), 128px-tall conclusion pills (54px names, gradient icons, match chips) and 44px captions",
+    "An opening that shows reading: the document starts centred while a cobalt scan band sweeps down the page (clipped to the paper corners) under an ANALYZING · 12 SOURCES kicker",
+    "A visible chain of cause: before each pill the evidence sentence gets a cobalt highlighter stroke, then the pill flies out from that line and lands in its right-column slot with a 14f overshoot (speed blur in flight), and a cobalt line draws from the sentence end to the pill",
+    "The rhythm skeleton is kept: park at 18-46f (about 40% visible, scale 0.92), 38f between pills, opacity before position; the document scrolls continuously at 1.4px/f with soft top and bottom fades",
+    "Captions darken word by word from grey to ink with a small rise and slide out before the next pill; the last one stays, so the final frame shows three conclusions and one reason (174f to 180f)"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

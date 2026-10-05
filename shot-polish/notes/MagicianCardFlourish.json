@@ -1,0 +1,31 @@
+{
+  "stem": "MagicianCardFlourish",
+  "issues": [
+    "定格后近 70 帧画面完全静止，只剩一张卡居中在纯黑里，没有任何后续信息",
+    "卡面是灰阶占位骨架（灰条 + 灰圆），定格成近满幅后反而更显空洞",
+    "背景是死平纯黑，没有光源与空间，星芒和卡片之间缺少\"光变出卡\"的联系",
+    "构图左右各空出约 500px 黑边，画面没有层级与视觉重心之外的内容"
+  ],
+  "changes": [
+    "look 换为 midnight：闪光期舞台压暗让星芒成为唯一光源，卡落定时主光与卡后背光一起亮起，浮尘缓慢漂移",
+    "卡面重做为深海军蓝「Founders Pass」邀请卡：四芒星徽记 + 同心细环 + 交叉针线复刻开场星芒，58px 大字标题、mono 票根行，徽记区全息箔随自旋角流光、定格即冻结",
+    "构图改为左卡右文：闪光点 = 落点（画面左 1/3），卡向右上荡出一道弧线再回到原点定格；右侧 132px 标题「Doors open / Nov 4.」与副文在定格后逐行揭示",
+    "保留用户定值的手法内核（9f 星芒转 90°、slow-in→弹射→减速弧线、13 圈对角自旋衰减、零回弹硬定格），飞行中卡带蓝色辉光被运动模糊拖成光尾",
+    "落定瞬间加一圈与卡同形的光脉冲外扩淡出，8f 后单次 sheen 扫光裁进圆角；时长 126→156f，最后 1.7s 是一张完整邀请海报"
+  ],
+  "issuesEn": [
+    "After the freeze nearly 70 frames are completely static: one card centred on pure black with nothing else to read",
+    "The card face is a grey placeholder skeleton (grey bars and a grey circle), which looks emptier once it fills the frame",
+    "Flat pure-black background with no light source or depth; nothing ties the star flash to the card it produces",
+    "About 500px of black on each side; the frame has no hierarchy beyond the single card"
+  ],
+  "changesEn": [
+    "Look switched to midnight: the stage is held dark during the flash so the star is the only light, then the key light and a backlight bloom as the card lands, with slow drifting dust",
+    "Card rebuilt as a deep-navy \"Founders Pass\" invitation: four-point star emblem with fine rings and crossed needles echoing the opening flare, 58px headline, mono ticket stub, and a holographic foil that shifts with spin angle and freezes on landing",
+    "Composition is now card-left, copy-right: the flash point is the landing point, the card swings out in an arc to the upper right and returns to freeze; a 132px headline \"Doors open / Nov 4.\" and subline reveal line by line after the freeze",
+    "Kept the user-tuned core (9f star flash rotating 90deg, slow-in > burst > decelerating arc, 13 diagonal spins with decay, zero-bounce hard freeze); the card carries a blue glow in flight that motion blur smears into a light trail",
+    "On landing a card-shaped light pulse expands and fades, followed 8f later by one sheen clipped to the rounded corners; duration 126 to 156f, ending on a complete invitation poster"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

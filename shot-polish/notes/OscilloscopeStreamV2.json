@@ -1,0 +1,31 @@
+{
+  "stem": "OscilloscopeStreamV2",
+  "issues": [
+    "曲线是一根 2px 灰黑线困在浅灰底的小卡片里，没有\"示波器\"的光感",
+    "尖峰是包络乘在原波形上，读起来只是波形大一点，不是一次突发事件",
+    "实时读数 50px、刻度 17px 级小字，读数逐帧乱跳，看不清也读不出事件",
+    "刹停后整屏死静，没有收尾落点"
+  ],
+  "changes": [
+    "look 换 midnight 深蓝夜：满版 1728×520 示波屏，主格线 + 中心十字刻度 + 左端渐隐，电光蓝磷光迹线（实线 + 两层泛光 + 最新 280px 高亮段）",
+    "尖峰改为带前兆/余震的高斯脉冲（约 2.2× 常态振幅），整段变珊瑚红并加粗，写完后峰顶钉「BURST 2,453 req/s」标签 + 落线随流左移",
+    "版式：虚构产品 Sonde 眉题 + LIVE 灯、176px 主读数（每 3 帧采样保持）、右上 p99 / 错误率 84px 副读数，三者随尖峰同步变色跳值",
+    "写入头放在 86%：竖向扫描线 + 光斑 + 横向读数参考线，尖峰时光斑转珊瑚色",
+    "时间表 165f：0f 起即在流动 → 46–68f 尖峰 → 104–118f out-cubic 刹停（LIVE→PAUSED）→ 47f hold 中相机 2.5% 缓推对准尖峰"
+  ],
+  "issuesEn": [
+    "The trace was a 2px dark line trapped in a small card on a light grey stage, with no oscilloscope glow",
+    "The spike was an envelope multiplied onto the wave, so it read as slightly larger waves rather than a burst event",
+    "The live readout was 50px with ~17px ticks, and it jittered every frame, so neither value nor event was readable",
+    "After the brake the screen went completely dead with no final focus"
+  ],
+  "changesEn": [
+    "Midnight look: a full-bleed 1728×520 scope screen with graticule, centre tick cross and left fade-out; an electric-blue phosphor trace with core line, two glow layers and a bright newest 280px",
+    "The spike is now a Gaussian pulse with precursor and aftershock (~2.2× normal amplitude) that turns coral and thicker, then gets a pinned 'BURST 2,453 req/s' tag with a drop line that flows left",
+    "Layout: fictional product Sonde kicker with a LIVE light, a 176px main readout sampled every 3 frames, and 84px p99 / error-rate readouts that all jump and change colour with the spike",
+    "The write head sits at 86% with a vertical scan line, a bloom and a horizontal value guide; the bloom turns coral during the spike",
+    "165f timeline: streaming from frame 0, spike at 46–68f, out-cubic brake at 104–118f (LIVE becomes PAUSED), then a 47f hold with a 2.5% push toward the spike"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

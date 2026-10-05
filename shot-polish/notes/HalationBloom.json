@@ -1,0 +1,31 @@
+{
+  "stem": "HalationBloom",
+  "issues": [
+    "300px 的 10× 和角落一行调试小字之外画面全空，暗场是死平的灰黑",
+    "晕层是一团均匀的灰白雾，读不出胶片 halation 的层次，也没有色彩",
+    "撞停后的副标题只有 40px 灰字，数字不知道在说什么",
+    "收尾 ~3 秒完全静止，画面没有空间感（无地面、无光源方向）"
+  ],
+  "changes": [
+    "look 换成 midnight：主角改为虚构显示器 Vesper XDR 的峰值亮度「2,000 nits」，330px 白→冰蓝自发光渐变数字 + 96px 单位，语义与\"撞停即照亮\"对上",
+    "晕分四层：贴边紧芯 + 主晕（6f out-cubic 猛涨到 1.18 再收回 1.03，避免停在大尺寸读成重影）+ 电光蓝外圈 halation + 撞停帧横向变形光条；消散 20f linear 与扩散解耦",
+    "空间：Stage 顶光与地平线光带、玻璃地台线 + 数字倒影（撞停时一起被照亮）、极淡浮尘，撞停同帧整片暗场受光再退",
+    "版式：眉题 PEAK BRIGHTNESS 字距收拢 + 两侧发丝线、52px 副标题逐词升起、30px mono 型号行，全部居中对齐数字轴线",
+    "节奏：6–14 crash-zoom 2.7→0.94（时间采样运动模糊）→ 弹簧回弹一次过冲 → 跟随元素晚 6f 起依次入场 → hold 段相机极缓推进 2.5% + 驻留晕 ±8% 呼吸，总长 150f"
+  ],
+  "issuesEn": [
+    "Apart from a 300px 10× and a tiny debug label in the corner the frame was empty, on a dead flat grey-black",
+    "The bloom was an even grey-white fog with no film-halation layering and no colour",
+    "The subtitle after the hit was 40px grey text, and the number never said what it measured",
+    "The last ~3 seconds were completely static with no sense of space (no floor, no light direction)"
+  ],
+  "changesEn": [
+    "Midnight look; the hero is now the peak brightness of a fictional display, Vesper XDR: a 330px white-to-ice-blue self-lit 2,000 plus a 96px unit, so the number itself lights the screen when it stops",
+    "Four light layers: a tight edge core, a main bloom (6f out-cubic surge to 1.18 then back to 1.03 so it never parks as a ghost copy), an electric-blue outer halation and an anamorphic streak on the stop frame; 20f linear decay decoupled from the spread",
+    "Space: Stage top light and horizon band, a glass floor line with the number's reflection (lit up on impact), faint dust, and a one-shot light spill across the dark stage on the stop frame",
+    "Layout: a PEAK BRIGHTNESS kicker tracking in between hairlines, a 52px subtitle rising word by word and a 30px mono spec line, all centred on the number's axis",
+    "Rhythm: crash zoom 2.7→0.94 at 6–14 with sub-frame motion blur, one visible spring overshoot, followers staggered from 6f later, then a hold with a 2.5% slow push and ±8% bloom breathing; 150f total"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

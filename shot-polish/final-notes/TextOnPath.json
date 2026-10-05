@@ -1,0 +1,12 @@
+{
+  "stem": "TextOnPath",
+  "changed": false,
+  "brand": [
+    "不换：画面无 logo / 品牌名，文案「UP AND TO THE RIGHT」是对增长线本身的描述、数值牌与刻度是图表数据主角，换成 video-shotcraft 会变成编造营收数字"
+  ],
+  "brandEn": [
+    "Unchanged: no logo or brand name on screen; \"UP AND TO THE RIGHT\" literally describes the growth line and the value badge / ticks are the chart data itself, so branding it would mean inventing revenue figures for video-shotcraft"
+  ],
+  "styleKey": "text-on-path",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "PaperPlaneMessenger",
+  "issues": [
+    "浅灰底上两扇白窗、一架白纸飞机，主角和背景同色，飞行中飞机几乎被底色吞掉",
+    "拉远后窗口文字 13–15px × 0.6 变焦只剩 8–9px，开场贴脸时正文也只有 ~23px，读不清",
+    "视差道具是灰色消息气泡和焦外光圈，像散落的 UI 碎片，没有\"在空中飞\"的环境感",
+    "虚线航迹又细又淡，飞机落点在新行还没顶开时就到了，像撞进旧行"
+  ],
+  "changes": [
+    "look 换成 midnight（深蓝夜 · 电光蓝）：两扇深色玻璃窗浮在夜空里，世界里唯一的亮物是白纸飞机 + 柔光晕，身后一条由暗到亮的光迹（宽辉光 + 细亮芯）",
+    "视差换成夜空三层：170 颗闪烁星点（depth 0.28）/ 中层薄云 / 近层焦外云絮从镜头前掠过，全用渐变不挂实时 blur",
+    "窗口为镜头放大排版：贴脸变焦 1.5 时正文 ≈39px；B 接管（变焦 2 = 窗宽恰好铺满）后姓名 52px、摘要 44px",
+    "因果闭环：点击后按钮上滑换成「Sent ✓」；新行提前 8f 顶开列表让出空槽，飞机滑进头像位 + 强调色涟漪，徽标换成「1 new」",
+    "时长 172f：贴脸 12f → 拉远 1.5→0.5 → 76f 伴飞（中途缓推到 0.56）→ 32f 接管推到 2.0 → 30f 收件箱 hold"
+  ],
+  "issuesEn": [
+    "Two white windows and a white paper plane on a light-grey backdrop: hero and background shared a colour, so the plane all but vanished in flight",
+    "Pulled back, window text was 13–15px at 0.6 zoom, about 8–9px on screen, and even the opening close-up body text was only ~23px",
+    "Parallax props were grey message bubbles and defocused rings that read as scattered UI scraps, with no sense of flying through air",
+    "The dotted trail was thin and faint, and the plane reached its slot before the new row opened, as if it crashed into an old row"
+  ],
+  "changesEn": [
+    "Midnight look (deep navy, electric blue): two dark glass windows float in a night sky, and the only bright thing in the world is the white paper plane with a soft halo and a trail that brightens toward the head (wide glow plus a thin bright core)",
+    "Parallax is now a three-layer night sky: 170 twinkling stars (depth 0.28), thin mid clouds, and defocused near wisps sweeping past the lens, all gradients with no live blur",
+    "Windows are laid out for camera: ~39px body text at the 1.5 close-up; after takeover (zoom 2, the window exactly fills frame) names are 52px and previews 44px",
+    "Closed cause and effect: after the click the button slides to 'Sent ✓'; the new row opens 8f early to clear an empty slot, the plane tucks into the avatar with an accent ripple, and the badge flips to '1 new'",
+    "172f: 12f close-up, pull back 1.5→0.5, a 76f chase flight (slowly pushing to 0.56), a 32f takeover to 2.0, and a 30f inbox hold"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

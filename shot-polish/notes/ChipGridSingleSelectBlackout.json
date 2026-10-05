@@ -1,0 +1,31 @@
+{
+  "stem": "ChipGridSingleSelectBlackout",
+  "issues": [
+    "480×270 设计坐标放大，chip 字只有 ~12 设计 px，整组只占画面中间一小块",
+    "灰底 + 小号「BILLING CYCLE」眉题，没有问题、没有产品语境",
+    "没有触发者，灰闪和反黑像是自己发生的",
+    "收束后的算式行是一行小字，结果没有分量，结尾不成画面"
+  ],
+  "changes": [
+    "look 换 porcelain 冷白 + 钴蓝，按 1080p 原生重排：84px 问句「How would you like to pay?」+ 96px 高实体 chip（36px 字、发丝线、内高光、两层软阴影），主体占画宽 ~62%",
+    "新增光标 swift 弧线移向目标并按下；单帧灰闪 → 5f 线性反黑（墨黑 + ✓ 长出）→ sin 回弹 0.04，其余 chip 降到 18% 位置锁死，命门参数保持",
+    "选中 chip 底下亮一圈极淡钴蓝落地光（只给主角一次），收束时上移 + 缩到 0.88 + 回中线，阴影随抬升变深",
+    "结果段做成价格海报：原价 $42.00 升起后被划线划掉退灰 → 现价 $34.44 180px 逐字升起 → 钴蓝「Save 18%」overshoot 弹出",
+    "时长 150→165f，落定 hold 31f"
+  ],
+  "issuesEn": [
+    "Built in 480×270 design units and scaled up; chip labels are ~12 design px and the group occupies a small patch in the middle",
+    "Grey background with a small \"BILLING CYCLE\" eyebrow; no question and no product context",
+    "There's no actor: the grey flash and blackout seem to happen by themselves",
+    "After the collapse the formula is one small line of text; the result has no weight and the end isn't a composed frame"
+  ],
+  "changesEn": [
+    "Porcelain cool white with cobalt, re-laid natively at 1080p: an 84px question \"How would you like to pay?\" and 96px-tall solid chips (36px type, hairline, top highlight, two-layer soft shadow) spanning ~62% of the width",
+    "A cursor arcs in and presses the target; one-frame grey flash → 5f linear blackout (ink navy, a check grows in) → 0.04 sine pulse, others drop to 18% with positions locked; the signature parameters are unchanged",
+    "A faint cobalt floor glow lights under the selected chip (once, hero only); on collapse it rises, scales to 0.88 and recentres while its shadow deepens",
+    "The result is a price poster: $42.00 rises then gets struck through and greys out → $34.44 rises char by char at 180px → a cobalt \"Save 18%\" pill pops with overshoot",
+    "150→165f with a 31f settle hold"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

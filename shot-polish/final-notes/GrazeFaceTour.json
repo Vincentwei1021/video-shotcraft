@@ -1,0 +1,18 @@
+{
+  "stem": "GrazeFaceTour",
+  "changed": true,
+  "brand": [
+    "侧栏渐变方块 logo + 「Orbit」 → video-shotcraft 标志 + 字标（ShotcraftWordmark）",
+    "顶栏活动 tab「Orbit 3.0」及渐变图标 → 「Launch film」+ 镜刻标志图标；其余 tab 换成 Shot recipe cards / Beat-synced cuts / Render queue",
+    "侧栏树、Recent 卡片换成 video-shotcraft 世界：Shot recipes / Storyboards / Opening · Camera moves · Transitions 空间、「Launch film · Storyboard v3」「Add shot · crash zoom」",
+    "任务行与搜索框：New Bugs Per Week 等 → Render launch film / Add shot: crash zoom / Beat-sync the cuts / Export JianYing draft；「Search shots, recipes…」"
+  ],
+  "brandEn": [
+    "Sidebar gradient-square logo + \"Orbit\" → video-shotcraft mark + wordmark (ShotcraftWordmark)",
+    "Active top tab \"Orbit 3.0\" and its gradient icon → \"Launch film\" with the Frame Chisel mark; other tabs → Shot recipe cards / Beat-synced cuts / Render queue",
+    "Sidebar tree and Recent cards now live in the video-shotcraft world: Shot recipes / Storyboards / Opening · Camera moves · Transitions spaces, \"Launch film · Storyboard v3\", \"Add shot · crash zoom\"",
+    "Task rows and search: New Bugs Per Week etc. → Render launch film / Add shot: crash zoom / Beat-sync the cuts / Export JianYing draft; \"Search shots, recipes…\""
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

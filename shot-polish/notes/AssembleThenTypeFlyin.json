@@ -1,0 +1,33 @@
+{
+  "stem": "AssembleThenTypeFlyin",
+  "issues": [
+    "骨架件是 1px 灰描边的空框，无材质无阴影，暗底上几乎看不见层次",
+    "480×270 设计坐标里的字只有 6–7px（放大后 24–28px），大半文字小到只能当纹理",
+    "内容是“The headline for your product here / Acme Studio”这类占位模板，成形后的页面没有设计感",
+    "两段之间没有停顿，骨架刚到文字就压上来，读不出“这是第二步”"
+  ],
+  "changes": [
+    "换 graphite 石墨暗场 + 胶片金唯一强调色，成形画面是虚构调色软件「Obscura 3」的发布页：玻璃导航、112px 衬线大标题「Grade every frame / like it was film.」、金色 CTA、三枚指标块、640×760 调色台卡",
+    "骨架段 10 件从画外 120–420px 平面飞入（overshoot 过冲 + ±7° 旋转回正 + 按速度的方向性模糊），开场即有 12 栏版式参考线",
+    "两段之间留 8f 停顿、参考线同步退淡；文字段逐字 perspective(900px) 3D 翻滚落位（dz −200→−760、三轴大角度旋转、远虚近实），先大标题后 mono 小标注",
+    "全部按 1920 原生坐标排版，要读的字 ≥28–36px、标题 112px，告别 DesignStage 的小字",
+    "落定后加一笔“定稿”：CTA 通电成金色实底，胶片画面被金色竖线从 log 灰片擦除成暖调成片，色轮控制点同步推到偏色位——呼应标题",
+    "时长 156→168f，f128 前所有字落完，留 40f 整页 hold + 1.5% 极缓推近"
+  ],
+  "issuesEn": [
+    "Skeleton parts are empty 1px grey outlines with no material or shadow, nearly invisible on the dark ground",
+    "In the 480x270 design space text was 6–7px (24–28px once scaled), so most of it could only read as texture",
+    "Content was a placeholder template ('The headline for your product here' / 'Acme Studio'), so the assembled page had no design",
+    "No pause between phases: text piled on as soon as the skeleton landed, so 'this is step two' never read"
+  ],
+  "changesEn": [
+    "Graphite dark stage with film gold as the only accent; the result is a launch page for a fictional grading app 'Obscura 3': glass nav, 112px serif headline 'Grade every frame / like it was film.', gold CTA, three stat tiles and a 640x760 grading-panel card",
+    "Ten skeleton parts fly in planar from 120–420px off-frame (overshoot settle, ±7° rotation, velocity-driven directional blur); a 12-column layout grid is on screen from frame one",
+    "An 8f pause separates the phases while the guides fade; text then tumbles in per character in perspective(900px) 3D (dz −200 to −760, large three-axis rotation, depth blur), headline first and mono labels last",
+    "Laid out natively at 1920 with readable text at 28–36px and a 112px headline, dropping the tiny DesignStage type",
+    "A finishing beat after landing: the CTA powers on to solid gold and a gold wipe grades the film still from flat log to a warm print look while the color-wheel pucks move off neutral, echoing the headline",
+    "Duration 156 to 168f: every glyph lands by f128, leaving a 40f hold with a 1.5% slow push"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

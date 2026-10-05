@@ -1,0 +1,35 @@
+{
+  "stem": "CursorDialogueDuet",
+  "issues": [
+    "近黑平底上两枚 42px 小光标 + 16px 名牌，画面大半是空的，名牌字读不清",
+    "\"灯光交接\"只是名牌透明度一亮一暗，没有真正的光，观众看不出谁在说话",
+    "光标之间没有任何台词，\"对话\"全靠观众脑补；双人舞的剧情读不出来",
+    "收尾巨箭头是线性倍率放大、纯色平块整屏，末帧是一块没信息的绿色",
+    "蓝/绿两色与暗场都偏通用，没有电影感的光与空间"
+  ],
+  "changes": [
+    "look 改 graphite 黑匣子剧场：顶上一盏钨丝色追光（体积光锥 + 地面光池 + 浮尘），身份色改冷调长春花蓝 / 暖调琥珀",
+    "灯光交接做成物理的：追光钉在台口说话位，亮度按光标到光心的距离算——绕位时一个走出光、一个走进光，暗处的人去饱和压暗",
+    "光标放大到 ~112px 高（矢量 SVG），名牌在说话时展开成 cursor chat 气泡逐字打出 48px 台词 \"Specs are final.\" / \"Shipping tonight.\"",
+    "绕位改为各绕起止中点同向转半圈的扁弧（不出画），快段加方向性运动模糊；站定时双频微漂",
+    "冲镜前加 8f 后缩预备，倍率在对数空间 ease-in（5.6→380），箭头体内锚点移到画面中心，整屏遮挡成琥珀色海报：标题 \"Handoff, without the handoff.\" 逐词升起，Designer 光标回到句尾谢幕",
+    "时长 140f → 216f：入场 / 台词 / hold / 绕位 / 台词 / 预备 / 冲镜 / 海报 hold 每拍都有呼吸"
+  ],
+  "issuesEn": [
+    "Two tiny 42px cursors with 16px tags on a flat near-black field; most of the frame is empty and the tags are unreadable",
+    "The 'light handoff' is just tag opacity — there is no actual light, so you can't tell who is speaking",
+    "No lines of dialogue at all; the duet's story has to be imagined",
+    "The closing giant arrow scales linearly and ends on a flat green slab with no information",
+    "Generic blue/green on dark, no cinematic light or space"
+  ],
+  "changesEn": [
+    "Graphite black-box theatre: one tungsten follow-spot from above (volumetric cone, floor pool, dust); identity colors become cool periwinkle vs warm amber",
+    "Physical light handoff: the spot is pinned to the speaking mark and brightness is computed from distance — during the swap one actor walks out of the light and the other walks in; the listener is desaturated in shadow",
+    "Cursors scaled to ~112px (vector SVG); tags expand into cursor-chat bubbles that type 48px lines 'Specs are final.' / 'Shipping tonight.'",
+    "Swap is a flattened half-orbit around each pair's midpoint (stays in frame) with directional motion blur on the fast part and dual-frequency idle drift",
+    "8f anticipation pull-back, then a log-space ease-in zoom (5.6→380) anchored inside the arrow body so it covers the frame; the amber cover becomes a poster with 'Handoff, without the handoff.' rising word by word and the Designer cursor returning for a curtain call",
+    "140f → 216f so every beat (entrance, line, hold, swap, line, anticipation, zoom, poster hold) breathes"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

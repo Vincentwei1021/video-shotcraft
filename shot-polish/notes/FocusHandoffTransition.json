@@ -1,0 +1,31 @@
+{
+  "stem": "FocusHandoffTransition",
+  "issues": [
+    "同一张整页截图叠两次做虚化交叉，交叉中段读作整屏糊掉，看不出前后两层",
+    "页面原生字号 16–17px，画面里没有一个要读的大字，分不清在讲哪个区块",
+    "上下缘焦外带是同一纹理的虚化副本，浅景深靠遮罩伪造，空间感弱",
+    "满屏浅灰页面，没有舞台、光和色彩层级"
+  ],
+  "changes": [
+    "look 换成 sand 暖沙；把长页的两个区块拆成前后两个景深平面：开场 B 就在 A 身后（0.9×、虚 14px、降饱和），第 3 张卡从 A 的空槽透出",
+    "rack focus：A 越过焦平面冲向镜头（1→1.08、上飘 80px、虚到 16px、ease-in 淡出），B 晚 3f 收焦落位（14px→0、饱和度回满、自下 40px），A 残影退净时 B 才真正合焦",
+    "每个区块配 112px 大标题 + 赤陶色等宽章节号（01 Agents & Dev Tools → 03 Perception & Sensing），标题与自己的平面同焦、晚 2f，两行大字不同时糊叠",
+    "真实卡片纹理放到 1.42× 排版，字可读；最远层整页大虚化散景 + 右下近景焦外卡片框边，三层视差同向漂移立住浅景深",
+    "时间表 120f：A hold 28f → 交接 28–55 → B hold 65f 极缓上漂与 1% 呼吸"
+  ],
+  "issuesEn": [
+    "The same full-page screenshot was cross-blurred with itself, so mid-handoff read as the whole frame going soft with no sense of two layers",
+    "The page's native 16-17px text left nothing large to read, so it was unclear which section was in view",
+    "The top and bottom bokeh bands were blurred copies of the same texture, faking shallow depth with a mask",
+    "A full-frame pale grey page with no stage, light or colour hierarchy"
+  ],
+  "changesEn": [
+    "Warm sand look; two sections of the long page become two depth planes: B already sits behind A at the start (0.9x, 14px blur, desaturated), with its third card showing through A's empty slot",
+    "Rack focus: A passes through the focal plane toward the lens (1 to 1.08, drifting up 80px, blurring to 16px, ease-in fade) while B pulls into focus 3f later (14px to 0, full saturation, rising 40px), only fully sharp once A's ghost is gone",
+    "Each section gets a 112px title with a terracotta mono index (01 Agents & Dev Tools to 03 Perception & Sensing), focused with its own plane and 2f behind it, so the two titles never blur over each other",
+    "Real card textures laid out at 1.42x so the text reads; a heavily blurred far page layer and an out-of-focus foreground card at the lower right drift with parallax to sell shallow depth",
+    "120f timeline: 28f A hold, handoff 28-55, then a 65f B hold with a slow upward drift and 1% breathing"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

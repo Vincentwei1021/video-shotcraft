@@ -1,0 +1,33 @@
+{
+  "stem": "ScanlineAnnotateFocus",
+  "issues": [
+    "页面是占位文案（The headline for / your product here、sample、@USERNAME），看不出是真实品牌页",
+    "标注与状态行是 8px 级小字，1080p 小窗里完全读不清，只剩纹理",
+    "扫描线、角标、页面全是同一层冷灰蓝，机器视线和页面内容分不开",
+    "整页铺满画框没有舞台，构图平、没有空间层次，扫完后就是一张静止截图"
+  ],
+  "changes": [
+    "look 换成 sand（米色 · 赤陶）：被分析的是一张为镜头设计的陶器工作室官网「Hollis」——120px 粗黑体 H1、程序化陶瓶产品图、赤陶 CTA、四色釉色板",
+    "颜色分工：赤陶只属于品牌页面，钴蓝只属于机器（扫描线 / 角标 / 标签 / 状态行），一眼分清谁在看、看的是什么",
+    "页面放进 1560×840 浏览器窗（两层软阴影），状态行 30px 在窗外上方，全程 1.000→1.035 极缓推镜",
+    "扫描线保持严格匀速（74f），身后留淡蓝洗色 + 点阵余晖，窗框两侧游标读出 Y 坐标；越过 bbox 下缘才触发",
+    "取景框改为四角从外扩 76px 弹簧收拢（damping 15，一次过冲）+ 臂长跟随收一档 + 对焦闪；标签是 32px 钴蓝底白字小签，逐字打出、签条随字长出",
+    "时长 150f：最后一块 ~77f 触发，状态行切 BRAND READ，后段 ~60f hold 是一张完整的品牌拆解海报"
+  ],
+  "issuesEn": [
+    "The page was placeholder copy (The headline for / your product here, sample, @USERNAME) and never read as a real brand site",
+    "Annotations and the status line were ~8px type, unreadable in a 1080p thumbnail and reduced to texture",
+    "Scanline, brackets and page shared one cold grey-blue, so the machine's gaze and the page content blurred together",
+    "The page filled the frame edge to edge with no stage, a flat composition that ended as a static screenshot"
+  ],
+  "changesEn": [
+    "Sand look (beige and terracotta): the page under analysis is a purpose-built ceramics studio site, Hollis, with a 120px heavy grotesk H1, a procedural vase product shot, a terracotta CTA and a four-glaze palette",
+    "Strict colour roles: terracotta belongs only to the brand page, cobalt only to the machine (scanline, brackets, tags, status), so who is looking and what is seen read instantly",
+    "The page sits in a 1560×840 browser window with a two-layer soft shadow, a 30px status line above it, and a slow 1.000→1.035 push throughout",
+    "The scanline stays strictly linear (74f) with a pale-blue wash and dot-grid trail, side cursors reading out Y; each target fires only when the line crosses its bottom edge",
+    "Brackets now spring in from 76px outside the bbox (damping 15, one overshoot) with lagging arm shrink and a focus flash; tags are 32px white-on-cobalt labels typed out character by character as the tag grows",
+    "150f total: the last target fires at ~77f, the status flips to BRAND READ, and a ~60f hold ends on a complete brand-breakdown poster"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

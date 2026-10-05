@@ -1,0 +1,16 @@
+{
+  "stem": "ContactShadowLift",
+  "changed": true,
+  "brand": [
+    "眉题「WEEKLY FOCUS · OCT 6 – 12」→「SHOT RECIPES · LAUNCH FILM」，标题「Shape your week.」→「Pick your shot.」",
+    "三张本周专注卡（Meetings 6h / Recharge 4h / Deep work 18h）→ 三张镜头配方卡（Whip pan 8f / Crash zoom 12f / Logo sting 24f），说明句与图标同步换",
+    "被选定那张的图标位 → video-shotcraft 标志；星期格 M–S → 节拍格 1–7"
+  ],
+  "brandEn": [
+    "Eyebrow \"WEEKLY FOCUS · OCT 6 – 12\" → \"SHOT RECIPES · LAUNCH FILM\"; title \"Shape your week.\" → \"Pick your shot.\"",
+    "Three weekly-focus cards (Meetings 6h / Recharge 4h / Deep work 18h) → three shot recipe cards (Whip pan 8f / Crash zoom 12f / Logo sting 24f), with new notes and icons",
+    "The picked card's icon is now the video-shotcraft mark; weekday cells M–S → beat cells 1–7"
+  ],
+  "styleKey": "contact-shadow-lift",
+  "mdChanged": true
+}

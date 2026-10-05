@@ -1,189 +1,315 @@
-// scanline-assemble-flyin — Scanline Assemble 扫描装配组件飞入（motion-lab 定稿转原生 Remotion）
-// 页面开场为空的暗底网格，一条亮扫描线自上而下掠过；扫过每个区块的落点后，该处组件从画外
-// 四面八方飞入（左上 logo 自左、右侧模块卡自右、H1 自左下、CTA 自下、页脚社交自下方两侧），
-// 带轻微过冲和残影模糊，贴合落位瞬间闪一道细亮边。扫完整页恰好装配完成。
-// 页面内容为中性占位模板，强调色可按项目替换。设计坐标 480×270（DesignStage 等比放大）。
+// scanline-assemble-flyin — 扫描装配组件飞入：开场只有一张蓝图画板（网格 + 虚线槽位），一条扫描线自上而下
+// 匀速掠过；扫描线走到哪个槽位，该处组件就从画外飞入、过冲贴合进槽，落位瞬间四角闪出咬合角标——扫完整页恰好装完。
+//
+// 第二轮重设计（午夜蓝图 · AI 生成落地页）：
+// - look = midnight（深蓝 · 电光蓝 · 青）。画面是一张 1640×860 的蓝图画板：120px 主网格 + 24px 细网格、
+//   画板尺寸标注、每个组件的虚线槽位（带「NAV 1640×96」类小标）——第 1 帧就有完整的"施工图"，不是空黑屏。
+// - 扫描线是施工进度条：电光蓝光芯 + 身后被"刷出来"的页面底色（扫过之处蓝图变成真实页面表面）+ 网格余晖。
+// - 七个组件为镜头设计：video-shotcraft 的落地页——导航（镜刻标志 + 字标）、徽章、120px 两行 H1「Shoot the / launch film.」
+//  （渐变强调词）、正文、CTA、样片镜头卡（程序化银河：确定性星点 + 银河带 + 山脊剪影）、三项数据。各自从所在方位的画外飞入：
+//   位移 380–900px、±2–7° 起始旋转，EASE.overshoot 过冲贴合；飞行中按速度沿方向 SpeedBlur，落定清零。
+// - 落定后：槽位虚线消失、四角咬合角标 2→12f 闪现收掉；全部装完后蓝图网格退到 30%、银河卡亮起，
+//   状态行停表「BUILT IN 2.9 s」。全程 1.000→1.03 极缓推镜。
+//
+// 时间表（30fps，共 156f）：
+//   0–8     蓝图画板 + 槽位在场，状态行亮起
+//   8–92    扫描线匀速 −20→880（84f）；组件在扫描线越过槽位下缘时落位（飞行 14f 提前起飞，≥4f 间隔）：
+//           NAV ~19f · BADGE ~29f · H1 ~54f · BODY ~66f · MEDIA ~75f · CTA ~79f · STATS ~87f
+//   92–104  扫描线淡出；蓝图退场；银河卡亮起；状态行停表
+//   104–156 hold：完整落地页海报，极缓推镜
 import React from 'react';
-import { DesignStage, E, lerp, seg, useT } from '../../_fixtures/Motion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, SpeedBlur, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, alpha, glow } from '../../_fixtures/Look';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
-export const SCANLINE_ASSEMBLE_FLYIN_DURATION = 138; // 4600ms @30fps
+export const SCANLINE_ASSEMBLE_FLYIN_DURATION = 156;
 
-const MONO = "'SF Mono',Menlo,Consolas,monospace";
-const SERIF = "Georgia,'Times New Roman',serif";
-const ACCENT = '#9fb6e8'; // 模板强调色，可按项目替换
-const A_RGB = '159,182,232';
+const L = LOOKS.midnight;
+const MONO = FONT.mono;
+const AX = 140; // 画板（帧坐标）
+const AY = 150;
+const AW = 1640;
+const AH = 860;
 
-/* ---- 每个组件的飞入方案：y=扫描落点（触发用），from=画外起点位移，rot=起始旋转 ---- */
-type Plan = { key: string; y: number; from: [number, number]; rot: number; ft: number };
+// 扫描线（画板坐标）：严格匀速
+const SCAN0 = 8;
+const SCAN1 = 92;
+const Y0 = -20;
+const Y1 = 880;
+const scanY = (f: number) => Y0 + (Y1 - Y0) * Math.min(1, Math.max(0, (f - SCAN0) / (SCAN1 - SCAN0)));
+const frameAtY = (y: number) => SCAN0 + ((y - Y0) / (Y1 - Y0)) * (SCAN1 - SCAN0);
+const FLIGHT = 14; // 飞行帧数（提前起飞，落位 = 扫描线越过槽位下缘）
+
+// ───────────── 组件飞入方案：box = 槽位（画板坐标），from = 画外起点位移，rot = 起始旋转 ─────────────
+type Plan = { key: string; name: string; box: [number, number, number, number]; from: [number, number]; rot: number; land: number };
 const PLAN: Plan[] = (() => {
   const ps: Plan[] = [
-    { key: 'topbar', y: 30, from: [0, -70], rot: 0, ft: 0 },
-    { key: 'logo', y: 53, from: [-160, -30], rot: -6, ft: 0 },
-    { key: 'module', y: 100, from: [230, 40], rot: 5, ft: 0 },
-    { key: 'h1', y: 148, from: [-260, 60], rot: -4, ft: 0 },
-    { key: 'cta', y: 192, from: [-60, 130], rot: 3, ft: 0 },
-    { key: 'footer', y: 257, from: [-140, 70], rot: 2, ft: 0 },
-    { key: 'social', y: 262, from: [150, 70], rot: -3, ft: 0 },
+    { key: 'nav', name: 'NAV', box: [0, 0, AW, 96], from: [0, -260], rot: 0, land: 0 },
+    { key: 'badge', name: 'BADGE', box: [72, 150, 372, 56], from: [-620, -60], rot: -7, land: 0 },
+    { key: 'h1', name: 'H1', box: [72, 228, 820, 250], from: [-980, 90], rot: -4, land: 0 },
+    { key: 'body', name: 'BODY', box: [72, 508, 760, 96], from: [-860, 220], rot: -2, land: 0 },
+    { key: 'media', name: 'MEDIA', box: [940, 140, 628, 560], from: [900, 80], rot: 6, land: 0 },
+    { key: 'cta', name: 'CTA', box: [72, 640, 560, 76], from: [-120, 460], rot: 3, land: 0 },
+    { key: 'stats', name: 'STATS', box: [72, 752, 1496, 80], from: [140, 420], rot: -2, land: 0 },
   ];
-  // 触发时刻：扫描线（0.05→0.72 纵扫 -30→300）到达组件落点 y，依序钳制最小间隔
-  let prev = -1;
-  for (const pl of ps) {
-    pl.ft = Math.max(0.05 + ((pl.y + 30) / 330) * 0.67 - 0.02, prev + 0.045);
-    prev = pl.ft;
+  let prev = -99;
+  for (const p of [...ps].sort((a, b) => a.box[1] + a.box[3] - (b.box[1] + b.box[3]))) {
+    p.land = Math.max(frameAtY(p.box[1] + p.box[3]), prev + 4);
+    prev = p.land;
   }
   return ps;
 })();
-const FT: Record<string, number> = Object.fromEntries(PLAN.map((pl) => [pl.key, pl.ft]));
+const P = Object.fromEntries(PLAN.map((p) => [p.key, p])) as Record<string, Plan>;
+const LAST_LAND = Math.max(...PLAN.map((p) => p.land));
+
+// 位姿（帧的纯函数，便于中心差分求速度）
+const poseAt = (p: Plan, f: number) => {
+  const a = ramp(f, p.land - FLIGHT, FLIGHT, EASE.overshoot); // 0→1，过冲 ~8% 再回落
+  return { a, x: mix(p.from[0], 0, a), y: mix(p.from[1], 0, a), r: mix(p.rot, 0, a) };
+};
+
+// ───────────── 确定性伪随机 ─────────────
+const rnd = (n: number) => {
+  const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+const STARS = Array.from({ length: 150 }, (_, i) => ({
+  x: rnd(i * 3.1) * 628, y: rnd(i * 7.7 + 2) * 430, s: 0.8 + rnd(i * 5.3 + 9) ** 3 * 3.2, a: 0.35 + rnd(i * 2.9 + 4) * 0.65,
+}));
+// 银河带里的密集微星：沿 −32° 带轴分布，离轴距离取近似高斯（三个均匀数求和）
+const BAND = Array.from({ length: 320 }, (_, i) => {
+  const u = rnd(i * 4.3 + 17) * 900 - 140;
+  const off = (rnd(i * 1.7 + 3) + rnd(i * 2.3 + 5) + rnd(i * 3.7 + 7) - 1.5) * 70;
+  const ang = (-32 * Math.PI) / 180;
+  return { x: 336 + (u - 380) * Math.cos(ang) - off * Math.sin(ang), y: 222 + (u - 380) * Math.sin(ang) + off * Math.cos(ang), s: 0.5 + rnd(i * 6.1) * 1.1, a: 0.25 + rnd(i * 8.3) * 0.55 };
+});
+
+// ───────────── 组件内容 ─────────────
+const Nav: React.FC = () => (
+  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: '0 72px', borderBottom: `1px solid ${L.line}`, fontFamily: FONT.sans }}>
+    {/* 镜刻标志（暗底反白版；svg 四周 16/128 留白，左移 7px 让可见框对齐 72）+ 字标 */}
+    <ShotcraftMark size={56} tone="dark" style={{ marginLeft: -7 }} />
+    <div style={{ marginLeft: 10, font: `700 32px ${BRAND.font}`, letterSpacing: '0.01em', color: L.ink, whiteSpace: 'nowrap' }}>{BRAND.name}</div>
+    <div style={{ marginLeft: 'auto', display: 'flex', gap: 44, font: `550 26px ${FONT.sans}`, color: L.ink2 }}>
+      <span>Recipes</span>
+      <span>Gallery</span>
+      <span>Docs</span>
+    </div>
+    <div style={{ marginLeft: 48, height: 52, padding: '0 26px', borderRadius: 26, background: alpha(L.ink, 0.08), border: `1px solid ${alpha(L.ink, 0.16)}`, display: 'flex', alignItems: 'center', font: `650 24px ${FONT.sans}`, color: L.ink }}>
+      Get the skill
+    </div>
+  </div>
+);
+
+const Badge: React.FC = () => (
+  <div style={{ position: 'absolute', left: 0, top: 0, height: 56, padding: '0 24px 0 18px', borderRadius: 28, display: 'flex', alignItems: 'center', gap: 14, background: alpha(L.accent2, 0.1), border: `1px solid ${alpha(L.accent2, 0.35)}`, font: `600 26px ${FONT.sans}`, color: L.ink, whiteSpace: 'nowrap' }}>
+    <span style={{ padding: '4px 10px', borderRadius: 8, background: L.accent2, color: L.onAccent, font: `750 20px ${MONO}`, letterSpacing: '0.06em' }}>NEW</span>
+    Motion workbench
+  </div>
+);
+
+const H1: React.FC = () => (
+  <div style={{ position: 'absolute', left: -4, top: 0, font: `820 120px ${FONT.sans}`, letterSpacing: '-0.048em', lineHeight: 1.02, color: L.ink, whiteSpace: 'nowrap' }}>
+    Shoot the
+    <br />
+    <span style={{ backgroundImage: `linear-gradient(90deg, ${L.accent} 0%, #9db8ff 55%, ${L.accent2} 100%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>launch film.</span>
+  </div>
+);
+
+const Body: React.FC = () => (
+  <div style={{ position: 'absolute', left: 0, top: 0, width: 760, font: `450 34px ${FONT.sans}`, lineHeight: 1.36, color: L.ink2, letterSpacing: '-0.012em' }}>
+    One prompt to a finished promo. Your agent lines up every cut for you.
+  </div>
+);
+
+const Cta: React.FC = () => (
+  <div style={{ position: 'absolute', left: 0, top: 0, display: 'flex', alignItems: 'center', gap: 34, fontFamily: FONT.sans }}>
+    <div style={{ height: 76, padding: '0 38px', borderRadius: 38, background: `linear-gradient(180deg, #7aa2ff 0%, ${L.accent} 100%)`, color: L.onAccent, display: 'flex', alignItems: 'center', font: `700 30px ${FONT.sans}`, letterSpacing: '-0.01em', boxShadow: `0 14px 34px -12px ${alpha(L.accent, 0.8)}, inset 0 1px 0 rgba(255,255,255,0.45)` }}>
+      Start shooting
+    </div>
+    <div style={{ font: `600 30px ${FONT.sans}`, color: L.ink, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <svg width={30} height={30} viewBox="0 0 30 30"><circle cx={15} cy={15} r={13.5} fill="none" stroke={L.ink2} strokeWidth={2} /><path d="M12 9.5 L20.5 15 L12 20.5 Z" fill={L.ink} /></svg>
+      Watch the film
+    </div>
+  </div>
+);
+
+const Media: React.FC<{ lit: number }> = ({ lit }) => (
+  <div style={{ position: 'absolute', inset: 0, borderRadius: 26, overflow: 'hidden', background: 'linear-gradient(180deg, #070b1d 0%, #111a44 48%, #2a1d4a 74%, #0b0a18 100%)', boxShadow: `inset 0 0 0 1px ${alpha('#b4c6ff', 0.14)}, inset 0 1px 0 ${alpha('#ffffff', 0.12)}` }}>
+    {/* 银河带：斜向椭圆光 + 暖色核心 + 暗尘带 */}
+    <div style={{ position: 'absolute', left: -120, top: 30, width: 880, height: 300, transform: 'rotate(-32deg)', borderRadius: '50%', background: `radial-gradient(ellipse 50% 50% at 50% 50%, rgba(196,210,255,${(0.32 + 0.22 * lit).toFixed(3)}) 0%, rgba(150,170,255,0.12) 45%, rgba(150,170,255,0) 72%)` }} />
+    <div style={{ position: 'absolute', left: 140, top: 150, width: 380, height: 150, transform: 'rotate(-32deg)', borderRadius: '50%', background: `radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,206,170,${(0.28 + 0.25 * lit).toFixed(3)}) 0%, rgba(255,170,140,0) 70%)` }} />
+    <div style={{ position: 'absolute', left: 40, top: 150, width: 640, height: 46, transform: 'rotate(-32deg)', borderRadius: '50%', background: 'radial-gradient(ellipse 50% 50% at 50% 50%, rgba(8,8,24,0.5) 0%, rgba(8,8,24,0) 70%)' }} />
+    <svg width={628} height={560} style={{ position: 'absolute', left: 0, top: 0 }}>
+      {BAND.map((s, i) => (
+        <circle key={`b${i}`} cx={s.x} cy={s.y} r={s.s} fill={i % 5 ? '#e6ecff' : '#ffd9c2'} opacity={s.a * (0.7 + 0.3 * lit)} />
+      ))}
+      {STARS.map((s, i) => (
+        <circle key={i} cx={s.x} cy={s.y} r={s.s} fill="#ffffff" opacity={s.a * (0.75 + 0.25 * lit)} />
+      ))}
+      {/* 山脊剪影 + 轮廓光 */}
+      <path d="M0 470 L70 430 L120 446 L190 392 L250 428 L320 380 L380 420 L440 398 L520 440 L580 418 L628 436 L628 560 L0 560 Z" fill="#05060f" />
+      <path d="M0 470 L70 430 L120 446 L190 392 L250 428 L320 380 L380 420 L440 398 L520 440 L580 418 L628 436" fill="none" stroke={alpha('#9db8ff', 0.35)} strokeWidth={1.5} />
+    </svg>
+    <div style={{ position: 'absolute', left: 26, bottom: 24, padding: '8px 14px', borderRadius: 10, background: alpha('#0b1226', 0.7), border: `1px solid ${L.line}`, font: `600 22px ${MONO}`, color: L.ink2 }}>
+      SHOT 04 · 2.5D push-in · 120f
+    </div>
+  </div>
+);
+
+const Stats: React.FC = () => (
+  <div style={{ position: 'absolute', inset: 0, borderTop: `1px solid ${L.line}`, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', paddingTop: 18, paddingRight: 24 }}>
+    {[
+      ['1', 'prompt to a promo'],
+      ['30 fps', 'Remotion render'],
+      ['0', 'keyframes by hand'],
+    ].map(([n, l], i) => (
+      <div key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
+        <span style={{ font: `780 52px ${FONT.sans}`, letterSpacing: '-0.04em', color: i === 0 ? L.accent : L.ink, fontVariantNumeric: 'tabular-nums' }}>{n}</span>
+        <span style={{ font: `500 26px ${FONT.sans}`, color: L.ink2 }}>{l}</span>
+      </div>
+    ))}
+  </div>
+);
+
+// 落位咬合角标：槽位外扩 10px、臂长 22px 的电光蓝 L 角
+const SnapTicks: React.FC<{ w: number; h: number; o: number; g: number }> = ({ w, h, o, g }) => {
+  if (o <= 0.01) return null;
+  const a = 22;
+  const d = [
+    `M${-g} ${-g + a}V${-g}H${-g + a}`,
+    `M${w + g - a} ${-g}H${w + g}V${-g + a}`,
+    `M${w + g} ${h + g - a}V${h + g}H${w + g - a}`,
+    `M${-g + a} ${h + g}H${-g}V${h + g - a}`,
+  ].join('');
+  return (
+    <svg width={w} height={h} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity: o, filter: `drop-shadow(0 0 6px ${alpha(L.accent, 0.9)})` }}>
+      <path d={d} fill="none" stroke="#a9c1ff" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
 export const ScanlineAssembleFlyin: React.FC = () => {
-  const t = useT();
+  const frame = useCurrentFrame();
+  const ly = scanY(frame);
+  const lineOn = ramp(frame, SCAN0 - 5, 6, EASE.out) * (1 - ramp(frame, SCAN1, 10, EASE.exit));
+  const done = ramp(frame, LAST_LAND + 4, 12, EASE.out);
+  const placed = PLAN.filter((p) => frame >= p.land).length;
+  const push = 1 + 0.03 * ramp(frame, 0, SCANLINE_ASSEMBLE_FLYIN_DURATION, EASE.swift);
+  const clock = Math.min(frame, LAST_LAND + 4) / 30; // 停表：装完那一刻定格
+  const lit = ramp(frame, LAST_LAND + 2, 20, EASE.out);
+  const blueprint = mix(1, 0.3, done);
 
-  // 扫描线纵扫 + 首尾淡入淡出
-  const ly = lerp(seg(t, 0.05, 0.72), -30, 300);
-  const lineOpacity = seg(t, 0.03, 0.08) * (1 - seg(t, 0.72, 0.77));
-
-  // 组件飞入样式：outBack 过冲贴合 + 运动残影 blur（落位即清晰）
-  const fly = ({ from, rot, ft }: Plan): React.CSSProperties => {
-    const a = seg(t, ft, ft + 0.15, E.outBack);
-    const vis = t >= ft ? 1 : 0;
-    const speed = a > 0 && a < 0.97 ? 1 - a : 0;
-    return {
-      position: 'absolute',
-      opacity: vis * Math.min(1, seg(t, ft, ft + 0.06) * 1.4),
-      transform: `translate(${lerp(a, from[0], 0)}px,${lerp(a, from[1], 0)}px) rotate(${lerp(a, rot, 0)}deg)`,
-      filter: speed > 0.03 ? `blur(${speed * 2.2}px)` : 'none',
-    };
+  const Fly: React.FC<{ p: Plan; children: React.ReactNode }> = ({ p, children }) => {
+    const pose = poseAt(p, frame);
+    const start = p.land - FLIGHT;
+    if (frame < start) return null;
+    const v0 = poseAt(p, frame - 0.5);
+    const v1 = poseAt(p, frame + 0.5);
+    const moving = frame < p.land + 4;
+    const [bx, by, bw, bh] = p.box;
+    const tick = ramp(frame, p.land + 1, 3, EASE.out) * (1 - ramp(frame, p.land + 5, 9, EASE.out));
+    const tickGap = 10 + 10 * (1 - ramp(frame, p.land + 1, 6, EASE.snappy)); // 角标从外 20px 咬进 10px
+    return (
+      <SpeedBlur vx={moving ? v1.x - v0.x : 0} vy={moving ? v1.y - v0.y : 0} amount={0.32} max={18}>
+        <div style={{
+          position: 'absolute', left: bx, top: by, width: bw, height: bh,
+          opacity: ramp(frame, start, 4, EASE.out),
+          transform: `translate(${pose.x.toFixed(2)}px, ${pose.y.toFixed(2)}px) rotate(${pose.r.toFixed(3)}deg)`,
+        }}>
+          {children}
+          {p.key !== 'nav' && <SnapTicks w={bw} h={bh} o={tick} g={tickGap} />}
+        </div>
+      </SpeedBlur>
+    );
   };
-  // 贴合瞬间闪一道细亮边（组件内层 inset:-3px 描边）
-  const flash = (ft: number): React.CSSProperties => ({
-    position: 'absolute',
-    inset: -3,
-    border: `1px solid rgba(${A_RGB},.9)`,
-    borderRadius: 4,
-    opacity: seg(t, ft + 0.11, ft + 0.15) * (1 - seg(t, ft + 0.15, ft + 0.26)),
-    pointerEvents: 'none',
-  });
 
-  // 已落位组件计数（a≥0.99 视为贴合完成）
-  const placed = PLAN.reduce((acc, pl) => acc + (seg(t, pl.ft, pl.ft + 0.15, E.outBack) >= 0.99 ? 1 : 0), 0);
-  const done = seg(t, 0.8, 0.86);
+  // 网格（帧坐标全屏）：24px 细网格 + 120px 主网格，蓝图色
+  const grid = (c: string, cm: string) =>
+    `repeating-linear-gradient(0deg, ${cm} 0 1.5px, transparent 1.5px 120px), repeating-linear-gradient(90deg, ${cm} 0 1.5px, transparent 1.5px 120px), ` +
+    `repeating-linear-gradient(0deg, ${c} 0 1px, transparent 1px 24px), repeating-linear-gradient(90deg, ${c} 0 1px, transparent 1px 24px)`;
+  const lyF = AY + ly; // 扫描线帧坐标
 
   return (
-    <DesignStage bg="#0a0b0e">
-      {/* 页面底渐变：原 CSS 为 #101116→#0c0d11，样片 x264 近黑量化后实测为
-          rgb(15,17,20)→rgb(10,12,16)，按对照帧校准取 #0f1114→#0a0c10 */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#0f1114,#0a0c10)' }}>
-        {/* 空页底：暗网格（组件飞入前唯一可见的东西） */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: 0.5,
-            background:
-              'repeating-linear-gradient(0deg,transparent 0 23px,rgba(255,255,255,.025) 23px 24px),' +
-              'repeating-linear-gradient(90deg,transparent 0 23px,rgba(255,255,255,.025) 23px 24px)',
-          }}
-        />
-        {/* 顶栏（url pill + 状态）——整组自上方落下 */}
-        <div style={{ ...fly(PLAN[0]), left: 0, top: 0, width: 480, height: 30 }}>
-          <div style={{ position: 'absolute', left: 18, top: 11, padding: '3px 10px', border: '1px solid #2a2c33', borderRadius: 9, font: `500 7px ${MONO}`, color: '#8d93a0', letterSpacing: 1 }}>app.example.com</div>
-          <div style={{ position: 'absolute', right: 18, top: 14, font: `500 7px ${MONO}`, color: '#565b66', letterSpacing: 1.5 }}>200 OK · TLS</div>
-          <div style={flash(FT.topbar)} />
+    <AbsoluteFill>
+      <Stage look={L} keyLight={{ x: 0.62, y: 0.0 }} fill={{ x: 0.1, y: 0.95 }} intensity={0.85} />
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: '50% 52%' }}>
+        {/* ── 蓝图网格（装完后退到 30%）+ 扫描线身后被照亮的一段 ── */}
+        <div style={{ position: 'absolute', inset: -40, opacity: blueprint, background: grid(alpha('#8fb0ff', 0.045), alpha('#8fb0ff', 0.085)), backgroundPosition: '20px 30px' }} />
+        {lineOn > 0.01 && (
+          <div style={{
+            position: 'absolute', inset: -40, opacity: lineOn, background: grid(alpha(L.accent, 0.22), alpha('#a9c1ff', 0.4)), backgroundPosition: '20px 30px',
+            WebkitMaskImage: `linear-gradient(180deg, transparent ${lyF - 180 + 40}px, #000 ${lyF + 40}px, transparent ${lyF + 42}px)`,
+            maskImage: `linear-gradient(180deg, transparent ${lyF - 180 + 40}px, #000 ${lyF + 40}px, transparent ${lyF + 42}px)`,
+          }} />
+        )}
+
+        {/* ── 状态行（画板上方）── */}
+        <div style={{ position: 'absolute', left: AX, top: 66, width: AW, height: 48, display: 'flex', alignItems: 'center', font: `600 30px ${MONO}`, color: L.ink, opacity: ramp(frame, 0, 10, EASE.out) }}>
+          <span style={{ color: done > 0.5 ? L.accent2 : L.accent, letterSpacing: '0.06em', textShadow: done > 0.5 ? glow(L.accent2, 0.5) : 'none' }}>
+            {done > 0.5 ? '✓ BUILT' : '▸ BUILDING'}
+          </span>
+          <span style={{ marginLeft: 18, color: L.ink3, fontWeight: 500 }}>video-shotcraft / index</span>
+          <span style={{ marginLeft: 'auto', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
+            <span style={{ color: L.ink3, fontWeight: 500 }}>BLOCKS </span>
+            <span style={{ color: placed === PLAN.length ? L.accent2 : L.ink }}>{String(placed).padStart(2, '0')}</span>
+            <span style={{ color: L.ink3 }}> / {String(PLAN.length).padStart(2, '0')}</span>
+            <span style={{ color: L.ink3, fontWeight: 500, marginLeft: 34 }}>{clock.toFixed(1)} s</span>
+          </span>
         </div>
-        {/* logo：点阵 mark + 衬线字标——自左飞入 */}
-        <div style={{ ...fly(PLAN[1]), left: 24, top: 35, width: 100, height: 18 }}>
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} style={{ position: 'absolute', width: 4, height: 4, borderRadius: '50%', background: '#e8e9ee', left: (i % 2) * 6, top: 2 + (i >> 1) * 6 }} />
-          ))}
-          <div style={{ position: 'absolute', left: 17, top: 0, font: `400 13px ${SERIF}`, color: '#eceef2' }}>
-            Acme <i>Studio</i>
+
+        {/* ── 画板 ── */}
+        <div style={{ position: 'absolute', left: AX, top: AY, width: AW, height: AH }}>
+          {/* 页面表面：扫描线扫过之处由蓝图"刷"成页面底色 */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: 28,
+            background: `linear-gradient(180deg, ${alpha('#101a36', 0.96)} 0%, ${alpha('#0b1328', 0.96)} 100%)`,
+            boxShadow: `0 40px 120px -40px ${alpha('#000208', 0.9)}, inset 0 0 0 1px ${alpha('#a9c1ff', 0.12)}, inset 0 1px 0 ${alpha('#ffffff', 0.08)}`,
+            WebkitMaskImage: `linear-gradient(180deg, #000 ${ly - 30}px, transparent ${ly + 2}px)`,
+            maskImage: `linear-gradient(180deg, #000 ${ly - 30}px, transparent ${ly + 2}px)`,
+          }} />
+          {/* 画板外框 + 尺寸标注（蓝图元素，装完后退场） */}
+          <div style={{ position: 'absolute', inset: 0, borderRadius: 28, border: `1.5px dashed ${alpha('#a9c1ff', 0.3)}`, opacity: blueprint }} />
+          <div style={{ position: 'absolute', left: 0, top: -30, width: AW, display: 'flex', alignItems: 'center', gap: 14, opacity: blueprint * 0.9, font: `500 20px ${MONO}`, color: alpha('#a9c1ff', 0.55) }}>
+            <div style={{ flex: 1, height: 1, background: alpha('#a9c1ff', 0.3) }} />1640<div style={{ flex: 1, height: 1, background: alpha('#a9c1ff', 0.3) }} />
           </div>
-          <div style={flash(FT.logo)} />
-        </div>
-        {/* H1 两行 + 注脚——自左下飞入 */}
-        <div style={{ ...fly(PLAN[3]), left: 22, top: 64, width: 242, height: 84 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, font: `400 29px ${SERIF}`, color: '#f2f3f6', letterSpacing: 0.3 }}>The headline for</div>
-          <div style={{ position: 'absolute', left: 0, top: 36, font: `italic 400 29px ${SERIF}`, color: '#f2f3f6', letterSpacing: 0.3 }}>your product here</div>
-          <div style={{ position: 'absolute', left: 1, top: 79, font: `500 6.5px ${MONO}`, color: '#565b66', letterSpacing: 1.5 }}>H1 · UI-SERIF / GEORGIA</div>
-          <div style={flash(FT.h1)} />
-        </div>
-        {/* CTA 行——自下飞入 */}
-        <div style={{ ...fly(PLAN[4]), left: 22, top: 166, width: 136, height: 26 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, padding: '6px 13px', border: '1px solid #3a3d46', borderRadius: 12, font: `600 7.5px ${MONO}`, color: '#e8e9ee', letterSpacing: 1.5 }}>GET STARTED</div>
-          <div style={{ position: 'absolute', left: 100, top: 7, font: `500 7.5px ${MONO}`, color: '#6a707c', letterSpacing: 1.5 }}>DOCS</div>
-          <div style={flash(FT.cta)} />
-        </div>
-        {/* 右侧模块卡——自右飞入 */}
-        {/* 原采集页为 content-box：162×150 外加 1px 边框（总 164×152），补 boxSizing 对齐几何 */}
-        <div style={{ ...fly(PLAN[2]), left: 296, top: 52, width: 162, height: 150, boxSizing: 'content-box', background: '#121319', border: '1px solid #23252d', borderRadius: 5 }}>
-          <div style={{ position: 'absolute', left: 10, top: 9, font: `500 6.5px ${MONO}`, color: '#7c828e', letterSpacing: 1.5 }}>WORK</div>
-          <div style={{ position: 'absolute', right: 10, top: 9, font: `500 6.5px ${MONO}`, color: '#565b66', letterSpacing: 1.5 }}>04 / 08</div>
-          <div style={{ position: 'absolute', left: 0, top: 24, width: '100%', height: 1, background: '#1e2028' }} />
-          <div style={{ position: 'absolute', left: 0, top: 44, width: '100%', textAlign: 'center', font: `italic 400 36px ${SERIF}`, color: '#f4f5f8' }}>sample</div>
-          <div style={{ position: 'absolute', left: 0, top: 104, width: '100%', height: 1, background: '#1e2028' }} />
-          <div style={{ position: 'absolute', left: 10, top: 112, font: `500 6px ${MONO}`, color: '#6a707c', letterSpacing: 1.5 }}>KINETIC TYPE · 04</div>
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} style={{ position: 'absolute', left: 10 + i * 30, top: 124, width: 24, height: 16, background: '#1a1c23', borderRadius: 2 }} />
-          ))}
-          <div style={{ position: 'absolute', right: 8, top: 129, font: `500 6px ${MONO}`, color: '#565b66' }}>00:30</div>
-          <div style={flash(FT.module)} />
-        </div>
-        {/* 页脚——自左下飞入 */}
-        <div style={{ ...fly(PLAN[5]), left: 18, top: 243, width: 220, height: 14 }}>
-          <div style={{ position: 'absolute', left: 0, top: 3, font: `500 6.5px ${MONO}`, color: '#4c515c', letterSpacing: 1.5 }}>A PRODUCT OF ACME · ACME LABS, INC.</div>
-          <div style={flash(FT.footer)} />
-        </div>
-        {/* 社交 chip——自右下飞入 */}
-        <div style={{ ...fly(PLAN[6]), left: 352, top: 239, width: 108, height: 16 }}>
-          {/* 同为 content-box：11×11 外加 1px 边框（总 13×13） */}
-          <div style={{ position: 'absolute', left: 0, top: 2, width: 11, height: 11, boxSizing: 'content-box', border: '1px solid #3a3d46', borderRadius: 2, font: `600 7px ${MONO}`, color: '#c9cdd6', textAlign: 'center', lineHeight: '11px' }}>x</div>
-          <div style={{ position: 'absolute', left: 17, top: 3, font: `600 7.5px ${MONO}`, color: '#c9cdd6', letterSpacing: 1.5 }}>@USERNAME</div>
-          <div style={flash(FT.social)} />
-        </div>
-      </div>
+          {/* 槽位：虚线框 + 小标（纹理），组件落位时消失 */}
+          {PLAN.map((p) => {
+            const [bx, by, bw, bh] = p.box;
+            const o = (1 - ramp(frame, p.land - 2, 4, EASE.out)) * blueprint;
+            if (o <= 0.01) return null;
+            return (
+              <div key={p.key} style={{ position: 'absolute', left: bx, top: by, width: bw, height: bh, opacity: o, borderRadius: 12, border: `1.5px dashed ${alpha('#a9c1ff', 0.5)}`, background: alpha('#5b8cff', 0.06) }}>
+                <div style={{ position: 'absolute', left: 14, top: 10, font: `600 18px ${MONO}`, color: alpha('#a9c1ff', 0.75), letterSpacing: '0.08em' }}>
+                  {p.name} <span style={{ opacity: 0.6 }}>{bw}×{bh}</span>
+                </div>
+              </div>
+            );
+          })}
 
-      {/* ---- 扫描线（渐变拖尾 + 亮芯） ---- */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: 40,
-          background: `linear-gradient(180deg,transparent,rgba(${A_RGB},.07) 55%,rgba(${A_RGB},.02) 96%,transparent)`,
-          transform: `translateY(${ly - 40}px)`,
-          opacity: lineOpacity,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            height: 1.5,
-            background: 'rgba(238,244,255,.9)',
-            boxShadow: `0 0 7px ${ACCENT},0 0 18px rgba(${A_RGB},.35)`,
-          }}
-        />
-      </div>
+          {/* 组件 */}
+          <Fly p={P.nav}><Nav /></Fly>
+          <Fly p={P.badge}><Badge /></Fly>
+          <Fly p={P.h1}><H1 /></Fly>
+          <Fly p={P.body}><Body /></Fly>
+          <Fly p={P.media}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: 26, boxShadow: `0 30px 80px -30px ${alpha('#000208', 0.95)}, 0 0 ${(60 * lit).toFixed(1)}px ${alpha(L.accent, 0.22 * lit)}` }} />
+            <Media lit={lit} />
+          </Fly>
+          <Fly p={P.cta}><Cta /></Fly>
+          <Fly p={P.stats}><Stats /></Fly>
 
-      {/* ---- 顶部状态行：BUILD 计数 → ASSEMBLY · COMPLETE ---- */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 14,
-          transform: 'translateX(-50%)',
-          font: `600 7px ${MONO}`,
-          letterSpacing: 2,
-          color: done >= 1 ? ACCENT : '#8d93a0',
-          opacity: seg(t, 0.02, 0.07),
-          zIndex: 60,
-        }}
-      >
-        {done >= 1 ? 'ASSEMBLY · COMPLETE' : `BUILD · 0${placed}/0${PLAN.length}`}
+          {/* 扫描线：光芯 + 柔辉 + 两端渐隐（画板宽 + 两侧各出 60px） */}
+          {lineOn > 0.01 && (
+            <div style={{
+              position: 'absolute', left: -60, width: AW + 120, top: ly - 2, height: 4, opacity: lineOn,
+              background: 'linear-gradient(90deg, transparent 0%, #dfe8ff 8%, #ffffff 50%, #dfe8ff 92%, transparent 100%)',
+              boxShadow: `0 0 12px ${alpha(L.accent, 0.95)}, 0 0 36px ${alpha(L.accent, 0.6)}, 0 0 90px ${alpha(L.accent, 0.35)}`,
+            }} />
+          )}
+        </div>
       </div>
-    </DesignStage>
+    </AbsoluteFill>
   );
 };

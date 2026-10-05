@@ -1,0 +1,31 @@
+{
+  "stem": "BentoLightUp",
+  "issues": [
+    "六格是满屏 12–16px 小字的通用 dashboard 卡，点亮时读不出\"亮了什么\"，暗态与亮态只是整体透明度差",
+    "标题 56px、卡内主数字不到 30px，1080p 画面里没有一个要读的字达标",
+    "琥珀彗星只是一段细描边，没有亮头与泛光，读作边框换色而不是\"通电\"",
+    "点亮顺序按行重启，光在墙上跳格；背景从头到尾一样暗，六格亮完画面能量没有变化"
+  ],
+  "changes": [
+    "look 换成 aurora（紫黑底 · 薰衣草紫 · 玫粉点缀），虚构平台「Basalt」，100px 主标题逐词升起",
+    "每格只讲一件事、一个大字主角：38s / 212 / 99.99% / 分支 URL / SOC 2 / 84ms（112–140px 白→薰衣草渐变字），辅助字 ≥32px，配小图形（耗时柱、经纬球、状态条、盾牌勾、延迟曲线）",
+    "彗星重做：亮芯白→玫粉 + 三层递减拖尾 + 高斯辉光 + 按圆角周长定位的头部泛光点，跑完一圈拖尾追上头部自然收掉，身后细边退火常亮",
+    "点亮顺序改蛇形（上排左→右、下排右→左），下排彗星从右上角起跑接住上一格；内容 +6f 接力提亮上浮带一次过冲，主角再晚 3f",
+    "房间随通电变亮：舞台主光与浮尘按已点亮格数连续爬升；全亮后 30f 缓推 0.972→1，落点即设计版式，22f 静止收尾"
+  ],
+  "issuesEn": [
+    "The six cells were generic dashboard cards full of 12–16px text, so lighting one up didn't say what had lit up; dark and lit states differed only in overall opacity",
+    "The title was 56px and the hero numbers in the cells were under 30px, so not one piece of text meant to be read was legible at 1080p",
+    "The amber comet was just a thin stroke segment with no bright head or bloom, so it read as a border colour change, not as powering on",
+    "The lighting order restarted on every row so the light jumped around the wall, and the background stayed equally dark throughout: no energy change once all six were lit"
+  ],
+  "changesEn": [
+    "Aurora look (violet-black, lavender, rose accent) for a fictional platform \"Basalt\", with a 100px headline rising word by word",
+    "Each cell tells one thing with one big hero: 38s / 212 / 99.99% / branch URL / SOC 2 / 84ms (112–140px white-to-lavender gradient type), supporting text ≥32px, plus a small graphic (build-time bars, wireframe globe, status strip, shield check, latency curve)",
+    "Rebuilt comet: white-to-rose core, three tapering tail layers, Gaussian glow and a bloom dot at the head positioned along the rounded perimeter; after one lap the tail catches the head and dissolves, leaving a thin border that anneals to a steady glow",
+    "Snake lighting order (top row left to right, bottom row right to left), with the bottom-row comets starting from the top-right corner to pick up from the previous cell; content brightens and rises 6f later with one overshoot, heroes 3f after that",
+    "The room brightens as power comes on: stage key light and dust climb continuously with the number of lit cells; once all are lit, a 30f push from 0.972 to 1 lands exactly on the designed layout, then 22f of stillness"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

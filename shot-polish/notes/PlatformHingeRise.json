@@ -1,0 +1,33 @@
+{
+  "stem": "PlatformHingeRise",
+  "issues": [
+    "480×270 小画布放大，主体只占画面中间一小块，四周大面积浅灰空白",
+    "方案卡内文字只有 5–14 设计 px、结论句 13 设计 px（在 480 宽画布上），在成片里仍然偏小、数据读不清",
+    "灰色石材平台和灰卡没有光，三段式（舞台→证据→结论）的层级全靠位置，没有能量",
+    "翻起只有 18° 与 ~100px 位移，动作幅度小，相邻铰点反向展开的力学关系不够醒目"
+  ],
+  "changes": [
+    "look 换成 lime（石墨 + 荧光黄绿），原生 1920 重画：1280 宽台口 + 620/560 宽两块证据牌 + 1440 宽结论台，填满画面",
+    "台口先由中心拉开一条荧光边线再挤出台身，这条线是全场唯一的自发光体，给翻起的主体打底光",
+    "两块证据牌改为 172–210px 大数字「9.4s」「−41%」+ 荧光 chip，落定时数字从旧值滚到新值，读作证据被摆上台",
+    "翻起幅度加大到 ±34° / 360–400px，22f 不对称 in-out + 纵向运动模糊，落定后一次阻尼回摆、台口承重下沉 1.5px",
+    "背景加基准测试刻度环与透视网格地面做语境层；结论台 24f 升入，64px 结论句逐词升起，只有「4× faster」用强调色",
+    "时长 104f→124f，结论落定后 ~34f hold + 极缓推近"
+  ],
+  "issuesEn": [
+    "Built on a 480x270 canvas scaled up: the subjects occupied a small patch in the middle of a mostly empty light-grey frame",
+    "Card text was only 5-14 design px and the verdict 13 design px on the 480-wide canvas, so the data still read small in the final frame",
+    "Grey stone platform and grey cards had no light; the stage-evidence-verdict hierarchy relied only on position",
+    "The hinge used just 18 degrees and ~100px of travel, so the opposing push of the adjacent hinges did not register"
+  ],
+  "changesEn": [
+    "Lime look (graphite plus neon yellow-green), redrawn at native 1920: a 1280-wide deck, two 620/560-wide evidence panels and a 1440-wide verdict plinth fill the frame",
+    "The deck starts as a neon edge line drawn out from the centre, then extrudes; that line is the only emissive element and underlights the rising panels",
+    "Evidence panels carry 172-210px figures '9.4s' and '-41%' with neon chips; the numbers roll from old to new values as they land",
+    "The hinge grows to plus/minus 34 degrees and 360-400px over 22f asymmetric in-out with vertical motion blur, then one damped swing and a 1.5px load dip in the deck",
+    "A benchmark dial and a perspective grid floor form the context layer; the verdict rises in 24f and its 64px line reveals word by word, accent only on '4x faster'",
+    "104f to 124f, with ~34f hold and a slow push after the verdict lands"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

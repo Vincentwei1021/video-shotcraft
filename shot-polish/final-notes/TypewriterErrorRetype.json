@@ -1,0 +1,14 @@
+{
+  "stem": "TypewriterErrorRetype",
+  "changed": true,
+  "brand": [
+    "眉题「Introducing Acme Console」→ 镜刻标志 +「Introducing video-shotcraft」",
+    "改口文案「just a dashboard」→「just a slideshow」，「your command center」→「your cinematic crew」（字符数 16 / 19 不变，打删节奏与马克笔落点不变）"
+  ],
+  "brandEn": [
+    "Eyebrow \"Introducing Acme Console\" → Frame Chisel mark + \"Introducing video-shotcraft\"",
+    "Retype copy \"just a dashboard\" → \"just a slideshow\", \"your command center\" → \"your cinematic crew\" (same 16 / 19 characters, so typing timing and highlighter span are unchanged)"
+  ],
+  "styleKey": "error-retype",
+  "mdChanged": true
+}

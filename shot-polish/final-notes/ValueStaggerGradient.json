@@ -1,0 +1,12 @@
+{
+  "stem": "ValueStaggerGradient",
+  "changed": false,
+  "brand": [
+    "画面无 logo 与品牌名，唯一的文字是 stagger 调用的代码条——它是技法说明道具（两拍间换句对应参数变化），换成宣传语会破坏手法，保留原样"
+  ],
+  "brandEn": [
+    "No logo or brand name in frame; the only text is the stagger() code strip, a technique prop that swaps lines to mirror the parameter change between beats, so it stays as is"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

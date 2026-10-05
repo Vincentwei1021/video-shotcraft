@@ -1,0 +1,31 @@
+{
+  "stem": "CornerSpotlightReveal",
+  "issues": [
+    "灰色骨架条冒充收件箱，标题之外没有可读内容，界面像占位图",
+    "纯黑场 + 冷白界面，光没有颜色也没有身份，读作一张圆形遮罩在放大",
+    "光前沿羽化过宽，整段像灰雾扩散，看不出\"照到 / 照不到\"的界线",
+    "全亮后只剩一张静止的平面界面，没有落点也没有余波"
+  ],
+  "changes": [
+    "look 换成 sand：光被重新解释为日出——光源在画外左上角，照亮晨间日程 app「Aubade」的今日简报（128px 问候、日出弧组件、四项日程含一块赤陶专注时段）",
+    "命门保留：显影平台半径严格 linear 190→2120，恰在 104f 盖满最远角；羽化带收窄到 110+0.3r，光前沿挂两圈 screen 杏粉辉边（宽 + 窄亮带）",
+    "光有色温：被照亮处先叠 multiply 晨光暖调，随时间褪成日光；角落几道极淡丁达尔光柱随光长、全亮后淡出",
+    "光到即醒：每块内容在光前沿扫过时上浮 18px 落座，按到光心距离自动错峰（左上先醒、右下后醒）",
+    "相机 1.12→1.0 缓出 112f 后静止；全亮 hold 46f 里太阳点沿日出弧升到 6:42、日晕极缓呼吸，尾帧是完整的晨间简报海报"
+  ],
+  "issuesEn": [
+    "Grey skeleton bars stood in for an inbox; apart from the title nothing was readable, so the UI looked like a placeholder",
+    "Pure black void plus a cold white UI: the light had no colour and no identity, reading as a circular mask scaling up",
+    "The light front was feathered so wide that it spread like grey fog, with no line between lit and unlit",
+    "Once fully lit it was just a static flat screen, with no landing beat and no follow-through"
+  ],
+  "changesEn": [
+    "Sand look: the light becomes a sunrise from off-frame top-left, revealing the morning brief of a planner app, Aubade (128px greeting, sunrise-arc widget, four agenda items including a terracotta focus block)",
+    "The core rule stays: the lit radius grows strictly linearly from 190 to 2120 and covers the farthest corner exactly at 104f; the feather is tightened to 110+0.3r and the front carries two screen-blended apricot rims (wide plus a thin bright band)",
+    "The light has colour temperature: newly lit areas start under a multiply dawn tint that fades to daylight, and faint god rays grow from the corner and fade once fully lit",
+    "Light wakes the content: each block rises 18px into place as the front passes it, auto-staggered by distance from the light (top-left first, bottom-right last)",
+    "Camera eases 1.12 to 1.0 over 112f then holds; during the 46f hold the sun dot climbs the arc to 6:42 and the corner glare breathes, so the last frame is a complete morning-brief poster"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

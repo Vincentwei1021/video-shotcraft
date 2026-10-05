@@ -1,0 +1,16 @@
+{
+  "stem": "SheenSweepRetry",
+  "changed": true,
+  "brand": [
+    "钛黑卡面渡鸦标志 + 字标「corvid」→ 激光蚀刻单色 video-shotcraft 标志 + 字标；Card member / Reserve → Director / Studio",
+    "眉题「Corvid Reserve」→「video-shotcraft」，标题「Metal, / not plastic.」→「Cinematic, / by default.」",
+    "正文「Laser-etched titanium, 18 grams. / No numbers on the front.」→「Shot recipe cards for your agent. / From screenshot to showreel.」，CTA「Request an invite」→「Make your first film」"
+  ],
+  "brandEn": [
+    "Card-face raven mark + \"corvid\" wordmark → laser-etched mono video-shotcraft mark + wordmark; Card member / Reserve → Director / Studio",
+    "Eyebrow \"Corvid Reserve\" → \"video-shotcraft\"; headline \"Metal, / not plastic.\" → \"Cinematic, / by default.\"",
+    "Body \"Laser-etched titanium, 18 grams. / No numbers on the front.\" → \"Shot recipe cards for your agent. / From screenshot to showreel.\"; CTA \"Request an invite\" → \"Make your first film\""
+  ],
+  "styleKey": "sheen-sweep",
+  "mdChanged": true
+}

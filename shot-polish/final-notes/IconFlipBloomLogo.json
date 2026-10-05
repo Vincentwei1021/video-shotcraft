@@ -1,0 +1,16 @@
+{
+  "stem": "IconFlipBloomLogo",
+  "changed": true,
+  "brand": [
+    "终点 logo 由 teal 五瓣花形 mark → video-shotcraft 标志：翻过最薄处标志按原过冲 spring 从竖线撑开，琥珀斜切随后划入（替代花瓣张开的第二拍）",
+    "字标 perplexity → video-shotcraft（全小写品牌字体，仍逐字由大变小落定），让位距离按新字宽重算",
+    "背景强调色 teal → 品牌琥珀"
+  ],
+  "brandEn": [
+    "End logo: teal five-petal flower mark → video-shotcraft mark; past the thinnest frame it unfolds from the line on the original overshoot spring, then the amber cut slices in (replacing the petal-opening beat)",
+    "Wordmark 'perplexity' → 'video-shotcraft' (lowercase brand font, same per-letter scale-down landing); shift distance recomputed for the new width",
+    "Backdrop accent teal → brand amber"
+  ],
+  "styleKey": "icon-flip-bloom",
+  "mdChanged": true
+}

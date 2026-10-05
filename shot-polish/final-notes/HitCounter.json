@@ -1,0 +1,18 @@
+{
+  "stem": "HitCounter",
+  "changed": true,
+  "brand": [
+    "眉题「Brickyard 3.0」+ 方块 logo → video-shotcraft 标志 + 字标（WHAT'S NEW 保留）",
+    "三张功能卡 Cached builds / Parallel tests / Instant previews → Shot recipes / Beat-synced cuts / 2.5D camera（图标同步重画：配方卡 / 波形 / 层叠景深）",
+    "伤害数字 −48s / −3 min / −12 min → −2 h / −1 day / −3 days（示意值，页脚 per shot / per edit / per promo）",
+    "收尾「Up to 16 min back on every push.」→「Up to a week back on every promo.」（a week 街机黄）"
+  ],
+  "brandEn": [
+    "Eyebrow \"Brickyard 3.0\" + square logo → video-shotcraft mark + wordmark (WHAT'S NEW kept)",
+    "Feature cards Cached builds / Parallel tests / Instant previews → Shot recipes / Beat-synced cuts / 2.5D camera (icons redrawn: recipe card / waveform / depth layers)",
+    "Damage numbers −48s / −3 min / −12 min → −2 h / −1 day / −3 days (illustrative; footers per shot / per edit / per promo)",
+    "Closing line \"Up to 16 min back on every push.\" → \"Up to a week back on every promo.\" (\"a week\" in arcade yellow)"
+  ],
+  "styleKey": "hit-counter",
+  "mdChanged": true
+}

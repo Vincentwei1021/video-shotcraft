@@ -1,0 +1,16 @@
+{
+  "stem": "BarnDoorSplit",
+  "changed": true,
+  "brand": [
+    "旧页 / 新页字标「Kiln 3」→「Shotcraft 3」、「Kiln 4」→「Shotcraft 4」（版本号为示意，同槽位取代手法不变）；新页眉题 Introducing 前加镜刻标志",
+    "副题：旧页「Reliable builds for growing teams.」→「Shot recipes for product films.」；新页「Builds in seconds, not minutes.」→「One prompt to a finished promo.」",
+    "三枚数据：Median build / Config files / Edge regions（64s→11.8s、12→0、6→32）→ Median render / Manual keyframes / Preview fps（64s→11.8s、12→0、6→30，示意值）"
+  ],
+  "brandEn": [
+    "Old/new wordmarks \"Kiln 3\" → \"Shotcraft 3\", \"Kiln 4\" → \"Shotcraft 4\" (illustrative version numbers; same-slot replacement kept); Frame Chisel mark added before the \"Introducing\" kicker",
+    "Subtitles: old \"Reliable builds for growing teams.\" → \"Shot recipes for product films.\"; new \"Builds in seconds, not minutes.\" → \"One prompt to a finished promo.\"",
+    "Three stats: Median build / Config files / Edge regions → Median render / Manual keyframes / Preview fps (64s→11.8s, 12→0, 6→30, illustrative)"
+  ],
+  "styleKey": "barn-door-split",
+  "mdChanged": true
+}

@@ -1,0 +1,16 @@
+{
+  "stem": "UiStripAwayOutro",
+  "changed": true,
+  "brand": [
+    "工具条的几何 logo 方块 → video-shotcraft 标志；收尾 lockup「几何标 + Acme」→ 镜刻标志 + video-shotcraft 字标",
+    "面包屑 Acme / Landing page → video-shotcraft / Launch film；预览框地址 acme.com → github.com/Vincentwei1021/video-shotcraft",
+    "图层栏从网页结构（Nav / Hero / Feature grid / Card — Analytics…）换成发布片的镜头（Cold open / Hero shot / Feature shots / Shot — Crash zoom…）"
+  ],
+  "brandEn": [
+    "Toolbar geometric logo tile → video-shotcraft mark; end lockup 'geometric mark + Acme' → Frame Chisel mark + video-shotcraft wordmark",
+    "Breadcrumb 'Acme / Landing page' → 'video-shotcraft / Launch film'; preview URL acme.com → github.com/Vincentwei1021/video-shotcraft",
+    "Layers panel changed from web-page structure (Nav / Hero / Feature grid / Card — Analytics…) to the shots of a launch film (Cold open / Hero shot / Feature shots / Shot — Crash zoom…)"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

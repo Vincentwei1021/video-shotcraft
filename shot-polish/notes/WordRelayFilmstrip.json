@@ -1,0 +1,31 @@
+{
+  "stem": "WordRelayFilmstrip",
+  "issues": [
+    "暖纸底 + 白卡片，焦点卡和邻卡一样亮，看不出当前是哪一张证据",
+    "右侧 116px 衬线词和左列之间没有视觉连接，\"词块对齐卡片中点\"这件事画面上看不见",
+    "新词整词去虚落位，接力的\"咔哒\"感弱；名词和动词同色同字形，层级平",
+    "画面只有卡和词两样东西，缺少能读的辅助信息"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色暗场 + 金色点缀），胶片卡黑白强制相间在暗场上对比更强，两层深阴影 + 发丝边",
+    "加景深：邻卡按离焦距离压暗 0.68·dist、缩到 0.94、虚化 ≤3px，胶片 18f 步进时新证据\"对焦\"进来；步进制与快段纵向运动模糊保留",
+    "右侧 Didot 140px：名词「Atlas」正体次级墨恒定，动词斜体白字——旧词灰化后 8f ease-in 升出遮罩，新词逐字母从遮罩下沿升起（1.2f 错峰，金色句点最后到）",
+    "一条金色引线从焦点卡右缘指向词块中线 y=540，切词时收回、新证据落定后重画，把\"图文对位\"画出来",
+    "词块上方 mono 序号 01/03、下方 32px 证据注脚随动词接力；相机 1→1.02 极缓推，时长 170→180f"
+  ],
+  "issuesEn": [
+    "Warm paper stage with white cards, and the focus card was as bright as its neighbours, so it was unclear which piece of evidence was current",
+    "Nothing visually linked the 116px serif words to the strip; the word block aligning to the card centre was invisible",
+    "New words faded in whole, so the relay lacked a click; noun and verb shared colour and style, flattening the hierarchy",
+    "The frame held only cards and words, with no readable supporting information"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark with gold accents); the forced black/white card alternation reads stronger on the dark stage, with deep two-layer shadows and hairline edges",
+    "Depth of field: neighbour cards dim by 0.68·dist, scale to 0.94 and blur up to 3px, so each 18f step pulls new evidence into focus; stepping and fast-phase vertical motion blur are kept",
+    "Didot 140px on the right: the noun 'Atlas' stays upright in secondary ink, the verb is white italic; the old verb greys out and rises out of its mask in 8f ease-in, and the new verb rises letter by letter (1.2f stagger, gold period last)",
+    "A gold leader runs from the focus card's right edge to the word block's centre line at y=540, retracting on each switch and redrawing once the new evidence lands, making the text-to-image alignment visible",
+    "A mono 01/03 index above and a 32px evidence caption below relay with each verb; slow 1→1.02 push; 170→180f"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

@@ -1,0 +1,16 @@
+{
+  "stem": "FontWeightPump",
+  "changed": true,
+  "brand": [
+    "左上眉题虚构品牌「Pulse Audio」→ video-shotcraft「镜刻」标志（反白版）+ 全小写字标 video-shotcraft",
+    "drop 后副标题「Spatial bass. Now on every device.」→「Beat-synced cuts, right on the drop.」（同为 6 词，逐词升起节奏不变）",
+    "主角大字 LOUDER 是节拍手法的道具（按 900 字重槽位逐字排），保留"
+  ],
+  "brandEn": [
+    "Top-left eyebrow fictional brand \"Pulse Audio\" → video-shotcraft Frame Chisel mark (reverse) + lowercase wordmark",
+    "Post-drop subtitle \"Spatial bass. Now on every device.\" → \"Beat-synced cuts, right on the drop.\" (still 6 words, same word-by-word rise timing)",
+    "Hero word LOUDER is the beat device (laid out per-glyph in 900-weight slots), kept"
+  ],
+  "styleKey": "font-weight-pump",
+  "mdChanged": true
+}

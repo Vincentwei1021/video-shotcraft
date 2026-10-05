@@ -1,0 +1,12 @@
+{
+  "stem": "ResearchCardStackScroll",
+  "changed": false,
+  "brand": [
+    "论文卡标题是通用研究论文占位（无品牌名 / logo），手法讲「吞吐海量文档」，换成宣传语会破坏论文卡语义，保留原文"
+  ],
+  "brandEn": [
+    "Paper titles are generic research placeholders (no brand name or logo); the shot is about document throughput, so promo copy would break the paper-card semantics — kept as is"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

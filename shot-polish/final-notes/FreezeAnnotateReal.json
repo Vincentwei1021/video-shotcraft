@@ -1,0 +1,14 @@
+{
+  "stem": "FreezeAnnotateReal",
+  "changed": true,
+  "brand": [
+    "右上产品名「Larkspur · Weekly review」→ 镜刻标志 + video-shotcraft + Shot review（定格时照常退场）",
+    "卡片流是真实截图纹理，批注「Ship this first.」与署名属于评审手法道具，保留"
+  ],
+  "brandEn": [
+    "Top-right product name \"Larkspur · Weekly review\" → Frame Chisel mark + video-shotcraft + Shot review (still fades out on freeze)",
+    "The card rail is a real screenshot texture; the \"Ship this first.\" note and signature are part of the review gag, kept as is"
+  ],
+  "styleKey": "freeze-annotate",
+  "mdChanged": true
+}

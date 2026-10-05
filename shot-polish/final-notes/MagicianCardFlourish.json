@@ -1,0 +1,16 @@
+{
+  "stem": "MagicianCardFlourish",
+  "changed": true,
+  "brand": [
+    "卡面品牌 VESPER 四芒星 → video-shotcraft 标志 + 字标；中心徽记与卡背的四芒星 → video-shotcraft 标志",
+    "卡面「SEASON 04 · KEYNOTE / Founders Pass」→「PREMIERE · REEL 01 / Launch Film」，票根改成场次 / 1920×1080 · 30 FPS",
+    "右侧文案「BY INVITATION ONLY / Doors open Nov 4. / Five hundred founders…」→「NOW SHOWING / Craft the shot. / Cinematic product videos, crafted by your agent.」"
+  ],
+  "brandEn": [
+    "Card brand VESPER + star → video-shotcraft mark + wordmark; center emblem and card-back star → video-shotcraft mark",
+    "Card copy “SEASON 04 · KEYNOTE / Founders Pass” → “PREMIERE · REEL 01 / Launch Film”; ticket details → take number and 1920×1080 · 30 FPS",
+    "Side copy “BY INVITATION ONLY / Doors open Nov 4. / Five hundred founders…” → “NOW SHOWING / Craft the shot. / Cinematic product videos, crafted by your agent.”"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

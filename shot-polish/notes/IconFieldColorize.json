@@ -1,0 +1,31 @@
+{
+  "stem": "IconFieldColorize",
+  "issues": [
+    "浅灰底上的浅灰磨砂方块，灰阶态几乎和背景融在一起，\"摆满了\"的那一拍读不出来",
+    "四道色波是靛 / 琥珀 / 青绿 / 珊瑚四个跨色相的颜色，终态像一张彩虹色卡，不像品牌",
+    "翻色是新旧两层透明度交叉，波前沿只是颜色变了，没有\"点亮\"的光感，背景也毫无反应",
+    "终态只是一屏色块横带，没有标题、没有落点，结尾帧不是一张海报"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 + 橙金）：图标做成熄灯的深色键帽（暖黑底、发丝边、顶沿受光、暗灰字形），灰阶在暗场里读作\"还没通电\"",
+    "色波改为同色系日出渐变（金 → 琥珀 → 橙 → 珊瑚红）四段横带，仍是 4 道波从各自起始行向下快扫、后波覆盖更低行带",
+    "单枚翻色改为通电：新色自上而下 clip 灌满键帽 + 1.22× pop + 灌满后 screen 白闪 + 泛光过冲；每行亮起后身后舞台染上同色光带",
+    "节奏重排：中心向外浮现 48f → 静置时整场压暗 12% 蓄力 → 4 道波 ~30f 扫完（原 42f）→ 余波稳定",
+    "收尾加落版：中心径向暗幕 + 30px 眉题 400+ INTEGRATIONS + 两行 132px 标题「Every tool, / one switch.」逐词升起；全程推近 4%，时长 150→170f"
+  ],
+  "issuesEn": [
+    "Light grey frosted tiles on a light grey background: the greyscale state almost melted into the stage, so the \"field is full\" beat never registered",
+    "The four waves were indigo, amber, teal and coral across the whole hue wheel, so the end state read as a rainbow swatch card rather than a brand",
+    "The flip was an opacity crossfade between two layers; the wavefront just changed colour with no sense of lighting up, and the background never reacted",
+    "The final state was just a screen of colour bands with no title or landing; the last frame was not a poster"
+  ],
+  "changesEn": [
+    "Ember look (warm black with orange and gold): icons are unlit dark keycaps (warm black base, hairline edge, lit top lip, dim grey glyph), so greyscale reads as \"not powered yet\" on the dark stage",
+    "Waves become one analogous sunrise gradient (gold, amber, orange, coral red) in four bands; still four waves sweeping down from their own start rows, each later wave covering lower rows",
+    "Each flip now powers on: the new colour fills the keycap top-down via clip, with a 1.22x pop, a screen-blend white flash once full and a glow overshoot; as each row lights, the stage behind it picks up a band of the same colour",
+    "Rhythm reworked: 48f centre-out reveal, then the whole field dims 12% during the rest as an inhale, then four waves finish in ~30f (was 42f) before the light settles",
+    "Added a landing: a central radial scrim, a 30px 400+ INTEGRATIONS kicker and a two-line 132px headline \"Every tool, / one switch.\" rising word by word; 4% slow push throughout, duration 150 to 170f"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

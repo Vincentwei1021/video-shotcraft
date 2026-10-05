@@ -1,0 +1,31 @@
+{
+  "stem": "BezierSourceConvergeMerge",
+  "issues": [
+    "浅灰底 + 1px 黑细线 + S1–S4 小白圆，像一张流程图示意，没有光也没有产品感",
+    "四个节点同时到达汇聚点，吞并只有一次小脉冲，全片缺一个节奏高点",
+    "节点缩小到消失时仍是白圆片，读不出「被吸进去 / 化成数据」",
+    "结尾徽标停在画面右侧，13px 字幕「Four sources unified」在 1080p 下几乎读不出"
+  ],
+  "changes": [
+    "look 换成 aurora 极光暗场：来源做成 128px 深色玻璃砖 + 线性图标，配 40px 名称与 mono 规模注记；汇聚点是 168px 极光渐变徽标 + 两圈慢转细环 + 大面积泛光",
+    "光路改为 10px 柔光底 + 2.4px 暗紫→亮粉渐变线，5f 错峰 draw-on；数据包是带 12 段彗尾的白色亮点，两个整数周期",
+    "四路按 5f 错峰汇入（到达 108/113/118/123f），徽标被连打四下、每下更亮，外圈四段弧逐段点亮、右上「N / 4 SYNCED」同步——da-da-da-DUM",
+    "节点沿真实曲线三段式缩小（128→44→0），中段被强调色点燃并收成光球，名称同时向左退场退焦",
+    "收尾：光路从起点反向擦除，相机平移 480px + 推近 1.1 把徽标收到正中，末次吸入一圈涟漪，96px 结论句「One source of truth.」逐词升起，hold 22f"
+  ],
+  "issuesEn": [
+    "A light grey ground with 1px black hairlines and small white S1–S4 discs read like a flowchart sketch, with no light and no product feel",
+    "All four nodes reached the hub at once, so the merge was a single small pulse and the shot lacked a rhythmic peak",
+    "The nodes were still white discs as they shrank away, so they never read as being sucked in or turned into data",
+    "The final badge sat off to the right, and the 13px caption 'Four sources unified' was barely legible at 1080p"
+  ],
+  "changesEn": [
+    "Switched to the aurora look: sources are 128px dark glass tiles with line icons, each with a 40px name and a mono scale note; the hub is a 168px aurora-gradient badge with two slowly counter-rotating rings and a wide bloom",
+    "Paths are now a 10px soft glow under a 2.4px violet-to-pink gradient line, drawn on with a 5f stagger; packets are bright white dots with 12-segment comet tails over two whole cycles",
+    "The four routes arrive on a 5f stagger (108/113/118/123f), so the badge takes four hits, each brighter than the last, while its outer four-segment arc and the 'N / 4 SYNCED' counter fill in step: da-da-da-DUM",
+    "Nodes shrink in three phases along the real curves (128→44→0), ignite with the accent light mid-way and round into orbs, while their names exit left with a defocus",
+    "Ending: paths erase back from their origins, the camera pans 480px and pushes to 1.1 to centre the badge, the last absorption sends out a ripple, and a 96px 'One source of truth.' rises word by word before a 22f hold"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

@@ -1,0 +1,35 @@
+{
+  "stem": "TitleDemoteToLabel",
+  "issues": [
+    "浅灰平底 + 128px 粗体标题，画面空、没有版式骨架，暂停任一帧都不像设计稿",
+    "降格终点 0.3x 的标签只有 ~38px 且无识别点，和下面的内容没有层级关系",
+    "内容区是 21–34px 的小字列表卡，字太小读不清，像通用 dashboard 而不是为镜头设计的画面",
+    "两式之间用 4f 白闪硬切，两个小节互不相识，左上角标签不让位",
+    "选区是系统选区蓝，与画面其他颜色无关，像截图里的 UI 而不是设计语言"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红），120px 网格边距 + 发丝线 + mono 页眉页脚，做成瑞士网格编辑版式的虚构笔记产品「Margin」",
+    "主标题改成 220px / 850 字重的单词海报「Capture.」「Select.」，朱红句点做识别点；逐字从遮罩线下升起、眉题字距收拢，站稳 20f（1.5% 极缓推近）",
+    "降格改为 26f 不对称 in-out（起步果断、落点很软）缩到 0.22 ≈ 48px 标签，按速度加方向性运动模糊，落位时「01 /」前缀从左擦入接班",
+    "内容重做成大字：60px 导语 + 三张剪藏卡（文章 / 深色引文卡 / 语音波形）；B 为 58px 正文 + 句内朱红选区 → 连线 → 旁注答案卡，先密后疏错峰裁切揭开",
+    "去掉白闪：共用一个舞台，A 内容 ease-in 上移退场，A 标签上移一行变灰成「上一节」，B 标签落进同一槽位（多节连用不叠放）",
+    "时长 196f → 246f，两式各有 ≥20f 落定 hold，尾帧是完整编辑页海报"
+  ],
+  "issuesEn": [
+    "Flat light-grey background with a 128px bold title: empty frame, no layout skeleton, no frame reads as a designed poster",
+    "The 0.3x label lands at ~38px with no visual anchor and no hierarchy with the content below",
+    "Content area is a 21–34px list card: too small to read, a generic dashboard rather than a shot-designed frame",
+    "The two variants are joined by a 4f white flash; the sections ignore each other and the top-left label never makes room",
+    "Selection uses system blue, unrelated to the rest of the palette, like a UI screenshot rather than a design language"
+  ],
+  "changesEn": [
+    "Switched to the paper look (warm paper, ink, vermilion) with a 120px grid margin, hairlines and mono header/footer: a Swiss-grid editorial page for a fictional notes app, Margin",
+    "Hero title is now a 220px / 850-weight single-word poster ('Capture.', 'Select.') with a vermilion period as the anchor; letters rise from a mask line, eyebrow tracking tightens, 20f hold with a 1.5% slow push",
+    "Demotion is a single 26f asymmetric in-out (decisive start, very soft landing) to 0.22 (~48px label) with velocity-based directional blur; a '01 /' prefix wipes in as it lands",
+    "Content rebuilt at large sizes: 60px lead + three clip cards (article / dark quote card / voice waveform); B is 58px body copy with an in-sentence vermilion selection, a connector line and a margin answer card, revealed with dense-then-sparse clipped stagger",
+    "No white flash: one shared stage, A's content exits upward with ease-in, A's label moves up a row and greys out as the previous section, and B's label lands in the same slot",
+    "Duration 196f to 246f; each variant gets a 20f+ settle hold and the final frame is a complete editorial poster"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

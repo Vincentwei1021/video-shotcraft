@@ -1,0 +1,31 @@
+{
+  "stem": "ClonerDepthEcho",
+  "issues": [
+    "浅灰底上一张灰色骨架占位卡，左上角还打着调试标题「CLONER DEPTH ECHO」，画面像线框图",
+    "主卡只占画宽 ~25%，四周大面积空白；克隆纵队挤成一叠白纸，几乎读不出纵深",
+    "克隆体只是同色半透明白卡，越远越淡但没有层次和光，像贴纸阵",
+    "合体后什么也没留下：没有数字、没有文案，\"一个 = 很多\"的卖点没有落到画面上"
+  ],
+  "changes": [
+    "look 换成 lime（石墨黑 + 荧光黄绿）：主角是一张边缘函数实例卡「checkout-api」——132px p95 读数 + 柠檬绿折线 + 底部 8 个区域位，把\"一个 = 很多\"落到\"一次部署 = 8 个区域\"",
+    "真 3D 纵深：perspective 1500、消失点放在左上，克隆体只做 translateZ 后退就排向左上；越远越淡、越虚、填充褪掉只剩柠檬绿描边，像 C4D Cloner 的线框回声，每个克隆顶栏换成自己的区域码",
+    "时间表重写为 138f：入场 16f → 按压预备 8f → spring 错峰 2.2f/个排开 → 停 32f（相机推近 2% + 视差漂移）→ 强 ease-in 10f 同步吸回（按速度拖影）→ 1.06 单脉冲 + 一次描边光",
+    "左下 260px 计数器「×N」随每个克隆弹出滚一格（出场格上移淡出、速度竖向虚化），合体同帧 8 个区域位全亮、计数回弹",
+    "合体后左上空位升起 112px 标题「Deploy once. / Run everywhere.」，尾帧是标题 + 计数 + 实例卡的完整海报"
+  ],
+  "issuesEn": [
+    "A grey skeleton placeholder card on a light grey floor, with a debug title \"CLONER DEPTH ECHO\" in the corner: it read like a wireframe",
+    "The hero card covered only ~25% of the width in a mostly empty frame; the clone column collapsed into a stack of white sheets with almost no visible depth",
+    "Clones were just translucent copies of the same white card, fading with distance but with no light or layering, like a sticker array",
+    "Nothing remained after the merge: no number, no copy, so the \"one = many\" message never landed on screen"
+  ],
+  "changesEn": [
+    "Lime look (graphite black, neon yellow-green): the hero is an edge-function instance card \"checkout-api\" with a 132px p95 readout, a lime sparkline and eight region slots, turning \"one = many\" into \"one deploy = eight regions\"",
+    "Real 3D depth: perspective 1500 with the vanishing point at top left, so clones recede into a column just by translating in Z; distant clones fade, blur and lose their fill down to a lime outline like a C4D Cloner echo, each header showing its own region code",
+    "New 138f timeline: 16f entrance, 8f press anticipation, springs staggered 2.2f per clone, a 32f hold (2% push-in plus parallax drift), a synchronized 10f strong ease-in merge with speed blur, then a single 1.06 pulse and one rim glow",
+    "A 260px counter \"xN\" at bottom left rolls one step per clone (outgoing digit slides up and fades, speed-based vertical blur); on merge all eight region slots light up and the counter bounces",
+    "After the merge a 112px headline \"Deploy once. / Run everywhere.\" rises into the freed top-left space, so the last frame is a complete poster of headline, counter and card"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

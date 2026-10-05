@@ -1,0 +1,33 @@
+{
+  "stem": "AutolayoutGapDial",
+  "issues": [
+    "灰底 + 灰色骨架条，链接块没有任何文字，读不出是导航",
+    "顶部「GAP」小字 + 黑块读数像调试占位，字号小、没有视觉主角",
+    "回弹弹簧过冲把 gap 拉成负数（≈−5px），块互相重叠、徽章读 0",
+    "去程是一条匀称的 inOut 曲线，没有预备也没有屏息，节奏平",
+    "框选描边/手柄/测量线全是同一种深灰粗线，工具语义笨重"
+  ],
+  "changes": [
+    "look 换 graphite 暗场：选择白 + 测量金两色语义，只有被拨动的数是有颜色的",
+    "读数做主角：196px 细体 tabular 数值 + px 单位 + 760px 拨盘刻度尺随 gap 横滚过金针，拨动中读数白→金、松手褪回",
+    "时间表改为「预备 12→6 → swift 拉到 104 → 屏息 20f → 欠阻尼回弹 → 落定 hold」，时长 120→150f；过冲段 ×0.45 压缩，gap 永不为负",
+    "导航块换成 120px 高的真实文案（Plinth 站点：Product 激活白底），带发丝线、顶部内高光、两层软阴影，并按各自速度做横向运动模糊",
+    "框选 spring 从外侧收拢、8 手柄错峰弹出、图层名旁实时显示整排尺寸；测量线虚线延长 + 端刺 + 金色徽章错峰升起；相机整段缓推 2.5%"
+  ],
+  "issuesEn": [
+    "Grey background and grey skeleton bars; the link blocks carry no text, so they don't read as navigation",
+    "A tiny \"GAP\" label with a black readout chip looks like a debug placeholder; small type, no visual hero",
+    "The return spring overshoots gap negative (≈−5px), so blocks overlap and the badges read 0",
+    "The out-trip is one even in-out curve with no anticipation and no held breath; the rhythm is flat",
+    "Selection frame, handles and measure lines are all the same thick dark grey, so the tool UI feels clumsy"
+  ],
+  "changesEn": [
+    "Graphite dark look with a two-colour tool language: selection white and measurement gold, so only the value being dialled has colour",
+    "The number is the hero: a 196px light tabular readout with px unit over a 760px dial ruler that scrolls past a gold needle; it turns gold while dialling and fades back on release",
+    "New timeline: anticipation 12→6 → swift pull to 104 → 20f held breath → underdamped spring back → settle hold, 120→150f; overshoot compressed ×0.45 so gap never goes negative",
+    "Blocks are 120px-tall real nav labels (fictional Plinth site, white active Product) with hairlines, top highlights, two-layer soft shadows and horizontal motion blur from each block's own speed",
+    "Selection frame springs in from outside, 8 handles pop in sequence, the layer name shows live row size; dashed extensions, tick-ended measure lines and gold badges rise in staggered; slow 2.5% camera push"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

@@ -3,16 +3,26 @@
 //  1) 白底居中打字 "#music"：几何无衬线（Futura 气质）、中灰墨色、红色实心光标恒亮不闪、人手节奏
 //  2) 实体化 = 1 帧硬切：文字+光标 → 宽大浅灰无描边胶囊 + 灰色双八分音符图标 + "music"（字号不变，#被图标替换）
 //  3) 停约 0.6s → 整体平滑缩小（→~0.55x）并左移落到页面标签位（约 0.55s，easeInOut）
-//  4) 再 1 帧硬切揭示成品笔记页：奶油底、墨绿大标题 "My favorite bands"、胶囊换成鼠尾草绿、正文三行——
+//  4) 再 1 帧硬切揭示成品笔记页：奶油底、墨绿大标题 "My favorite shots"、胶囊换成鼠尾草绿、正文三行——
 //     原片没有"胶囊飞入下方滑入卡片"的段落（批次 8 的飞行段为杜撰，已砍）
+// 质感升级：两张底都换成带极淡纸感的渐变 + 颗粒（防大面积纯色死平）；胶囊是"实体"——受光上沿
+// 内高光 + 微体积渐变 + 离地软影（hero 时浮起 10px，缩移中随落位降到 0，归位即"嵌进"页面）；
+// 缩移段按速度给方向性运动模糊；成品页补一行页眉元信息（面包屑 + 编辑时间），版式完整。
+// 两次硬切、缩移曲线与全部时间点不变。
+// 品牌轮：话题词 "#music" → "#shots"（与原词等长，胶囊版式不变），音符图标换场记板，
+// 成品页讲 video-shotcraft 的镜头（标题 "My favorite shots"，正文点名 video-shotcraft）。
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
+import { Grain, SpeedBlur, velocity } from '../../_fixtures/Polish';
 
+// 揭示 83f 后真静止 37f（≈1.2s 呼吸，R1），全段 4s
+export const HASHTAG_TO_PILL_MATERIALIZE_DURATION = 120;
 const FONT = "Futura, 'Century Gothic', 'Avenir Next', 'Trebuchet MS', sans-serif";
 
 const C = {
-  bgWhite: '#fcfcfb',
-  bgCream: '#f4f1e5',
+  bgWhite: 'linear-gradient(180deg, #fdfdfc 0%, #fbfbfa 60%, #f6f6f3 100%)',
+  bgCream: 'linear-gradient(180deg, #f6f3e8 0%, #f3f0e4 55%, #eeeadc 100%)',
+  meta: '#a7a392',
   ink: '#454543',
   cursor: '#e0453f',
   pillGray: '#e9e9e7',
@@ -37,7 +47,7 @@ function mulberry32(seed: number) {
   };
 }
 
-const TEXT = '#music';
+const TEXT = '#shots';
 // 打字起点 & 每字间隔（帧），4–8 帧带抖动，模拟原片真人节奏
 const TYPE_START = 8;
 const rand = mulberry32(20260717);
@@ -64,25 +74,41 @@ const PILL_W = 740, PILL_H = 236;     // 原片实测 493x157 @720p ×1.5
 const END_SCALE = 0.554;              // 落位缩放（原片 273/493）
 const SLOT = { x: 361, y: 473 };      // 标签位中心（原片灰胶囊落点 (244.5,317.5)×1.5 与揭示位折中）
 
-// 灰色双八分音符图标（原片是 beamed 双音符，非 ♪）
-const NoteIcon: React.FC<{ size: number; color: string }> = ({ size, color }) => (
-  <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'block' }}>
-    <ellipse cx="11" cy="39" rx="7.2" ry="5.6" fill={color} transform="rotate(-18 11 39)" />
-    <ellipse cx="35" cy="35" rx="7.2" ry="5.6" fill={color} transform="rotate(-18 35 35)" />
-    <rect x="15.4" y="12.5" width="3" height="27" fill={color} />
-    <rect x="39.4" y="8.5" width="3" height="27" fill={color} />
-    <polygon points="15.4,12.5 42.4,8.5 42.4,16.5 15.4,20.5" fill={color} />
-  </svg>
-);
+// 场记板图标（实心剪影，与原音符图标同一视觉重量）：板身 + 左铰链翘起的拍板，拍板斜纹用遮罩镂空
+const ClapperIcon: React.FC<{ size: number; color: string }> = ({ size, color }) => {
+  const id = React.useId().replace(/[^a-zA-Z0-9]/g, '');
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" style={{ display: 'block' }}>
+      <defs>
+        <mask id={`k${id}`}>
+          <rect x="0" y="0" width="48" height="48" fill="#fff" />
+          {[0, 1, 2].map((i) => (
+            <polygon key={i} points={`${11 + i * 10},8 ${15.5 + i * 10},8 ${19.5 + i * 10},18 ${15 + i * 10},18`} fill="#000" />
+          ))}
+        </mask>
+      </defs>
+      <rect x="4" y="21" width="40" height="23" rx="3.5" fill={color} />
+      <g transform="rotate(-17 5 19.5)">
+        <rect x="4" y="9" width="40" height="9" rx="2" fill={color} mask={`url(#k${id})`} />
+      </g>
+    </svg>
+  );
+};
 
 // 胶囊（大字号绘制，整体 transform 缩放，保证实体化前后文字原位等大）
-const Pill: React.FC<{ bg: string; iconColor: string; textColor: string }> = ({ bg, iconColor, textColor }) => (
+// lift = 离地高度（大字号坐标 px）：hero 时浮起，落位时归零贴进页面
+const Pill: React.FC<{ bg: string; iconColor: string; textColor: string; lift: number }> = ({ bg, iconColor, textColor, lift }) => (
   <div style={{
-    width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2, background: bg,
+    width: PILL_W, height: PILL_H, borderRadius: PILL_H / 2,
+    // 无描边：实体感来自上亮下暗的微体积 + 顶沿内高光 + 离地软影（不是边框）
+    background: `linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 46%, rgba(0,0,0,0.025) 100%), ${bg}`,
+    boxShadow: `inset 0 3px 0 rgba(255,255,255,0.7), inset 0 -2px 0 rgba(40,40,30,0.03), ` +
+      `0 ${(1 + lift * 0.12).toFixed(1)}px ${(2 + lift * 0.3).toFixed(1)}px rgba(40,40,30,${(0.04 + lift * 0.003).toFixed(3)}), ` +
+      `0 ${(lift * 1.6).toFixed(1)}px ${(lift * 4).toFixed(1)}px ${(-lift * 0.6).toFixed(1)}px rgba(40,40,30,${(lift * 0.009).toFixed(3)})`,
     display: 'flex', alignItems: 'center', paddingLeft: 96, boxSizing: 'border-box', gap: 66,
   }}>
-    <NoteIcon size={104} color={iconColor} />
-    <span style={{ fontSize: FS, fontWeight: 500, color: textColor, letterSpacing: 2 }}>music</span>
+    <ClapperIcon size={104} color={iconColor} />
+    <span style={{ fontSize: FS, fontWeight: 500, color: textColor, letterSpacing: 2 }}>shots</span>
   </div>
 );
 
@@ -94,13 +120,21 @@ export const HashtagToPillMaterialize: React.FC = () => {
   const typed = TEXT.slice(0, typedCount);
 
   // ---- 缩小左移 ----
-  const moveT = interpolate(frame, [MOVE_START, MOVE_END], [0, 1], {
+  const moveAt = (f: number) => interpolate(f, [MOVE_START, MOVE_END], [0, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
     easing: Easing.bezier(0.5, 0, 0.25, 1),
   });
-  const px = interpolate(moveT, [0, 1], [HERO.x, SLOT.x]);
-  const py = interpolate(moveT, [0, 1], [HERO.y, SLOT.y]);
+  const pxAt = (f: number) => interpolate(moveAt(f), [0, 1], [HERO.x, SLOT.x]);
+  const pyAt = (f: number) => interpolate(moveAt(f), [0, 1], [HERO.y, SLOT.y]);
+  const moveT = moveAt(frame);
+  const px = pxAt(frame);
+  const py = pyAt(frame);
   const ps = interpolate(moveT, [0, 1], [1, END_SCALE]);
+  // 缩移峰值 ~70px/帧：按速度沿运动方向给拖影，起止处速度→0 自动无模糊
+  const vx = velocity(pxAt, frame);
+  const vy = velocity(pyAt, frame);
+  // 离地：hero hold 时浮 10px，缩移后半程降落，落位贴平（Q9：归位即嵌入页面）
+  const lift = 10 * (1 - interpolate(moveT, [0.35, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }));
   // 实体化瞬间极轻微落定（原片近乎硬切，仅 3 帧 1.03→1，避免死板）
   const settle = interpolate(frame, [MORPH, MORPH + 3], [1.03, 1], {
     extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.quad),
@@ -113,19 +147,33 @@ export const HashtagToPillMaterialize: React.FC = () => {
       {/* 成品页（硬切揭示，之后全静） */}
       {revealed && (
         <>
+          {/* 页眉元信息：面包屑 + 编辑时间，让"成品页"版式完整（辅助文字 32px，低对比不抢标题） */}
+          <div style={{
+            position: 'absolute', left: 164, right: 160, top: 86, display: 'flex', alignItems: 'center',
+            fontSize: 32, fontWeight: 500, color: C.meta, letterSpacing: 0.6,
+          }}>
+            <span>Notes</span>
+            <span style={{ margin: '0 18px', opacity: 0.7 }}>/</span>
+            <span>Shots</span>
+            <span style={{ marginLeft: 'auto' }}>Edited just now</span>
+          </div>
+          <div style={{
+            position: 'absolute', left: 164, right: 160, top: 144, height: 1,
+            background: 'linear-gradient(90deg, rgba(120,112,80,0.16), rgba(120,112,80,0.06))',
+          }} />
           <div style={{
             position: 'absolute', left: 160, top: 168,
             fontSize: 122, fontWeight: 700, color: C.titleGreen, letterSpacing: 0.5,
           }}>
-            My favorite bands
+            My favorite shots
           </div>
           <div style={{
             position: 'absolute', left: 152, top: 618,
             fontSize: 70, fontWeight: 500, color: C.body, lineHeight: 1.33, letterSpacing: 0.3,
           }}>
-            I want to share a few of my favorite bands<br />
-            and the song that I always listen when driving<br />
-            to home. Welcome. Bring headphones.
+            A few camera moves I keep stealing from<br />
+            video-shotcraft: the crash zoom, the orbit,<br />
+            the whip pan. Welcome. Bring popcorn.
           </div>
         </>
       )}
@@ -147,6 +195,7 @@ export const HashtagToPillMaterialize: React.FC = () => {
 
       {/* 胶囊层：实体化 1 帧硬切出现 → hold → 缩小左移落位 → 揭示帧换鼠尾草绿 */}
       {frame >= MORPH && (
+        <SpeedBlur vx={vx} vy={vy} amount={0.1} max={7}>
         <div style={{
           position: 'absolute', left: 0, top: 0,
           // origin 必须是 0 0：translate 先把原点送到目标中心，scale 绕该点缩放，
@@ -156,11 +205,14 @@ export const HashtagToPillMaterialize: React.FC = () => {
         }}>
           <div style={{ transform: 'translate(-50%, -50%)' }}>
             {revealed
-              ? <Pill bg={C.pillSage} iconColor={C.iconSage} textColor={C.pillSageText} />
-              : <Pill bg={C.pillGray} iconColor={C.iconGray} textColor={C.pillTextGray} />}
+              ? <Pill bg={C.pillSage} iconColor={C.iconSage} textColor={C.pillSageText} lift={0} />
+              : <Pill bg={C.pillGray} iconColor={C.iconGray} textColor={C.pillTextGray} lift={lift} />}
           </div>
         </div>
+        </SpeedBlur>
       )}
+      {/* 极弱纸面颗粒：防大面积浅底色带，揭示帧随底色一起硬切（同一层，不做过渡） */}
+      <Grain opacity={0.05} step={2} />
     </AbsoluteFill>
   );
 };

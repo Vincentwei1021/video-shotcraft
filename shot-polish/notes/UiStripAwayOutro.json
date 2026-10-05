@@ -1,0 +1,31 @@
+{
+  "stem": "UiStripAwayOutro",
+  "issues": [
+    "编辑器是灰阶占位 UI：侧栏、卡片全是灰条，画布里没有可读的内容，看不出在编辑什么",
+    "蒸发是整块面板一起淡出，中段出现一大块半透明灰色画布，读作调透明度而不是\"复杂性蒸发\"",
+    "Publish 只是一颗 150px 的白色小按钮，迁移到屏心后在黑场上分量不够，升格感弱",
+    "按钮直接淡出交给「WORDMARK」占位字，没有结果的那一拍，结尾海报空洞"
+  ],
+  "changes": [
+    "look 用 custom 群青：前半是冷白亮场的建站编辑器 Tessel（为镜头设计的大字 UI，画布里是一张正在编辑的咖啡品牌落地页，92px 标题被选中带控制柄），后半是带群青色相的近黑暗场",
+    "蒸发改成逐行 / 逐块 / 逐图标的单元，外围先走（侧栏 → 属性 → 工具条 → 画布区块），每单元 ease-in 离心位移 + 上飘 + 模糊，透明度近线性不留灰色残影",
+    "画布底切成 8×5 镶嵌瓦片，按到屏心的距离从四角向中心逐块收缩并被暗场吸暗——压黑也有秩序，呼应品牌名 Tessel",
+    "按钮 26f 不对称 in-out 滑到屏心并按布局放大到 2.5×（字边锐利）带速度拖影，群青光晕 + 地面光斑；到位后标签上卷成「✓ Live」+ 一次裁进圆角的扫光",
+    "字标接棒：图形标弹簧落定、Tessel 196px 逐字由虚到实、口号逐词升起、网址淡入；开场相机朝按钮缓推 4%，时长 144f → 176f"
+  ],
+  "issuesEn": [
+    "The editor was grey placeholder UI: grey bars in the sidebar and cards, nothing readable on the canvas, no sense of what was being edited",
+    "Whole panels faded out together, leaving a big semi-transparent grey canvas mid-shot that read as an opacity change rather than complexity evaporating",
+    "Publish was a small 150px white button; once it reached the centre it had too little weight on the black to feel promoted",
+    "The button simply faded to a 'WORDMARK' placeholder with no payoff beat, so the end frame felt empty"
+  ],
+  "changesEn": [
+    "Custom ultramarine look: first a cool-white site builder, Tessel, with large camera-ready UI and a coffee landing page being edited on the canvas (a selected 92px headline with handles), then a near-black void tinted ultramarine",
+    "Evaporation now works per row, block and icon, outside in (sidebar, inspector, toolbar, canvas blocks); each unit leaves with ease-in outward drift, a slight rise and blur, and near-linear opacity so no grey ghosts remain",
+    "The canvas background is cut into 8x5 tiles that shrink and darken into the void from the corners toward the centre, so even the blackout is ordered and echoes the Tessel name",
+    "The button glides to centre on a 26f asymmetric in-out with speed blur and is laid out at 2.5x so the text stays sharp, with an ultramarine halo and floor glow; it then rolls its label to '✓ Live' with one sheen clipped to its corners",
+    "Logo handoff: the mark springs in, 'Tessel' at 196px resolves letter by letter from blur, the tagline rises word by word and the URL fades in; a 4% push toward the button opens the shot; 144f to 176f"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

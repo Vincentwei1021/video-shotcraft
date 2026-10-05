@@ -1,0 +1,31 @@
+{
+  "stem": "KanadaPerspectiveSnap",
+  "issues": [
+    "主体是一张灰色占位卡（几条灰线 + 圆点），没有任何内容可读，左上角还留着调试卡名",
+    "浅灰底 + 灰卡，画面没有光、没有色彩，冲击感全靠位移撑",
+    "透视与扭转和位移同一条曲线同时收，到位前几帧卡片已经平了，鱼眼感几乎看不到",
+    "落定只有 6px 震屏，缺少动漫式\"定格一拍\"的视觉重音；之后 100f 完全空转"
+  ],
+  "changes": [
+    "look 换成 aurora（紫黑 · 紫 · 粉），主角改为虚构流媒体「Hikari」的番剧首播卡（1000×580）：程序化霓虹黄昏插画（条纹落日 + 城市剪影 + 水面倒影）+ 92px 片名「Neon Tide」+ Watch now 按钮",
+    "甩入 18f：位移 −1350→0 走 snappy 急停，透视 260→1800px / rotate3d 62°→0 / scale 1.8→1 走晚收曲线——卡片\"扭着\"冲到位、最后几帧才被拍平，金田式鱼眼一目了然",
+    "落定重音：rotateY 冲到 +6° 再弹簧回零、8px 震屏 2f、48 道动漫集中线 9f 向外退散；飞行中水平 SpeedBlur + 7 条粉白速度线",
+    "跟随：卡内文字晚 3f 落定，片名带 −10° skew 收正；随后字幕「Streams Friday · only on Hikari」逐词升起",
+    "海报构图：顶部一条 168px 低透明片名大字带缓慢反向漂移，主卡居中、字幕在下；时长 120f，后段极缓推镜"
+  ],
+  "issuesEn": [
+    "The hero was a grey placeholder card (grey bars and a dot) with nothing to read, plus the debug card name left in the corner",
+    "Light grey stage and grey card: no light, no colour, so all the impact rested on translation",
+    "Perspective and twist eased on the same curve as position, so the card was flat a few frames before arriving and the fisheye barely showed",
+    "The landing had only a 6px shake, no anime-style held accent, and the remaining 100f idled"
+  ],
+  "changesEn": [
+    "Aurora look (purple-black, violet, pink); the hero is a premiere card for a fictional streaming service, Hikari (1000×580): procedural neon-dusk artwork (striped sun, skyline, reflections), a 92px 'Neon Tide' title and a Watch now button",
+    "18f fling: translation −1350→0 on a snappy ease for the hard stop, while perspective 260→1800px, rotate3d 62°→0 and scale 1.8→1 resolve on a late curve, so the card arrives still twisted and is slapped flat in the last frames, a clear Kanada fisheye",
+    "Landing accent: rotateY overshoots to +6° and springs back, an 8px 2f shake, and 48 anime focus lines retreat outward over 9f; horizontal SpeedBlur plus 7 pink-white speed lines during flight",
+    "Follow-through: the card's text settles 3f late with the title straightening from a −10° skew, then the line 'Streams Friday · only on Hikari' rises word by word",
+    "Poster layout: a 168px low-opacity title band drifts slowly along the top, card centred, caption below; 120f total with a slow push in the tail"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

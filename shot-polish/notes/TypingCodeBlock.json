@@ -1,0 +1,31 @@
+{
+  "stem": "TypingCodeBlock",
+  "issues": [
+    "两块面板里代码只有 12px 设计坐标（放大后仍小），面板一半是空的，手法标签是 8px 小字",
+    "深蓝黑底没有光，面板之间和背景都是死平的暗色",
+    "两种揭示的节奏差只能靠观众自己比，画面上没有任何对照信息",
+    "光标块颜色暗、几乎看不见，打完也没有收尾的一拍"
+  ],
+  "changes": [
+    "look 换成 aurora（紫黑舞台 + 顶部紫光 + 粉色余光 + 稀疏浮尘）：两块 820×500 编辑器玻璃面板合占画宽 88%，代码 40px 等宽、行高 70，语法色重配到极光色系",
+    "面板上方 44px 标签「01 Line by line / 02 Keystroke」，下方各一条揭示时间线：左 4 段刻度随行点亮、右连续进度条 + 计数 + 秒表（1.6s vs 3.6s），把节奏差直接画出来",
+    "左侧 4 行 9f 错峰、各 20f snappy 上浮 14px + 6px 去虚；右侧确定性 1/2f 真人间隔、换行顿 4f，token 色仍在 setup 期写死",
+    "光标改成强调色发光方块（字反白），当前行整行淡高亮 + 左缘强调色条；打完 Typing→Saved 并给右面板一次扫光",
+    "面板 snappy 上浮入场、相机 1→1.025 极缓推；时长 138→165f，尾帧留 30f 读全文"
+  ],
+  "issuesEn": [
+    "Code was 12px in design space and still small after scaling, half of each panel was empty, and the method labels were 8px",
+    "The navy-black backdrop had no light; panels and background were flat dark fills",
+    "The rhythm difference between the two reveals was left for the viewer to judge; nothing on screen compared them",
+    "The cursor block was dark and nearly invisible, and finishing the code had no closing beat"
+  ],
+  "changesEn": [
+    "Aurora look (violet-black stage, violet top light, pink fill, sparse dust): two 820×500 glass editor panels spanning 88% of the frame, 40px mono code at 70px line height, syntax colours re-tuned to the aurora palette",
+    "44px labels '01 Line by line / 02 Keystroke' above, and a reveal timeline under each panel: four ticks lighting per line on the left, a continuous bar with key count and stopwatch on the right (1.6s vs 3.6s), so the rhythm gap is drawn on screen",
+    "Left: 4 lines staggered 9f, each a 20f snappy rise of 14px with 6px de-blur. Right: deterministic 1/2f human gaps with a 4f pause per line; token colours are still baked in at setup",
+    "The cursor is now a glowing accent block with inverted glyph, the current line gets a soft band and accent edge; on completion Typing→Saved and a single sheen crosses the right panel",
+    "Panels rise in with a snappy ease and the camera creeps 1→1.025; 138→165f with 30f left to read the result"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

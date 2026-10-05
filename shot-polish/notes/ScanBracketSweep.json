@@ -1,0 +1,31 @@
+{
+  "stem": "ScanBracketSweep",
+  "issues": [
+    "文档只占画面中间一小块，内容是灰色骨架条，读不出它是一份什么文件",
+    "扫描光是一条黑线拖着大片灰色渐变，读作脏污或遮罩，不像光",
+    "浅灰底 + 白卡片 + 黑括号，没有光源、没有层次，整帧像线框稿",
+    "扫完 5 趟就结束了，扫描没有留下任何结果，结尾没有收束的一拍"
+  ],
+  "changes": [
+    "look 换成 ember：暖黑舞台 + 顶部主光 + 地平线暖光带 + 浮尘；主体是一份 1180×700 的暗色合同条款表（7 条条款、30px 正文、页眉页脚），占画宽 61%",
+    "扫描光重做成琥珀光：3px 白热光芯 + 44px 金色柔辉 + 随速度伸缩的 200px 拖尾，暗场里全部 screen 叠加，整条裁进文档 22px 圆角",
+    "让光真的在读：第 1 趟光芯扫过的行由暗转亮，两条风险条款在光芯经过时亮起琥珀竖条与页边点；文档本体一像素不动",
+    "文档下方加 HUD：状态点 + 进度条 + 「CLAUSE 04 / 07」跟着光带走；扫完收束为「REVIEW READY · 2 CLAUSES FLAGGED」，四角括号同帧 spring 向内收紧并转暖白",
+    "新时间表 190f：0–18f 文档弹入、10–30f 括号错峰 overshoot 落位、30–146f 扫 5 趟、148f 收束、28f hold；相机全程极缓推进 1.8%"
+  ],
+  "issuesEn": [
+    "The document filled only a small patch in the middle and held grey skeleton bars, so you couldn't tell what kind of file it was",
+    "The scan was a black line dragging a large grey gradient, which read as dirt or a mask rather than light",
+    "Light grey background, white card, black brackets: no light source and no depth, so every frame looked like a wireframe",
+    "It simply ended after five passes; the scan left no result and there was no closing beat"
+  ],
+  "changesEn": [
+    "Look switched to ember: warm-black stage with a top key light, a warm horizon band and drifting dust; the subject is a 1180×700 dark contract terms table (7 clauses, 30px body text, header and footer) filling 61% of the frame width",
+    "The scan beam is now amber light: a 3px white-hot core, a 44px gold glow and a 200px tail that stretches with speed, all screen-blended on the dark stage and clipped to the document's 22px corner radius",
+    "The light visibly reads: rows brighten from dim to read as the core first passes them, and two risky clauses light an amber edge bar and margin dot as it crosses; the document itself never moves a pixel",
+    "A HUD below the document (status dot, progress bar, \"CLAUSE 04 / 07\") tracks the beam; at the end it resolves to \"REVIEW READY · 2 CLAUSES FLAGGED\" while the four brackets spring inward and turn warm white on the same frame",
+    "New 190f timeline: 0–18f document pops in, 10–30f staggered overshoot bracket landing, 30–146f five passes, 148f resolve, 28f hold; a very slow 1.8% camera push throughout"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

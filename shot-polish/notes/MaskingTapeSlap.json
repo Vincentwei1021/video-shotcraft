@@ -1,0 +1,33 @@
+{
+  "stem": "MaskingTapeSlap",
+  "issues": [
+    "左上角打着调试标题「MASKING TAPE SLAP」，画面主体是一张 560px 的灰条骨架卡，四周大片空灰底",
+    "浅灰平底 + 灰色胶带，没有光源和材质，胶带读作两条灰色色块而不是纸胶带",
+    "卡片只是从上方 120px 平移淡入，没有纸的重量；悬浮与贴板的投影差很小，「按死」那一下看不出来",
+    "胶带用 ease-out 落座，像轻轻放上去，没有「拍」的加速与冲击"
+  ],
+  "changes": [
+    "look 换成 graphite 暖炭灰情绪板：左上暖色聚光打在卡片区，板上钉着几张失焦旧印刷品做前/中/后景",
+    "主体换成 1040×640 编辑感印刷卡：左侧金色球体棚拍静物，右侧 132px 衬线大标题「Quiet / launch.」+ 34px 正文",
+    "卡片像纸一样从画外滑翔落下：位置弹簧 + 仰角 34°→0 与倾角晚 3f 收敛，悬浮时离板 30px、整卡放大 1.2%、投影远而虚",
+    "胶带改成香槟金和纸（纤维纹 + 透光边 + 撕边），从镜头方向 ease-in 加速砸下（scale 1.7→1 + 失焦），落帧压扁一帧再回弹",
+    "第一条胶带锁住钉点、卡片改绕钉点摆；第二条同帧按死：晃动 2f 归零、离板 30→2、投影收成贴板实影",
+    "时长保持 120f，按死后聚光轻收到卡上 + 极缓推近 2.5%，尾帧是一张完整海报"
+  ],
+  "issuesEn": [
+    "A debug title 'MASKING TAPE SLAP' sat in the corner; the subject was a 560px grey skeleton card floating in empty grey",
+    "Flat light-grey background and grey tape with no light or material: the tape read as two grey bars, not masking tape",
+    "The card just slid down 120px and faded in with no paper weight; hover and pinned shadows barely differed, so the 'pinned' moment was invisible",
+    "The tape landed with ease-out, as if gently placed, with no slap acceleration or impact"
+  ],
+  "changesEn": [
+    "Graphite look as a warm charcoal mood board: a warm spotlight on the card area, out-of-focus old prints pinned around it for depth",
+    "The subject is now a 1040x640 editorial print: a gold-sphere studio still on the left, a 132px serif 'Quiet / launch.' and 34px body copy on the right",
+    "The card glides in like paper: a position spring with a 34-degree pitch and a tilt that settle 3f later; hovering 30px off the board it is 1.2% larger with a far, soft shadow",
+    "Tape is champagne washi (fibres, translucent edges, torn ends) slapped from the camera with ease-in acceleration (scale 1.7 to 1 plus defocus), squashing for one frame on impact",
+    "The first strip locks the pin point so the card swings around it; the second pins it dead in the same frame: wobble to zero in 2f, height 30 to 2, shadow tightening to a contact shadow",
+    "Still 120f: after pinning the spotlight tightens on the card with a 2.5% slow push, so the last frame is a finished poster"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

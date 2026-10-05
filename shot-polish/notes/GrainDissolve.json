@@ -1,0 +1,31 @@
+{
+  "stem": "GrainDissolve",
+  "issues": [
+    "整行字只有 ~99px 等效、短字标 ACME 也只占画宽 1/7，大片空黑，画面没有分量",
+    "冷白辉光 + 灰底近单色，砂化读起来像雾化模糊，没有能量感",
+    "整行字与短字标字体一样、只是变大变粗，\"一句话归结为一个名字\"的叙事不明显",
+    "60f 太短：凝固后几乎没有 hold，字标刚清楚就结束了"
+  ],
+  "changes": [
+    "look 换 ember（暖黑 · 橙 · 金）：砂化 = 加热，暖橙双层 bloom，凝聚后的字标是白热→橙的竖向渐变、留一圈余温辉光",
+    "字体做对比：整行字是等宽代码体「{ Kova 3 — now live }」，凝聚成 300px 粗黑体品牌字标「KOVA」（占画宽 42%），代码→品牌就是叙事",
+    "滤镜改按 1920 原生坐标、高频噪声 + 大位移 + 0.55px 极小模糊，颗粒是真正的 2–3px 砂粒而不是雾",
+    "180 颗余烬火星被热气吹出上飘、凝聚时 ease-in 加速吸回，按速度拉成短线；选区框琥珀斜纹 + 等宽角标，overshoot 弹开、横向挤压收拢撤场预告\"压缩\"",
+    "时长 60→84f：10f 干净常态 → 砂化沸腾 → 凝聚 + 一道光痕 → 副标「Now live, everywhere.」逐词升起 → 18f hold，全程 3.5% 极缓推镜"
+  ],
+  "issuesEn": [
+    "The sentence was only ~99px effective and the short ACME mark filled 1/7 of the width, floating in empty black with no weight",
+    "Cold white glow on a near-monochrome grey stage made the grain read as foggy blur with no energy",
+    "Sentence and short mark used the same typeface, just bigger and bolder, so 'a sentence boiled down to a name' did not come across",
+    "60f was too short: almost no hold after the lock, the mark ended as soon as it was legible"
+  ],
+  "changesEn": [
+    "Ember look (warm black, orange, gold): the grain is heat, with a two-layer warm bloom; the condensed mark is a white-hot-to-orange vertical gradient with a lingering warm glow",
+    "Typographic contrast: the line is monospace code '{ Kova 3 — now live }' and condenses into a 300px heavy sans wordmark KOVA (42% of frame width); code becoming brand is the story",
+    "The filter now runs at native 1920 coordinates with high-frequency noise, big displacement and only 0.55px blur, so the grains are real 2–3px sand instead of fog",
+    "180 embers blow out and drift upward on the heat, then accelerate back in with ease-in, stretched into streaks by speed; the amber hatched selection box with a mono tag springs open and squeezes shut sideways, foreshadowing the compression",
+    "60→84f: 10f clean state, grain and boil, condense with one light streak, the subline 'Now live, everywhere.' rises word by word, then an 18f hold, with a 3.5% slow push throughout"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

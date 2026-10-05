@@ -1,0 +1,18 @@
+{
+  "stem": "RisoMisregistrationHit",
+  "changed": true,
+  "brand": [
+    "版记「INKWELL PRESS — Nº 07」→「VIDEO-SHOTCRAFT — Nº 07」；圆章环字「INKWELL」→「SHOTCRAFT」，中心星 → 单色蓝版镜刻标志（保持正立）",
+    "300px 标题「PRINT IT / LOUD.」→「CRAFT IT / LOUD.」（F→T 接缝处微收字距去掉发丝缝）",
+    "底部三栏演出信息（Small press night / Fri 14 Nov / Free entry）→ 卖点：Shot recipe cards · One prompt to a finished promo · Built on Remotion for Claude Code & Codex",
+    "卡片 md 删掉已去掉的 beat-pump 式（选型表 / 参数 / 坑 / 参考实现），改为单式卡"
+  ],
+  "brandEn": [
+    "Masthead \"INKWELL PRESS — Nº 07\" → \"VIDEO-SHOTCRAFT — Nº 07\"; stamp ring \"INKWELL\" → \"SHOTCRAFT\", centre star → one-colour blue Frame Chisel mark (kept upright)",
+    "300px headline \"PRINT IT / LOUD.\" → \"CRAFT IT / LOUD.\" (tightened the F→T join to remove a hairline seam)",
+    "Bottom event info (Small press night / Fri 14 Nov / Free entry) → selling points: Shot recipe cards · One prompt to a finished promo · Built on Remotion for Claude Code & Codex",
+    "Card md: removed the dropped beat-pump style (table row, params, pitfalls, reference file); now a single-style card"
+  ],
+  "styleKey": "misregistration-hit",
+  "mdChanged": true
+}

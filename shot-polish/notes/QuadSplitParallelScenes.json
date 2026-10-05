@@ -1,0 +1,31 @@
+{
+  "stem": "QuadSplitParallelScenes",
+  "issues": [
+    "四格全是占位文案（Placeholder headline / Section label / One clear message / Tab Tab Tab），读不出在讲什么",
+    "设计坐标 480×270 放大，格内字只有十几像素等效，tab 与评论卡几乎不可读",
+    "灰 / 浅 / 靛蓝三种互不相干的底色，没有统一的 look 与品牌",
+    "63f 全程轰炸、没有收尾，最后一帧不是一张完整画面"
+  ],
+  "changes": [
+    "look 改为 ember：四格 = 虚构产品 Brasa 发布日同时发生的四件事（打开发布页 / 终端 deploy / 品牌口号 / 审批发布），奶油·暖黑·橙·拿铁棋盘交错，8px 暖黑缝 + 圆角分格",
+    "格内全部按 1080p 原生排版：地址栏 34px、终端 36–40px mono、BL 三个 132px 大词、审批卡按钮 32px，辅助字都 ≥32px",
+    "错拍表重排：tab 6/11/16/21、终端输出 27/33、急推 37、词 14/30/49、点击 25/52、通知 56——相邻重事件间隔 ≥3f，光标闪烁 16f / 14f 错相",
+    "TR 急推改为以末行为原点 1→1.85 + sin 包络模糊，旧行退到 8%，落成一句巨大的「● live in 4.2s」",
+    "时长 63f→90f：62f 后四格落在终态拼成一张海报（Launch day. / live in 4.2s / Write. Ship. Repeat. / Live · 3,214 visitors）hold 28f"
+  ],
+  "issuesEn": [
+    "All four quadrants used placeholder copy (Placeholder headline, Section label, One clear message, Tab Tab Tab) that said nothing",
+    "Built in a 480x270 design space and scaled up, so the text was effectively a dozen pixels tall and tabs and comments were unreadable",
+    "Grey, pale and indigo backgrounds with no shared look or brand",
+    "All 63f were bombardment with no ending; the last frame was not a complete picture"
+  ],
+  "changesEn": [
+    "Ember look: the quadrants are four simultaneous launch-day moments for the fictional product Brasa (launch page, terminal deploy, brand slogan, approve and publish) in a cream / warm-black / orange / latte checkerboard with 8px gutters and rounded corners",
+    "Everything is laid out natively at 1080p: 34px address bar, 36-40px terminal mono, three 132px words, 32px buttons, every supporting line at least 32px",
+    "Re-timed off-beat sheet: tabs 6/11/16/21, terminal lines 27/33, whip zoom 37, words 14/30/49, clicks 25/52, toast 56, with at least 3f between heavy events and caret blinks at 16f vs 14f out of phase",
+    "The TR whip zoom now scales 1 to 1.85 about the last line with a sine-envelope blur while older lines fade to 8%, landing on a huge '● live in 4.2s'",
+    "Duration 63f to 90f: after 62f all four quadrants settle into end states that form one poster (Launch day. / live in 4.2s / Write. Ship. Repeat. / Live · 3,214 visitors) held for 28f"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

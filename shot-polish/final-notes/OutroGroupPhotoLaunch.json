@@ -1,0 +1,18 @@
+{
+  "stem": "OutroGroupPhotoLaunch",
+  "changed": true,
+  "brand": [
+    "衬线字标 AI Foundation Lab → video-shotcraft 标志 + 全小写字标（品牌字体），标志与字母同一套 letterpress 入场、标志先压 4f",
+    "眉题 TEAM RESEARCH CONSOLE → FRAME MOTION. CRAFT THE SHOT.（品牌短句）",
+    "截图纹理页头的站点名「AI Foundation Lab / AI Field Lab」→ 镜刻标志 + video-shotcraft 字标（主控直接改了纹理图，导航项顺延）",
+    "周报截图纹理的标题与侧栏条目「Foundation Lab Weekly」→「Shotcraft Weekly」，DOM 历史条目同步改"
+  ],
+  "brandEn": [
+    "Serif wordmark 'AI Foundation Lab' → video-shotcraft mark + lowercase wordmark (brand font); the mark letterpresses in 4f ahead of the letters",
+    "Eyebrow 'TEAM RESEARCH CONSOLE' → 'FRAME MOTION. CRAFT THE SHOT.' (brand motto)",
+    "The site name 'AI Foundation Lab / AI Field Lab' in the screenshot textures' header → Frame Chisel mark + video-shotcraft wordmark (the coordinator edited the texture images directly; nav items shifted to fit)",
+    "Weekly-report texture title and sidebar entry 'Foundation Lab Weekly' → 'Shotcraft Weekly'; the DOM history entries were updated to match"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

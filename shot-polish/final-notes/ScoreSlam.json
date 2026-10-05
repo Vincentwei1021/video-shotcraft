@@ -1,0 +1,18 @@
+{
+  "stem": "ScoreSlam",
+  "changed": true,
+  "brand": [
+    "主队 NRV 字母队徽 + Norvik → 镜刻标志队徽 + Shotcraft；客队 SLT / Saltmere → KEY / Keyframes",
+    "信息行「CUP FINAL · HARBOUR PARK · 61,204」→「MOTION CUP FINAL · BUILT ON REMOTION」",
+    "标题「Norvik lift the Cup.」→「Shotcraft lifts the Cup.」",
+    "副句「First title in 41 years…」→ 评价「Camera moves I would have keyframed for a week.」"
+  ],
+  "brandEn": [
+    "Home crest NRV + \"Norvik\" → Frame Chisel mark + \"Shotcraft\"; away SLT / \"Saltmere\" → KEY / \"Keyframes\"",
+    "Info row \"CUP FINAL · HARBOUR PARK · 61,204\" → \"MOTION CUP FINAL · BUILT ON REMOTION\"",
+    "Headline \"Norvik lift the Cup.\" → \"Shotcraft lifts the Cup.\"",
+    "Subline \"First title in 41 years…\" → praise \"Camera moves I would have keyframed for a week.\""
+  ],
+  "styleKey": "score-slam",
+  "mdChanged": true
+}

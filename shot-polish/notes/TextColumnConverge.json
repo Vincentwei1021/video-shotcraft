@@ -1,0 +1,31 @@
+{
+  "stem": "TextColumnConverge",
+  "issues": [
+    "42px 等宽小字在纯黑里，字高不到画高 3%，缩略图里几乎看不见，整屏 95% 是黑",
+    "开场 8f 纯黑死帧，之后只有两个词，没有任何版式结构交代\"这是一页清单\"",
+    "收尾短语直接用了真实产品名，合拢后的画面也只是一行小字 + 一行斜体小字，不成海报",
+    "灰白单色，没有强调色，NEW 与特性词、结论与过程之间没有层级"
+  ],
+  "changes": [
+    "look 换成 paper（暖白纸 · 墨 · 朱红）瑞士网格发布说明页：四角页眉页脚（Release notes / Vol. 4 — 2026 / 品牌字标 / 01–09 序号随硬切翻页），正中 120px/850 粗黑体大写，上下发丝横线把这一行框成\"目录条\"",
+    "钉死与唯一合拢保留：NEW 左缘、特性词右缘钉在左右相等的 144px 边距，硬切停留 18/13/10/8/7/8/10/13f；末词停稳 10f 后 36f ease-in-out 相向合拢，按速度水平运动模糊",
+    "合拢时上下横线与两词同步收拢到短语宽度，终点按实测字宽计算一个词距咬合——观众这才发现\"目录条\"框住的是一句话",
+    "NEW 用朱红、特性词墨色，换词那 1f 新词闪朱红；副标题定格 18f 后 4f 硬切浮现，宽度收在短语内",
+    "第 1 帧就有纸面与页眉，横线由中心向两缘画出；品牌改成虚构的 Kestrel；时长 180→195f，定格后极缓推近 1→1.025"
+  ],
+  "issuesEn": [
+    "42px monospace in pure black, under 3% of frame height and nearly invisible in thumbnails; 95% of the frame was black",
+    "An 8f dead black opening, then just two words with no layout structure saying 'this is a list'",
+    "The payoff used a real product name, and the converged frame was one small line plus a small italic line, not a poster",
+    "Grey on black with no accent, so there was no hierarchy between NEW and the features, or between the payoff and the build-up"
+  ],
+  "changesEn": [
+    "Paper look (warm paper, ink, vermilion) as a Swiss-grid release-notes page: corner header and footer (Release notes, Vol. 4 — 2026, wordmark, a 01–09 index that turns with each cut) and a central 120px/850 uppercase row framed by hairline rules like a contents strip",
+    "The pin and the single converge are kept: NEW's left edge and the feature word's right edge sit on equal 144px margins, hard cuts hold 18/13/10/8/7/8/10/13f, and 10f after the last word settles both slide together over 36f ease-in-out with speed-based horizontal motion blur",
+    "During the converge the rules contract with the words to the phrase width, and the end positions come from measured glyph widths for an exact word space, revealing that the 'contents strip' was framing one sentence",
+    "NEW is vermilion and features are ink, with each new word flashing vermilion for 1f; the subline hard-cuts in over 4f 18f after the lock and stays within the phrase width",
+    "Frame 1 already shows the page and header, with rules drawing from the centre outwards; the brand is the fictional Kestrel; duration 180 to 195f with a slow 1 to 1.025 push after the lock"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "LogoShrinkWordmarkLockup",
+  "issues": [
+    "设计坐标 480×270：大环开场只有 ~160px，远谈不上\"满屏能量\"，落定的图标和字标也只占画宽 1/6",
+    "字标 BRAND 27px×4 等效约 110px 但字重、字距都是占位感，标语是 12.5px 级小字，读不清",
+    "纯黑底 + 一圈淡紫晕，收束段几乎没有速度感，演出态与标准态区别只在颜色",
+    "标语用撞色的红，和霓虹紫不在一个色系"
+  ],
+  "changes": [
+    "look 换 aurora（紫粉极光暗场 + 浮尘）：开场第 1 帧就是直径 1240px、上下出画的虹彩切口双弧环（紫→粉→冰蓝渐变描边 + 宽泛光）",
+    "收束改「先慢后猛、最后硬刹」曲线（×10 收缩 28f）+ 7% 刹车过冲 + 一圈冲击波；环按目标半径每帧重画（不放大不糊），描边次线性变细，高速段 3 圈半径残影做径向运动模糊",
+    "演出态→标准态：缺口愈合、虹彩交叉到奶白实环，环心弹出一颗虹彩\"珍珠\"——演出态的颜色被收进图标里（虚构品牌 Nacre = 珍珠母）",
+    "lockup 按 1080p 重排：190px 字标 NACRE 从图标后面逐字抽出（错峰 3f + 对焦），落定后一道珍珠光泽裁进字形扫过一次；标语 LIGHT IN EVERY LAYER 32px 宽字距强调粉",
+    "时长 132→138f，尾段 42f hold 有 1.5% 极缓推镜与光的呼吸"
+  ],
+  "issuesEn": [
+    "Built in 480×270 design space: the opening ring was only ~160px across, nowhere near full-frame energy, and the final lockup filled 1/6 of the width",
+    "The BRAND wordmark felt like a placeholder in weight and tracking, and the tagline was a 12.5px-class line that could not be read",
+    "Pure black with a faint purple halo; the collapse had almost no sense of speed, and the performance and standard states differed only in colour",
+    "The tagline used a clashing red, outside the neon-violet palette"
+  ],
+  "changesEn": [
+    "Aurora look (violet-pink night with dust): frame 1 is a 1240px iridescent split ring that bleeds off top and bottom, with a violet-pink-ice gradient stroke and a wide glow",
+    "The collapse is slow-then-violent with a hard brake (10x in 28f), a 7% brake overshoot and one shockwave; the ring is redrawn at its true radius each frame (no upscaling blur), the stroke thins sublinearly, and three radius ghosts give radial motion blur at peak speed",
+    "Performance to standard state: the gaps heal, the iridescence crossfades to a cream solid ring and an iridescent pearl pops into the centre, keeping the show colours inside the mark (fictional brand Nacre)",
+    "The lockup is laid out for 1080p: a 190px NACRE wordmark slides out from behind the icon letter by letter (3f stagger, focus pull), then a single pearl sheen clipped to the glyphs sweeps across; the tagline LIGHT IN EVERY LAYER is 32px, wide-tracked accent pink",
+    "132→138f, with a 42f end hold carrying a 1.5% slow push and breathing light"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

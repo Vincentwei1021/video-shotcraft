@@ -1,0 +1,31 @@
+{
+  "stem": "RowEmbed",
+  "issues": [
+    "整页浅色截图铺满全屏，画面没有舞台、光和空间层次，读起来像一张截图在平移",
+    "行只是 2D 平移下落 120px，没有真实高度感，“嵌入”读作贴纸",
+    "机位全程正视且只有轻微下摇，节奏平，镜头没有起承落",
+    "68 帧里末行 58 帧才落地，强调色缝收尾即结束，没有落定 hold"
+  ],
+  "changes": [
+    "look 换成 ember 暖黑舞台：只取「研究问题」一节真实截图做成圆角面板，两层大软影 + 发丝边 + 顶部受光，和页面自身的赤橙强调色同系",
+    "机位改成一条 crane：开场 40° 低角度斜俯，边落行边摇正推近，86f 落成正视（信息密集列表最终正视、可读）",
+    "行从面板上方 250px 的真实 3D 高度落下，以底边为铰链、顶边抬起 16° 再合上，投影随高度收紧变实，末段带速度砸进槽位 + press 回弹",
+    "节拍改为 12→7f 递减的行雨，时长 68→112f，末行 62f 落地后留约 40f 正视 hold",
+    "嵌入缝加宽到 3px 并配一层极淡行底橙光；面板按目标倍率直接布局，3D 只旋转不放大，截图文字全程清晰"
+  ],
+  "issuesEn": [
+    "The light full-page screenshot filled the frame with no stage, light or depth; it read as a screenshot panning",
+    "Rows only dropped 120px in 2D with no real height, so the 'embed' read like a sticker",
+    "The camera stayed frontal with a slight tilt-down, flat rhythm and no arc",
+    "In 68 frames the last row landed at 58 and the shot ended with the seam; no settled hold"
+  ],
+  "changesEn": [
+    "Look switched to an ember warm-dark stage: only the 'research questions' section of the real screenshot becomes a rounded panel with two soft shadows, a hairline and top light, matching the page's own vermilion accent",
+    "The camera is now a single crane: a 40° low oblique opening that straightens and pushes in as rows land, settling frontal at 86f so the dense list ends readable",
+    "Rows drop from a real 3D height of 250px above the panel, hinged at the bottom edge with the top lifted 16° before closing, with a shadow that tightens as they descend, slamming into the slot with a press rebound",
+    "Rhythm is an accelerating 12→7f row rain; duration 68→112f, the last row lands at 62f followed by ~40f of frontal hold",
+    "The seam widens to 3px with a faint orange under-glow; the panel is laid out at target scale and the 3D only rotates, so the screenshot text stays crisp"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

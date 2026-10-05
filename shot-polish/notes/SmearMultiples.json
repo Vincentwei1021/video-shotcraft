@@ -1,0 +1,31 @@
+{
+  "stem": "SmearMultiples",
+  "issues": [
+    "主体是 FakeDashboard 小卡（Deploys 热力格），卡内 14–20px 字读不清，位移本身没有含义",
+    "冷灰暗底 + 两个空槽，构图上下大片空白",
+    "半透明分身叠在一起，层次靠 0.09 那档几乎看不见",
+    "落位后只有列名亮起，余波弱、尾段 47f 全静止偏死"
+  ],
+  "changes": [
+    "look 换 aurora：两条泳道「Staging → Production」（虚构 Tidewater），主角是功能开关卡「Instant checkout」，位移即“晋级上线”，泳道里还有紧凑行做真实密度",
+    "分身改为不透明的褪色副本（底色向舞台褪、描边紫→粉、内容按 0.5/0.32/0.18/0.09 降亮），从远到近叠放只露前缘——4 张清晰可数、文字不再透叠成乱码",
+    "物理：8f 预备回拉 20px + 下蹲，12f 上拱 46px 的弧线横移、按速度前倾 ≤4°，分身的 x / y / 倾角都按 f − 2k 求值；过冲 30px 后 7f 回弹，落位前 3f 分身收拢合一",
+    "落位余波：生产泳道亮灯、计数 12→13、开关拨到 ON、状态药丸 STAGING→LIVE、灰度条 25%→100%、腾空槽位出现“Moved to Production →”、一次柔光、说明行逐词浮现",
+    "时间表 100f：0–20f 泳道错峰升起，30–42f 横移，42–70f 余波，hold 段 1.5% 极缓推进"
+  ],
+  "issuesEn": [
+    "The subject is a tiny FakeDashboard card (deploy heat-grid) with unreadable 14-20px text; the move itself means nothing",
+    "Cool grey dark backdrop with two empty slots; large dead areas above and below",
+    "Translucent copies pile on top of each other; the 0.09 copy is nearly invisible",
+    "After landing only the column label lights up; weak aftermath and a dead 47f still tail"
+  ],
+  "changesEn": [
+    "Aurora look: two lanes 'Staging -> Production' (fictional Tidewater), hero is an 'Instant checkout' feature-flag card, so the move reads as a promotion to production; compact rows give the lanes real density",
+    "Copies become opaque faded duplicates (body fades toward the stage, border tinted violet to pink, content dimmed by 0.5/0.32/0.18/0.09) stacked back to front so only each leading edge shows: four clearly countable copies, no text bleeding through",
+    "Physics: 8f anticipation pulls back 20px and crouches, a 12f arc with a 46px rise and up to 4 deg lean; x, y and tilt of every copy are evaluated at f - 2k; 30px overshoot, 7f settle, copies converge 3f before landing",
+    "Landing aftermath: production lane lights, count 12 -> 13, toggle flips on, pill STAGING -> LIVE, rollout bar 25% -> 100%, the vacated slot reads 'Moved to Production', one soft bloom, caption fades in word by word",
+    "100f timeline: lanes rise staggered over 0-20f, move 30-42f, aftermath 42-70f, hold with a 1.5% creep"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

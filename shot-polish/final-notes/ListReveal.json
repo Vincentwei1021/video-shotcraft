@@ -1,0 +1,16 @@
+{
+  "stem": "ListReveal",
+  "changed": true,
+  "brand": [
+    "侧栏条目 Projects / Analytics / Messages → Shots / Renders / Reviews（video-shotcraft 工作台侧栏；Renders 图标换成播放框）",
+    "眉题「NAVIGATION · v4」→「video-shotcraft · workbench」",
+    "标题「Everything, within reach.」→「Every shot, within reach.」；副句 → 「Every recipe, render and storyboard, one keystroke away.」"
+  ],
+  "brandEn": [
+    "Sidebar items Projects / Analytics / Messages → Shots / Renders / Reviews (the video-shotcraft workbench sidebar; the Renders icon becomes a play frame)",
+    "Eyebrow \"NAVIGATION · v4\" → \"video-shotcraft · workbench\"",
+    "Headline \"Everything, within reach.\" → \"Every shot, within reach.\"; subline → \"Every recipe, render and storyboard, one keystroke away.\""
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

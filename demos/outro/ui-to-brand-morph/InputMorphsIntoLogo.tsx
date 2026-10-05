@@ -1,215 +1,333 @@
-// input-morphs-into-logo —— slack-promo 40–41s
-// 消息输入框（一行文字 + 发送键）点击发送：文字飞走，输入框收缩变形成
-// 圆角胶囊；上方依次落下 圆、胶囊、小圆，四粒元素集结排成抽象 logo
-// 单瓣（泪滴 + 胶囊的抽象组合，非真 Slack logo），落定呼吸。
+// input-morphs-into-logo —— slack-promo 40–41s · B 式 input-morph-assemble
+//
+// 第二轮重设计（「字标构造图」· 瑞士网格亮场）：
+// - look = custom「signal」：带一点灰绿的冷纸白底 + 12 栏淡网格（瑞士平面设计的构造感），
+//   墨黑 + 钴蓝 #2446ff + 一粒琥珀。品牌轮：终点 logo = video-shotcraft「镜刻」标志（开口取景框 + 琥珀斜切）。
+// - 主角是一只为镜头设计的大号消息输入框（1040×132，44px 文案，钴蓝焦点环 + 圆形发送键），上方是
+//   频道名与两条最近消息（34px，发送即退场）。
+//   点发送 → 文案加速飞出 → 输入框 x/y/w/h/r 五量同一个 spring 收缩成取景框的竖笔（横条直接挤成竖条、
+//   圆角收成直角，中途不叠别的动画），发送后标志墨色从发送键处圆形漫开灌满输入框（全程实色）。
+// - 三块图元依次从画外落下，把竖笔拼成「镜刻」标志：上横（墨）→ 下横（墨）→ 琥珀斜切。每块落下前 10f，
+//   目标槽位先画出一圈蓝色虚线构造轮廓（Q9：落点是真实槽位），落地按速度拉伸 / 压扁（原点钉底部）后构造线淡出。
+//   图元在空中带落影、落定即平（标志本身不加投影）。
+// - 拼好后 mark 左移让位并收到 0.7（给 15 个字符的字标腾地方，标志高 ≈ 字号 2.1 倍），
+//   「video-shotcraft」逐字从基线下升起、口号逐词升起；构造网格退场，留一张干净海报。
+//
+// 时间表（30fps，共 168f）：
+//   0–20    光标从右下滑到发送键（第 0 帧画面即有频道上下文、输入框与光标），插入符闪烁
+//   20      点击：发送键压缩 + 闪白 6f
+//   21–32   文案 ease-in 加速向右上飞出 + 旋转 + 拖影
+//   28–40   墨色从发送键圆形漫开灌满输入框
+//   30–60   morph：spring(damping 15, stiffness 95) 输入框 → 取景框竖笔
+//   58–76   落下①上横（构造轮廓 48 起画）
+//   72–90   落下②下横
+//   86–104  落下③琥珀斜切
+//   108–128 mark 左移让位 + 收到 0.7；构造网格淡出
+//   114–140 video-shotcraft 逐字升起、口号逐词升起
+//   140–168 海报 hold（相机极缓推近 2%）
 import React from 'react';
-import {
-  AbsoluteFill,
-  useCurrentFrame,
-  useVideoConfig,
-  interpolate,
-  spring,
-  Easing,
-} from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { EASE, FONT, bezier, mix, ramp } from '../../_fixtures/Polish';
+import { LOOKS, Stage, TextReveal, alpha, springAt, type, type Look } from '../../_fixtures/Look';
+import { BRAND, MARK_PATHS, PITCH } from '../../_fixtures/Brand';
 
-const BG = '#3d1f47'; // 深梅紫
-const CX = 960;
-const CY = 560;
+export const INPUT_MORPHS_INTO_LOGO_DURATION = 168;
 
-// 落定后的抽象单瓣布局（横向胶囊在中，上方泪滴圆、右侧胶囊、下方小圆）
-// 单瓣 = 主胶囊(输入框变) + 大圆 + 竖胶囊 + 小圆 集结成花瓣角
-const FINAL = {
-  mainPill: { x: CX - 150, y: CY + 10, w: 300, h: 108, r: 54 }, // 横胶囊
-  bigDot: { x: CX - 204, y: CY + 10, d: 108 },                  // 左端圆（与胶囊左帽相切，构成泪滴感）
-  vPill: { x: CX + 96, y: CY - 152, w: 108, h: 260, r: 54 },    // 右上竖胶囊
-  smallDot: { x: CX + 150, y: CY - 226, d: 76 },                // 竖胶囊顶上的小圆
+const L: Look = {
+  ...LOOKS.porcelain,
+  bg: ['#f5f6f2', '#eeefe9', '#e3e5de'],
+  light: '#ffffff',
+  surface: '#ffffff',
+  ink: '#10121a',
+  ink2: '#545966',
+  ink3: '#9a9ea6',
+  accent: '#2446ff',
+  accent2: '#ffb21f',
+  shadow: '#1a2030',
+};
+const COBALT = '#2446ff';
+const MARK_INK = BRAND.ink; // 标志取景框（亮底用墨色版）
+const MARK_CUT = BRAND.amber; // 斜切：品牌琥珀，不换色
+
+// —— 关键帧
+const CLICK = 20;
+const FLY = 21;
+const MORPH = 30;
+const DROPS = [58, 72, 86];
+const SHIFT = 108;
+const WORD = 114;
+
+// mark 局部几何（相对 mark 中心，px）：「镜刻」标志 viewBox 128，取景框竖笔 = 输入框收成的那根竖条，
+// 上横 / 下横 / 斜切三块落下拼齐。U = 每个 viewBox 单位的像素数（竖笔高 96 单位 = 330px）。
+const U = 330 / 96;
+const MY = 492;
+const MX0 = 960; // 拼装时 mark 居中
+const END_S = 0.7; // 让位时 mark 收到 0.7
+const SHIFT_DX = -466; // 让位后 lockup 整组居中（与字标起点、字号 110 耦合）
+const STEM = { x: (29 - 64) * U, y: 0, w: 26 * U, h: 96 * U };
+// 横笔取满宽（x 16..112，盖住竖笔两端，同色叠合）：拼缝处不出抗锯齿发丝 / 台阶
+type Piece = { x: number; y: number; w: number; h: number; color: string; cut?: boolean };
+const PIECES: Piece[] = [
+  { x: 0, y: (29 - 64) * U, w: 96 * U, h: 26 * U, color: MARK_INK }, // 上横
+  { x: 0, y: (99 - 64) * U, w: 96 * U, h: 26 * U, color: MARK_INK }, // 下横
+  { x: (88 - 64) * U, y: (66 - 64) * U, w: 64 * U, h: 36 * U, color: MARK_CUT, cut: true }, // 斜切（外接框 56..120 × 48..84）
+];
+// 频道里最近两条消息（上下文）
+const THREAD = [
+  { n: 'Maya', t: '8:52', m: 'Storyboard is locked: twelve shots.', c: '#1f7a5c' },
+  { n: 'Theo', t: '8:55', m: 'Crash zoom lands right on the beat.', c: '#c2410c' },
+];
+// 输入框初始几何（屏幕坐标，中心）
+const BOX = { x: 960, y: 690, w: 1040, h: 132, r: 34 };
+
+// 落体：spring 从画外上方落到槽位；按速度纵向拉伸、回弹时压扁
+const DROP_H = 760;
+const dropAt = (f: number, i: number) => (f < DROPS[i] ? 0 : springAt(f, DROPS[i], { damping: 13, stiffness: 120, mass: 0.9 }));
+
+// 构造虚线轮廓（目标槽位外扩 10px）：沿轮廓画出 → 落定后淡出。矩形 / 斜切平行四边形（45° 边）两种。
+const guidePoints = (p: Piece, cx: number, cy: number, k: number) => {
+  const d = 10;
+  if (!p.cut) {
+    const w = (p.w * k) / 2 + d;
+    const h = (p.h * k) / 2 + d;
+    return [[cx - w, cy - h], [cx + w, cy - h], [cx + w, cy + h], [cx - w, cy + h]];
+  }
+  // 斜切顶点 (92,48)(120,48)(84,84)(56,84)，以外接框中心 (88,66) 为原点；45° 边外扩 d 时水平移 d·√2
+  const u = U * k;
+  const r2 = Math.SQRT2;
+  return [
+    [(92 - 88) * u + d * (1 - r2), (48 - 66) * u - d],
+    [(120 - 88) * u + d * (1 + r2), (48 - 66) * u - d],
+    [(84 - 88) * u + d * (r2 - 1), (84 - 66) * u + d],
+    [(56 - 88) * u - d * (1 + r2), (84 - 66) * u + d],
+  ].map(([x, y]) => [cx + x, cy + y]);
+};
+const Guide: React.FC<{ f: number; i: number; pts: number[][] }> = ({ f, i, pts }) => {
+  const draw = ramp(f, DROPS[i] - 10, 12, EASE.out);
+  const fade = 1 - ramp(f, DROPS[i] + 14, 10, EASE.out);
+  const a = draw > 0 ? Math.min(draw * 2, 1) * fade : 0;
+  if (a <= 0.001) return null;
+  const d = `M${pts.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join('L')}Z`;
+  const cx = pts.reduce((s, q) => s + q[0], 0) / pts.length;
+  const cy = pts.reduce((s, q) => s + q[1], 0) / pts.length;
+  const mid = `guide-draw-${i}`;
+  return (
+    <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, overflow: 'visible', opacity: a }}>
+      <defs>
+        <mask id={mid} maskUnits="userSpaceOnUse" x={0} y={0} width={1920} height={1080}>
+          <path d={d} fill="none" stroke="#fff" strokeWidth={8} pathLength={1} strokeDasharray={`${draw.toFixed(4)} 1`} />
+        </mask>
+      </defs>
+      <path d={d} fill="none" stroke={COBALT} strokeWidth={2} strokeDasharray="10 8" opacity={0.75} mask={`url(#${mid})`} />
+      <line x1={cx - 12} y1={cy} x2={cx + 12} y2={cy} stroke={COBALT} strokeWidth={1.5} opacity={0.7} />
+      <line x1={cx} y1={cy - 12} x2={cx} y2={cy + 12} stroke={COBALT} strokeWidth={1.5} opacity={0.7} />
+    </svg>
+  );
 };
 
 export const InputMorphsIntoLogo: React.FC = () => {
   const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
-  // —— 时间轴 ——
-  const CLICK = 22;      // 光标按下发送
-  const FLY = 26;        // 文字飞走
-  const MORPH = 34;      // 输入框开始收缩变形
-  const DROPS = [56, 70, 84]; // 大圆 / 竖胶囊 / 小圆 依次落下
-  const SETTLE = 108;    // 全部落定，开始呼吸
+  // —— 光标
+  const curT = ramp(f, 0, CLICK - 2, EASE.swift);
+  const sendX = BOX.x + BOX.w / 2 - 24 - 42;
+  const cursorX = mix(1560, sendX + 6, curT);
+  const cursorY = mix(940, BOX.y + 8, ramp(f, 0, CLICK - 2, bezier(0.25, 0.6, 0.3, 1)));
+  const press = f >= CLICK && f <= CLICK + 4 ? 0.84 : 1;
+  const cursorOp = 1 - ramp(f, FLY + 2, 8, EASE.out);
+  const flash = f >= CLICK && f <= CLICK + 5 ? 1 - (f - CLICK) / 6 : 0;
 
-  // 输入框初始几何
-  const box0 = { x: CX - 430, y: CY - 60, w: 860, h: 120, r: 26 };
+  // —— 文案飞出（加速）
+  const flyT = ramp(f, FLY, 11, bezier(0.5, 0, 0.9, 0.55));
 
-  // 光标移入 + 点击
-  const cursorX = interpolate(f, [0, CLICK], [1500, box0.x + box0.w - 60], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic),
-  });
-  const cursorY = interpolate(f, [0, CLICK], [900, box0.y + 60], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic),
-  });
-  const press = f >= CLICK && f <= CLICK + 4 ? 0.82 : 1;
-  const cursorGone = interpolate(f, [FLY + 4, FLY + 12], [1, 0], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
-  });
+  // —— morph：五量同一个 spring
+  const m = f < MORPH ? 0 : springAt(f, MORPH, { damping: 15, stiffness: 95, mass: 1 });
+  const flood = ramp(f, 28, 12, EASE.snappy); // 蓝色从发送键漫开
+  const fill = flood;
+  const flat = 1 - Math.min(1, m); // 输入框的投影随 morph 收掉：落定的标志是平的
+  // 拼齐后（让位起点，三块都已落定）把竖笔 + 上下横换成一条完整的取景框路径：
+  // 叠在一起的同色块边缘抗锯齿会叠加，拼缝处出 1px 台阶；同几何换成单一路径后边缘干净
+  const assembled = f >= SHIFT;
+  const shift = ramp(f, SHIFT, 20, EASE.swift);
+  const MX = MX0 + SHIFT_DX * shift;
+  const S = mix(1, END_S, shift); // mark 整体比例（让位时收小）
+  const bx = mix(BOX.x, MX + STEM.x * S, m);
+  const by = mix(BOX.y, MY + STEM.y * S, m);
+  const bw = mix(BOX.w, STEM.w * S, m);
+  const bh = mix(BOX.h, STEM.h * S, m);
+  const br = Math.max(0, mix(BOX.r, 0, Math.min(1, m))); // 圆角收成取景框的直角
+  // morph 速度 → 收缩方向的轻微拖影（只在快段）
+  const mPrev = f - 1 < MORPH ? 0 : springAt(f - 1, MORPH, { damping: 15, stiffness: 95, mass: 1 });
+  const mBlur = Math.min(3, Math.abs(m - mPrev) * 30);
 
-  // 发送键按下反馈
-  const btnFlash = f >= CLICK && f <= CLICK + 6 ? 1 : 0;
+  // 输入框 UI 元素（随 morph 尽早退场，不在中途叠动画）
+  const uiOut = Math.min(1, m * 3);
 
-  // 文字飞走：整行向右上飞出 + 加速
-  const flyT = interpolate(f, [FLY, FLY + 12], [0, 1], {
-    extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.in(Easing.cubic),
-  });
+  // 构造网格 & 十字线：拼装期出现，让位时退场
+  const gridA = 0.55 * ramp(f, MORPH + 10, 20, EASE.out) * (1 - ramp(f, SHIFT, 18, EASE.out)) + 0.25;
+  const constrA = ramp(f, DROPS[0] - 14, 16, EASE.out) * (1 - ramp(f, SHIFT - 4, 16, EASE.out));
 
-  // 输入框 → 主胶囊 morph（几何插值，带一点弹性落定）
-  const m = spring({ frame: f - MORPH, fps, config: { damping: 13, stiffness: 90, mass: 0.9 } });
-  const bx = interpolate(m, [0, 1], [box0.x, FINAL.mainPill.x]);
-  const by = interpolate(m, [0, 1], [box0.y, FINAL.mainPill.y - FINAL.mainPill.h / 2 + 60 - 60]);
-  const bw = interpolate(m, [0, 1], [box0.w, FINAL.mainPill.w]);
-  const bh = interpolate(m, [0, 1], [box0.h, FINAL.mainPill.h]);
-  const br = interpolate(m, [0, 1], [box0.r, FINAL.mainPill.r]);
-  const bColor = m; // 边框白框 → 实心暖白
-
-  // 三粒元素依次从画外上方落下（spring 落定，带轻微过冲）
-  const dropSpring = (i: number) =>
-    spring({ frame: f - DROPS[i], fps, config: { damping: 12, stiffness: 110, mass: 0.85 } });
-
-  // 落定呼吸：整瓣轻微 scale 脉动
-  const breathe = f >= SETTLE ? 1 + 0.03 * Math.sin((f - SETTLE) * 0.18) : 1;
-
-  const dropY = (finalY: number, s: number) => interpolate(s, [0, 1], [-260, finalY]);
-
-  const s0 = dropSpring(0);
-  const s1 = dropSpring(1);
-  const s2 = dropSpring(2);
-
-  const WHITE = '#fdf6ee';
+  // 落定后整组极缓推近
+  const push = 1 + 0.02 * ramp(f, 124, 44, EASE.smooth);
 
   return (
-    <AbsoluteFill style={{ background: BG, fontFamily: 'Helvetica, Arial, sans-serif', overflow: 'hidden' }}>
-      <AbsoluteFill style={{ transform: `scale(${breathe})`, transformOrigin: `${CX}px ${CY - 40}px` }}>
-        {/* 主体：输入框 → 主胶囊 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: bx,
-            top: by,
-            width: bw,
-            height: bh,
-            borderRadius: br,
-            border: `4px solid ${WHITE}`,
-            background: `rgba(253,246,238,${bColor})`,
-            boxSizing: 'border-box',
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 34px',
-            boxShadow: m > 0.6 ? '0 0 60px rgba(253,246,238,0.25)' : 'none',
-          }}
-        >
-          {/* 一行文字（发送后飞走） */}
-          <div
-            style={{
-              fontSize: 44,
-              color: WHITE,
-              whiteSpace: 'nowrap',
-              opacity: (1 - flyT) * (1 - m),
-              transform: `translate(${flyT * 700}px, ${-flyT * 380}px) rotate(${-flyT * 10}deg)`,
-            }}
-          >
-            Ready, set, go!
-            {/* 光标闪烁 */}
-            <span style={{ opacity: Math.floor(f / 8) % 2 === 0 && f < FLY ? 1 : 0 }}>|</span>
+    <AbsoluteFill style={{ overflow: 'hidden', fontFamily: FONT.sans }}>
+      <Stage look={L} keyLight={{ x: 0.42, y: 0.2 }} fill={{ x: 0.9, y: 0.95 }} grain={0.05} vignette={0.2}>
+        {/* 12 栏淡网格 + 基线：瑞士式构造底 */}
+        <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, opacity: gridA }}>
+          {Array.from({ length: 13 }, (_, i) => (
+            <line key={i} x1={96 + i * 144} y1={0} x2={96 + i * 144} y2={1080} stroke={alpha(L.ink, 0.06)} strokeWidth={1} />
+          ))}
+          {[180, 492, 804].map((y) => <line key={y} x1={0} y1={y} x2={1920} y2={y} stroke={alpha(L.ink, 0.05)} strokeWidth={1} />)}
+        </svg>
+      </Stage>
+
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push.toFixed(5)})`, transformOrigin: '960px 540px' }}>
+        {/* 构造十字线：穿过 mark 中心与碗心 */}
+        {constrA > 0.001 && (
+          <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, opacity: constrA }}>
+            <line x1={0} y1={MY + PIECES[0].y * S} x2={1920} y2={MY + PIECES[0].y * S} stroke={alpha(COBALT, 0.28)} strokeWidth={1.2} />
+            <line x1={MX + PIECES[2].x * S} y1={0} x2={MX + PIECES[2].x * S} y2={1080} stroke={alpha(COBALT, 0.28)} strokeWidth={1.2} />
+            <line x1={MX + (STEM.x - STEM.w / 2) * S} y1={0} x2={MX + (STEM.x - STEM.w / 2) * S} y2={1080} stroke={alpha(COBALT, 0.18)} strokeWidth={1.2} strokeDasharray="6 8" />
+            <line x1={0} y1={MY + (STEM.h / 2) * S} x2={1920} y2={MY + (STEM.h / 2) * S} stroke={alpha(COBALT, 0.18)} strokeWidth={1.2} strokeDasharray="6 8" />
+          </svg>
+        )}
+
+        {/* 频道上下文：频道名 + 两条最近消息（发送即退场，给"你每天用的那个输入框"一个真实语境） */}
+        <div style={{
+          position: 'absolute', left: BOX.x - BOX.w / 2 + 8, top: BOX.y - BOX.h / 2 - 410, width: BOX.w - 16,
+          opacity: 1 - ramp(f, FLY + 1, 10, EASE.out), transform: `translateY(${(-24 * ramp(f, FLY + 1, 10, EASE.exit)).toFixed(2)}px)`,
+          filter: f > FLY + 1 ? `blur(${(6 * ramp(f, FLY + 1, 10, EASE.linear)).toFixed(2)}px)` : undefined,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, ...type(34, 650), color: L.ink, paddingBottom: 22, borderBottom: `1px solid ${alpha(L.ink, 0.08)}` }}>
+            <span style={{ color: COBALT, fontWeight: 800 }}>#</span>launch-film
+            <span style={{ ...type(26, 500), color: L.ink3, marginLeft: 'auto' }}>12 members</span>
           </div>
-          {/* 发送键 */}
-          <div
-            style={{
-              marginLeft: 'auto',
-              width: 72,
-              height: 72,
-              borderRadius: 18,
-              background: btnFlash ? '#ffffff' : 'rgba(253,246,238,0.9)',
-              opacity: 1 - m,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transform: `scale(${press})`,
-              flexShrink: 0,
-            }}
-          >
-            {/* 纸飞机三角 */}
-            <svg width={34} height={34} viewBox="0 0 34 34">
-              <path d="M3 17 L31 4 L20 30 L15 19 Z" fill={BG} />
-            </svg>
-          </div>
+          {THREAD.map((msg, i) => (
+            <div key={i} style={{ display: 'flex', gap: 22, marginTop: 30, opacity: i === 0 ? 0.55 : 1 }}>
+              <div style={{ width: 60, height: 60, borderRadius: 18, background: msg.c, flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', ...type(24, 700), color: '#fff' }}>{msg.n[0]}</div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+                  <span style={{ ...type(30, 700), color: L.ink }}>{msg.n}</span>
+                  <span style={{ ...type(24, 500), color: L.ink3 }}>{msg.t}</span>
+                </div>
+                <div style={{ ...type(34, 450), color: L.ink2, marginTop: 6 }}>{msg.m}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* 大圆（第一粒，落在主胶囊左端形成泪滴组合） */}
-        {f >= DROPS[0] && (
-          <div
-            style={{
-              position: 'absolute',
-              left: FINAL.bigDot.x - FINAL.bigDot.d / 2,
-              top: dropY(FINAL.bigDot.y - FINAL.bigDot.d / 2, s0),
-              width: FINAL.bigDot.d,
-              height: FINAL.bigDot.d,
-              borderRadius: '50%',
-              background: WHITE,
-              boxShadow: '0 0 40px rgba(253,246,238,0.2)',
-            }}
-          />
-        )}
+        {/* 主体：输入框 → 取景框竖笔 */}
+        {!assembled && <div style={{
+          position: 'absolute', left: bx - bw / 2, top: by - bh / 2, width: bw, height: bh, borderRadius: br,
+          boxSizing: 'border-box', overflow: 'hidden',
+          background: flood >= 1 ? MARK_INK : '#ffffff', // 灌满后底色也换墨：竖笔边缘不带白边，与横笔拼合无发丝缝
+          boxShadow: `0 0 0 ${(3 * (1 - fill)).toFixed(2)}px ${alpha(COBALT, 0.9 * (1 - fill))}, 0 0 0 ${(9 * (1 - fill)).toFixed(2)}px ${alpha(COBALT, 0.12 * (1 - fill))}, ` +
+            `0 2px 4px ${alpha(L.shadow, 0.06 * flat)}, 0 ${mix(24, 18, m).toFixed(1)}px ${mix(50, 36, m).toFixed(1)}px -18px ${alpha(L.shadow, 0.3 * flat)}`,
+          filter: mBlur > 0.3 ? `blur(${mBlur.toFixed(2)}px)` : undefined,
+        }}>
+          {/* 标志墨色实心：从发送键处圆形漫开（发送 = 把输入框灌成标志的竖笔），全程实色，不经过半透明中间态；
+              灌满后由底色接手（再叠一层同色会让边缘抗锯齿加深） */}
+          {flood < 1 && <div style={{
+            position: 'absolute', inset: 0,
+            clipPath: flood >= 1 ? undefined : `circle(${(flood * Math.hypot(bw, bh)).toFixed(1)}px at ${(bw - 66 * (1 - m)).toFixed(1)}px ${(bh / 2).toFixed(1)}px)`,
+            background: MARK_INK,
+          }} />}
+          {/* 工具图标（纹理级，morph 即退） */}
+          <div style={{ position: 'absolute', right: 132, top: 0, height: BOX.h, display: 'flex', alignItems: 'center', gap: 22, opacity: 1 - uiOut }}>
+            {['M12 5v14M5 12h14', 'M8 9h.01M16 9h.01M8 15q4 3 8 0'].map((d, i) => (
+              <svg key={i} width={34} height={34} viewBox="0 0 24 24" fill="none" stroke={L.ink3} strokeWidth={2} strokeLinecap="round">
+                {i === 1 && <circle cx={12} cy={12} r={9} />}
+                <path d={d} />
+              </svg>
+            ))}
+          </div>
+          {/* 发送键 */}
+          <div style={{
+            position: 'absolute', right: 24, top: (BOX.h - 84) / 2, width: 84, height: 84, borderRadius: 42,
+            background: flash > 0 ? `rgb(${Math.round(mix(36, 140, flash))},${Math.round(mix(70, 160, flash))},255)` : COBALT,
+            boxShadow: `0 6px 16px -6px ${alpha(COBALT, 0.7)}, inset 0 1.5px 0 rgba(255,255,255,0.3)`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transform: `scale(${press})`, opacity: 1 - uiOut,
+          }}>
+            <svg width={38} height={38} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" />
+            </svg>
+          </div>
+        </div>}
 
-        {/* 竖胶囊（第二粒） */}
-        {f >= DROPS[1] && (
-          <div
-            style={{
-              position: 'absolute',
-              left: FINAL.vPill.x - FINAL.vPill.w / 2,
-              top: dropY(FINAL.vPill.y - FINAL.vPill.h / 2, s1),
-              width: FINAL.vPill.w,
-              height: FINAL.vPill.h,
-              borderRadius: FINAL.vPill.r,
-              background: WHITE,
-              boxShadow: '0 0 40px rgba(253,246,238,0.2)',
-            }}
-          />
-        )}
+        {/* 文案（在输入框外层渲染：飞出时不被输入框圆角裁掉） */}
+        <div style={{
+          position: 'absolute', left: BOX.x - BOX.w / 2 + 44, top: BOX.y - BOX.h / 2, height: BOX.h, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap',
+          ...type(44, 450), color: L.ink, opacity: (1 - flyT) * (1 - uiOut),
+          transform: `translate(${(flyT * 760).toFixed(1)}px, ${(-flyT * 420).toFixed(1)}px) rotate(${(-flyT * 9).toFixed(2)}deg)`,
+          filter: flyT > 0.15 ? `blur(${(flyT * 6).toFixed(2)}px)` : undefined,
+        }}>
+          Render the launch film. Ship it.
+          <span style={{ display: 'inline-block', width: 3, height: 50, marginLeft: 6, background: COBALT, opacity: f < FLY && Math.floor(f / 8) % 2 === 0 ? 1 : 0 }} />
+        </div>
 
-        {/* 小圆（第三粒，压在竖胶囊顶端旁） */}
-        {f >= DROPS[2] && (
-          <div
-            style={{
-              position: 'absolute',
-              left: FINAL.smallDot.x - FINAL.smallDot.d / 2,
-              top: dropY(FINAL.smallDot.y - FINAL.smallDot.d / 2, s2),
-              width: FINAL.smallDot.d,
-              height: FINAL.smallDot.d,
-              borderRadius: '50%',
-              background: '#e8b84b',
-              boxShadow: '0 0 40px rgba(232,184,75,0.35)',
-            }}
-          />
+        {/* 构造虚线轮廓（目标槽位） */}
+        {PIECES.map((p, i) => <Guide key={i} f={f} i={i} pts={guidePoints(p, MX + p.x * S, MY + p.y * S, S)} />)}
+
+        {/* 三块图元落下（空中带落影，落定即平） */}
+        {assembled && (
+          <svg width={128 * U * S} height={128 * U * S} viewBox="0 0 128 128"
+            style={{ position: 'absolute', left: MX - 64 * U * S, top: MY - 64 * U * S, overflow: 'visible' }}>
+            <path d={MARK_PATHS.frame} fill={MARK_INK} />
+          </svg>
         )}
-      </AbsoluteFill>
+        {PIECES.map((p, i) => {
+          if (f < DROPS[i] || (assembled && !p.cut)) return null;
+          const s = dropAt(f, i);
+          const v = (s - dropAt(f - 1, i)) * DROP_H; // 每帧下落像素（回弹时为负）
+          const k = Math.max(-1, Math.min(1, v / 70));
+          const sy = 1 + 0.14 * k;
+          const sx = 1 - 0.09 * k;
+          const w = p.w * S;
+          const h = p.h * S;
+          const top = MY + p.y * S - h / 2 - (1 - s) * DROP_H;
+          const air = Math.max(0, Math.min(1, (1 - s) * 3));
+          const shadow = air > 0.01 ? `drop-shadow(0 ${(14 * air).toFixed(1)}px ${(16 * air).toFixed(1)}px ${alpha('#1a1a10', 0.35 * air)})` : '';
+          const blur = Math.abs(v) > 14 ? `blur(${Math.min(3, Math.abs(v) * 0.03).toFixed(2)}px)` : '';
+          return (
+            <div key={i} style={{
+              position: 'absolute', left: MX + p.x * S - w / 2, top, width: w, height: h,
+              background: p.cut ? undefined : p.color,
+              transform: `scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`, transformOrigin: '50% 100%',
+              filter: [blur, shadow].filter(Boolean).join(' ') || undefined,
+            }}>
+              {p.cut && (
+                <svg width={w} height={h} viewBox="56 48 64 36" preserveAspectRatio="none" style={{ display: 'block', overflow: 'visible' }}>
+                  <path d="M92 48h28L84 84H56l36-36Z" fill={p.color} />
+                </svg>
+              )}
+            </div>
+          );
+        })}
+
+        {/* 字标 + 口号 */}
+        {/* 字标起点 = 取景框可见右缘（斜切尖 x=120）+ 60px，随 mark 位置 / 比例走 */}
+        <div style={{
+          position: 'absolute', left: MX + (120 - 64) * U * S + 60, top: MY - 4, transform: 'translateY(-50%)',
+          fontFamily: BRAND.font, fontSize: 110, fontWeight: 700, lineHeight: 1, letterSpacing: '0.03em', color: MARK_INK, whiteSpace: 'nowrap',
+        }}>
+          <TextReveal text={BRAND.name} by="char" variant="rise" start={WORD} each={16} gap={1.5} ease={EASE.snappy} />
+        </div>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: MY + 190, textAlign: 'center', ...type(46, 450), color: L.ink2 }}>
+          <TextReveal text={PITCH.en.taglines[0]} by="word" variant="rise" start={WORD + 16} each={16} gap={3} ease={EASE.out} />
+        </div>
+      </div>
 
       {/* 光标 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: cursorX,
-          top: cursorY,
-          opacity: cursorGone,
-          transform: `scale(${press})`,
-          zIndex: 50,
-        }}
-      >
-        <svg width={40} height={44} viewBox="0 0 40 44">
-          <path
-            d="M4 2 L4 34 L13 26 L19 40 L26 37 L20 23 L32 22 Z"
-            fill="#ffffff"
-            stroke={BG}
-            strokeWidth={2}
-          />
+      {cursorOp > 0.001 && (
+        <svg width={40} height={46} viewBox="0 0 40 44" style={{
+          position: 'absolute', left: cursorX, top: cursorY, opacity: cursorOp, transform: `scale(${press})`, transformOrigin: '4px 2px',
+          filter: `drop-shadow(0 4px 8px ${alpha(L.shadow, 0.3)})`,
+        }}>
+          <path d="M4 2 L4 34 L13 26 L19 40 L26 37 L20 23 L32 22 Z" fill={L.ink} stroke="#ffffff" strokeWidth={2.2} strokeLinejoin="round" />
         </svg>
-      </div>
+      )}
     </AbsoluteFill>
   );
 };

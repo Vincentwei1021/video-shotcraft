@@ -1,0 +1,18 @@
+{
+  "stem": "SteepTiltGlide",
+  "changed": true,
+  "brand": [
+    "顶栏标题：蓝色方块 + 「ClickUp 3.0」→ video-shotcraft 标志 + 「video-shotcraft」字标；tab「Product analytics / Widget brainstorm / Design system / Design」→「Shot recipes / Launch storyboard / Camera moves / Renders」",
+    "侧栏 ClickUp 彩色 logo + 「ClickUp」→ video-shotcraft 标志 + 「Shotcraft」",
+    "主区灰砖里的 Dropbox 图标 → 墨色 + 琥珀斜纹的场记板图标",
+    "小组件与右段列表换成 video-shotcraft 的工作内容：Sprint 24 / Due this week / Velocity → Render queue / Shot list / Renders；「Product Management」→「Launch film shots」，任务行 → Crash zoom opener / Steep tilt glide / Beat-synced cuts / Logo sting"
+  ],
+  "brandEn": [
+    "Header title: blue square + \"ClickUp 3.0\" → video-shotcraft mark + \"video-shotcraft\" wordmark; tabs \"Product analytics / Widget brainstorm / Design system / Design\" → \"Shot recipes / Launch storyboard / Camera moves / Renders\"",
+    "Sidebar ClickUp gradient logo + \"ClickUp\" → video-shotcraft mark + \"Shotcraft\"",
+    "Dropbox glyph in the main-area tile → ink-and-amber clapperboard icon",
+    "Widgets and right-hand list now show video-shotcraft work: Sprint 24 / Due this week / Velocity → Render queue / Shot list / Renders; \"Product Management\" → \"Launch film shots\" with shot rows Crash zoom opener / Steep tilt glide / Beat-synced cuts / Logo sting"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

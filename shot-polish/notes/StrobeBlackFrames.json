@@ -1,0 +1,31 @@
+{
+  "stem": "StrobeBlackFrames",
+  "issues": [
+    "灰底占位 dashboard，频闪前后画面都是灰条，没有“高潮前倒数”的对象",
+    "黑帧之间的画面没有任何变化，只有暗角在变，压强感很弱",
+    "落锤后只是放大到一张空白卡 + 细选中环，释放感不足",
+    "冷灰配色与靛蓝选中环平淡，没有预告片气质"
+  ],
+  "changes": [
+    "look 自定义（石墨近黑 + 信号红）：院线预告片式发布海报，2.39:1 遮幅黑边，居中 210px 超粗字标「PARALLAX」（虚构相机引擎），蓄压段是 SVG 遮罩做的干净空心描边",
+    "频闪即倒计时：黑闪 [44…83] 各 2f、间隔 8→3f 收敛，每闪右上 T–10→T–01 跳一格 + 刻度点亮；暗角 0.5→0.92、字标背后红色变形镜头光条随闪次拉长",
+    "落锤一帧四件事：零补间硬切 1.35×（CSS zoom 按目标尺寸栅格化）、遮幅撤掉、空心字变实心白、红光条炸满全宽，叠 2f 压暗 0.82",
+    "余波：「AVAILABLE NOW」升起、三项规格（8K / 240 fps / 0.9 kg）4f 错峰升起；光条 18f 衰减到 0.45",
+    "时间表 150f：0–30f 眉题字距收紧 + 空心字标 track 入场，全程 1.0→1.06 ease-in 蓄压推近，落锤后 40f hold 只留 2% 极缓推进"
+  ],
+  "issuesEn": [
+    "Grey placeholder dashboard: nothing on screen for the 'countdown before the climax' to be about",
+    "Between black frames the picture never changes, only the vignette does, so the pressure barely builds",
+    "The slam just zooms into an empty card with a thin selection ring; little release",
+    "Cool grey palette with an indigo ring: flat, nothing trailer-like"
+  ],
+  "changesEn": [
+    "Custom look (graphite near-black + signal red): a theatrical teaser poster with 2.39:1 letterbox and a 210px ultra-bold 'PARALLAX' wordmark (fictional camera engine), drawn as a clean hollow outline via an SVG mask during the build-up",
+    "The strobe is the countdown: black flashes [44...83], 2f each, gaps converging 8 to 3f; each flash ticks T-10 to T-01 and lights a pip, vignette tightens 0.5 to 0.92 and a red anamorphic streak grows behind the wordmark",
+    "The slam does four things in one frame: zero-tween hard cut to 1.35x (CSS zoom, rasterized at target size), letterbox removed, hollow wordmark turns solid white, red streak blows out full width, plus a 2f 0.82 darken",
+    "Aftermath: 'AVAILABLE NOW' rises, three specs (8K / 240 fps / 0.9 kg) rise 4f apart; streak decays to 0.45 over 18f",
+    "150f timeline: eyebrow tracking tightens and hollow wordmark tracks in over 0-30f, 1.0 to 1.06 ease-in push throughout the build, 40f post-slam hold with a 2% creep"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

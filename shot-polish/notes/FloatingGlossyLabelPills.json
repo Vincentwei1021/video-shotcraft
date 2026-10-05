@@ -1,0 +1,33 @@
+{
+  "stem": "FloatingGlossyLabelPills",
+  "issues": [
+    "四块面板是灰色骨架条线框稿，暂停任一帧都看不出是什么页面、什么功能",
+    "浅灰白底 + 灰蓝胶囊，整体发灰没有光，胶囊高光是一块硬边矩形，玻璃感廉价",
+    "胶囊文案是 Feature A–D 占位，面板与胶囊在 480×270 设计坐标里，字小到读不清",
+    "走廊只有缩放和下沉，没有纵深；换位是整条硬平移，没有速度感",
+    "末段光标只是滑到位静止，面板居中时内容也不动，hold 段是死帧"
+  ],
+  "changes": [
+    "换 aurora 暗场（紫粉极光主光 + 地平线光带 + 紫色地面反光 + 浮尘），面板改带色相的深色玻璃（发丝线、顶沿受光、两层深影），去掉 DesignStage 按 1920 原生排版",
+    "胶囊重做成糖果玻璃：四段紫渐变 + 粉色底部反光 + 裁进圆角的椭圆高光 + 图标，居中者加紫色泛光并在面板顶沿洒一抹溢光；胶囊极缓漂浮",
+    "内容换成虚构产品 Halo 的四个功能屏（Compose / Insights / Automate / Publish），每屏一个主信息、要读的字 ≥30px；每块居中时主元素做一个小动作（打字、数字+曲线描出、光点走线、开关打开）",
+    "走廊加纵深：邻位缩到 0.62、下沉 120px、朝外侧转 16°、压暗 50% + 2.2px 虚化；换位按速度加横向运动模糊，胶囊晚约 2f 落定",
+    "节奏改为越巡越快：三拍 26f（带长尾）/ 20f / 18f，hold 16f → 12f；末段光标硬现斜滑到末位胶囊后点按（下压 5% + 弹回）并给一次单次扫光，全程极缓推近；时长 120→168f"
+  ],
+  "issuesEn": [
+    "All four panels were grey skeleton wireframes — no paused frame told you what page or feature it was",
+    "Light grey background with blue-grey pills: everything looked washed out and unlit, and the pill gloss was a hard-edged rectangle",
+    "Pill labels were Feature A–D placeholders, and with everything authored in 480×270 design units the text was too small to read",
+    "The corridor had only scale and sink, no depth; swaps were a rigid translation with no sense of speed",
+    "The cursor just slid into place and stopped, and centred panels never moved, so the holds were dead frames"
+  ],
+  "changesEn": [
+    "Aurora dark stage (violet-pink key light, horizon band, violet floor glow, dust); panels are hue-tinted dark glass with hairline edges, a lit top edge and two-layer deep shadows, laid out natively at 1920 without DesignStage",
+    "Pills rebuilt as candy glass: four-stop violet gradient, pink bounce light, an elliptical highlight clipped to the radius, and an icon; the centred pill glows and spills violet light onto its panel's top edge, and pills float gently",
+    "Content is now four feature screens of a fictional product, Halo (Compose / Insights / Automate / Publish), one key message each with readable text ≥30px; each panel's hero element performs a small action when centred (typing, count-up + chart draw, pulse along the workflow, toggle on)",
+    "Corridor depth: neighbours scale to 0.62, sink 120px, turn outward 16°, dim 50% and blur 2.2px; swaps get velocity-based horizontal motion blur and the pills settle about 2f after the panels",
+    "Rhythm accelerates through the tour: beats of 26f (with long tail) / 20f / 18f, holds 16f → 12f; the cursor pops in, glides to the last pill, clicks (5% press + spring back) and triggers a single sheen; slow push throughout; duration 120→168f"
+  ],
+  "mdChanged": true,
+  "look": "aurora"
+}

@@ -1,0 +1,33 @@
+{
+  "stem": "CardFootageCadence",
+  "issues": [
+    "UI 段是灰色通用 dashboard 占位图，三段裁切看到的都是灰条，画面不讲任何事",
+    "字卡是黑底居中的 SHIP / FASTER / TODAY，和 UI 段同一冷灰调，色彩上没有对话感",
+    "8f 字卡 + 10–12f UI 段的切换里，UI 段之间没有因果，读不出「画面做一件事、字卡说一个词」",
+    "收尾全景是同一张灰色列表，没有落点"
+  ],
+  "changes": [
+    "custom look：字卡满版克莱因蓝 + 米白粗黑体，UI 段为暗场周视图日历「Plover」（虚构）——字卡与画面在色温上一冷一暖、一亮一暗地接拍",
+    "UI 三段各讲一件事：A 全景 ease-in 推近、光标驶向 Design review → B 1.7x 裁切把它从周二拖到周四（拾起 + 原位虚线残影）→ C 2.2x 裁切落位弹跳 + 「Everyone's free · invites sent」提示条弹出；全部 CSS zoom 栅格化，字边锐利",
+    "字卡改瑞士网格：左对齐 300px「Plan. / Move. / Done.」+ 页码 01—03 + 发丝线 + 一行注脚，第三张反白（米白底蓝字）做高潮变奏；只在前 5f 1.05→1 落定，其余全静",
+    "切点重排为 16/26/40/50/62/72，字卡 10f、UI 段 12–16f，全部条件挂载硬切",
+    "收尾全景是拖好的周视图 + 提示条，72–120f 极缓推近 1→1.03，之后真静止 45f",
+    "时长 150f → 165f"
+  ],
+  "issuesEn": [
+    "The UI segments were grey generic dashboard placeholders; all three crops showed grey bars and told no story",
+    "The title cards were SHIP / FASTER / TODAY centred on black, in the same cool grey as the UI, so the colours never talked to each other",
+    "With 8f cards and 10–12f UI shots there was no cause and effect between UI segments, so it never read as 'the picture does something, the card says a word'",
+    "The closing wide was the same grey list with nothing to land on"
+  ],
+  "changesEn": [
+    "Custom look: title cards are full-bleed Klein blue with cream heavy type, and the UI is a dark week-view calendar 'Plover' (fictional), so cards and footage trade light/dark and warm/cool on every cut",
+    "Each UI segment does one thing: A is a wide ease-in push as the cursor heads for Design review, B is a 1.7x crop dragging it from Tuesday to Thursday (lift plus a dashed ghost in the old slot), C is a 2.2x crop where it lands with a bounce and an 'Everyone's free · invites sent' toast pops up; all crops use CSS zoom so text stays sharp",
+    "Title cards use a Swiss grid: left-aligned 300px 'Plan. / Move. / Done.' with a 01—03 page number, a hairline and a one-line footnote, and the third card is inverted (cream ground, blue type) as the climax; each only settles 1.05→1 in the first 5f and is otherwise still",
+    "Cuts are re-timed to 16/26/40/50/62/72: 10f cards, 12–16f UI shots, all hard cuts by conditional mounting",
+    "The closing wide shows the rearranged week with the toast, pushes 1→1.03 very slowly over 72–120f, then holds truly still for 45f",
+    "150f → 165f"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

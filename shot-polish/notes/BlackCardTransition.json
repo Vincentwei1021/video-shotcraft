@@ -1,0 +1,31 @@
+{
+  "stem": "BlackCardTransition",
+  "issues": [
+    "前后两景是满屏平贴的截图，淡入淡出就是整屏叠黑，没有舞台和光",
+    "字卡 96px 居中一行半，第二行孤零零一个词，版式松散",
+    "副行等宽字只有 28px，读不清；黑场大面积空着，构图没有重心",
+    "节奏平均：淡出、压印、退场、淡入都是同一种软切，缺少\"熄灯—亮灯\"的仪式感"
+  ],
+  "changes": [
+    "look 换成 ember 暖黑影院：两景都是浮在暖黑舞台上的产品窗口（真实截图纹理），舞台顶部有主光",
+    "淡入黑场改成\"熄灯\"：主光收暗、窗口亮度自下而上落下，相机带着前镜惯性继续轻推 4%；后镜反向\"开灯\"从暗里被照亮并 1.05→1 落定",
+    "字卡改成左对齐电影章节版式：CHAPTER 02 眉题 + 132px 两行大标题逐词压印（1.16×/虚 10px→实，前密后疏），关键词琥珀→橙渐变",
+    "右侧巨型描边章节号「02」由琥珀光沿轮廓画出，底部四段章节进度条点亮第 2 章，填满黑场的构图重心",
+    "时间表 140f：熄灯 18f → 压印 24f → 完整字卡 hold 30f（极缓前推 1.5%）→ 上浮虚化退场 → 开灯 18f → B hold"
+  ],
+  "issuesEn": [
+    "Both scenes were flat full-bleed screenshots and the fade was a plain full-frame dip to black, with no stage or light",
+    "The 96px centred title wrapped into a line and a half, leaving one orphan word on line two",
+    "The 28px mono subline was unreadable and the black frame was mostly empty with no visual anchor",
+    "Even rhythm: fade-out, imprint, exit and fade-in were all the same soft dissolve, with no lights-down ceremony"
+  ],
+  "changesEn": [
+    "Warm ember cinema look: both scenes are product windows (real screenshot textures) floating on a warm black stage under a top key light",
+    "The dip to black is now a lights-down: the key light dims and the window darkens bottom-up while the camera keeps a 4% inertial push; the next scene is lit back up and settles from 1.05 to 1",
+    "The card is a left-aligned film chapter layout: CHAPTER 02 kicker plus a 132px two-line headline imprinted word by word (1.16x/10px blur to sharp, dense then loose), key words in an amber-to-orange gradient",
+    "A giant outlined 02 is traced in amber on the right and a four-part chapter bar lights up chapter 2, anchoring the empty dark frame",
+    "140f timeline: 18f lights-down, 24f imprint, 30f full-card hold with a 1.5% creep, blurred rise-out, 18f lights-up, then B hold"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

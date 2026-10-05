@@ -1,0 +1,16 @@
+{
+  "stem": "NeedleSweepSelftest",
+  "changed": true,
+  "brand": [
+    "卡头左侧加 video-shotcraft 标志，标题「System health」→「Render node health」",
+    "副标题「edge-cluster-02 · 3 sensors」→「video-shotcraft · render-node-02 · 3 sensors」",
+    "自检完成状态「All systems nominal」→「Ready to render」；中间表 Memory → GPU"
+  ],
+  "brandEn": [
+    "Added the video-shotcraft mark to the card header; title \"System health\" → \"Render node health\"",
+    "Subtitle \"edge-cluster-02 · 3 sensors\" → \"video-shotcraft · render-node-02 · 3 sensors\"",
+    "Self-test done status \"All systems nominal\" → \"Ready to render\"; middle gauge Memory → GPU"
+  ],
+  "styleKey": "needle-sweep-selftest",
+  "mdChanged": true
+}

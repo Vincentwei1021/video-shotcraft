@@ -1,0 +1,31 @@
+{
+  "stem": "DollyZoomReal",
+  "issues": [
+    "浅灰暖底上主体卡和背景卡群同为白卡，主角只靠落影区分，视线没有被钉住",
+    "背景只有整页 + 一圈卡 + 搜索条三层，膨胀读起来更像\"背景放大\"而不是空间被拉伸",
+    "定格段 25 帧没有任何信息落版，尾帧不是海报",
+    "整体色调平，推拉的压迫感只靠暗角轻收"
+  ],
+  "changes": [
+    "换 midnight look（深蓝 + 电光蓝）：暖白截图卡成为画面里唯一的亮面，身后电光蓝背光随推拉增强，视线被钉住",
+    "空间做成一条走廊：8 道等物理尺寸的 16:9 框线（δ 0.3…7）从主体身后\"长\"出来 + 透视棱线 + 墙上 6 张 multiply 到深蓝的真实卡 + 镜头前一层反向内收的散景（δ=−0.35）",
+    "膨胀仍按真实光学 R(1+δ)/(R+δ)，行程加到 R 1→2.4（98f 不对称 in-out），景深随焦距变浅、暗角 0.3→0.65 收紧",
+    "新增落版：眉题「Focus mode · Project 04」字距收拢 + 120px 标题「Tune out the noise.」逐词升起；hold 段 R 继续 2.4→2.46 极缓呼吸",
+    "时长 135→150f；模糊从整层全屏挪到小元素上，渲染 71s→21s"
+  ],
+  "issuesEn": [
+    "On a pale warm background the subject and the background cards were all white cards, separated only by shadow, so the eye wasn't pinned",
+    "The background had only three layers (page, a ring of cards, a search bar), so the expansion read as 'background zooms' rather than space stretching",
+    "The 25-frame hold had no title or information, so the last frame wasn't a poster",
+    "Flat overall tone; the pressure of the move relied only on a light vignette tightening"
+  ],
+  "changesEn": [
+    "Midnight look (deep blue + electric blue): the warm-white screenshot card becomes the only bright surface, with an electric-blue backlight that grows during the move, pinning the eye",
+    "The space is now a corridor: eight equal-size 16:9 frames (δ 0.3…7) grow out from behind the subject, plus perspective edges, six real cards multiplied into deep blue on the walls, and a layer of foreground bokeh (δ=−0.35) that shrinks inward",
+    "Expansion still follows the true optics R(1+δ)/(R+δ), now with a longer R 1→2.4 stroke (98f asymmetric in-out); depth of field shallows with focal length and the vignette tightens 0.3→0.65",
+    "New end title: the kicker “Focus mode · Project 04” tracks in and a 120px headline, “Tune out the noise.”, rises word by word; during the hold R keeps creeping 2.4→2.46",
+    "Duration 135→150f; blur moved from a full-screen layer onto small elements, cutting render time 71s→21s"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "GlassPillDictationTyping",
+  "issues": [
+    "480×270 设计坐标放大，胶囊只占画面中间一条，21px（×4）字与 30px 图标在成片里仍显小",
+    "近黑底 + 紫光，与库里其他暗场紫色 UI 撞色，画面除胶囊外几乎全黑",
+    "只有 50f（1.7s），落位、打字、光退挤在一起，没有落定后的 hold",
+    "\"光退\"只发生在胶囊里，环境不跟着变，因果感弱"
+  ],
+  "changes": [
+    "look 改 sand 午后日光亮场：胶囊背后一轮暖色\"太阳\"和几团柔光，胶囊用 backdrop-filter 真磨砂把它们晕开",
+    "主体放大到 1240×132 胶囊、56px 听写字、92px 圆形声波按钮；材质有白色体积渐变、顶沿高光线、底缘内暗边、暖色两层落地影",
+    "光退做满因果：同一个 g 同时熄灭胶囊内赤陶→杏色渐层、背后的暖光、地面反光，声波按钮从实心暖色退成描边中性",
+    "时长 50f → 100f：落位 snappy 20f（前 14f 景深收焦）、打字 2f/字匀速 28 字、光退 smooth 62f、尾段 26f hold",
+    "画面只加一枚静态品牌小标「Wren · speak or type」，保持全片最安静的一拍"
+  ],
+  "issuesEn": [
+    "Built on a 480×270 design stage — the pill is a thin strip, and 21px (×4) text and a 30px icon still feel small",
+    "Near-black with violet light, clashing with other dark purple UI shots; everything but the pill is black",
+    "Only 50f (1.7s): landing, typing and the light fade are crammed together with no settled hold",
+    "The light only fades inside the pill; the environment doesn't react, so the cause-and-effect is weak"
+  ],
+  "changesEn": [
+    "Sand look in afternoon daylight: a warm 'sun' and soft light blobs sit behind the pill, which uses real backdrop-filter frosting to diffuse them",
+    "Subject enlarged to a 1240×132 pill, 56px dictation text and a 92px round waveform button, with white volume gradient, top rim highlight, inner bottom shade and a warm two-layer shadow",
+    "Full causality: one g value fades the terracotta→apricot inner gradient, the sun behind, the floor bounce and turns the waveform button from solid warm to neutral outline",
+    "50f → 100f: snappy 20f landing (14f focus pull), uniform 2f/char typing of 28 chars, smooth 62f light fade, 26f hold",
+    "Only one static brand mark 'Wren · speak or type' added, keeping it the quietest beat"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

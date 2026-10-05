@@ -1,0 +1,31 @@
+{
+  "stem": "OverheadTabletopDrop",
+  "issues": [
+    "浅灰桌面 + 三张灰色占位 dashboard，平躺时只是一排灰块，看不出是三张不同的页面",
+    "横滑后直接扎入，没有\"选中这张\"的那一拍，扎入的目标读起来是随机的",
+    "落版满屏是通用小字 dashboard，字只有 10–20px，尾帧不是海报",
+    "落版后 47f 完全静止，死帧"
+  ],
+  "changes": [
+    "look 换成 graphite：深石墨哑光台面 + 发丝网格，三盏顶灯各打一个光池和一束体积光，暗桌白稿的反差撑起层次",
+    "三张样稿重做为虚构产品「Fieldwork」官网的定价 / 首页 / 更新日志，每张下方一枚印刷标签（01 PRICING / 02 HOME / 03 CHANGELOG），横滑时也是相机运动参照",
+    "时间表加一拍「选定」：50f 横滑停住后 8f 内目标稿离桌 16px、它的顶灯更亮、左右两盏暗到 35%、标签编号转金，然后 58–86f 三通道同跑扎入",
+    "落版尾帧是 150px 两行大标题「Plan the work. / Not the meeting.」（无衬线粗体 + 衬线斜体）+ 右侧日程产品图，安全边距 ≥120px",
+    "落版后页面内一个小动作：金色「Launch review」日程块滑入周三空槽、一次过冲落座，同列两块让位；hold 段极缓推近 1.2%"
+  ],
+  "issuesEn": [
+    "A pale grey desk with three grey placeholder dashboards: lying flat they were just a row of grey blocks, not three different pages",
+    "The pan went straight into the dive with no 'this one' beat, so the target felt random",
+    "The full-screen landing was a generic small-text dashboard (10–20px type), so the last frame was not a poster",
+    "47 completely static frames after landing"
+  ],
+  "changesEn": [
+    "Graphite look: a dark matte slate desk with hairline grid, three overhead lamps each casting a light pool and a soft beam; white prints on a dark desk give the depth",
+    "The three prints are now the pricing, home and changelog pages of a fictional product 'Fieldwork', each with a printed desk tag (01 PRICING / 02 HOME / 03 CHANGELOG) that also shows the camera moving",
+    "A new selection beat: after the 50f pan stops, within 8f the target lifts 16px, its lamp brightens, the other two dim to 35% and its tag number turns gold; then all three channels dive together from 58f to 86f",
+    "The landed frame is a poster: a 150px two-line headline 'Plan the work. / Not the meeting.' (heavy sans plus serif italic) with a weekly planner product shot, margins of at least 120px",
+    "One small in-page action after landing: a gold 'Launch review' block slides into Wednesday's empty slot with one overshoot while the column below makes room; a 1.2% push-in keeps the hold alive"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

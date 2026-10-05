@@ -1,0 +1,18 @@
+{
+  "stem": "ComicPanelSplit",
+  "changed": true,
+  "brand": [
+    "镜名环「SAROS 35mm 1:1.2 ASPH · MADE FOR NIGHT」→「video-shotcraft 35mm 1:1.2 · FRAME MOTION · CRAFT THE SHOT」",
+    "三个旁白框「Saros 35 / The night lens.」「Focus by hand」「Wide open」→「Shot 01 · Wide / Frame motion.」「Shot 02 · Close」「Shot 03 · Macro」",
+    "海报眉题「Saros Optics · 35mm」→ video-shotcraft 标志 + 字标；大标题「See in the dark.」→「Craft the shot.」",
+    "副标题「f/1.2 · eleven blades · focus by hand」→「Three angles, cut on the beat.」"
+  ],
+  "brandEn": [
+    "Lens name ring \"SAROS 35mm 1:1.2 ASPH · MADE FOR NIGHT\" → \"video-shotcraft 35mm 1:1.2 · FRAME MOTION · CRAFT THE SHOT\"",
+    "Captions \"Saros 35 / The night lens.\", \"Focus by hand\", \"Wide open\" → \"Shot 01 · Wide / Frame motion.\", \"Shot 02 · Close\", \"Shot 03 · Macro\"",
+    "Poster eyebrow \"Saros Optics · 35mm\" → video-shotcraft mark + wordmark; headline \"See in the dark.\" → \"Craft the shot.\"",
+    "Subtitle \"f/1.2 · eleven blades · focus by hand\" → \"Three angles, cut on the beat.\""
+  ],
+  "styleKey": "comic-panel-split",
+  "mdChanged": true
+}

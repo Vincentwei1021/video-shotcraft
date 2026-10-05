@@ -1,0 +1,33 @@
+{
+  "stem": "CursorCastEnsemble",
+  "issues": [
+    "灰阶画布上便签只有 18–21px 小字，整张画面像占位稿",
+    "五枚光标和名牌偏小（13.5px 名牌），\"团队在场\"只能靠颜色认",
+    "Rita 打字时箭头和插入点各算各的，箭头停在句尾附近而不是跟着字走",
+    "画面没有空间层次与界面上下文（没有板名、在线头像、工具条），读不出是白板产品"
+  ],
+  "changes": [
+    "look 改 porcelain，做成为镜头设计的白板：左上板名、右上在线头像组、底部浮动工具条、点阵画布、6 张 36px 可读便签 + 中央大简报卡",
+    "身份编码三处一致：五人五色光标 / 便签作者色淡彩底与圆点 / 头像组随每人入场同帧弹出（槽宽随弹出长，不留空位）",
+    "Rita 的箭头挂在行内插入点锚点上，88px 标题 \"Ship the beta to 2,000 teams.\" 带人手节奏逐字出现，换行也跟着走；打完卡片 Draft → Ready、进度 38% → 72%",
+    "四层空间：画布 / 便签（远层虚化降对比）/ 简报卡 / 光标，全程 1→1.045 极缓推镜，远层视差更小",
+    "聚拢位重排到卡片四周，任何名牌都不压标题与眉题；漂移保留 25%，hold 段画面仍活着",
+    "时长 140f → 156f"
+  ],
+  "issuesEn": [
+    "Grayscale canvas with 18–21px sticky text; the whole frame reads like a placeholder",
+    "Cursors and 13.5px tags are small; 'the team is here' only reads through color",
+    "Rita's arrow and the text caret are positioned independently, so the arrow parks near the line end instead of riding the caret",
+    "No depth and no product context (no board name, presence avatars or toolbar) — it doesn't read as a whiteboard app"
+  ],
+  "changesEn": [
+    "Porcelain look with a board designed for camera: board name, live avatar stack, floating toolbar, dot-grid canvas, six readable 36px stickies and a large central brief card",
+    "Identity coded three ways: five cursor colors, sticky tints and author dots, and presence avatars that pop in the same frame each person arrives (slots grow, no gaps)",
+    "Rita's arrow is attached to an inline caret anchor; the 88px title 'Ship the beta to 2,000 teams.' types with human jitter and the arrow follows across the line wrap; the card then flips Draft → Ready and 38% → 72%",
+    "Four depth layers (canvas, blurred far stickies, brief card, cursors) with a slow 1→1.045 push and reduced parallax on the far layer",
+    "Gather positions re-laid around the card so no tag covers the title or eyebrow; 25% drift kept so the hold stays alive",
+    "140f → 156f"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

@@ -1,0 +1,16 @@
+{
+  "stem": "WhiteFlashLogoSimplifyCut",
+  "changed": true,
+  "brand": [
+    "虚构字标「Vela.」（液态与扁平两版）→ video-shotcraft 字标（全小写、字标字体，字号 300→190 以容纳 15 字符，两版仍同字号同位置）",
+    "扁平定妆段眉题「Vela Design System · 2.0」→ 字标上方镜刻标志描出（取景框揭开 → 琥珀斜切划入）；副标「Interfaces, distilled.」→ 品牌短句「Frame motion. Craft the shot.」",
+    "扁平段品牌常量收编为 video-shotcraft 色：冷紫白纸 / 墨 / 紫色短线 → 剪辑纸 / 片场墨 / 镜琥珀短线（液态段虹彩保留）"
+  ],
+  "brandEn": [
+    "Fictional wordmark \"Vela.\" (liquid and flat versions) → the video-shotcraft wordmark (all lowercase, wordmark font, size 300→190 to fit 15 characters; both versions still share size and position)",
+    "Flat lock-up eyebrow \"Vela Design System · 2.0\" → Frame Chisel mark drawn on above the wordmark (frame reveals, then the amber cut slides in); subline \"Interfaces, distilled.\" → brand motto \"Frame motion. Craft the shot.\"",
+    "Flat-stage brand constants re-mapped to video-shotcraft: cool violet paper / ink / violet rule → editing paper / set ink / amber rule (liquid-stage iridescence kept)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

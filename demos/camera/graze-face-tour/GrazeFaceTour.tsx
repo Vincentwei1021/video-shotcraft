@@ -1,29 +1,47 @@
-// graze-face-tour v2 —— 源片 clickup-30.mp4 约 28.5–33s：
+// graze-face-tour v3 —— 源片 clickup-30.mp4 约 28.5–33s：
 // 相机大倾角贴着 UI 表面游走特写，三段接力：侧栏树 → 顶部 tab 条 → 列表行。
 // v2（用户意见）：页面文字初始悬浮在界面上空（3D 抬高），空中时在 UI 面上
 // 投模糊同形软影；随镜头推进先后落贴回界面，影子随高度收敛消失。
+// v3 质感升级：
+// - 灰阶骨架 UI（Helvetica 回退、5px 粗边框图标、CSS 三角）→ 出版级浅色产品 UI：系统字体栈、
+//   字重层级、统一线性 SVG 图标、3px 发丝线（界面按 ~2.7x 排版，等效 1px）、单一靛紫强调色
+//   （选中行 / List 视图 / 徽标），与霓虹缘光同色系。
+// - 品牌轮：界面就是 video-shotcraft 的工作区——侧栏标志 + 字标、活动 tab 的标志图标，
+//   树 / 卡片 / 任务行的内容换成镜头配方卡、分镜、渲染队列（行数与文字长度按原版保持）。
+// - 运镜不再"段段刹停"：中段匀速巡航、首段缓起、末段缓落，交叉淡化窗口里相机继续外推
+//   （旧版淡化期 t 被钳住 = 每次接力都有 7f 静止），并带 ±1° 的缓慢滚转，持续"低飞"。
+// - 同形软影改纯色压暗（不再是灰字重影），落地瞬间收成贴地接触影；背景霓虹框改发光描边、
+//   随相机反向视差漂移；暗角改带色相的深色，不再把亮面 UI 压成脏灰；加暗场颗粒。
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame, Easing } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+import { FONT, Grain, Vignette, bezier } from '../../_fixtures/Polish';
+import { ShotcraftMark, ShotcraftWordmark } from '../../_fixtures/Brand';
 
-const FONT = 'Helvetica, Arial, sans-serif';
-const INK = '#3a3a40';
-const MID = '#8b8b92';
-const FAINT = '#c8c8ce';
+export const GRAZE_FACE_TOUR_DURATION = 150; // 三段 × 50f
 
-const easeIO = Easing.bezier(0.45, 0, 0.25, 1);
-const easeFall = Easing.bezier(0.5, 0.05, 0.6, 1); // 加速下落、末端软着陆
+const INK = '#17181c';
+const INK2 = '#5d6068';
+const INK3 = '#9a9ca5';
+const LINE = 'rgba(20,22,28,0.085)';
+const SURF = '#f8f8f9';
+const SIDE = '#f2f2f4';
+const ACC = '#7457f5';
+const ACC_SOFT = 'rgba(116,87,245,0.11)';
+const SANS = FONT.sans;
+
+const easeFall = bezier(0.5, 0.05, 0.6, 1); // 加速下落、末端软着陆
 
 /* ---------- 悬浮 + 同形软影 ----------
- * h=悬浮高度(px)。文字整体向上（屏幕上-左）抬起，
- * 原位置留一份模糊压暗的同形投影；h→0 时两者重合、影子消失。 */
+ * h=悬浮高度(px)。文字整体向上（屏幕上-左）抬起，原位置留一份纯色压暗的同形投影：
+ * 高处影大、糊、淡、偏移远；h→0 时收成贴地接触影并消失。 */
 const FloatWrap: React.FC<{ h: number; children: React.ReactNode }> = ({ h, children }) => (
   <div style={{ position: 'relative' }}>
     {h > 1.5 && (
       <div style={{
         position: 'absolute', inset: 0,
         transform: `translate(${h * 0.22}px, ${h * 0.42}px) scale(${1 + h * 0.0011})`,
-        filter: `blur(${3.5 + h * 0.085}px) brightness(0.32) saturate(0.4)`,
-        opacity: Math.min(0.38, 0.16 + h * 0.004),
+        filter: `brightness(0) blur(${2 + h * 0.09}px)`,
+        opacity: Math.min(0.22, 0.08 + h * 0.0026),
         pointerEvents: 'none',
       }}>{children}</div>
     )}
@@ -38,95 +56,134 @@ const liftOf = (t: number, land: number, H = 120) => {
   return (1 - easeFall(p)) * H;
 };
 
-/* ---------- 灰阶自绘 UI 素材 ---------- */
+/* ---------- 线性图标（24 视框，界面按 ~2.7x 排版，描边 1.7 ≈ 屏幕 4px） ---------- */
+type IconName = 'doc' | 'folder' | 'more' | 'chevR' | 'chevD' | 'home' | 'inbox' | 'building' | 'users'
+  | 'target' | 'search' | 'list' | 'grid' | 'square' | 'dot';
+const PATHS: Record<IconName, string> = {
+  doc: 'M7 3h7l4 4v14H7zM14 3v4h4M9.5 12h6M9.5 15.5h6',
+  folder: 'M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z',
+  more: 'M6 12h.01M12 12h.01M18 12h.01',
+  chevR: 'M9.5 6l6 6-6 6',
+  chevD: 'M6 9.5l6 6 6-6',
+  home: 'M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5',
+  inbox: 'M4 13.5l2.5-8h11l2.5 8v5H4zM4 13.5h4.5l1.2 2h4.6l1.2-2H20',
+  building: 'M5 20V5.5h9V20M14 9.5h5V20M8 9h3M8 12.5h3M8 16h3M3.5 20h17',
+  users: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.5 19a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.5M17.5 14a5 5 0 0 1 3 5',
+  target: 'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 12h.01',
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',
+  list: 'M8.5 6.5h11M8.5 12h11M8.5 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01',
+  grid: 'M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z',
+  square: 'M5 5h14v14H5z',
+  dot: 'M12 12h.01',
+};
+const Icon: React.FC<{ name: IconName; size?: number; color?: string; sw?: number; dashed?: boolean }> = ({
+  name, size = 50, color = INK3, sw = 1.7, dashed,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={name === 'more' || name === 'dot' ? 3.2 : sw}
+    strokeLinecap="round" strokeLinejoin="round" strokeDasharray={dashed ? '2.6 2.4' : undefined} style={{ flex: 'none' }}>
+    <path d={PATHS[name]} />
+  </svg>
+);
 
-const Chip: React.FC<{ letter: string; tone: string }> = ({ letter, tone }) => (
+/* 空间徽标：低饱和色块 + 字母 */
+const SpaceChip: React.FC<{ letter: string; hue: string }> = ({ letter, hue }) => (
   <div style={{
-    width: 64, height: 64, borderRadius: 16, background: tone,
+    width: 60, height: 60, borderRadius: 16, background: hue, flex: 'none',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontFamily: FONT, fontWeight: 700, fontSize: 36, color: '#666',
+    fontFamily: SANS, fontWeight: 700, fontSize: 32, color: '#fff', letterSpacing: '-0.02em',
+    boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.25)',
   }}>{letter}</div>
 );
 
-const Tri: React.FC<{ open?: boolean }> = ({ open }) => (
-  <div style={{
-    width: 0, height: 0,
-    borderLeft: open ? '16px solid transparent' : '22px solid #9a9aa0',
-    borderRight: open ? '16px solid transparent' : '0 solid transparent',
-    borderTop: open ? '22px solid #9a9aa0' : '14px solid transparent',
-    borderBottom: open ? '0' : '14px solid transparent',
-  }} />
-);
-
-const DocIcon: React.FC = () => (
-  <div style={{ width: 44, height: 54, border: '5px solid #9a9aa0', borderRadius: 8, position: 'relative' }}>
-    <div style={{ position: 'absolute', left: 7, top: 10, width: 22, height: 5, background: '#b6b6bc' }} />
-    <div style={{ position: 'absolute', left: 7, top: 22, width: 22, height: 5, background: '#b6b6bc' }} />
-  </div>
-);
-
-const FolderIcon: React.FC = () => (
-  <div style={{ width: 54, height: 42, background: '#8f8f95', borderRadius: 7, position: 'relative' }}>
-    <div style={{ position: 'absolute', left: 0, top: -10, width: 24, height: 12, background: '#8f8f95', borderRadius: '6px 6px 0 0' }} />
-  </div>
-);
+type RowIcon = 'tri' | 'triOpen' | 'doc' | 'folder' | 'dash' | undefined;
 
 const TreeRow: React.FC<{
-  depth: number; label: string; icon?: 'tri' | 'triOpen' | 'doc' | 'folder' | 'dash' | 'chip';
-  chip?: string; count?: string; size?: number; dim?: boolean;
-}> = ({ depth, label, icon, chip, count, size = 58, dim }) => (
+  depth: number; label: string; icon?: RowIcon; chip?: string; count?: string; size?: number;
+}> = ({ depth, label, icon, chip, count, size = 56 }) => (
   <div style={{
-    display: 'flex', alignItems: 'center', gap: 30, paddingLeft: 40 + depth * 90,
-    height: size * 2.1, opacity: dim ? 0.35 : 1,
+    display: 'flex', alignItems: 'center', gap: 26, paddingLeft: 40 + depth * 90,
+    height: size * 2.1,
   }}>
-    {icon === 'tri' && <Tri />}
-    {icon === 'triOpen' && <Tri open />}
-    {icon === 'doc' && <DocIcon />}
-    {icon === 'folder' && <FolderIcon />}
-    {icon === 'dash' && <div style={{ width: 40, height: 40, border: '6px dashed #a2a2a8', borderRadius: 10 }} />}
-    {chip && <Chip letter={chip} tone="#d4d4da" />}
-    <div style={{ fontFamily: FONT, fontSize: size, color: INK, fontWeight: 500 }}>{label}</div>
-    {count && <div style={{ marginLeft: 'auto', marginRight: 80, fontFamily: FONT, fontSize: size * 0.85, color: MID }}>{count}</div>}
+    {icon === 'tri' && <Icon name="chevR" size={44} color={INK3} />}
+    {icon === 'triOpen' && <Icon name="chevD" size={44} color={INK2} />}
+    {icon === 'doc' && <Icon name="doc" color={INK3} />}
+    {icon === 'folder' && <Icon name="folder" color={INK3} />}
+    {icon === 'dash' && <Icon name="square" color={INK3} dashed />}
+    {chip && <SpaceChip letter={chip} hue={{ O: '#8a7cf0', C: '#4fb39a', T: '#e39a5b' }[chip] ?? '#9a9ca5'} />}
+    <div style={{ fontFamily: SANS, fontSize: size, color: INK, fontWeight: 500, letterSpacing: '-0.012em' }}>{label}</div>
+    {count && (
+      <div style={{
+        marginLeft: 'auto', marginRight: 80, fontFamily: SANS, fontSize: size * 0.78, color: INK3, fontWeight: 500,
+        fontVariantNumeric: 'tabular-nums',
+      }}>{count}</div>
+    )}
   </div>
 );
 
-const RecentCard: React.FC<{ title: string; sub: string; w?: number }> = ({ title, sub, w = 880 }) => (
+const RecentCard: React.FC<{ title: string; sub: string; meta: string; w?: number }> = ({ title, sub, meta, w = 880 }) => (
   <div style={{
-    width: w, border: `4px solid ${FAINT}`, borderRadius: 24, padding: '36px 44px',
-    display: 'flex', flexDirection: 'column', gap: 18, background: '#fbfbfa',
+    width: w, border: `3px solid ${LINE}`, borderRadius: 26, padding: '34px 42px',
+    display: 'flex', flexDirection: 'column', gap: 14, background: '#fff', boxSizing: 'border-box',
+    boxShadow: '0 3px 6px rgba(16,18,24,0.04), 0 18px 40px -14px rgba(16,18,24,0.12)',
   }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 26 }}>
-      <div style={{ width: 44, height: 44, border: '6px solid #85858b', borderRadius: 8 }} />
-      <div style={{ fontFamily: FONT, fontSize: 52, color: INK, fontWeight: 600 }}>{title}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
+      <Icon name="doc" size={52} color={INK2} />
+      <div style={{ fontFamily: SANS, fontSize: 50, color: INK, fontWeight: 650, letterSpacing: '-0.02em' }}>{title}</div>
     </div>
-    <div style={{ fontFamily: FONT, fontSize: 42, color: MID, paddingLeft: 70 }}>{sub}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 18, paddingLeft: 74, fontFamily: SANS, fontSize: 38, color: INK3 }}>
+      <span style={{ color: INK2 }}>{sub}</span>
+      <span>·</span>
+      <span>{meta}</span>
+    </div>
   </div>
 );
 
-/* 场景 A：侧栏 SPACES 树 + 右侧 Recent 卡（对标截图 1/2/4）
- * v2：树行/卡片按镜头行进方向（自上而下）先后从空中落贴回界面 */
+const Tabs: React.FC<{ items: string[]; size: number }> = ({ items, size }) => (
+  <div style={{ display: 'flex', gap: 80, fontFamily: SANS, fontSize: size, letterSpacing: '-0.012em' }}>
+    {items.map((it, i) => (
+      <div key={it} style={{ position: 'relative', color: i === 0 ? INK : INK3, fontWeight: i === 0 ? 650 : 500 }}>
+        {it}
+        {i === 0 && <div style={{ position: 'absolute', left: 0, right: 0, bottom: -22, height: 5, borderRadius: 3, background: ACC }} />}
+      </div>
+    ))}
+  </div>
+);
+
+const ViewSwitch: React.FC<{ size: number }> = ({ size }) => (
+  <div style={{ display: 'flex', gap: 30, alignItems: 'center' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 16, padding: '20px 40px', background: ACC_SOFT, borderRadius: 18,
+      border: '3px solid rgba(116,87,245,0.22)', fontFamily: SANS, fontSize: size, color: ACC, fontWeight: 650,
+    }}><Icon name="list" size={size * 0.95} color={ACC} />List</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontFamily: SANS, fontSize: size, color: INK3, fontWeight: 500 }}>
+      <Icon name="grid" size={size * 0.95} color={INK3} />Gallery
+    </div>
+  </div>
+);
+
+/* 场景 A：侧栏 SPACES 树 + 右侧 Recent 卡
+ * 树行/卡片按镜头行进方向（自上而下）先后从空中落贴回界面 */
 const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
-  // 树行落地时刻：镜头由树顶滑向树底，行 index 越大越晚落
   const L = (i: number, n = 14) => liftOf(t, 0.22 + (i / n) * 0.62, 130);
-  const rows: [number, string, 'tri' | 'triOpen' | 'doc' | 'folder' | 'dash' | undefined, string | undefined, string | undefined][] = [
-    [0, 'People & Teams', 'doc', undefined, undefined],
-    [0, 'Goals', 'doc', undefined, undefined],
-    [0, 'Docs', 'doc', undefined, undefined],
+  const rows: [number, string, RowIcon, string | undefined, string | undefined][] = [
+    [0, 'Shot recipes', 'doc', undefined, undefined],
+    [0, 'Storyboards', 'doc', undefined, undefined],
+    [0, 'Renders', 'doc', undefined, undefined],
     [0, 'More', 'dash', undefined, undefined],
-    [0, 'EPD', 'tri', 'E', undefined],
-    [0, 'Product roadmap', 'tri', 'P', undefined],
-    [0, 'Design', 'triOpen', 'D', undefined],
-    [1, 'Designer handbook', 'doc', undefined, undefined],
-    [1, '3.0', 'folder', undefined, undefined],
-    [1, 'Design system', 'folder', undefined, undefined],
-    [2, 'Design system', 'doc', undefined, undefined],
-    [2, 'Components', 'dash', undefined, '56'],
-    [2, 'Patterns', 'dash', undefined, '8'],
-    [2, 'Tokens', 'dash', undefined, '256'],
+    [0, 'Opening', 'tri', 'O', undefined],
+    [0, 'Camera moves', 'tri', 'C', undefined],
+    [0, 'Transitions', 'triOpen', 'T', undefined],
+    [1, 'Recipe handbook', 'doc', undefined, undefined],
+    [1, 'Whip pans', 'folder', undefined, undefined],
+    [1, 'Match cuts', 'folder', undefined, undefined],
+    [2, 'Match cuts', 'doc', undefined, undefined],
+    [2, 'Takes', 'dash', undefined, '56'],
+    [2, 'Demos', 'dash', undefined, '8'],
+    [2, 'Frames', 'dash', undefined, '256'],
   ];
   return (
-    <div style={{ width: 2900, height: 2400, background: '#f5f5f4', display: 'flex' }}>
-      <div style={{ width: 1500, borderRight: `4px solid ${FAINT}`, paddingTop: 60, background: '#f2f2f1' }}>
+    <div style={{ width: 2900, height: 2400, background: SURF, display: 'flex' }}>
+      <div style={{ width: 1500, borderRight: `3px solid ${LINE}`, paddingTop: 60, background: SIDE }}>
         {rows.slice(0, 4).map((r, i) => (
           <FloatWrap key={r[1] + i} h={L(i)}>
             <TreeRow depth={r[0]} label={r[1]} icon={r[2]} chip={r[3]} count={r[4]} />
@@ -134,7 +191,7 @@ const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
         ))}
         <div style={{ height: 90 }} />
         <FloatWrap h={L(4)}>
-          <div style={{ paddingLeft: 48, fontFamily: FONT, fontSize: 46, letterSpacing: 6, color: MID, fontWeight: 600 }}>SPACES</div>
+          <div style={{ paddingLeft: 48, fontFamily: SANS, fontSize: 40, letterSpacing: '0.14em', color: INK3, fontWeight: 650 }}>SPACES</div>
         </FloatWrap>
         <div style={{ height: 30 }} />
         {rows.slice(4).map((r, i) => (
@@ -145,117 +202,114 @@ const SceneTree: React.FC<{ t?: number }> = ({ t = 1 }) => {
       </div>
       <div style={{ flex: 1, paddingTop: 100, paddingLeft: 110 }}>
         <FloatWrap h={liftOf(t, 0.3, 150)}>
-          <div style={{ display: 'flex', gap: 90, fontFamily: FONT, fontSize: 52 }}>
-            <div style={{ color: INK, fontWeight: 700 }}>Recent</div>
-            <div style={{ color: MID }}>Favorites</div>
-          </div>
+          <Tabs items={['Recent', 'Favorites']} size={52} />
         </FloatWrap>
-        <div style={{ height: 64 }} />
+        <div style={{ height: 70 }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 44 }}>
           <FloatWrap h={liftOf(t, 0.42, 170)}>
-            <RecentCard title="Logo" sub="Brand refresh" />
+            <RecentCard title="Launch film" sub="Storyboard v3" meta="Edited 2h ago" />
           </FloatWrap>
           <FloatWrap h={liftOf(t, 0.55, 170)}>
-            <RecentCard title="Split.io Access for Oleg" sub="Team credentials" />
+            <RecentCard title="Add shot · crash zoom" sub="Camera moves" meta="Yesterday" />
           </FloatWrap>
         </div>
         <div style={{ height: 110 }} />
         <FloatWrap h={liftOf(t, 0.68, 150)}>
-          <div style={{ display: 'flex', gap: 90, fontFamily: FONT, fontSize: 50 }}>
-            <div style={{ color: INK, fontWeight: 700 }}>Todo</div>
-            <div style={{ color: MID }}>Comments</div>
-            <div style={{ color: MID }}>Done</div>
-          </div>
+          <Tabs items={['Todo', 'Comments', 'Done']} size={50} />
         </FloatWrap>
-        <div style={{ height: 50 }} />
+        <div style={{ height: 60 }} />
         <FloatWrap h={liftOf(t, 0.8, 150)}>
-          <div style={{ display: 'flex', gap: 40, alignItems: 'center' }}>
-            <div style={{
-              padding: '22px 46px', background: '#e3e3ec', borderRadius: 18,
-              fontFamily: FONT, fontSize: 46, color: INK, fontWeight: 600,
-            }}>≡ List</div>
-            <div style={{ fontFamily: FONT, fontSize: 46, color: MID }}>▦ Gallery</div>
-          </div>
+          <ViewSwitch size={46} />
         </FloatWrap>
       </div>
     </div>
   );
 };
 
-/* 场景 B：顶部 tab 条 + 左上侧栏导航（对标截图 6/7）
- * v2：tab 条、logo、Home 行、侧栏项先后从空中贴落 */
+/* 场景 B：顶部 tab 条 + 左上侧栏导航
+ * tab 条、video-shotcraft 字标、Home 行、侧栏项先后从空中贴落 */
+const NAV: [IconName, string][] = [['inbox', 'Inbox'], ['building', 'Company'], ['users', 'People & Teams'], ['target', 'Goals'], ['doc', 'Docs']];
 const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
-  <div style={{ width: 3000, height: 2100, background: '#f5f5f4', borderRadius: 48 }}>
+  <div style={{ width: 3000, height: 2100, background: SURF, borderRadius: 48 }}>
     <div style={{
-      height: 150, borderBottom: `4px solid ${FAINT}`, display: 'flex', alignItems: 'center',
-      gap: 120, paddingLeft: 90, fontFamily: FONT, fontSize: 54, color: INK,
+      height: 150, borderBottom: `3px solid ${LINE}`, display: 'flex', alignItems: 'center',
+      gap: 110, paddingLeft: 90, fontFamily: SANS, fontSize: 52, color: INK, background: SIDE, borderRadius: '48px 48px 0 0',
     }}>
-      {['Product analytics', 'ClickUp 3.0', 'Widget brainstorm', 'Design system'].map((tb, i) => (
+      {['Shot recipe cards', 'Launch film', 'Beat-synced cuts', 'Render queue'].map((tb, i) => (
         <FloatWrap key={tb} h={liftOf(t, 0.2 + i * 0.1, 140)}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 26, fontWeight: i === 1 ? 700 : 400, opacity: i > 1 ? 0.75 : 1 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: i === 1 ? 14 : 8,
-              background: i === 1 ? '#7d7d84' : 'transparent',
-              border: i === 1 ? 'none' : '5px solid #9a9aa0',
-            }} />
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 22, fontWeight: i === 1 ? 650 : 500, color: i === 1 ? INK : INK2,
+            letterSpacing: '-0.012em', opacity: i > 1 ? 0.8 : 1,
+            ...(i === 1 ? { background: '#fff', padding: '18px 34px', borderRadius: 18, border: `3px solid ${LINE}`, boxShadow: '0 6px 16px -8px rgba(16,18,24,0.18)' } : {}),
+          }}>
+            {i === 1
+              ? <ShotcraftMark size={40} tone="light" />
+              : <Icon name="doc" size={44} color={INK3} />}
             {tb}
           </div>
         </FloatWrap>
       ))}
     </div>
     <div style={{ display: 'flex' }}>
-      <div style={{ width: 1250, padding: '70px 70px 0' }}>
+      <div style={{ width: 1250, padding: '70px 70px 0', background: SIDE, height: 1950, boxSizing: 'border-box', borderBottomLeftRadius: 48 }}>
         <FloatWrap h={liftOf(t, 0.34, 150)}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 30 }}>
-            <div style={{ width: 74, height: 74, borderRadius: 20, background: 'linear-gradient(135deg,#a9a9af,#6f6f76)' }} />
-            <div style={{ fontFamily: FONT, fontSize: 66, fontWeight: 800, color: INK }}>ClickUp</div>
-            <div style={{ marginLeft: 'auto', width: 130, height: 90, border: `4px solid ${FAINT}`, borderRadius: 22, background: '#fff' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            <ShotcraftWordmark size={56} tone="light" markScale={1.5} gap={24} />
+            <div style={{
+              marginLeft: 'auto', width: 120, height: 84, border: `3px solid ${LINE}`, borderRadius: 22, background: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><Icon name="search" size={44} color={INK2} /></div>
           </div>
         </FloatWrap>
         <div style={{ height: 60 }} />
         <FloatWrap h={liftOf(t, 0.46, 160)}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 34, background: '#e6e6f0',
-            border: '4px solid #c5c5d4', borderRadius: 24, padding: '30px 44px',
+            display: 'flex', alignItems: 'center', gap: 30, background: ACC_SOFT,
+            border: '3px solid rgba(116,87,245,0.2)', borderRadius: 24, padding: '28px 40px',
           }}>
-            <div style={{ width: 48, height: 44, border: '6px solid #5f5f66', borderBottom: 'none', borderRadius: '10px 10px 0 0' }} />
-            <div style={{ fontFamily: FONT, fontSize: 56, color: '#4a4a55', fontWeight: 600 }}>Home</div>
+            <Icon name="home" size={54} color={ACC} sw={1.9} />
+            <div style={{ fontFamily: SANS, fontSize: 54, color: INK, fontWeight: 650, letterSpacing: '-0.015em' }}>Home</div>
             <div style={{
-              marginLeft: 'auto', width: 62, height: 62, borderRadius: 31, background: '#a5a5ab',
-              color: '#fff', fontFamily: FONT, fontSize: 38, fontWeight: 700,
+              marginLeft: 'auto', minWidth: 62, height: 62, borderRadius: 31, background: ACC,
+              color: '#fff', fontFamily: SANS, fontSize: 36, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>3</div>
           </div>
         </FloatWrap>
-        {['Inbox', 'Company', 'People & Teams', 'Goals', 'Docs'].map((tb, i) => (
+        {NAV.map(([ic, tb], i) => (
           <FloatWrap key={tb} h={liftOf(t, 0.55 + i * 0.08, 140)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 34, height: 128, paddingLeft: 44 }}>
-              <div style={{ width: 44, height: 44, border: '6px solid #93939a', borderRadius: 10 }} />
-              <div style={{ fontFamily: FONT, fontSize: 54, color: INK }}>{tb}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 30, height: 128, paddingLeft: 40 }}>
+              <Icon name={ic} size={52} color={INK3} />
+              <div style={{ fontFamily: SANS, fontSize: 52, color: INK2, fontWeight: 500, letterSpacing: '-0.012em' }}>{tb}</div>
             </div>
           </FloatWrap>
         ))}
       </div>
-      <div style={{ flex: 1, borderLeft: `4px solid ${FAINT}`, padding: '70px 90px 0' }}>
+      <div style={{ flex: 1, borderLeft: `3px solid ${LINE}`, padding: '70px 90px 0' }}>
         <FloatWrap h={liftOf(t, 0.4, 150)}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 40, color: MID, fontFamily: FONT, fontSize: 52 }}>
-            <div>‹</div><div>›</div>
-            <div style={{ width: 44, height: 40, border: '6px solid #93939a', borderBottom: 'none', borderRadius: '10px 10px 0 0' }} />
-            <div style={{ color: INK }}>Home</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 30, color: INK3, fontFamily: SANS, fontSize: 48 }}>
+            <Icon name="chevR" size={44} color={INK3} />
+            <Icon name="home" size={46} color={INK3} />
+            <div style={{ color: INK2, fontWeight: 500 }}>Home</div>
           </div>
         </FloatWrap>
         <div style={{ height: 80 }} />
         <FloatWrap h={liftOf(t, 0.58, 180)}>
-          <div style={{ fontFamily: FONT, fontSize: 130, fontWeight: 750, color: INK }}>Home</div>
+          <div style={{ fontFamily: SANS, fontSize: 128, fontWeight: 750, color: INK, letterSpacing: '-0.04em', lineHeight: 1 }}>Home</div>
         </FloatWrap>
-        <div style={{ height: 70 }} />
+        <div style={{ height: 80 }} />
         <FloatWrap h={liftOf(t, 0.74, 160)}>
           <div style={{
-            display: 'flex', alignItems: 'center', gap: 36, border: `4px solid ${FAINT}`,
-            borderRadius: 26, padding: '34px 46px', background: '#fff', width: 1100,
+            display: 'flex', alignItems: 'center', gap: 30, border: `3px solid ${LINE}`,
+            borderRadius: 26, padding: '32px 44px', background: '#fff', width: 1100, boxSizing: 'border-box',
+            boxShadow: '0 3px 6px rgba(16,18,24,0.04), 0 18px 40px -14px rgba(16,18,24,0.14)',
           }}>
-            <div style={{ width: 44, height: 44, borderRadius: 22, border: '6px solid #9a9aa0' }} />
-            <div style={{ fontFamily: FONT, fontSize: 48, color: MID }}>Search by app, filetype…</div>
+            <Icon name="search" size={50} color={INK3} />
+            <div style={{ fontFamily: SANS, fontSize: 46, color: INK3 }}>Search shots, recipes…</div>
+            <div style={{
+              marginLeft: 'auto', padding: '8px 18px', borderRadius: 12, border: `3px solid ${LINE}`,
+              fontFamily: FONT.mono, fontSize: 34, color: INK3,
+            }}>⌘K</div>
           </div>
         </FloatWrap>
       </div>
@@ -263,54 +317,58 @@ const SceneTopNav: React.FC<{ t?: number }> = ({ t = 1 }) => (
   </div>
 );
 
-/* 场景 C：列表行（对标截图 4 右下 TODAY/TASK NAME 区）
- * v2：Todo 头/TODAY 徽章/任务行自上而下先后贴落 */
+/* 场景 C：列表行（TODAY / TASK NAME 区）——Todo 头/TODAY 徽章/任务行自上而下先后贴落 */
+const TASKS = [
+  { n: 'Render launch film', who: '#8a7cf0', due: 'Today', p: 0.72 },
+  { n: 'Add shot: crash zoom', who: '#4fb39a', due: 'Today', p: 0.45 },
+  { n: 'Beat-sync the cuts', who: '#e39a5b', due: 'Tomorrow', p: 0.3 },
+  { n: 'Export JianYing draft', who: '#6aa6e8', due: 'Fri', p: 0.86 },
+];
 const SceneListRows: React.FC<{ t?: number }> = ({ t = 1 }) => (
-  <div style={{ width: 2900, height: 2200, background: '#f6f6f5', paddingTop: 60 }}>
+  <div style={{ width: 2900, height: 2200, background: SURF, paddingTop: 60 }}>
     <FloatWrap h={liftOf(t, 0.22, 150)}>
-      <div style={{ display: 'flex', gap: 100, paddingLeft: 120, fontFamily: FONT, fontSize: 54 }}>
-        <div style={{ color: INK, fontWeight: 700 }}>Todo</div>
-        <div style={{ color: MID }}>Comments</div>
-        <div style={{ color: MID }}>Done</div>
-        <div style={{ color: MID }}>Delegated</div>
-      </div>
+      <div style={{ paddingLeft: 120 }}><Tabs items={['Todo', 'Comments', 'Done', 'Delegated']} size={52} /></div>
     </FloatWrap>
-    <div style={{ height: 56 }} />
+    <div style={{ height: 66 }} />
     <FloatWrap h={liftOf(t, 0.32, 150)}>
-      <div style={{ display: 'flex', gap: 44, alignItems: 'center', paddingLeft: 120 }}>
-        <div style={{
-          padding: '24px 52px', background: '#e2e2ea', borderRadius: 20,
-          fontFamily: FONT, fontSize: 50, color: INK, fontWeight: 600,
-        }}>≡ List</div>
-        <div style={{ fontFamily: FONT, fontSize: 50, color: MID }}>▦ Gallery</div>
-        <div style={{ marginLeft: 500, display: 'flex', gap: 80, color: MID, fontFamily: FONT, fontSize: 46 }}>
+      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 120 }}>
+        <ViewSwitch size={48} />
+        <div style={{ marginLeft: 500, display: 'flex', gap: 70, color: INK3, fontFamily: SANS, fontSize: 44, fontWeight: 500 }}>
           <div>Filter</div><div>Group</div><div>Sort</div>
         </div>
       </div>
     </FloatWrap>
-    <div style={{ height: 40, borderBottom: `4px solid ${FAINT}`, marginLeft: 120, marginRight: 120 }} />
+    <div style={{ height: 40, borderBottom: `3px solid ${LINE}`, marginLeft: 120, marginRight: 120 }} />
     <div style={{ height: 60 }} />
     <FloatWrap h={liftOf(t, 0.44, 160)}>
       <div style={{
-        marginLeft: 120, display: 'inline-block', padding: '20px 48px', background: '#e4e4e3',
-        borderRadius: 16, fontFamily: FONT, fontSize: 44, letterSpacing: 4, color: '#6f6f75', fontWeight: 600,
-      }}>TODAY</div>
+        marginLeft: 120, display: 'inline-flex', alignItems: 'center', gap: 16, padding: '18px 40px', background: ACC_SOFT,
+        borderRadius: 16, fontFamily: SANS, fontSize: 40, letterSpacing: '0.12em', color: ACC, fontWeight: 700,
+      }}><Icon name="chevD" size={38} color={ACC} sw={2.2} />TODAY</div>
     </FloatWrap>
     <div style={{ height: 60 }} />
     <FloatWrap h={liftOf(t, 0.54, 150)}>
-      <div style={{ paddingLeft: 120, fontFamily: FONT, fontSize: 42, letterSpacing: 5, color: MID }}>TASK NAME</div>
+      <div style={{ display: 'flex', paddingLeft: 120, paddingRight: 120, fontFamily: SANS, fontSize: 38, letterSpacing: '0.12em', color: INK3, fontWeight: 600 }}>
+        <div>TASK NAME</div>
+        <div style={{ marginLeft: 'auto', width: 520 }}>PROGRESS</div>
+        <div style={{ width: 260, textAlign: 'right' }}>DUE</div>
+      </div>
     </FloatWrap>
     <div style={{ height: 30 }} />
-    {['New Bugs Per Week', 'Designer handbook', 'Mobile screens', 'Product roadmap'].map((tb, i) => (
-      <FloatWrap key={tb} h={liftOf(t, 0.62 + i * 0.09, 160)}>
+    {TASKS.map((tk, i) => (
+      <FloatWrap key={tk.n} h={liftOf(t, 0.62 + i * 0.09, 160)}>
         <div style={{
-          display: 'flex', alignItems: 'center', gap: 44, height: 170, marginLeft: 120, marginRight: 120,
-          borderBottom: '3px solid #e6e6e4',
+          display: 'flex', alignItems: 'center', gap: 40, height: 170, marginLeft: 120, marginRight: 120,
+          borderBottom: `3px solid ${LINE}`,
         }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: '#88888e' }} />
-          <div style={{ fontFamily: FONT, fontSize: 58, color: INK, fontWeight: 550 }}>{tb}</div>
-          <div style={{ marginLeft: 'auto', width: 220, height: 20, background: '#e2e2e8', borderRadius: 10 }} />
-          <div style={{ color: MID, fontSize: 60 }}>…</div>
+          <div style={{ width: 42, height: 42, borderRadius: 13, border: `4px solid ${i === 0 ? ACC : 'rgba(20,22,28,0.22)'}`, background: i === 0 ? ACC_SOFT : 'transparent', boxSizing: 'border-box' }} />
+          <div style={{ fontFamily: SANS, fontSize: 56, color: INK, fontWeight: 550, letterSpacing: '-0.015em' }}>{tk.n}</div>
+          <div style={{ marginLeft: 'auto', width: 64, height: 64, borderRadius: 32, background: tk.who, border: '5px solid #fff', boxShadow: '0 0 0 3px rgba(20,22,28,0.06)' }} />
+          <div style={{ width: 400, height: 16, borderRadius: 8, background: 'rgba(20,22,28,0.07)', overflow: 'hidden' }}>
+            <div style={{ width: `${tk.p * 100}%`, height: '100%', borderRadius: 8, background: i === 0 ? ACC : 'rgba(20,22,28,0.28)' }} />
+          </div>
+          <div style={{ width: 220, textAlign: 'right', fontFamily: SANS, fontSize: 44, color: tk.due === 'Today' ? ACC : INK3, fontWeight: 550 }}>{tk.due}</div>
+          <Icon name="more" size={50} color={INK3} />
         </div>
       </FloatWrap>
     ))}
@@ -324,53 +382,65 @@ type Cam = {
   x: [number, number]; y: [number, number];
 };
 
+// 巡航曲线：首段缓起（前 30% 二次加速接匀速）、末段缓落、中段匀速；u 超出 [0,1]（交叉淡化
+// 窗口）时按端点斜率线性外推，相机在淡化里继续飞，接力处不再刹停
+const cruise = (u: number, first: boolean, last: boolean) => {
+  const A = 0.3;
+  const k = 1 / (1 - (first ? A / 2 : 0) - (last ? A / 2 : 0));
+  const inPart = (x: number) => (x < A ? (x * x) / (2 * A) : x - A / 2);
+  if (first && u <= A) return k * inPart(Math.max(0, u));
+  if (last && u >= 1 - A) return 1 - k * inPart(Math.max(0, 1 - u));
+  return first ? k * inPart(u) : k * u;
+};
+
 const Plane: React.FC<{
-  cam: Cam; t: number; edge?: 'left' | 'top'; children: React.ReactNode;
-}> = ({ cam, t, edge = 'left', children }) => {
-  const x = interpolate(t, [0, 1], cam.x, { easing: easeIO });
-  const y = interpolate(t, [0, 1], cam.y, { easing: easeIO });
+  cam: Cam; p: number; edge?: 'left' | 'top'; children: React.ReactNode;
+}> = ({ cam, p, edge = 'left', children }) => {
+  const x = cam.x[0] + (cam.x[1] - cam.x[0]) * p;
+  const y = cam.y[0] + (cam.y[1] - cam.y[0]) * p;
+  const roll = cam.rz + (p - 0.5) * 2; // ±1° 缓慢滚转
   return (
     <AbsoluteFill style={{ perspective: 1050, perspectiveOrigin: '50% 46%' }}>
       <div style={{
         position: 'absolute', left: '50%', top: '50%', width: 0, height: 0,
         transformStyle: 'preserve-3d',
-        transform: `scale(${cam.scale}) rotateX(${cam.rx}deg) rotateY(${cam.ry}deg) rotateZ(${cam.rz}deg)`,
+        transform: `scale(${cam.scale}) rotateX(${cam.rx}deg) rotateY(${cam.ry}deg) rotateZ(${roll}deg)`,
       }}>
         <div style={{ position: 'absolute', transform: `translate3d(${x}px, ${y}px, 0)` }}>
           <div style={{ position: 'relative', transform: 'translate(-50%, -50%)' }}>
-            {/* 屏幕边缘霓虹晕染 */}
+            {/* 屏幕边缘霓虹缘光：外晕 + 贴边细亮线 */}
             {edge === 'left' ? (
               <>
                 <div style={{
-                  position: 'absolute', left: -70, top: -40, width: 110, height: '104%',
-                  background: 'linear-gradient(185deg, #ff7ab8, #b06cff 55%, #6d4dff)',
-                  filter: 'blur(70px)', opacity: 0.9,
+                  position: 'absolute', left: -80, top: -40, width: 120, height: '104%',
+                  background: 'linear-gradient(185deg, #ff7ab8, #a46cff 55%, #6a4dff)',
+                  filter: 'blur(70px)', opacity: 0.85,
                 }} />
                 <div style={{
-                  position: 'absolute', left: -10, top: 0, width: 8, height: '100%',
-                  background: 'linear-gradient(180deg, #ffb0d5, #b78cff)', filter: 'blur(3px)', opacity: 0.95,
+                  position: 'absolute', left: -7, top: 0, width: 6, height: '100%', borderRadius: 3,
+                  background: 'linear-gradient(180deg, #ffc2de, #b99bff)', filter: 'blur(2px)', opacity: 0.95,
                 }} />
               </>
             ) : (
               <>
                 <div style={{
-                  position: 'absolute', left: -40, top: -70, width: '104%', height: 110,
-                  background: 'linear-gradient(90deg, #ff7ab8, #b06cff 55%, #6d4dff)',
-                  filter: 'blur(70px)', opacity: 0.85,
+                  position: 'absolute', left: -40, top: -80, width: '104%', height: 120,
+                  background: 'linear-gradient(90deg, #ff7ab8, #a46cff 55%, #6a4dff)',
+                  filter: 'blur(70px)', opacity: 0.8,
                 }} />
                 <div style={{
-                  position: 'absolute', left: 0, top: -10, width: '100%', height: 8,
-                  background: 'linear-gradient(90deg, #ffb0d5, #b78cff)', filter: 'blur(3px)', opacity: 0.9,
+                  position: 'absolute', left: 48, top: -7, width: 'calc(100% - 96px)', height: 6, borderRadius: 3,
+                  background: 'linear-gradient(90deg, #ffc2de, #b99bff)', filter: 'blur(2px)', opacity: 0.9,
                 }} />
               </>
             )}
             {children}
-            {/* 远端压暗：贴面透视里远处渐暗 */}
+            {/* 远端压暗：贴面透视里远处渐暗（比 v2 轻，亮面不发脏） */}
             <div style={{
               position: 'absolute', inset: 0,
               background: edge === 'left'
-                ? 'linear-gradient(105deg, rgba(0,0,10,0) 30%, rgba(0,0,10,0.35) 75%, rgba(0,0,10,0.6) 100%)'
-                : 'linear-gradient(175deg, rgba(0,0,10,0) 35%, rgba(0,0,10,0.3) 80%, rgba(0,0,10,0.55) 100%)',
+                ? 'linear-gradient(105deg, rgba(8,6,18,0) 34%, rgba(8,6,18,0.22) 75%, rgba(8,6,18,0.5) 100%)'
+                : 'linear-gradient(175deg, rgba(8,6,18,0) 38%, rgba(8,6,18,0.2) 80%, rgba(8,6,18,0.45) 100%)',
               pointerEvents: 'none',
             }} />
           </div>
@@ -380,23 +450,20 @@ const Plane: React.FC<{
   );
 };
 
-/* 背景霓虹描边矩形（暗场道具） */
-const NeonRects: React.FC<{ drift: number }> = ({ drift }) => (
-  <AbsoluteFill style={{ overflow: 'hidden' }}>
-    <div style={{
-      position: 'absolute', left: -140 + drift * 40, top: 240, width: 620, height: 380,
-      border: '4px solid #c04dff', borderRadius: 34, filter: 'blur(7px)', opacity: 0.5,
-    }} />
-    <div style={{
-      position: 'absolute', left: 60 + drift * 25, top: 700, width: 420, height: 260,
-      border: '4px solid #ff4da8', borderRadius: 28, filter: 'blur(10px)', opacity: 0.4,
-    }} />
-    <div style={{
-      position: 'absolute', right: -180 - drift * 30, top: -80, width: 560, height: 340,
-      border: '4px solid #7b4dff', borderRadius: 30, filter: 'blur(12px)', opacity: 0.35,
-    }} />
-  </AbsoluteFill>
-);
+/* 背景霓虹框（暗场道具）：发光细描边，随镜头行进反向视差漂移 */
+const NeonRects: React.FC<{ drift: number }> = ({ drift }) => {
+  const box = (c: string, a: number): React.CSSProperties => ({
+    position: 'absolute', borderRadius: 32, border: `3px solid ${c}`, opacity: a,
+    boxShadow: `0 0 24px ${c}, inset 0 0 18px ${c}`, filter: 'blur(3px)',
+  });
+  return (
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <div style={{ ...box('#b04dff', 0.42), left: -140 + drift * 60, top: 240, width: 620, height: 380 }} />
+      <div style={{ ...box('#ff4da8', 0.32), left: 60 + drift * 36, top: 700, width: 420, height: 260 }} />
+      <div style={{ ...box('#7b4dff', 0.3), right: -180 - drift * 44, top: -80, width: 560, height: 340 }} />
+    </AbsoluteFill>
+  );
+};
 
 // 平移目标以内容坐标 (cx,cy) 给出：translate = (W/2-cx, H/2-cy)
 const SEGS: { cam: Cam; edge: 'left' | 'top'; render: (t: number) => React.ReactNode }[] = [
@@ -423,18 +490,21 @@ const FADE = 7;
 const Stage: React.FC = () => {
   const frame = useCurrentFrame();
   return (
-    <AbsoluteFill style={{ background: '#060608' }}>
+    <AbsoluteFill style={{ background: '#07060c' }}>
       {SEGS.map((s, i) => {
         const start = i * SEG_LEN;
         const local = frame - start;
         if (local < -FADE || local > SEG_LEN + FADE) return null;
-        const t = Math.min(1, Math.max(0, local / SEG_LEN));
+        const u = local / SEG_LEN; // 不钳：淡化窗口里相机继续外推
+        const t = Math.min(1, Math.max(0, u)); // 内容（贴落进度）照旧钳位
+        const p = cruise(u, i === 0, i === SEGS.length - 1);
         // 相邻段交叉淡化：后段在边界前 [-FADE,0] 淡入、前段在 [SEG_LEN-FADE, SEG_LEN] 淡出，边界帧无纯黑
-        const opacity = interpolate(local, [-FADE, 0, SEG_LEN - FADE, SEG_LEN], [i === 0 ? 1 : 0, 1, 1, i === SEGS.length - 1 ? 1 : 0]);
+        const fadeIn = i === 0 ? 1 : Math.min(1, Math.max(0, (local + FADE) / FADE));
+        const fadeOut = i === SEGS.length - 1 ? 1 : Math.min(1, Math.max(0, (SEG_LEN - local) / FADE));
         return (
-          <AbsoluteFill key={i} style={{ opacity }}>
-            <NeonRects drift={t} />
-            <Plane cam={s.cam} t={t} edge={s.edge}>{s.render(t)}</Plane>
+          <AbsoluteFill key={i} style={{ opacity: Math.min(fadeIn, fadeOut) }}>
+            <NeonRects drift={p} />
+            <Plane cam={s.cam} p={p} edge={s.edge}>{s.render(t)}</Plane>
           </AbsoluteFill>
         );
       })}
@@ -444,26 +514,29 @@ const Stage: React.FC = () => {
 
 export const GrazeFaceTour: React.FC = () => {
   const frame = useCurrentFrame();
-  // 呼吸感的焦点带（浅景深）：焦点椭圆随段落略移
-  const seg = Math.min(2, Math.floor(frame / SEG_LEN));
-  const focusX = [44, 40, 46][seg];
-  const focusY = [46, 40, 50][seg];
+  // 浅景深焦点带：焦点椭圆随段落平滑移动（段间 10f 过渡，不跳）
+  const FX = [44, 40, 46];
+  const FY = [46, 40, 50];
+  const k1 = Math.min(1, Math.max(0, (frame - SEG_LEN + 5) / 10));
+  const k2 = Math.min(1, Math.max(0, (frame - 2 * SEG_LEN + 5) / 10));
+  const kk = k1 + k2; // 0→1→2：段 A→B→C 的焦点
+  const lerpArr = (a: number[]) => (kk <= 1 ? a[0] + (a[1] - a[0]) * kk : a[1] + (a[2] - a[1]) * (kk - 1));
+  const focusX = lerpArr(FX);
+  const focusY = lerpArr(FY);
   return (
-    <AbsoluteFill style={{ background: '#060608' }}>
+    <AbsoluteFill style={{ background: '#07060c' }}>
       <Stage />
       {/* 屏幕空间浅景深：焦点带外整体模糊 */}
       <AbsoluteFill style={{
-        filter: 'blur(16px) brightness(0.92)',
+        filter: 'blur(15px)',
         WebkitMaskImage: `radial-gradient(ellipse 58% 52% at ${focusX}% ${focusY}%, transparent 34%, rgba(0,0,0,0.85) 72%, black 92%)`,
         maskImage: `radial-gradient(ellipse 58% 52% at ${focusX}% ${focusY}%, transparent 34%, rgba(0,0,0,0.85) 72%, black 92%)`,
       }}>
         <Stage />
       </AbsoluteFill>
-      {/* 暗角 + 冷调压暗 */}
-      <AbsoluteFill style={{
-        background: 'radial-gradient(ellipse 90% 80% at 50% 45%, transparent 40%, rgba(2,2,6,0.55) 78%, rgba(1,1,4,0.9) 100%)',
-        pointerEvents: 'none',
-      }} />
+      {/* 带色相的暗角（不再把亮面压成灰）+ 暗场颗粒 */}
+      <Vignette strength={0.62} inner={0.42} color="#06040e" cx={focusX / 100} cy={focusY / 100} />
+      <Grain opacity={0.06} blend="soft-light" />
     </AbsoluteFill>
   );
 };

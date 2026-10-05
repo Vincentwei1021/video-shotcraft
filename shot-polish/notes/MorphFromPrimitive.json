@@ -1,0 +1,33 @@
+{
+  "stem": "MorphFromPrimitive",
+  "issues": [
+    "浅灰平底上一根细线圈变成空线框，整镜几乎没有光、材质和空间",
+    "主体只占画宽 ~27%（520×300 的卡），1080p 里存在感很弱",
+    "卡片内容是 13–26px 的小字任务卡（或灰色骨架条），缩小后读不清",
+    "呼吸幅度与变形节奏单薄：两轴同步插值，变形读作匀称缩放而不是生长"
+  ],
+  "changes": [
+    "look 改 graphite 石墨暗场：原型变成一颗发光的\"聆听\"光球（暖白—香槟径向光 + 亮边 + 盘内 7 根跳动声波），舞台光与地面反光亮度跟随光球",
+    "呼吸拍改为缓吸气到 1.14 → 7f 干脆呼气压到 0.94 的预备下蹲 → 变形中回正，预备动作更可感",
+    "同构 path 的 x、y 分开计时：横向先长、纵向晚 3f 跟上，各带 ~2% 过冲，生长有重量",
+    "光用固定圆心的 userSpace 径向渐变，变形时光保持圆形向外晕开变暗，深色卡面从光的边缘长出；54–70f 实体化（亮边→发丝线、外发光→两层软阴影）+ 一次裁在圆角内的扫光",
+    "目标卡放大到 1120×640（画宽 58%），内容重做成 AI 会议纪要：80px 标题逐词升起、36px 三条决议逐条落位（香槟勾描出）、声波条从左长出并缓慢播放；光球缩成卡片左上图标前后呼应",
+    "时长 140→150f，hold 段极缓推近 2.5% 保持画面活着"
+  ],
+  "issuesEn": [
+    "A thin line circle on flat light grey turns into an empty outline; the shot has almost no light, material or depth",
+    "The subject took only ~27% of frame width (a 520×300 card), so it barely registered at 1080p",
+    "Card content was 13–26px task-card text (or grey skeleton bars) that was unreadable when scaled down",
+    "The breath was weak and both axes interpolated together, so the morph read as uniform scaling rather than growth"
+  ],
+  "changesEn": [
+    "Switched to the graphite dark look: the primitive is now a glowing 'listening' orb (warm white-to-champagne radial light, bright rim, seven bouncing waveform bars), and the stage light and floor bounce follow its brightness",
+    "The breath is a slow inhale to 1.14, a crisp 7f exhale down to 0.94 as an anticipation crouch, then back to 1 during the morph",
+    "The isomorphic path times x and y separately: width grows first and height follows 3f later, each with ~2% overshoot, so the growth has weight",
+    "The light uses a fixed-center userSpace radial gradient, so it stays round and blooms outward while dimming and the dark card face grows from its edge; 54–70f solidifies it (rim to hairline, outer glow to two soft shadows) with a single sheen clipped to the corners",
+    "The target card is 1120×640 (58% of width) and is now an AI meeting recap: an 80px title rising word by word, three 36px decisions landing with champagne checks drawing in, and a waveform growing from the left and slowly playing; the orb shrinks into the card's top-left icon",
+    "Duration 140→150f, with a slow 2.5% push-in keeping the hold alive"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

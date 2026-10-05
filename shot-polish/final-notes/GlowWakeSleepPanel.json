@@ -1,0 +1,14 @@
+{
+  "stem": "GlowWakeSleepPanel",
+  "changed": true,
+  "brand": [
+    "侧栏占位 logo 方块 + 名称灰条 → video-shotcraft 标志（亮底版）+ video-shotcraft 字标",
+    "logo 描光框加宽到包住标志与字标，扫光经过时照常描光"
+  ],
+  "brandEn": [
+    "Sidebar placeholder logo square + name bar → video-shotcraft mark (light tone) + video-shotcraft wordmark",
+    "Logo glow ring widened to wrap mark + wordmark; it still lights up as the sweep passes"
+  ],
+  "styleKey": "glow-wake-sleep-panel",
+  "mdChanged": false
+}

@@ -1,0 +1,18 @@
+{
+  "stem": "CursorFlyover",
+  "changed": true,
+  "brand": [
+    "顶栏虚构产品「Paragon」(蓝色渐变 logo 方块) → video-shotcraft 标志 + 字标；导航改为 Overview / Shots / Renders / Releases，搜索框 Search shots",
+    "Revenue / Active users 模块 → Frames rendered（2.48M→7.31M）/ Shot previews",
+    "功能开关 Smart routing / Usage alerts / Beta dashboard → Beat-synced cuts / Film-grade SFX / JianYing export",
+    "Top accounts 里的虚构公司名 → Top shots：Crash zoom / Cursor flyover / Text as mask / Logo sting（分类 + 本月渲染次数）"
+  ],
+  "brandEn": [
+    "Fictional 'Paragon' product (blue gradient logo tile) in the top bar → video-shotcraft mark + wordmark; nav now Overview / Shots / Renders / Releases, search reads 'Search shots'",
+    "Revenue / Active users modules → Frames rendered (2.48M→7.31M) / Shot previews",
+    "Feature flags Smart routing / Usage alerts / Beta dashboard → Beat-synced cuts / Film-grade SFX / JianYing export",
+    "Fictional company names in Top accounts → Top shots: Crash zoom / Cursor flyover / Text as mask / Logo sting (category + renders this month)"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

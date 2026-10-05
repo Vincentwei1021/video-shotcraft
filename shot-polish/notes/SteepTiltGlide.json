@@ -1,0 +1,31 @@
+{
+  "stem": "SteepTiltGlide",
+  "issues": [
+    "页面是浅灰占位 UI（Dropbox 图标、大 W 残字、空白砖），内容掠过时没有一节值得看、也读不出是什么产品",
+    "浅灰页面在暗场里一片白，颜色单调，光只有左侧一团紫晕",
+    "滑移近匀速，整镜头节奏平，尾段没有落点，最后一帧不是一张完整画面",
+    "速度重影垫在不透明页面下面，几乎只在页面边缘露出；悬空贴落是 2D 位移假影子"
+  ],
+  "changes": [
+    "look 换成 lime（石墨暗场 + 荧光黄绿）：页面改成为镜头设计的深色产品长页（虚构跑步产品 STRIDE 4），五节「车厢」——200px 标题 / 4:12 配速卡 / 心率区间 Z4 / 12.4 km 路线卡 / 「Run smarter.」+ 荧光按钮",
+    "镜头常数（60° / perspective 1100 / origin 30% 58%）一个数不动，仍是物动镜不动；滑移改 bezier(0.36,0.08,0.32,0.94)，「慢—快—慢」，收尾减速成蠕行（尾段斜率不归零），末帧是可读的收尾海报",
+    "悬空贴落改成真 3D：卡片在 preserve-3d 里 translateZ 悬在页面前方，按自身滑到的位置加速贴落，页面上的软影随高度收拢变实",
+    "速度重影改成 f-0.5/-1.0/-1.5 三层密拖尾、叠在本体之上 lighten 混合，只在高速段出现，亮字与荧光件拖出连续残影",
+    "光：镜头坐标系里固定的一团荧光主光（页面在光下滑过）+ 页面顶缘荧光轮廓线 + 远端雾；3D 层去掉 filter: blur（软影改径向渐变），渲染从白屏 / 4 分多钟降到 ~40s；时长 120→150f"
+  ],
+  "issuesEn": [
+    "The page was light-grey placeholder UI (a Dropbox glyph, a stray giant W, blank tiles): no section was worth watching and the product was unclear",
+    "The light-grey page read as a white slab on the dark stage, with only a purple glow on the left for light",
+    "The glide was near-linear, so the rhythm was flat and the tail had no landing; the last frame was not a composed image",
+    "Speed ghosts sat under the opaque page and only peeked out at its edges; the float-and-land used fake 2D offsets"
+  ],
+  "changesEn": [
+    "Lime look (graphite stage and neon yellow-green): the page is a dark product long-page designed for the shot (fictional running app STRIDE 4) with five 'carriages': a 200px headline, a 4:12 pace card, heart-rate zones with Z4 as hero, a 12.4 km route card and 'Run smarter.' with a neon button",
+    "Camera constants (60°, perspective 1100, origin 30% 58%) are untouched, still object-moves-camera-locked; the glide now runs on bezier(0.36,0.08,0.32,0.94), slow-fast-slow, easing into a creep with a non-zero tail slope so the last frame is a readable closing poster",
+    "Float-and-land is true 3D: cards hover in front of the page via translateZ inside preserve-3d and drop as they slide into the reading zone, their soft shadows tightening as they land",
+    "Speed ghosts are now dense trails at f-0.5/-1.0/-1.5 composited above the page with lighten blending, only at high speed, so bright type and neon parts smear continuously",
+    "Light: a neon key light fixed in camera space that the page slides under, a neon rim along the top edge and far fog; filter: blur was removed from the 3D layers (shadows are radial gradients), taking the render from white frames and 4+ minutes to ~40s; duration 120→150f"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

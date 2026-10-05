@@ -1,0 +1,33 @@
+{
+  "stem": "TapeScrollFixedPointer",
+  "issues": [
+    "刻度带只是画面左侧一条 60px 宽的灰色窄条，读数框是一张小白卡，主体占画面不到 15%",
+    "标题是调试文字「TAPE SCROLL · FIXED POINTER」，读数框里只有一条灰色骨架条",
+    "数值从 60 爬到 420 没有任何叙事——看不出为什么跳变，跳到哪里算到位",
+    "冲刺段没有运动模糊，刻度数字小（~20px），「世界动、针不动」的速度感弱"
+  ],
+  "changes": [
+    "look 换成 porcelain（冷白 + 钴蓝）：一条贯穿全画高、上下渐隐出画的刻度带（每 10 一刻、每 50 一大刻 + 64px 数字），钴蓝读数窗 + 指针缺口钉死在中线，窗内 128px 白色读数",
+    "加入叙事：慢爬顶到旧上限虚线（Old limit 140k）被压住 → 升级生效、上限线断开向两侧滑开 → 预备回拉 5 → 冲刺 → 新上限钴蓝三角 bug 恰好停进指针",
+    "曲线：慢爬 swift（贴近上限减速）、冲刺 22f bezier(.55,0,.25,1)（峰值 ~100px/f）、弹簧刹车 444→416→420 一次可见回摆；冲刺段刻度带与读数按速度纵向模糊，读数窗外发光随速度增强",
+    "刻度数字滑到读数窗背后前淡出，不从窗沿露半截",
+    "左侧排版：虚构品牌 Tideway 眉题 + 124px「Rate limit」，落定后第二行「tripled.」钴蓝逐字升起，再弹出 ▲200% 胶囊与「140k → 420k」等宽小结",
+    "时长 140f → 150f，110f 后读数锁死常数，尾段极缓推近 1.0→1.025"
+  ],
+  "issuesEn": [
+    "The tape was a 60px grey strip on the left and the readout a small white card; the subject filled under 15% of the frame",
+    "The title was debug text (TAPE SCROLL · FIXED POINTER) and the readout card held a grey skeleton bar",
+    "The value climbed from 60 to 420 with no story: no reason for the jump, no sense of where it should land",
+    "No motion blur in the sprint and tiny (~20px) tape numbers, so the 'world moves, pointer stays' speed was weak"
+  ],
+  "changesEn": [
+    "Porcelain look (cool white + cobalt): a full-height tape that fades off top and bottom (minor tick every 10, major every 50 with 64px numbers); a cobalt readout window and pointer notch locked to the centre line, with a 128px white readout",
+    "Added a story: a slow crawl presses against the dashed Old limit (140k) line, the upgrade lands and the line splits apart, a small anticipation dip, the sprint, and the cobalt New limit bug parks exactly in the pointer",
+    "Curves: swift crawl (slowing against the cap), 22f sprint on bezier(.55,0,.25,1) peaking near 100px/f, spring brake 444→416→420 with one visible rebound; tape and readout get vertical speed blur and the window glow rises with speed",
+    "Tape numbers fade out before sliding behind the window instead of peeking out half-cut",
+    "Left-side type: a fictional Tideway kicker and a 124px 'Rate limit'; after settling, 'tripled.' rises in cobalt letter by letter, then a ▲200% chip and a mono '140k → 420k' recap",
+    "140f → 150f; the value locks to a constant after 110f and the frame drifts 1.0→1.025 at the tail"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "PullBackIsolation",
+  "issues": [
+    "兄弟卡是灰色占位小卡，熄灭前后都没有信息，\"世界\"不成立",
+    "背景从浅灰直接变成平黑，光的变化没有来源",
+    "终帧孤卡很小、只有卡内小字，海报缺一句收束的话",
+    "主卡光晕是一圈均匀的白边，像描边而不是光"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色暗场 + 白，金色只点一周）；世界改成 44 块深石墨小屏组成的控制室屏幕墙，正中 2×2 是主卡「99.999%」",
+    "后拉 2.4→0.62 / 118f 改 bezier(0.33,0,0.15,1)：起步柔、主体段快、长尾减速；按 2.4× CSS zoom 布局，开场特写字锐利（Q2）",
+    "熄灭按到主卡距离由近到远、起点 EASE.out 错峰（越往外越密，塌暗在加速）；每块先断电 6f 再沉入暗处 14f（opacity + 下沉 + 压暗）",
+    "环境光 = 仍亮着的屏幕占比，墙越灭四周越暗；最后收成落在主卡上的一束窄顶光 + 白色轮廓光与两层冷白光晕",
+    "落定后屏幕空间 56px 结语「Five nines. All year.」逐词虚化入场；时长 150→168f"
+  ],
+  "issuesEn": [
+    "Sibling cards were grey placeholders with no information before or after fading, so the 'world' never existed",
+    "The background jumped from light grey to flat black with no motivated light change",
+    "The final card was small with only tiny in-card text, and the poster lacked a closing line",
+    "The hero glow was an even white ring that read as an outline, not light"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark with white, gold on a single week); the world is a control-room wall of 44 dark graphite screens with the 99.999% hero card in the central 2×2 slot",
+    "Pull-back 2.4→0.62 over 118f on bezier(0.33,0,0.15,1): soft start, fast middle, long decelerating tail; laid out at 2.4× CSS zoom so the opening close-up is crisp (Q2)",
+    "Screens die nearest-first with EASE.out staggered starts (denser outward, an accelerating collapse); each loses its content in 6f, then sinks into the dark over 14f",
+    "Ambient light tracks the share of screens still lit, so the room darkens as the wall dies, ending in a narrow top light on the hero with a white rim and two cool halos",
+    "A 56px screen-space closing line 'Five nines. All year.' blurs in word by word; duration 150→168f"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

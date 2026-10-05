@@ -1,0 +1,31 @@
+{
+  "stem": "TimelineTravel",
+  "issues": [
+    "工作台从源码猜到 104f，正好截在急停帧：Today 卡、1.28× 推近和尾段静止从未出镜",
+    "画面上方打着调试标题 TIMELINE TRAVEL，卡片是灰色骨架，刻度标签 Helvetica 回退",
+    "分段 interpolate 每段各套 inOut，在断点处速度归零，旅行读作“一顿一顿”",
+    "浅灰底只有一根轴线，没有远近景，速度感全靠卡片自己"
+  ],
+  "changes": [
+    "换 ember 暖黑余烬：发光时间轴压着地平线光带，次刻度每 140px 一根做速度参照，远景 380px 渐变大年份 0.35× 视差、近景失焦光斑 1.6× 视差",
+    "相机改为连续速度剖面（smoothstep 起步 → 巡航 → 末 18% 平方律急刹），数值积分成位置表，没有断点顿挫；冲刺段横向运动模糊",
+    "里程碑卡重做成 620×300 出版级卡（版本 chip / 时间 / 54px 标题 / 说明 / 指标），视觉到达前 6f 以底边为轴弹簧立起、连杆长出、节点点亮",
+    "急停后 14f snappy 推近 1.28 到「Today · Ferro Agents」，强调色描边 + 泛光 + 光带加亮，页眉同步退场让结尾只剩一个主角",
+    "时长定为 160f（导出常量），急停后留 42f hold，内含 1.28→1.30 极缓推近"
+  ],
+  "issuesEn": [
+    "The workbench guessed 104f from source, cutting exactly on the brake: the Today card, the 1.28x push and the hold were never seen",
+    "A debug title 'TIMELINE TRAVEL' sits on top, cards are grey skeletons and tick labels fall back to Helvetica",
+    "Each interpolate segment carried its own inOut easing, so velocity dropped to zero at every breakpoint and the travel stuttered",
+    "A light grey stage with a single axis line: no foreground or background, so all speed had to come from the cards"
+  ],
+  "changesEn": [
+    "Ember warm-black stage: a glowing axis on a horizon light band, minor ticks every 140px as speed references, 380px gradient years in the background at 0.35x parallax and defocused bokeh in front at 1.6x",
+    "The camera follows one continuous velocity profile (smoothstep start, cruise, quadratic brake over the last 18%) integrated into a position table, with no stutter; horizontal motion blur during the sprint",
+    "Milestone cards rebuilt as 620x300 publish-grade cards (version chip, date, 54px title, line, metric) that spring up from the axis 6f before visual arrival as stems grow and nodes light",
+    "After the brake a 14f snappy push to 1.28 lands on 'Today · Ferro Agents' with accent stroke, glow and a brighter horizon; the header exits so the end frame has one hero",
+    "Duration fixed at an exported 160f with a 42f hold after the brake, creeping 1.28 to 1.30"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

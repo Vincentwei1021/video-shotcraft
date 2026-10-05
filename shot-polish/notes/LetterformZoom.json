@@ -1,0 +1,35 @@
+{
+  "stem": "LetterformZoom",
+  "issues": [
+    "盖板是平涂米灰、字洞里透出的是灰色占位 dashboard，洞里有什么根本读不出来",
+    "「DASH」字卡没有任何文案层级与光，像线框稿",
+    "指数推进只有简单 blur，没有纵深与速度感，穿洞瞬间像整屏放大一张图",
+    "接管后的新页面是一张静止的灰色列表，穿越之后什么都没发生"
+  ],
+  "changes": [
+    "look 改为 ember：暖黑章节字卡挖出 560px Black 字重「SHIFT」，洞里是熔金渐变的虚构发布页（Kiln 4.0），字形成了画面里最亮的东西",
+    "字卡 hold 期洞里只透出暖色渐变与柔光形（页面文字层隐去，不与「SHIFT」两层字互相抢），主推中段 64–90f 页面内容由 18px 失焦淡入合焦，接管时已清晰可读",
+    "字缘加一圈只画在盖板上的模糊橙色描边（光从字洞漏出来）+ 1.5px 暖白切口边，配眉题「CHAPTER 02」字距收拢与 44px 副标",
+    "推进锚点改到「I」竖笔中心（实测 1029,515），30^u 慢起陡收 + 2% 后吸预备；快速段四层半透明残影叠成径向变焦拖尾 + 按 scale 补偿的模糊",
+    "两层视差：盖板 ×30、后景页面只推 1.08（交接处速度连续）并向左漂 28px，洞里内容在动，读作真实纵深；接管瞬间页面曝光 +12% 一闪",
+    "着陆后余波：部署卡计数 0→32、四条区域延迟条错峰填满、LIVE 标签弹簧弹出，尾帧是一张完整的产品发布海报",
+    "时长 140→150f，时间表：建立 0–26 / 预备 26–34 / 主推 34–86 / 落定 86–116 / 余波 96–132 / hold"
+  ],
+  "issuesEn": [
+    "Flat beige plate with a grey placeholder dashboard showing through the letter holes — you can't tell anything is inside",
+    "The 'DASH' title card has no typographic hierarchy or light; it reads like a wireframe",
+    "The exponential push only adds a basic blur — no depth or speed, so going through the hole feels like scaling a flat image",
+    "The page that takes over is a static grey list; nothing happens after the fly-through"
+  ],
+  "changesEn": [
+    "Look switched to ember: a warm-black chapter card with a 560px Black 'SHIFT' cut out, revealing a molten-gold fictional launch page (Kiln 4.0) so the letterforms are the brightest thing on screen",
+    "During the title hold the holes show only warm gradient and soft glow shapes (the page's type layer is hidden so it doesn't compete with 'SHIFT'); in the middle of the push (64–90f) the page content fades in from an 18px defocus and is sharp by takeover",
+    "A blurred orange stroke drawn only on the plate makes light leak out of the holes, plus a 1.5px warm cut edge; eyebrow 'CHAPTER 02' tracks in and a 44px subline rises",
+    "Push anchored at the centre of the 'I' stem (measured 1029,515), 30^u slow-in/steep curve with a 2% anticipation pull-back; four translucent lagged plates form a radial zoom trail plus scale-compensated blur",
+    "Two-layer parallax: plate goes ×30 while the page behind only pushes to 1.08 (velocity-continuous hand-off) and drifts 28px, so the holes show real depth; a +12% exposure pop at takeover",
+    "Aftermath once landed: deploy card counts 0→32, four region latency bars fill in a stagger, a LIVE pill springs in — the last frame is a full launch poster",
+    "Duration 140→150f; timeline: establish 0–26 / anticipate 26–34 / push 34–86 / settle 86–116 / aftermath 96–132 / hold"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

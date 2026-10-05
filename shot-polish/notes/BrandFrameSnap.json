@@ -1,0 +1,33 @@
+{
+  "stem": "BrandFrameSnap",
+  "issues": [
+    "画框之内是灰阶骨架：灰色占位条代替界面，窗口里读不出任何真实内容",
+    "dashboard 被 transform 缩进窗口、底部一排被裁掉半截，整体像线框图",
+    "框内平铺灰底、画框与内容交界没有厚度，读作色块而不是装裱",
+    "窗口下落没有运动模糊、阴影固定；翻色没有动机（没人按开关），像定时切换",
+    "蓝/绿两色明度相近，角标字小（24px 以下），翻色的识别度弱"
+  ],
+  "changes": [
+    "look = porcelain 冷白舞台；画框是唯一强色：Design 钴蓝 #2F55FF ↔ Dev 橘红 #FF5B1F，色相对冲 + 明度差，窗内 UI 全中性墨色，强调色只跟模式走",
+    "主体换成为镜头设计的设计工具「Tessel」窗口（1560×864 原生像素）：图层栏 / 画布上一张大字号定价卡（$24 124px）/ 检查器，选中的是 Start free trial 按钮",
+    "翻色帧四件事同帧硬切：画框色、角标 DESIGN→DEV MODE、开关态、整套版式（浅色检查器→深色 CSS 代码面板、图层→tokens、蓝选框→橘色标注线）",
+    "加入动机：光标弧线滑到标题栏 Design | Dev 开关、按下预备、松开那一帧翻色；翻色叠 3 帧径向白闪 + 框厚阻尼弹跳 + 内容 1% 顿挫",
+    "时间表重排为 140f：0–18 画框长出（60px，第 2 帧就有框）→ 10–40 窗口弹簧落入（前倾 18° 回正 + 速度模糊 + 阴影收紧）→ 36–52 选框手柄错峰弹出 → 84 翻色 → 86–104 标注线 3f 错峰画出、数值胶囊过冲 → hold 极缓推近 2%"
+  ],
+  "issuesEn": [
+    "Inside the frame was a grey skeleton: placeholder bars instead of an interface, nothing real to read in the window",
+    "The dashboard was transform-scaled into the window with its bottom row cut in half, reading like a wireframe",
+    "A flat grey ground inside the frame with no depth at the edge, so the frame read as a colour block rather than a mat",
+    "The window drop had no motion blur and a fixed shadow; the flip had no motivation (nobody pressed a toggle) and felt like a timer",
+    "Blue and green had similar lightness and the band labels were tiny (under 24px), so the flip was weakly legible"
+  ],
+  "changesEn": [
+    "Look = porcelain (cool white stage); the frame is the only strong colour: Design cobalt #2F55FF ↔ Dev orange #FF5B1F, opposed hues plus a lightness gap; the UI itself is neutral ink and accents follow the mode",
+    "The subject is now a shot-designed window of a fictional design tool, Tessel (1560×864 native pixels): layers panel, a canvas with a big pricing card ($24 at 124px), and an inspector, with the Start free trial button selected",
+    "Four things hard-cut on the same flip frame: frame colour, band label DESIGN→DEV MODE, toggle state, and the whole layout (light inspector → dark CSS code panel, layers → tokens, blue selection → orange redlines)",
+    "Added motivation: a cursor arcs to the Design | Dev toggle in the title bar, presses with anticipation and releases on the flip frame; the flip gets a 3-frame radial flash, a damped band-thickness bounce and a ~1% content jolt",
+    "Retimed to 140f: 0–18 frame grows to 60px (visible by frame 2) → 10–40 window springs in (18° tilt settling, velocity blur, tightening shadow) → 36–52 selection handles pop in staggered → 84 flip → 86–104 redlines draw on 3f apart with overshooting value pills → hold with a 2% slow push"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

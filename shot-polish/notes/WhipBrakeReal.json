@@ -1,0 +1,31 @@
+{
+  "stem": "WhipBrakeReal",
+  "issues": [
+    "只有一排卡在浅黄底上滑，画面上半和下半大面积空白，没有任何排版",
+    "甩动的位移曲线没有和画面里其他元素产生关系，急刹的\"刹\"只能靠卡片自己读",
+    "落定后目标卡只放大 4%，卡面字仍是 16px 级，\"要读内容\"的落点读不清",
+    "底色偏黄、邻卡退暗不明显，主角不突出"
+  ],
+  "changes": [
+    "look 换成 paper 暖纸；右上加一只 150px 衬线机械滚轮索引计数器「Nº 02 / 10」，数位跟着长廊位置连续滚动（按转速竖向模糊、9→0 进位），甩时飞转、急刹时越转越慢、咔地停在 09",
+    "画面中线一根固定朱红播放头 + 随长廊走的刻度尺（每卡大刻度 + 等宽序号），甩动时刻度糊成一片，急刹时播放头卡进第 09 格",
+    "保留单条速度曲线积分（3f 起步 + 指数衰减，前 70% 路程 12f、后 30% 长尾 48f），按瞬时速度方向性拖影",
+    "落定：目标卡（高清纹理）抬起放大到 1.2×、阴影变深变虚，邻卡退到 45% 并后缩 4%，播放头下浮出朱红分区名 EFFICIENT MODELS",
+    "左上 PROJECT INDEX 眉题与右上计数器构成页眉，长廊居中，结尾帧是完整的索引海报"
+  ],
+  "issuesEn": [
+    "Just a row of cards sliding over a pale yellow ground, with the top and bottom halves of the frame empty and no typography",
+    "The whip's position curve drove nothing else on screen, so the brake could only be read from the cards themselves",
+    "After landing the target only grew 4% and its text stayed around 16px, so the 'land on content to read' payoff was unreadable",
+    "The ground skewed yellow and the neighbour dimming was faint, so the hero did not stand out"
+  ],
+  "changesEn": [
+    "Warm paper look; a 150px serif mechanical odometer 'No. 02 / 10' at top right rolls with the rail position (vertical blur by spin speed, real 9-to-0 carry), spinning during the whip, slowing on the brake and clicking to 09",
+    "A fixed vermilion playhead on the centre line plus a ruler that travels with the rail (major tick and mono index per card): the ticks smear during the whip and the playhead locks into slot 09 on the brake",
+    "The single integrated velocity curve is kept (3f ramp then exponential decay, 70% of the distance in 12f and a 48f tail), with directional blur by instantaneous speed",
+    "Landing: the hi-res target lifts to 1.2x with a deeper, softer shadow, neighbours drop to 45% and shrink 4%, and the vermilion section name EFFICIENT MODELS rises under the playhead",
+    "A PROJECT INDEX kicker at top left and the counter at top right form a header around the centred rail, so the end frame is a complete index poster"
+  ],
+  "look": "paper",
+  "mdChanged": true
+}

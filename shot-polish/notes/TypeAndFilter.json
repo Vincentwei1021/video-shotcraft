@@ -1,0 +1,35 @@
+{
+  "stem": "TypeAndFilter",
+  "issues": [
+    "页面截图满幅铺开、没有舞台和光，整体是一张平的浅色纸，像屏幕录像",
+    "全景时卡片字只有十几像素，过滤后剩一张小卡停在大片空白里，画面空",
+    "过滤后计数仍是 10/10、目标卡落在 'Agents & Dev Tools' 分组下、下方空分组标题还在，细节穿帮",
+    "结尾只是推进到 2.2 倍就结束（依赖外部 flash-cut），镜头本身没有落点",
+    "打字等间隔 3f，读作脚本"
+  ],
+  "changes": [
+    "look = graphite（主光改暖色）：真实页面装进暖纸色浏览器窗浮在暗场上，窗下地面光、暗角与颗粒，产品是画面里唯一亮的东西；截图纹理全部保留",
+    "一镜到底：特写搜索框 zoom 2.5（输入字 ≈44px）随光标微移 → 拉开到整窗看过滤 → 指针点中 → 卡片容器变形展开成详情页、相机推到 1.75 落在 60px 的详情标题上",
+    "人手节奏打字（nano 快、'-' 前犹豫、lab 快），首键落下 placeholder 消失，打完留 13f 呼吸再过滤",
+    "补齐真实产品细节：计数 10/10→1/10、分组标题换成 RESEARCH INFRA · 1 个项目、下方空分组淡出、地址栏 projects → ?q=nano-lab → /nano-lab",
+    "目标卡从视口下方升到首行真实槽位（EASE.swift + 纵向速度拖影 + 浮起阴影），点击双圈琥珀涟漪 + 描边",
+    "时长 73f → 156f，节奏为 预备 10f / 打字 23f / 呼吸 / 收敛 / 点击 / 穿透 26f / hold 38f"
+  ],
+  "issuesEn": [
+    "The screenshot filled the frame with no stage or light, a flat sheet of pale paper that read like a screen recording",
+    "In the wide view card text was a dozen pixels tall, and after filtering a single small card sat in a large empty area",
+    "After filtering the counter still said 10/10, the target landed under the 'Agents & Dev Tools' header and empty section headers remained",
+    "It ended on a push to 2.2x that relied on an external flash-cut, so the shot had no landing",
+    "Typing at an even 3f per key read as scripted"
+  ],
+  "changesEn": [
+    "Look = graphite with a warm key: the real page sits in a warm-paper browser window floating on a dark stage with floor glow, vignette and grain, so the product is the only bright thing; all screenshot textures are kept",
+    "One continuous take: a 2.5x close-up on the search field (typed text ≈44px) drifting with the caret → pull back to the full window for the filter → pointer click → the card container-transforms into the detail page while the camera pushes to 1.75x onto the 60px detail title",
+    "Human typing rhythm (fast 'nano', a hesitation before '-', fast 'lab'); the placeholder disappears on the first key, and a 13f breath follows before filtering",
+    "Real-product details: counter 10/10 → 1/10, section header becomes RESEARCH INFRA · 1 project, empty sections fade, the URL goes projects → ?q=nano-lab → /nano-lab",
+    "The target rises from below the viewport into the real first-row slot (EASE.swift, vertical speed blur, lifted shadow); the click gets two amber ripples and an outline",
+    "Duration 73f → 156f: 10f set-up / 23f typing / breath / converge / click / 26f container transform / 38f hold"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

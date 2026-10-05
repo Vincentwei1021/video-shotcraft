@@ -1,0 +1,31 @@
+{
+  "stem": "BeatCutAccelerando",
+  "issues": [
+    "六个视图都是通用小字 FakeDashboard 的放大，浅灰底 + 靛蓝，切再快也看不出这是什么产品",
+    "画面是死的：切点之间内容不动，加速只存在于剪辑节奏里",
+    "末刀回到全景后没有结论，加速逼近\"逼近\"了个寂寞",
+    "全景下字号 10–14px，只有 2.6x 特写时才勉强可读"
+  ],
+  "changes": [
+    "look 换成 ember：产品改成赛车遥测大屏「Pitwall」——260px 车速、档位 + 转速灯条、赛道图上跑动的车点、108px 圈速差、三段计时、油门 / 刹车曲线，全景下也全部可读",
+    "内容是活的：车点一直在跑、车速一路爬到 312、圈速差越拉越大，六个硬切是同一段时间里的六个机位",
+    "切点叙事化：全景 → 赛道图 → 车速 → 圈速差 → 油门曲线 → 跟车特写（相机锁住车点）；间隔仍是 16→12→8→6→4，段内微推速率逐段加快",
+    "末刀回全景后 +4f「FASTEST LAP 1:31.204」徽章弹簧弹出、S3 亮出最快段，结论落地；hold 加长到 45f",
+    "切帧\"咔\"：1f 亮度 +6% + 6% 暖白层，新视图 4f 1.03→1 微回弹；放大走 CSS zoom 保证 3.4x 特写不糊"
+  ],
+  "issuesEn": [
+    "All six views were zooms of the generic small-type FakeDashboard on light grey with indigo, so however fast the cuts, you couldn't tell what the product was",
+    "The picture was dead: nothing moved between cuts, so the acceleration existed only in the edit",
+    "After the last cut back to the wide there was no payoff; the accelerating approach led nowhere",
+    "In the wide shot type was 10-14px, barely readable even in the 2.6x close-up"
+  ],
+  "changesEn": [
+    "Ember look: the product is now a race-telemetry wall, Pitwall, with a 260px speed readout, gear and shift lights, a car dot running the track map, a 108px lap delta, sector times and throttle/brake traces, all readable in the wide",
+    "The content is live: the car keeps running, speed climbs to 312 and the delta keeps growing, so the six hard cuts are six cameras on the same moment",
+    "The cuts tell a story: wide, track map, speed, delta, throttle trace, then a chase close-up locked to the car; intervals stay 16/12/8/6/4 and the in-shot push speeds up each segment",
+    "After the final cut back to the wide, a 'FASTEST LAP 1:31.204' badge springs in 4f later and S3 lights as the best sector, landing the conclusion; the hold is now 45f",
+    "Cut-frame click: one frame at +6% brightness with a 6% warm-white layer, and each new view settles 1.03 to 1 over 4f; zoom uses CSS zoom so the 3.4x close-up stays sharp"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

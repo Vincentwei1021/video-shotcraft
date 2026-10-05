@@ -3,6 +3,7 @@
 // logo 划过，光到即亮、光走即暗，尾段沉回黑暗（右缘残留蓝紫）。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const W = 1250;
 const H = 860;
@@ -27,7 +28,7 @@ const TaskCard: React.FC<{ seed: number }> = ({ seed }) => (
   </div>
 );
 
-// 灰阶斜置面板（ClickUp 布局形：侧栏 + Review/Shipped 两列）
+// 灰阶斜置面板（ClickUp 布局形：侧栏 + Review/Shipped 两列；侧栏顶是 video-shotcraft 标志 + 字标）
 const Panel: React.FC = () => (
   <div style={{
     width: W, height: H, background: '#f6f6f5', borderRadius: R,
@@ -35,8 +36,9 @@ const Panel: React.FC = () => (
   }}>
     <div style={{ width: 300, borderRight: `2px solid ${line}`, padding: '30px 28px', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 34 }}>
-        <div style={{ width: 30, height: 30, borderRadius: 8, background: ink }} />
-        <div style={{ height: 16, width: 96, background: ink, borderRadius: 7 }} />
+        {/* 侧栏品牌位：video-shotcraft 标志 + 字标（扫光经过时描光） */}
+        <ShotcraftMark size={30} tone="light" />
+        <div style={{ fontFamily: BRAND.font, fontSize: 17, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1, color: ink, whiteSpace: 'nowrap' }}>{BRAND.name}</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <Row w={72} /><Row w={128} /><Row w={64} />
@@ -166,7 +168,7 @@ export const GlowWakeSleepPanel: React.FC = () => {
           <EdgeStreak cx={260} y={W + 2} len={620} opacity={Math.max(rightNear * env, tailBlue * 0.9)} vertical />
           {/* logo 一圈描光（截图⑤：光经过 logo 时） */}
           <div style={{
-            position: 'absolute', left: 8, top: 12, width: 150, height: 66, borderRadius: 16,
+            position: 'absolute', left: 8, top: 12, width: 222, height: 66, borderRadius: 16, // 宽度包住标志 + 字标
             boxShadow: '0 0 26px 8px rgba(196,126,255,0.75), 0 0 60px 22px rgba(150,82,238,0.4)',
             opacity: logoGlow,
           }} />
@@ -181,3 +183,5 @@ export const GlowWakeSleepPanel: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+export const GLOW_WAKE_SLEEP_PANEL_DURATION = 140;

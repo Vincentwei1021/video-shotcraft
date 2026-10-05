@@ -1,0 +1,14 @@
+{
+  "stem": "DiagramCascadeBuild",
+  "changed": true,
+  "brand": [
+    "prompt「Map the data model for our SaaS」→「Map the data model for Shotcraft」（同长度，提交帧仍 50f）",
+    "ER 表从 SaaS 模型（Organization/Team/Subscription/Member/Project/Invoice/Plan）→ video-shotcraft 的数据模型（Project/Storyboard/RenderJob/Shot/Recipe/Output/Preset）及对应字段"
+  ],
+  "brandEn": [
+    "Prompt \"Map the data model for our SaaS\" -> \"Map the data model for Shotcraft\" (same length, submit still at 50f)",
+    "ER tables changed from a generic SaaS model to video-shotcraft's own model (Project / Storyboard / RenderJob / Shot / Recipe / Output / Preset) with matching fields"
+  ],
+  "styleKey": "diagram-cascade",
+  "mdChanged": false
+}

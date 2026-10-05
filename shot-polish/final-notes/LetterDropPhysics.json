@@ -1,0 +1,14 @@
+{
+  "stem": "LetterDropPhysics",
+  "changed": true,
+  "brand": [
+    "坠落标题「GRAVITY」→ 品牌名「Shotcraft」（9 字符，起跳时刻仍按 4→40f 的同一条错峰曲线分布）",
+    "副标题「Everything lands somewhere.」→「Every shot lands on the beat.」"
+  ],
+  "brandEn": [
+    "Falling title \"GRAVITY\" → brand name \"Shotcraft\" (9 letters, drop starts still spread over the same 4→40f stagger curve)",
+    "Subtitle \"Everything lands somewhere.\" → \"Every shot lands on the beat.\""
+  ],
+  "styleKey": "letter-drop-physics",
+  "mdChanged": true
+}

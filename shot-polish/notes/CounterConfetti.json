@@ -1,0 +1,33 @@
+{
+  "stem": "CounterConfetti",
+  "issues": [
+    "数字只有 74px（设计坐标放大后仍偏小），四周大面积空黑，标签 10px 级小字读不清",
+    "计数是整数直接跳变，快段只靠整体模糊，没有\"滚\"的机械感，冲到终值也没有落定的那一下",
+    "纸屑是 8 色荧光彩虹，和深蓝底、蓝白数字不在一个色系，像游戏特效",
+    "冲击环 + 柔闪 + 中心辉光三种光效叠在一起，主次不清"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 橙 · 金）香槟夜：268px 渐变金白数字占画宽 70%，眉题 MILESTONE 30px、副标题 64px、致谢 32px 三级层级",
+    "计数器改七位机械滚轮：真实进位规则、低位按转速竖向模糊变虚、未到高位是暗色幽灵零（开场第 1 帧就有 0,000,000）",
+    "节奏改「快—慢—停—咔」：expo-out 冲到 0,999,999 → 停 2f → 六位同时 9→0、最高位 0→1 的弹簧进位（~8% 过冲）",
+    "抢拍保留：两门礼炮在进位起跳同一帧射出 120 片金箔 / 橙 / 奶白三色纸屑，金箔随翻转反光，阻力抛体 + 飘摆 + 三层景深",
+    "光效收成一次：落定时数字弹一下 + 背后金色泛光 + 横向光带，去掉冲击环",
+    "时长 172f：纸屑 ~160f 前落出画外，尾帧是干净的里程碑海报"
+  ],
+  "issuesEn": [
+    "The number was only 74px in design space and still small after scaling, floating in empty black; the 10px-class label was unreadable",
+    "The count jumped as plain integers with a global blur on fast frames: no mechanical roll, and no settle when it hit the final value",
+    "Confetti used an 8-colour neon rainbow that clashed with the navy stage and blue-white number, reading like a game effect",
+    "Shock ring, soft flash and centre glow stacked three light effects with no clear hierarchy"
+  ],
+  "changesEn": [
+    "Warm ember look (warm black, orange, gold): a 268px gold-white gradient number spanning 70% of the frame, with a three-level hierarchy of 30px MILESTONE kicker, 64px line and 32px thank-you",
+    "The counter is now a seven-digit mechanical odometer: real carry rules, fast digits blur and fade with spin speed, unreached digits sit as dark ghost zeros (0,000,000 is on screen from frame 1)",
+    "Rhythm is fast, slow, pause, clunk: expo-out to 0,999,999, a 2f pause, then a spring carry that rolls six 9s to 0 and the top digit 0 to 1 (~8% overshoot)",
+    "The early beat is kept: two cannons fire 120 pieces of gold foil, orange and cream confetti on the carry frame, with foil glints, drag ballistics, flutter and three depth layers",
+    "One light accent only: on landing the number bumps, a gold bloom and a horizontal streak flash behind it; the shock ring is gone",
+    "172f total: the confetti clears the frame by ~160f, so the last frame is a clean milestone poster"
+  ],
+  "mdChanged": true,
+  "look": "ember"
+}

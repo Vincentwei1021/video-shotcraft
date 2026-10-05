@@ -1,0 +1,33 @@
+{
+  "stem": "TrailerBumper",
+  "issues": [
+    "三个速剪镜头是灰色通用 dashboard 占位图，9f 里看不出任何内容，钩子不抓人",
+    "三镜构图差别不大（两张全景 + 一张放大），速剪读不出景别变化",
+    "开场标题是浅灰底上的「THE LAUNCH」，字小、平、没有光，黑场之后亮起来像幻灯片",
+    "标题落定后 77f 完全静止，尾段死帧"
+  ],
+  "changes": [
+    "custom look（青黑 + 琥珀的预告片调色）；三个速剪镜头为同一虚构产品「Cinder」量身设计：微距命令行（荷兰角 −7°、上下行景深虚化）/ 420px 琥珀渐变「0.4s」+ 透视网格地平线 / Deploy 按钮被光标按下（反向荷兰角 +6°、按下压缩 + 光环）",
+    "保留骨架：三镜各 9f 等长硬切 + 每镜 1→1.04 匀速微推、27–33f 纯黑静默",
+    "开场：舞台 14f 由黑亮起，230px「CINDER」逐字由虚到实从中间向两边绽开、字距 0.42em→0.16em 缓收，一道琥珀宽银幕光条横扫标题中线一次",
+    "眉题 A NEW WAY TO SHIP / 42px 副题 / 日期 10 · 14 依次跟进，层级分明",
+    "hold 70f 不再死帧：3% 极缓推近 + 光带呼吸 + 琥珀余烬浮尘上飘（呼应品牌名）",
+    "时长 140f → 150f"
+  ],
+  "issuesEn": [
+    "The three quick cuts were grey generic dashboard placeholders; nothing was readable in 9f, so the hook didn't grab",
+    "The three compositions were barely different (two wides and one zoom), so the cuts didn't read as changes of shot size",
+    "The title was 'THE LAUNCH' on a pale grey card: small, flat and unlit, so coming out of black felt like a slideshow",
+    "After the title settled the frame stayed completely still for 77f, a dead tail"
+  ],
+  "changesEn": [
+    "Custom teal-and-amber trailer grade; the three cuts are designed for one fictional product, 'Cinder': a macro command line (−7° Dutch angle, depth-of-field blur on the lines above and below), a 420px amber-gradient '0.4s' over a perspective grid horizon, and a Deploy button pressed by the cursor (+6° Dutch angle, press squash and ring)",
+    "The skeleton is kept: three equal 9f hard cuts, each with a constant 1→1.04 push, then 27–33f of pure black silence",
+    "The open: the stage rises out of black over 14f, a 230px 'CINDER' blooms letter by letter from blur outward from the centre while tracking eases from 0.42em to 0.16em, and one amber anamorphic streak sweeps the title's centre line",
+    "Kicker 'A NEW WAY TO SHIP', a 42px subtitle and the date '10 · 14' follow in turn with clear hierarchy",
+    "The 70f hold is no longer dead: a 3% slow push, a breathing light band and drifting amber embers that echo the brand name",
+    "140f → 150f"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

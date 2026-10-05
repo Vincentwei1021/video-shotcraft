@@ -1,0 +1,31 @@
+{
+  "stem": "GridFlashMosaic",
+  "issues": [
+    "九格全是灰白 dashboard 局部裁切，格子里读不出任何功能，墙只是一堆骨架条",
+    "前 25f 是一块灰底 + 一个孤零零的小卡，开场像死帧",
+    "吞屏用纯 ease-in，带着全速停在满屏帧，落点生硬",
+    "吞屏后落在一张普通 dashboard 页面上，没有品牌、没有文案收尾"
+  ],
+  "changes": [
+    "look 改为 midnight：外围 8 格 = 虚构工作台 Ninefold 的 8 件工具，每格一个为镜头设计的大图形 + 48px 名称 + 一个数据；中心格就是品牌海报，3×3 方块字标与九宫格墙语义闭环",
+    "开场第 1 帧就是 9 个暗槽；外围格每 2f 一格乱序硬切亮相（4f scale 1.12→1 + 白闪），中心格晚 2f 最后砸下当重拍",
+    "满墙停 22f：整墙 1.006 呼吸，格内图形各自动一下（柱子长、声纹跳、⌘K 打字、最后一项被勾掉）",
+    "吞屏改为 3f 预备缩 0.97 + 16f 强加速尾段急刹放大到 3.4，外围格同时外推、缩小、压暗让出纵深；格子圆角同步收成直角",
+    "摘罩后海报原生直出：「Nine tools. One workspace.」逐词升起 + PUBLIC BETA 标签，1.5% 推近 hold"
+  ],
+  "issuesEn": [
+    "All nine cells were grey dashboard crops; no feature was readable and the wall was just skeleton bars",
+    "The first 25f were a grey field with one lonely small card, a dead-looking opening",
+    "The swallow zoom was pure ease-in and stopped at full speed on the full-screen frame",
+    "It landed on an ordinary dashboard page with no brand or closing copy"
+  ],
+  "changesEn": [
+    "Midnight look: the eight outer cells are eight tools of the fictional workspace Ninefold, each with a purpose-built graphic, a 48px name and one stat; the centre cell is the brand poster whose 3x3 mark echoes the wall",
+    "Frame 1 already shows nine dark slots; outer cells hard-cut in every 2f in shuffled order (4f scale 1.12 to 1 plus a white flash) and the centre slams in 2f later as the downbeat",
+    "The full wall holds 22f with a 1.006 breath while each tile's graphic moves once (bars grow, waveform jumps, Cmd-K types, a task gets checked)",
+    "The swallow is a 3f anticipation to 0.97 then a 16f accelerate-and-brake zoom to 3.4 while outer cells push out, shrink and darken; the cell corners square off as it grows",
+    "After unmounting, the poster renders natively: 'Nine tools. One workspace.' rises word by word with a PUBLIC BETA tag and a 1.5% push hold"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

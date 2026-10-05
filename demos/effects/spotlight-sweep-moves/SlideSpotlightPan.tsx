@@ -4,6 +4,7 @@
 // 用户裁决："紫色的光线是贴着ui界面泛光的，聚光的移动是匀速的"。
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame, interpolate } from 'remotion';
+import { BRAND, ShotcraftMark } from '../../_fixtures/Brand';
 
 const ink = '#3c3c3a';
 const mid = '#98989a';
@@ -40,7 +41,7 @@ const Col: React.FC<{ accent: string; seed: number; w: number }> = ({ accent, se
   </div>
 );
 
-// 超宽面板内容（放大特写级别）：侧栏 + 顶栏 + 三列看板
+// 超宽面板内容（放大特写级别）：侧栏（顶部 video-shotcraft 标志 + 字标）+ 顶栏 + 三列看板
 const WidePanel: React.FC = () => (
   <div style={{
     width: PW, height: PH, background: '#f4f4f3',
@@ -49,8 +50,9 @@ const WidePanel: React.FC = () => (
   }}>
     <div style={{ width: 560, borderRight: `3px solid ${line}`, padding: '52px 48px', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 56 }}>
-        <div style={{ width: 46, height: 46, borderRadius: 12, background: ink }} />
-        <div style={{ height: 26, width: 150, background: ink, borderRadius: 10 }} />
+        {/* 侧栏品牌位：video-shotcraft 标志 + 字标 */}
+        <ShotcraftMark size={46} tone="light" />
+        <div style={{ fontFamily: BRAND.font, fontSize: 27, fontWeight: 700, letterSpacing: '0.03em', lineHeight: 1, color: ink, whiteSpace: 'nowrap' }}>{BRAND.name}</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <SideRow w={110} /><SideRow w={200} /><SideRow w={100} />
@@ -169,3 +171,5 @@ export const SlideSpotlightPan: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+export const SLIDE_SPOTLIGHT_PAN_DURATION = 132;

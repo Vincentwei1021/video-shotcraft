@@ -1,0 +1,33 @@
+{
+  "stem": "BeatStepListThemeCycle",
+  "issues": [
+    "形容词只有 ~60px 的居中单列，四周大面积空场，没有任何品牌或上下文，读不出是在展示什么",
+    "胶囊是一条固定 900px 的长条，词只占一半，右侧大块空色块",
+    "选中判定跟整数拍走：跳变时新词还在胶囊下方就先变成反白色，穿帮",
+    "换主题只换颜色，五个形容词字体完全一样，\"多种气质\"讲不出来"
+  ],
+  "changes": [
+    "版式改成一句话：静止细体「Make it」(132px/300) + 胶囊里的形容词，读作 Make it modern → playful → expressive → BOLD → yours.，最后一拍落在口号上",
+    "胶囊改成透镜：外层统一暗白列表，胶囊里是裁切副本（深色字 + 该主题字体：无衬线 / 圆体 / 衬线斜体 / 全大写 Futura），词越过胶囊边缘才换色换体",
+    "胶囊宽度跟选中词实测字宽、与色 / 场 / 行同一个拍内时钟插值；squash 改为竖 1.14 / 横反相 0.97 的体积守恒弹 + 接住瞬间同色辉光",
+    "节奏 3 拍→4 拍（18f/拍，6f 陡 ease-out 跳变 + 12f 静置），140f；开场 16f 由虚到实入场，全程 1.0→1.03 极缓推镜",
+    "五套深场同明度异色相（浓缩→深梅→深靛→深青→海军蓝），胶囊同色大光晕跟场同拍换；列表按行距衰减 + 远行虚化做滚轮景深",
+    "加品牌 Quire、THEME 03/05 计数与五枚色票（元素层挂同一整数拍），末拍后口号「One system. Every mood.」逐词升起"
+  ],
+  "issuesEn": [
+    "The adjectives were a ~60px centred column floating in empty space, with no brand or context to say what was being shown",
+    "The pill was a fixed 900px bar with the word filling only half of it, leaving a large empty block of colour",
+    "Selection followed the integer beat, so during the jump the incoming word turned dark while still below the pill",
+    "Each theme only changed colour; every adjective used the same typeface, so 'many personalities' never came across"
+  ],
+  "changesEn": [
+    "The layout is now one sentence: a static light 'Make it' (132px/300) plus the adjective in the pill, reading Make it modern, playful, expressive, BOLD, yours., landing on the tagline",
+    "The pill is a lens: outside is one dim white list, inside is a clipped copy in dark ink and the theme's typeface (sans, rounded, serif italic, uppercase Futura), so words change only as they cross the pill edge",
+    "Pill width follows the measured width of the selected word on the same in-beat clock as colour, field and row; squash is now a volume-preserving 1.14 vertical / 0.97 horizontal pop with a glow on catch",
+    "Rhythm goes from 3 to 4 beats (18f per beat, 6f steep ease-out jump, 12f still), 140f total, with a 16f blur-in opening and a 1.0 to 1.03 slow push throughout",
+    "Five deep fields of equal lightness and different hue (espresso, plum, indigo, teal, navy) with a large pill-coloured glow that changes on the beat; the list fades and blurs by row distance for wheel-like depth",
+    "Added the Quire brand, a THEME 03/05 counter and five swatches on the same integer beat (element layer only), and the tagline 'One system. Every mood.' rising word by word after the last beat"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

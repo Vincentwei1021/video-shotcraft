@@ -1,0 +1,31 @@
+{
+  "stem": "GlowOrbAmbient",
+  "issues": [
+    "三团光斑是 blur(100px) 的灰蓝暗团，峰值太低，近黑底上几乎看不出在\"呼吸\"",
+    "中央卡只有 560×330，标题 19px、指标说明 14px，画面大面积空黑，卡里的字全是读不清的中间态",
+    "卡与光斑的关系只靠一圈很淡的外发光，看不出光斑在卡后游过",
+    "全片无主次：卡片是通用的 uptime 指标卡，没有内容记忆点"
+  ],
+  "changes": [
+    "自定义 look「abyss」：深海青黑底，光斑换成潮青 / 深海蓝 / 一小团珊瑚的 1200/1000/760px 多段径向渐变（screen 叠加、不做实时模糊），漂移振幅加大到 280–300px",
+    "主角换成 1100×600 的磨砂玻璃卡（backdrop 模糊 + 提饱和）：光斑游过时颜色真的透过玻璃染进卡面；外缘辉光取最近光斑的颜色与距离，另有一道只在受光侧亮的定向轮廓光",
+    "内容改成助眠白噪音 app「Nocta」正在播放卡：160px 标题「Low tide」、36px 声景说明、64 根随潮汐起伏的声波条、64px 等宽剩余时间每秒跳一次",
+    "节奏：卡 8–34f snappy 升起，标题逐字 blur 揭示、说明逐词、声波条从左到右长出；光斑与声波共用一条\"潮汐时间\"，115–145f out-sine 收敛（起始斜率 = 1、速度连续），末 25f 真静止",
+    "镜头全程 1→1.03 极缓推进与收敛同步落定，暗角 + 颗粒防色带"
+  ],
+  "issuesEn": [
+    "The three orbs were grey-blue blur(100px) smudges with low peaks, so the 'breathing' barely registered on the near-black stage",
+    "The centre card was only 560×330 with a 19px title and 14px captions; most of the frame was empty black and none of the card text was readable",
+    "The card related to the orbs only through a faint outer glow, so you could not tell the orbs were drifting behind it",
+    "No hierarchy or hook: the card was a generic uptime tile with nothing memorable"
+  ],
+  "changesEn": [
+    "Custom 'abyss' look: deep teal-black stage, orbs rebuilt as 1200/1000/760px multi-stop radial gradients in tide teal, deep-sea blue and one small coral (screen blend, no live blur), with drift amplitude raised to 280–300px",
+    "The hero is now a 1100×600 frosted-glass card (backdrop blur plus saturation): orb colour actually tints through the glass as they pass; the outer glow takes the nearest orb's colour and distance, and a hairline rim light brightens only on the lit side",
+    "Content is a now-playing card for the sleep-sound app 'Nocta': a 160px 'Low tide' title, a 36px soundscape line, 64 waveform bars that swell with the tide and a 64px mono countdown that ticks every second",
+    "Rhythm: the card rises snappily over 8–34f, the title resolves letter by letter from blur, the caption word by word, and the bars grow left to right; orbs and bars share one 'tide clock' that eases out with a sine over 115–145f (initial slope 1, continuous speed), then 25f of true stillness",
+    "A slow 1 to 1.03 camera push settles together with the drift; vignette and grain prevent banding"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

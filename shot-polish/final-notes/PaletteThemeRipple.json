@@ -1,0 +1,16 @@
+{
+  "stem": "PaletteThemeRipple",
+  "changed": true,
+  "brand": [
+    "侧栏 logo（珊瑚渐变方块 + 波形）+「Overtone」→ video-shotcraft「镜刻」标志（随主题换亮 / 反白版）+「Shotcraft」；面板页脚「Overtone Commands」→「Shotcraft Commands」",
+    "音乐库 → 样片画廊：标题「Library」→「Gallery」，导航 Home / Shot cards / Workbench / Gallery / Renders，筛选 All shots / Camera / Outro / Made for you，「248 albums」→「1080p · 30fps」",
+    "5 张专辑名 / 歌手 → 镜头名 / 类别（Horizon Push · Camera / Ink Press · Opening / Neon Marquee · Outro / Glow Bloom · Effects / Whip Pan · Transition）；播放条「Glass Harbor」→「Launch Film · Preview · Shot 04」（0:22 / 0:48）"
+  ],
+  "brandEn": [
+    "Sidebar logo (coral gradient tile + wave) + \"Overtone\" → video-shotcraft Frame Chisel mark (light / reverse per theme) + \"Shotcraft\"; palette footer \"Overtone Commands\" → \"Shotcraft Commands\"",
+    "Music library → sample gallery: title \"Library\" → \"Gallery\", nav Home / Shot cards / Workbench / Gallery / Renders, chips All shots / Camera / Outro / Made for you, \"248 albums\" → \"1080p · 30fps\"",
+    "Five album titles / artists → shot names / categories (Horizon Push · Camera / Ink Press · Opening / Neon Marquee · Outro / Glow Bloom · Effects / Whip Pan · Transition); player \"Glass Harbor\" → \"Launch Film · Preview · Shot 04\" (0:22 / 0:48)"
+  ],
+  "styleKey": "palette-theme-ripple",
+  "mdChanged": true
+}

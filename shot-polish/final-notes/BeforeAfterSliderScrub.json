@@ -1,0 +1,14 @@
+{
+  "stem": "BeforeAfterSliderScrub",
+  "changed": true,
+  "brand": [
+    "画面里的品牌全来自 FakeDashboard（主控已换成 video-shotcraft 标志 + 名字），本镜头文案（Before / After 胶囊）保持原样",
+    "版式微调：品牌化后面包屑变长、把时段切换往右推，After 胶囊 x 628 → 646，避免贴住切换控件和定格时的分割杆"
+  ],
+  "brandEn": [
+    "All branding comes from FakeDashboard (already switched to the video-shotcraft mark + name); this shot's own copy (Before / After pills) stays as is",
+    "Layout nudge: the longer branded breadcrumb pushes the date-range control right, so the After pill moves x 628 → 646 to clear both the control and the divider in the final hold"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

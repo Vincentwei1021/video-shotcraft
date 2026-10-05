@@ -1,0 +1,33 @@
+{
+  "stem": "ProductCardProgressiveAssemble",
+  "issues": [
+    "480×270 设计坐标放大：正文 10、pill 7.5、眉标 6.5 设计 px，小字段在成片里读不清，也没有为镜头放大的层级",
+    "暗底上一张米白卡，卡外大片空黑，主体只占画宽 78% 但内部留白杂乱",
+    "字段只是各自淡入，缺少「被抓取/被填写」的叙事线索，读作普通的逐个出现",
+    "节奏靠 60 分母配方帧，间隔 2 帧过密，价格降级这一核心事件不够突出"
+  ],
+  "changes": [
+    "look 换成 porcelain（冷白 + 钴蓝），原生 1920 重画：1520×840 卡片，标题 108px、价格 112px、正文 34px、pill 28px",
+    "加入钴蓝「填充光标」：描边框 + AUTOFILL 签领先每个字段 2f 跳到槽位，框形 6f 不对称 in-out 变形移动，最后收进按钮——全片唯一光效",
+    "字段落位前槽位里是浅灰骨架条，落位时骨架淡出、内容升起，读作表单被一格一格自动填好",
+    "价格事件放大：$449 完整落位 hold 18f → 6f 同窗缩小变灰划线 → 钴蓝 $349 弹簧从 1.18 收到 1 → SAVE 22% 滑入",
+    "商品图换成矢量头戴耳机「Aero Max」棚拍 + 接触影；收尾加墨黑按钮由左向右填满",
+    "时长 150f→172f，按 30fps 帧号重排：组内 3f、跨组 10–20f，末段 40f 定格"
+  ],
+  "issuesEn": [
+    "Built at 480x270 design coordinates and scaled: body 10, pills 7.5 and eyebrow 6.5 design px, so small fields were hard to read and there was no shot-scale hierarchy",
+    "A cream card on a dark backdrop with lots of empty black around it and cluttered spacing inside",
+    "Fields simply faded in one by one, with no cue that the card was being extracted or filled in",
+    "Timing used 60-denominator recipe frames with 2-frame gaps that were too dense, so the price drop did not stand out"
+  ],
+  "changesEn": [
+    "Porcelain look (cool white, cobalt), redrawn at native 1920: a 1520x840 card with a 108px title, 112px price, 34px body and 28px pills",
+    "A cobalt autofill cursor (outline box plus AUTOFILL tag) jumps to each slot 2f ahead of the field, morphing between boxes with a 6f asymmetric in-out, and finally folds into the button: the only light effect",
+    "Before landing, each slot holds a light-grey skeleton bar that fades as the content rises, so the form reads as being filled in cell by cell",
+    "The price beat is bigger: $449 lands and holds 18f, then shrinks, greys and gets struck through in one 6f window, cobalt $349 springs from 1.18 to 1 and SAVE 22% slides in",
+    "The product shot is a vector over-ear headphone 'Aero Max' with a contact shadow; the end adds an ink button that fills left to right",
+    "150f to 172f, retimed in 30fps frames: 3f inside a group, 10-20f between groups, 40f hold at the end"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

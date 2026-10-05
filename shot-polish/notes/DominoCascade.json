@@ -1,0 +1,31 @@
+{
+  "stem": "DominoCascade",
+  "issues": [
+    "浅灰底 + 通用小字卡片，四张卡只有 340×220、文字读不清，画面大面积空",
+    "标题竖直平砸下来，落在\"空气\"上，没有着力面，冲击从哪里传到卡片说不清",
+    "四张卡等高弹起、末卡歪向左但侧边栏从左往右进，动量方向的出处很弱",
+    "前 36f 静置读布景，超过 1 秒画面几乎不动"
+  ],
+  "changes": [
+    "look 改为自定义「混凝土 · 信号橙」瑞士网格：暖灰混凝土底、128px 粗黑体标题（橙色逗号）、四块 335×330 黑色多米诺 KPI 石板（76px 数字 + 橙色增幅胶囊 + 走势线），虚构运营看板 Cairn",
+    "撞击一有着力面：标题带 3.5° 歪斜自由落体、右端先着地、2f 拍平落在发丝规线上，规线像蹦床下弯回弹、标题压扁回弹、两端扬尘，全画面竖震 10px",
+    "冲击方向可见：一道橙色地面脉冲从右往左跑，依次顶起石板 4→1，弹高逐级放大 50→76px（多米诺能量放大链），空中向左微倾、落地 squash、接触影随高度变化",
+    "撞击二：最左一块带 -3° 左倾落地、震 6px，黑色侧边栏从左墙弹入（snappy + 14px 过冲回正 + 横向运动模糊），导航项比面板晚 2–3f 错峰跟随",
+    "节奏重排为 150f：布景缩到 22f 并用\"标题落影在规线上逐渐变深\"预告下落，三级链 39→68f，落定后 60f hold + 1.0→1.015 极缓推镜"
+  ],
+  "issuesEn": [
+    "Light grey background with generic small-text cards; the four cards were only 340×220 with unreadable text, and most of the frame was empty",
+    "The title dropped straight down and landed on nothing, so it was unclear how the impact reached the cards",
+    "All four cards bounced to the same height, and the last card tilted left while the sidebar slid in from the left, so the momentum had a weak source",
+    "The first 36f were a static read of the set, more than a second with almost nothing moving"
+  ],
+  "changesEn": [
+    "Custom 'concrete and signal orange' Swiss-grid look: warm grey concrete, a 128px heavy black headline with an orange comma, and four 335×330 black domino-like KPI slabs (76px figures, orange delta pills, trend lines) for a fictional ops board, Cairn",
+    "Impact one has a surface: the headline falls tilted 3.5°, its right end lands first and it slaps flat in 2f onto a hairline rule that bows and rebounds like a trampoline, with title squash, dust at both ends and a 10px vertical frame shake",
+    "The impact direction is visible: an orange floor pulse runs right to left and kicks slabs 4 to 1 in turn, with hop heights amplifying 50 to 76px (dominoes amplify energy), a slight left lean in the air, landing squash and height-aware contact shadows",
+    "Impact two: the leftmost slab lands leaning -3° with a 6px shake and the black sidebar springs in from the left wall (snappy, 14px overshoot and settle, horizontal motion blur), its nav items following 2-3f behind the panel",
+    "Retimed to 150f: the set is cut to 22f and the title's shadow darkening on the rule foreshadows the drop, the three-level chain runs 39 to 68f, then a 60f hold with a 1.0 to 1.015 slow push"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

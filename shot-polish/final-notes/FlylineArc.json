@@ -1,0 +1,12 @@
+{
+  "stem": "FlylineArc",
+  "changed": false,
+  "brand": [
+    "无需改：底图是已品牌化的暗场 FakeDashboard，demo 本身只画飞线与脉冲，没有文字或 logo"
+  ],
+  "brandEn": [
+    "No change needed: the background is the already-rebranded dark FakeDashboard; the demo itself only draws flylines and pulses, no text or logo"
+  ],
+  "styleKey": "flyline-arc",
+  "mdChanged": true
+}

@@ -1,0 +1,33 @@
+{
+  "stem": "ThemeSweepToggle",
+  "issues": [
+    "原版是灰阶占位骨架 dashboard，没有任何可读内容，看不出是什么产品",
+    "斜扫从左上角凭空出现，和开关没有因果，开关在 1920 全景里只有 56px 几乎看不见",
+    "死机位全景，扫场 38f 后 56f 全静止，节奏平",
+    "边界只是一条细白线，深浅两版都是中性灰，没有光和氛围"
+  ],
+  "changes": [
+    "主体换成为镜头设计的周视图日历 Solstice：64px 周标题、40px 日期、28px 事件标题、4 种日历色、一条此刻线，深浅两版同一组件只换色板，逐像素同布局",
+    "因果链重排：开场特写顶栏 132px 日夜开关（zoom 2.0），指针按下、旋钮弹簧拨过去、太阳收光芒长出月牙，夜色边界随即从开关一侧（右→左）扫出",
+    "相机在扫场中途 30f 拉开到全景，晨昏线在全景里过画面中线，得到昼夜同屏的海报帧；之后 1→1.02 极缓推",
+    "custom look：昼是暖象牙舞台 + 斜射窗格阳光，夜是墨蓝舞台 + 月光 + 星点，连舞台的时辰一起换",
+    "边界做成晨昏线：白热核心线 + 亮侧随速度变宽的落日橙暮光带 + 夜侧冷蓝辉",
+    "余波开灯：扫完后今日胶囊、此刻线、窗口冷色轮廓光依次亮起，取代 scale 0.99 的坐实"
+  ],
+  "issuesEn": [
+    "The original was a greyscale placeholder dashboard with nothing readable, so the product was unclear",
+    "The diagonal sweep appeared out of the top-left corner with no link to the toggle, which was only 56px in a full 1920 frame",
+    "Locked-off wide camera; 38f of sweep followed by 56f of total stillness, a flat rhythm",
+    "The edge was a thin white line and both themes were neutral grey, with no light or atmosphere"
+  ],
+  "changesEn": [
+    "The subject is a shot-designed week calendar, Solstice: 64px week title, 40px dates, 28px event titles, four calendar colours and a now line; both themes are one component with swapped palettes, pixel-identical layout",
+    "Causality rebuilt: the shot opens on a 132px day/night toggle at 2x, a pointer clicks, the knob springs across and the sun retracts its rays into a crescent, then night sweeps out from the toggle's side (right to left)",
+    "The camera pulls back to the full view over 30f mid-sweep so the terminator crosses the frame centre in the wide shot, a poster frame with day and night side by side; then a 1→1.02 slow push",
+    "Custom look: day is a warm ivory stage with slanted window light, night is an ink-blue stage with moonlight and stars, so the stage changes time of day too",
+    "The edge is a terminator line: white-hot core, a sunset-orange dusk band on the light side that widens with speed, and a cool blue glow on the night side",
+    "Aftermath 'lights on': today's date pill, the now line and a cool window rim light ignite in turn, replacing the 0.99 scale settle"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

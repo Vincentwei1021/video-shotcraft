@@ -1,0 +1,31 @@
+{
+  "stem": "FlyingWords",
+  "issues": [
+    "480×270 设计坐标放大，词在 20–36px 档、粗细单一，画面像一团随机散落的标签云，没有\"隧道\"的结构",
+    "只有词本身在动，没有隧道壁或速度参照，纵深感全靠缩放，速度感很弱",
+    "近处词的运动模糊被封顶得很小，擦身而过时只是变大变糊，没有冲过镜头的拖尾",
+    "画面没有任何前景或视觉中心，卡片说它是背景层，demo 却没演示它怎么托住一个标题；词表是动效术语占位"
+  ],
+  "changes": [
+    "look 换成 midnight（深蓝黑 · 电光蓝），原生 1920 作画、透视手算 P=4400，隧道尽头一团电光蓝光晕按 2 次/片呼吸",
+    "加两层纵深参照：10 道扁椭圆发丝环作隧道壁同速推进，56 粒尘埃画成沿径向拉长的光速流线，整条隧道 ±2.5° 周期滚转",
+    "22 个产品能力关键词：sans 700 冷白三阶 + 6 个衬线斜体词 + 4 个带泛光的电光蓝强调词；远端大气雾、近端 6 层方向拖尾 + 失焦",
+    "正中压一组静态字标（HALYARD MOTION 眉题 + 112px「Every tool, one timeline.」+ 径向暗幕），飞进字标区的词自动压到 20%，演示背景层托标题的用法",
+    "循环改成 t = frame / 180，末帧的下一帧正好回到第 0 帧，2 整圈真正无缝"
+  ],
+  "issuesEn": [
+    "Scaled up from 480x270 design space, the words sat at 20-36px in one weight, so the frame read as a random tag cloud with no tunnel structure",
+    "Only the words moved, with no tunnel walls or speed reference, so depth relied on scale alone and the sense of speed was weak",
+    "Near-camera motion blur was capped low, so words just grew and blurred as they passed instead of streaking past the lens",
+    "There was no foreground or focal point: the card calls it a background layer but the demo never showed it carrying a title, and the word list was motion-jargon placeholder"
+  ],
+  "changesEn": [
+    "Midnight look (deep navy, electric blue), drawn natively at 1920 with hand-computed perspective P=4400, and an electric-blue glow at the tunnel's end breathing twice per loop",
+    "Two depth references were added: 10 flattened hairline rings advance as tunnel walls, 56 dust motes become radial light-speed streaks, and the whole tunnel rolls +/-2.5 degrees periodically",
+    "22 product-capability keywords: cool-white sans 700 in three tones, 6 serif italics and 4 glowing electric-blue accents, with atmospheric haze far away and a 6-layer directional trail plus defocus up close",
+    "A static lockup sits in the centre (HALYARD MOTION kicker, 112px 'Every tool, one timeline.', radial scrim), and words entering it drop to 20%, showing how the background layer carries a title",
+    "The loop now uses t = frame / 180, so the frame after the last is exactly frame 0, making two full cycles truly seamless"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

@@ -1,0 +1,33 @@
+{
+  "stem": "LineCarryTransition",
+  "issues": [
+    "两个场景都是浅灰占位卡片，18–24px 的小字和灰条读不出内容，B 框里也只是几条灰线",
+    "A 和 B 之间没有叙事关系：线为什么出发、框里为什么是这张卡都不成立",
+    "横移中段画面里只有一根线，没有任何速度参照，读不出镜头在动",
+    "全片中性灰 + 黑线，没有强调色，观众不知道该盯哪里"
+  ],
+  "changes": [
+    "look 换成 sand（米色纸 + 墨 + 赤陶），线改成 8px 方头直角硬线，笔头是全片唯一的赤陶色点，视线只追这一点",
+    "A 重做成「导出海报」进度卡：170px 百分比与 MB 随线计数，满格停 6f 翻成 Ready to print 并弹出对勾，给线出发的理由",
+    "B 是线围出的 720×480 画框里长出的 Saul Bass 式剪纸海报（太阳升起、山丘叠印、粗黑体字），左侧 120px 展签标题，线的水平段成了展签下的基线",
+    "交接处速度全部连续：进度条 ease-out → 冲出段两端零速 → 镜头 in-out → 收框 in-out；笔头在横移段钉在画面 x≈1480",
+    "横移时世界内容按镜头速度水平模糊，线经过后在线下长出制图刻度，空镜段也有速度参照",
+    "时长 160→190f，框闭合后海报分层长出，尾段 24f 静止成一张展墙海报"
+  ],
+  "issuesEn": [
+    "Both scenes were light-grey placeholder cards with 18–24px text and grey bars, and the frame in B held only a few grey lines",
+    "No story between A and B: nothing explained why the line leaves or why that card sits in the frame",
+    "Mid-pan the frame contained a single line and nothing else, so the camera move was hard to read",
+    "Neutral grey plus a black line with no accent, so the eye had no clear target"
+  ],
+  "changesEn": [
+    "Sand look (warm paper, ink, terracotta): the line is now an 8px square-capped, hard-cornered rule and the pen tip is the only terracotta point in the shot, so the eye follows just that dot",
+    "Scene A is an 'export poster' progress card: a 170px percentage and MB count run with the line, then hold 6f at full as it flips to 'Ready to print' with a popping check, which gives the line its reason to leave",
+    "Scene B is a Saul Bass-style cut-paper poster growing inside the 720x480 frame the line draws (rising sun, overprinted hills, heavy type), with a 120px gallery caption on the left whose baseline is the line itself",
+    "Speed is continuous at every handoff: ease-out bar fill, a zero-to-zero dash out, an in-out camera, an in-out frame close; the tip stays pinned at screen x≈1480 during the pan",
+    "World content gets horizontal motion blur from camera speed, and drafting ticks grow under the line once it passes, so even the empty middle of the pan has a speed reference",
+    "Duration 160 to 190f: the poster builds in layers after the frame closes and the last 24f hold as a finished wall poster"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

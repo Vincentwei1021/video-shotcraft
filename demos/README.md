@@ -5,47 +5,8 @@ demo 文件，不能只凭卡名假设目录结构。这里的组件是调校过
 **用卡先读准确源码**（SKILL.md 理念 5）。
 
 使用方式：copy 需要的 .tsx 进你的 Remotion 项目（30fps / 1920×1080），
-注册成 Composition 即可跑。两类共享依赖：
-
-- `_fixtures/Fixtures.tsx` — 灰阶假 UI 场景件（FakeDashboard/Card/TitleBlock/G 调色板）。
-  多数 demo import 它；copy demo 时把 import 路径改成你项目里的位置。
-- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，
-  self-contained，仅依赖 remotion）。给"真实纹理"类 demo（spotlight-hero-card /
-  type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
-  document-typewriter-reveal / outro-group-photo-launch）复用。copy 这些 demo 时
-  一并带上并改 import 路径。
-- `_textures/` — 少数"真实素材版" demo（crash-zoom-punch / depth-layer-moves /
-  speed-ramp-freeze / shot-transitions / page-waterfall-wall 以及本批补全的
-  spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed /
-  list-stack-press / document-typewriter-reveal / outro-group-photo-launch）用到的
-  整页截图与 `live-layout.json`。这些 demo 里的 `staticFile('textures/live/xxx.png')`
-  要求把 `_textures/` 下的同名文件复制到你项目的 `public/textures/live/`
-  （page-waterfall-wall 例外：它写的是 `textures/xxx.png`，放 `public/textures/`）。
-
-个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
-`npm i @remotion/motion-blur`。名单（8 个文件 / 6 张卡）：
-
-- `camera/crash-zoom-punch/CrashZoomReal.tsx`、`CrashImpactReal.tsx`
-- `camera/space-camera-moves/DroneDiveLanding.tsx`
-- `opening/magician-card-flourish/MagicianCardFlourish.tsx`
-- `rhythm/speed-ramp-freeze/SpeedRampReal.tsx`
-- `transition/shot-transitions/WhipPanReal.tsx`、`WhipBrakeReal.tsx`
-- `transition/transition-hidden-cut/InvisibleCut.tsx`
-
-## Motion 系 demo（2026-08 并入的 48 张卡）
-
-这批卡的参考实现与其他 demo 同为原生 Remotion .tsx 组件，用法一致：
-copy 进项目注册 Composition 即可。差异只有两点：
-
-- 共享依赖是 `_fixtures/Motion.tsx`（不是 Fixtures.tsx）：E 缓动表 / seg /
-  lerp / 确定性 rand / useT / DesignStage。copy demo 时一并带上并改 import 路径。
-- 画面用 `<DesignStage>` 的 480×270 设计坐标作画、等比放大到合成分辨率；
-  卡片参数表数值都在此坐标系下标定，改合成分辨率不需要动参数。
-  个别文字密集的 demo 用 `raster="zoom"`（布局期放大，小字号字形按目标尺寸
-  光栅化，更清晰）；默认 transform scale 是合成期放大，两者 API 相同。
-
-每个组件同时 `export const <卡名大写蛇形>_DURATION`（30fps 帧数），注册
-Composition 时直接用：
+注册成 Composition 即可跑。每个组件都 `export const <Stem>: React.FC` 并同时导出
+`<大写蛇形>_DURATION`（30fps 帧数），注册时直接用：
 
 ```tsx
 import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
@@ -53,13 +14,49 @@ import { BlurSlide, BLUR_SLIDE_DURATION } from './blur-slide/BlurSlide';
   durationInFrames={BLUR_SLIDE_DURATION} fps={30} width={1920} height={1080} />
 ```
 
-动画全部由归一化 t（useT()）驱动计算，无真随机，逐帧确定性渲染。
-三个文字密集组件例外（glass-pill-dictation-typing / chip-grid-single-select-blackout /
-pill-chip-slot-cycle-handled）：挂载时用 useLayoutEffect 实测一次文字宽度
-（之后恒定，单次渲染内仍逐帧确定），因此其布局随渲染环境的字体而变——
-跨平台若字体回退不同，宽度会整体漂移；组件内已备兜底估算值，介意的话
-可把实测值写死。每个组件都经过与原样片 mp4 的全帧 SSIM 比对验收
- （mean≥0.97 / min≥0.93 或有注释说明的编码噪声豁免）。
+动画全部是帧的纯函数（无真随机 / 无 Date），逐帧确定性渲染。2026-10 全库做过两轮改版对照，
+每个镜头由作者在原版 / 第一版（质感打磨）/ 第二版（成片级重设计）里择一落版，并去掉了 66 个镜头
+（决策记录 `shot-polish/decisions.json`）。随后做了品牌替换：画面里出现的 logo / 品牌名统一是
+video-shotcraft，合适的文案换成它的宣传语——拿去给自己的产品用时，把 `Brand.tsx` 的件换成你的标志与文案即可。
+
+共享依赖（copy demo 时把用到的一并带上并改 import 路径）：
+
+- `_fixtures/Brand.tsx` — video-shotcraft 品牌件：「镜刻」标志 `<ShotcraftMark>`（可分段描出）、字标
+  `<ShotcraftWordmark>`、品牌色 `BRAND`、宣传文案库 `PITCH`（规范见 `assets/brand/BRAND.md`）。仅依赖 react。
+- `_fixtures/Look.tsx` — 第二轮的视觉系统：8 套调色板 `LOOKS`（暗场 midnight / aurora / ember / graphite / lime，
+  亮场 paper / porcelain / sand）、字号阶梯 `TYPE` 与 `type()`、带主光/余光/地平线光带/暗角/颗粒的
+  舞台 `<Stage>`、透视网格地面 `<GridFloor>`、确定性浮尘 `<Dust>`、单次扫光 `<Sheen>`、
+  逐字/词/行揭示 `<TextReveal>`、`stagger` / `springAt` / `glow`。第二版 demo 都 import 它；依赖 `./Polish`。
+- `_fixtures/Polish.tsx` — 质感工具件：贝塞尔缓动 `EASE` / `ramp` / `mix` / `velocity`、按速度的方向性模糊
+  `SpeedBlur`、`softShadow` / `hairline` / `surface` 材质 helper、`Grain` / `Vignette` / `Backdrop`。仅依赖 remotion + react。
+- `_fixtures/Fixtures.tsx` — 假 UI 场景件（FakeDashboard / Card / TitleBlock / G 调色板），侧栏/顶栏是
+  video-shotcraft 标志与名字（依赖 `./Brand`）。第一版 / 原版落版的 demo 里有二十来个在用。
+- `_fixtures/Motion.tsx` — 480×270 设计坐标的 `DesignStage` + E 缓动表 / seg / lerp / rand / useT。
+  原版 / 第一版落版的 Motion 系 demo 在用（fracture、bezier-source-converge-merge、radial-wave 等十几个）。
+- `_fixtures/PageCam2D.tsx` — 2.5D 页面相机（与 template 的 PageCam 同款坐标数学，self-contained）。
+  spotlight-hero-card / type-and-filter / row-embed / list-stack-press / outro-group-photo-launch 在用。
+- `_textures/` — 真实页面截图与 `live-layout.json`。用到 `staticFile('textures/live/xxx.png')` 的 demo
+  （crash-zoom-punch 两式 / depth-layer-moves / shot-transitions 急刹甩镜 / speed-ramp-freeze 定格标注 /
+  spotlight-hero-card / type-and-filter / deck-deal-flyin / row-embed / list-stack-press /
+  document-typewriter-reveal / page-waterfall-wall / outro-group-photo-launch）要求把 `_textures/` 下的同名文件
+  复制到你项目的 `public/textures/live/`。截图代表"产品既有页面"（审美准则 Q1）；页头站名已改成
+  video-shotcraft 标志 + 字标（周报页标题为 Shotcraft Weekly），其余页面内容未动。
+
+个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
+`npm i @remotion/motion-blur`。名单（4 个文件 / 4 张卡）：
+
+- `camera/space-camera-moves/DroneDiveLanding.tsx`
+- `opening/crane-rise-reveal/CraneRiseReveal.tsx`
+- `opening/fracture/Fracture.tsx`
+- `opening/magician-card-flourish/MagicianCardFlourish.tsx`
+
+其余快速运动一律用按速度量自算的方向模糊（`SpeedBlur` 或局部实现）——CameraMotionBlur 多重采样
+代价高，且在近静止帧会把画面整体染灰/染黄。
+
+字体：只用系统字体栈（SF / Helvetica Neue / Iowan Old Style / Avenir Next Condensed / Futura 等 macOS 自带字），
+不依赖 `@remotion/google-fonts`。少数 demo 按本机 SF Pro 实测写死了字宽 / 字心坐标（如 letter-drop-physics、
+letterform-zoom、beat-step-list-theme-cycle、pill-chip-slot-cycle-handled），换字体或字号要按注释重测；
+可变字重动画（font-weight-pump）依赖系统可变字体，没有时退化为阶梯字重。
 
 ## 真实视频素材（ClipCard，assets/lib/ClipCard.tsx）
 
@@ -111,7 +108,7 @@ import { ClipCard } from './assets/lib/ClipCard';
    # 需要 template 依赖 + motion-blur（CI 里临时装）
    cd template && npm ci && npm i --no-save "@remotion/motion-blur@$(node -p "require('./package.json').dependencies.remotion")"
    cd .. && python3 assets/scripts/smoke-render-demos.py        # 全量
-   python3 assets/scripts/smoke-render-demos.py --subset BlurSlide,Scramble  # 子集
+   python3 assets/scripts/smoke-render-demos.py --subset BlurSlide,GlitchCycle  # 子集
    python3 assets/scripts/smoke-render-demos.py --list          # 列出可渲染 demo
    ```
 

@@ -1,0 +1,16 @@
+{
+  "stem": "WordRelayFilmstrip",
+  "changed": true,
+  "brand": [
+    "恒定主体名词「Atlas」→「Shotcraft」，动词接力 researches / builds / codes → frames / builds / ships，注脚同步换成分镜 / 渲染 / PR 三条",
+    "三张证据卡改成 video-shotcraft 的工作流：研究长文 → 分镜脚本（页眉 video-shotcraft 字标，Shot list S01–S04），acme/web-app 构建流水线 → video-shotcraft/launch-film 渲染流水线（npx remotion render、剪映草稿导出），购物车代码评审 → 把宣传片接进落地页 Hero 的 PR（评语「Feels like a launch film from a real studio. Ship it.」）",
+    "开场基准报告卡 → 宣传片节奏报告（Motion energy, shot by shot）；出货表卡的占位 logo 方块 → 镜刻标志"
+  ],
+  "brandEn": [
+    "Constant subject \"Atlas\" → \"Shotcraft\"; verb relay researches / builds / codes → frames / builds / ships, captions now storyboard / render / PR",
+    "Three evidence cards rewritten as the video-shotcraft workflow: research article → storyboard doc (video-shotcraft wordmark masthead, shot list S01–S04); acme/web-app build pipeline → video-shotcraft/launch-film render pipeline (npx remotion render, JianYing draft export); cart code review → a PR adding the launch film to the landing hero (review: \"Feels like a launch film from a real studio. Ship it.\")",
+    "Opening benchmark card → promo pacing report (Motion energy, shot by shot); placeholder logo square on the shipments card → Frame Chisel mark"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

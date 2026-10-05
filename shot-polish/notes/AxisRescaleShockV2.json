@@ -1,0 +1,31 @@
+{
+  "stem": "AxisRescaleShockV2",
+  "issues": [
+    "图表缩在一张 1060px 的白卡片里，刻度和月份 18–21px，1080p 下读不清",
+    "浅灰底 + 白卡 + 琥珀线，和库里其他亮场 dashboard 镜头长得一样，没有设计语言",
+    "爆表段冲出卡片后只是一根线停在空中，天花板没有被\"撞破\"的反馈",
+    "重标后的收尾画面主次弱：真值标签 32px、年度合计和标题区没有联动"
+  ],
+  "changes": [
+    "look 换 sand 沙色纸：整张画面做成瑞士网格财务海报，124px 粗黑体标题 + 同字号右上 KPI，满版 1532×540 绘图区，刻度/月份 32px",
+    "历史面积改 45° 印刷排线，3px 墨黑基线与天花板粗规线，刻度改成压在规线上方的左对齐标签",
+    "爆表段越冲越快顶破天花板：规线在穿透点裂开、三片碎屑弹飞、图表阻尼震 10px，线头一路扎进右上 KPI 数字并把它撞得一颤",
+    "时间表 168f：规线画出 → 42f 写入 → 12f 预警（规线转赤陶 + Nov 脉冲）→ 14f 爆表 → 悬停 18f → 14f 重标 → 标签/KPI 落定 → hold 42f",
+    "重标后弹出 76px 赤陶真值块「$340k ▲ 372% vs Nov」，KPI 滚到 $833k 并转赤陶，全程 1.8% 极缓推镜"
+  ],
+  "issuesEn": [
+    "The chart sat inside a small 1060px white card with 18–21px ticks and months that were unreadable at 1080p",
+    "Light grey stage, white card and amber line looked like every other light dashboard shot, with no design language",
+    "After breaking out, the spike was just a line hanging in the air; the ceiling gave no sense of being smashed",
+    "The end frame lacked hierarchy: a 32px value label, with no link between the yearly total and the header"
+  ],
+  "changesEn": [
+    "Sand paper look: the whole frame is a Swiss-grid finance poster with a 124px heavy headline, a same-size KPI top right, a full-bleed 1532×540 plot and 32px ticks and months",
+    "History area uses 45° print hatching, 3px ink baseline and ceiling rules, and ticks become left-aligned labels sitting on their rules",
+    "The spike accelerates through the ceiling: the rule cracks at the pierce point, three shards fly off, the chart gets a 10px damped shake, and the line drives into the KPI number, jolting it",
+    "168f timeline: rules draw, 42f write, 12f warning (ceiling turns terracotta, Nov pulses), 14f breakout, 18f hang, 14f rescale, label and KPI land, 42f hold",
+    "After the rescale a 76px terracotta value block '$340k ▲ 372% vs Nov' pops in, the KPI rolls to $833k in terracotta, with a 1.8% slow push throughout"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

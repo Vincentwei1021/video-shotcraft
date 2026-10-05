@@ -1,0 +1,31 @@
+{
+  "stem": "MaskWipeReal",
+  "issues": [
+    "满屏浅色页面直接放大，没有舞台和光，背景和窗口是同一种米色，主次不清",
+    "卡片放大中脸被拉伸成满屏的半透明巨字残影，和详情页叠在一起很脏",
+    "卡片字号是页面原生 16px，\"点开\"前观众读不清点的是哪张卡",
+    "落定后详情页满屏平贴，结尾帧没有构图"
+  ],
+  "changes": [
+    "look 换成 aurora 紫夜：列表页以 1.3× 放进浮在紫夜舞台上的大窗口，卡片标题可读",
+    "先演点开：滚动惯性落定 → 光标滑入 → 卡片抬起 + 一圈紫粉渐变选中描边与外发光（全片唯一光效）→ 按下微缩",
+    "卡片冲出旧窗口，放大到与旧窗口完全相同的框位成为新窗口；旧窗同时后退 0.94、压暗、轻虚化沉进舞台，新旧两扇窗前后交接",
+    "卡面在前 28% 行程内渐隐（1−3.6t），不再被拉成巨字残影；窗内详情页与窗几何同一个 t 从 0.42 反向补偿到 1，带页头、1.1× 可读",
+    "穿窗改为 44f bezier(0.6,0,0.15,1) 先蓄后冲、长尾落位，落定后详情页极缓前推 1.2%，130f"
+  ],
+  "issuesEn": [
+    "A full-frame light page simply scaled up with no stage or light; background and window were the same beige, with no hierarchy",
+    "Mid-expansion the card face was stretched into full-screen translucent giant text over the detail page, which looked dirty",
+    "Card text sat at the page's native 16px, so viewers could not read which card was being opened",
+    "After landing the detail page was a flat full-bleed paste with no composed end frame"
+  ],
+  "changesEn": [
+    "Aurora violet-night look: the list page sits at 1.3x inside a large window floating on the stage, so card titles are readable",
+    "The click is acted out: scroll inertia settles, the cursor glides in, the card lifts with a violet-pink gradient selection ring and glow (the only light effect), then presses",
+    "The card breaks out of the old window and grows into exactly the old window's frame, becoming the new window while the old one recedes to 0.94, darkens and softens into the stage",
+    "The card face fades within the first 28% of travel (1-3.6t) so it never becomes giant ghost text; the detail page shares the window's t and grows from 0.42 to 1, with its header, at a readable 1.1x",
+    "The expansion is now 44f on bezier(0.6,0,0.15,1), coiling then launching with a long settle, followed by a 1.2% creep on the detail page; 130f total"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

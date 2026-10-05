@@ -1,0 +1,31 @@
+{
+  "stem": "TrackingExpandReveal",
+  "issues": [
+    "浅灰平底 + 150px 粗黑「BREATHE」，粗字重和「呼吸 / 安静」的气质相反，左上角有调试标题",
+    "展开曲线是强 ease-out（poly5），字一下弹开，没有呼吸的起伏",
+    "副标题 32px 三级灰几乎看不见，画面除了一个词什么都没有",
+    "展开后 72f 完全静止，hold 是死帧"
+  ],
+  "changes": [
+    "look 换成 aurora（紫夜 · 粉紫地平线），主角改为 156px / 300 细字重「AFTERGLOW」，终态字距 0.34em——细字宽距才是片头字幕的安静气质",
+    "节奏改为先吸后呼：0–10f 叠字再收紧（预备），随后 66f 缓起长尾展开（−0.42em → 0.34em），blur 16→0 与辉光同曲线",
+    "地平线光带宽度、词下发丝线长度绑定同一条 p 与字一起「呼」出去；hold 段字距再余呼 1.5%、光带呼吸、整画面 1.5% 推近，画面活着但不抖",
+    "补齐层级：mono 眉题「CHAPTER III」字距收拢浮现，40px 副句逐词虚化揭示；首帧是一团发光虚焦叠字",
+    "时长 130f → 150f"
+  ],
+  "issuesEn": [
+    "Flat light-grey background with a 150px heavy black 'BREATHE': the heavy weight fights the quiet, breathing mood, and a debug title sits in the corner",
+    "The expansion uses a strong ease-out (poly5), so the letters pop apart with no breathing rise and fall",
+    "The 32px tertiary-grey subtitle is nearly invisible; the frame contains nothing but one word",
+    "After expanding, 72f of total stillness: a dead hold"
+  ],
+  "changesEn": [
+    "Switched to the aurora look (violet night, pink-violet horizon); the hero is now 'AFTERGLOW' at 156px / 300 weight with 0.34em final tracking, the quiet thin-and-wide film-title voice",
+    "Rhythm is now inhale then exhale: 0–10f the clump tightens further (anticipation), then a 66f slow-in long-tail expansion (−0.42em to 0.34em) with blur 16 to 0 and glow on the same curve",
+    "The horizon light band width and the hairline under the word are bound to the same p and exhale with the letters; the hold adds 1.5% extra tracking drift, a breathing band and a 1.5% push, alive without jitter",
+    "Added hierarchy: a mono eyebrow 'CHAPTER III' with tightening tracking and a 40px subline revealed word by word with blur; frame 0 is a glowing defocused clump",
+    "Duration 130f to 150f"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

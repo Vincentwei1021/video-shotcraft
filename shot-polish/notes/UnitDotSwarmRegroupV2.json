@@ -1,0 +1,31 @@
+{
+  "stem": "UnitDotSwarmRegroupV2",
+  "issues": [
+    "画面顶部是调试大标题，图例和标签 20px 级小字，三幕没有叙事文字",
+    "点只有 9px 直径、灰/琥珀/黑三色，簇是随机散点互相重叠，像噪点",
+    "终幕数字三色分段，读起来像拼错的色块而不是一个数字",
+    "迁徙中没有速度感，三幕的节奏差不多，缺少落定后的停顿"
+  ],
+  "changes": [
+    "look 换 porcelain 瓷白：Free 雾蓝灰 / Pro 钴蓝（主角）/ Enterprise 深海军蓝，点放大到 20px 实心小珠（顶部受光 + 贴地软影）",
+    "叙事标题 84px 每幕换一句（Every dot is 40 customers → Split by plan → Stacked by plan → Total customers），旧句上推出、新句从线下升起",
+    "簇改向日葵螺旋紧密排布，簇标签/柱顶数值 60px、套餐名 32px；迁徙中点按速度沿方向拉成胶囊，停下变回圆",
+    "终幕数字落位后统一收拢成钴蓝，下方三枚图例 + Each dot ≈ 40 customers 把构成信息留在海报上",
+    "时间表 192f：中心向外弹出 → 24f 聚簇 → 62f 成柱 → 100f 自左向右扫成数字 → 64f hold（2% 缓推），每幕后留 14–20f 读标签"
+  ],
+  "issuesEn": [
+    "A debug title sat at the top, legend and labels were ~20px, and the three acts had no narrative text",
+    "Dots were only 9px in grey, amber and black; clusters were random overlapping scatter that read as noise",
+    "The final number was split into three colour segments and read like misprinted blocks rather than a number",
+    "Migrations had no sense of speed, the three acts had the same pacing, and there were no pauses after landing"
+  ],
+  "changesEn": [
+    "Porcelain look: Free mist slate, Pro cobalt (protagonist), Enterprise deep navy; dots enlarged to 20px solid beads with top light and a soft contact shadow",
+    "An 84px narrative headline changes per act (Every dot is 40 customers, Split by plan, Stacked by plan, Total customers), old lines pushing up and new ones rising from below",
+    "Clusters use a tight sunflower-spiral packing with 60px values and 32px plan names; in flight each dot stretches into a capsule along its velocity and rounds off when it stops",
+    "Once landed the number unifies into cobalt, and a three-item legend plus 'Each dot ≈ 40 customers' keeps the composition on the poster",
+    "192f timeline: dots pop out from the centre, cluster at 24f, stack at 62f, sweep left to right into the number at 100f, then a 64f hold with a 2% push; 14–20f reading pauses after each act"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

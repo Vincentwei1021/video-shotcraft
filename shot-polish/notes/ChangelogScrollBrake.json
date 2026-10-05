@@ -1,0 +1,33 @@
+{
+  "stem": "ChangelogScrollBrake",
+  "issues": [
+    "整列都是灰色骨架条，停点那一行也没有任何内容，读不出“今天这条最大”",
+    "浅灰底 + 灰条，画面没有光、没有层次，暂停任何一帧都像线框稿",
+    "起步是第 14 帧瞬间跳到峰速的硬切，没有预备",
+    "停点只靠 1px 黑描边区分，急刹之后没有任何“到了”的落定动作"
+  ],
+  "changes": [
+    "换 midnight 深蓝暗场 + 瑞士网格版式：左栏固定读数区（字标、96px「Changelog」、120px 日期读数），右侧 1136px 长卷",
+    "长卷写成 2026 全年的真实感发布记录（版本号 / 标题 / 类型点 / 日期，三档行高错落），停点 v4.0「Live Canvas」64px 出版级主角卡",
+    "节奏改成 10f 向下回拉 26px 预备 → 54f 快起步长尾刹车（bezier .45,0,.06,1）→ 86f 落定 hold，纵向方向性模糊按速度差分驱动",
+    "日期读数跟着读线上的条目飞速翻动并按速度糊开，急刹同帧落成强调色「Today」——把“一直在发货→今天”讲成一个数字",
+    "急刹后主角行弹簧抬升 1.04（一次回弹）+ 强调色描边与背后泛光 + 一次裁进圆角的扫光，其余行退暗 0.38 并轻虚化退到景深后",
+    "尾段整幅 2% 极缓推近、泛光呼吸，结尾帧是一张完整的发布海报"
+  ],
+  "issuesEn": [
+    "The whole column is grey skeleton bars; even the stop row has no content, so 'today's is the big one' never reads",
+    "Light grey on grey: no light, no depth — any paused frame looks like a wireframe",
+    "Scrolling starts with a hard jump to peak speed on frame 14, with no anticipation",
+    "The stop row is only marked by a 1px dark outline; nothing lands after the brake"
+  ],
+  "changesEn": [
+    "Midnight dark stage with a Swiss-grid layout: a fixed left readout column (wordmark, 96px 'Changelog', 120px date readout) and a 1136px-wide scroll on the right",
+    "The scroll is a believable 2026 release log (version / title / type dot / date, three staggered row heights); the stop row is a publish-grade 64px v4.0 'Live Canvas' hero card",
+    "Rhythm rebuilt as a 10f 26px pull-back anticipation, a 54f fast-start long-tail brake (bezier .45,0,.06,1) and an 86f hold, with vertical directional blur driven by velocity",
+    "The date readout flips with whatever crosses the read line and smears with speed, then lands as an accent 'Today' on the brake frame",
+    "On the brake the hero row spring-lifts to 1.04 (one visible bounce) with an accent stroke, back glow and a single clipped sheen; other rows dim to 0.38 and soften into depth",
+    "The tail holds with a slow 2% push and breathing glow, ending on a complete launch poster"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

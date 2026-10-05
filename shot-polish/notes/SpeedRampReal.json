@@ -1,0 +1,33 @@
+{
+  "stem": "SpeedRampReal",
+  "issues": [
+    "米白页面平铺满屏，卡片小、没有舞台与光，看起来是一张截图在横移",
+    "变速只能靠模糊程度去猜，画面上没有任何东西告诉观众「现在放慢了」",
+    "慢窗里目标卡只抬高一点点，凝视的对象不够突出，其余卡仍然抢视线",
+    "全程停在快速流动里收尾，尾帧是一张糊掉的画面，没有落定的海报"
+  ],
+  "changes": [
+    "look 换成 aurora 紫夜：真实卡片纹理立在有倒影的玻璃导轨上，背后地平线光带 + 顶部薰衣草主光",
+    "变速写在画面上：左下 150px 速率读数随 remap 斜率实时变化（慢窗转粉 + 泛光），右下速率-帧曲线带播放头，走过的部分点亮、凝视窗描粉",
+    "速率曲线改为 2.6→0.2→2.6→0 三段 smoothstep 换挡，每源帧位移反推到刹停时恰好一张卡停在屏中，尾段 22f 静止海报",
+    "凝视：目标卡拾起 22px + 放大 5% + 粉色轮廓光与地面余光，其余卡压进紫黑、相机极缓推近 2.5%，卡上挂「0.2× · IN FOCUS」标签",
+    "快段背景随速度出现横向光痕，慢窗光痕消失、画面安静；方向性模糊仍按实际速度门控",
+    "时长 135f → 170f（快 30f / 刹车 18f / 凝视 48f / 油门 14f / 快 14f / 刹停 24f / hold 22f）"
+  ],
+  "issuesEn": [
+    "A cream page filled the frame edge to edge; the cards were small with no stage or light, so it read as a screenshot sliding sideways",
+    "You could only guess at the speed change from the blur; nothing on screen said the shot had slowed down",
+    "In the slow window the target card barely lifted, so the gaze had no clear subject and the other cards still competed",
+    "It ended mid-flow, so the last frame was a blurred image instead of a settled poster"
+  ],
+  "changesEn": [
+    "Aurora look (violet night): the real card textures stand on a reflective glass rail, with a horizon glow band and a lavender key light from above",
+    "The speed change is on screen: a 150px playback-rate readout tracks the remap slope live (it turns pink and glows in the slow window), and a rate-over-frame curve with a playhead lights up as it plays, with the gaze window traced in pink",
+    "The rate curve is now 2.6→0.2→2.6→0 with three smoothstep shifts; pixels per source frame are solved so a card comes to rest dead centre, giving a 22f still poster at the end",
+    "Gaze: the target card lifts 22px, scales up 5% and gets a pink rim and floor glow, the rest sink into violet-black, the camera pushes in 2.5%, and a '0.2× · IN FOCUS' tag sits above the card",
+    "Horizontal light streaks appear behind the rail at speed and vanish in the slow window; directional blur is still gated on real velocity",
+    "135f → 170f (fast 30f / brake 18f / gaze 48f / throttle 14f / fast 14f / stop 24f / hold 22f)"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

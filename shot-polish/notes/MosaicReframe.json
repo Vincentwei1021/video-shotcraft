@@ -1,0 +1,33 @@
+{
+  "stem": "MosaicReframe",
+  "issues": [
+    "画面在 480×270 设计坐标里排版再放大，瓦片标题 5–10px 级，放大后仍是读不清的小字",
+    "瓦片是同一套蓝紫渐变色块 / 几何插画，12 张看起来一样，不像照片也不像任何产品",
+    "重排没有起因：布局自己突然变形，观众不知道是谁触发的",
+    "全程 smoothstep 同一条曲线、旋转与位置同时到，B→C 收尾没有落定感；C 态没有任何文字，尾帧不成画面"
+  ],
+  "changes": [
+    "look 换成 sand（米色 · 赤陶）：虚构相册产品 Folio 的夏日影集，12 张程序绘制的暖调胶片照片（落日、沙丘、拱门、雾山、泳池、柑橘等八式）",
+    "加入因果：右上角 Grid / Mosaic / Cascade 分段控件，赤陶胶囊先滑（途中拉长）、瓦片晚 4f 开始重排",
+    "曲线分层：位置用 bezier(0.75,0,0.15,1) 果断换位，宽高晚 2f、旋转晚 4f 并轻过冲一次；途中抬起放大 3.5% + 阴影变虚",
+    "三态三种语气：B 态主图压 84px 衬线图注逐词升起；C 态瓦片长出相纸白边、按序号发牌式摊开",
+    "排版改 1920 原生：字标 48px、控件 30px、C 态左下 124px 衬线大标题「Summer, in sequence.」+ 32px 副行，尾帧是完整影集海报",
+    "时长 214f：浮现 22f → hold A → A→B → hold B 36f → B→C → hold C 34f，全程相机极缓推近 2.5%"
+  ],
+  "issuesEn": [
+    "Laid out in a 480×270 design space and scaled up, so tile titles were 5–10px-class text that stayed unreadable",
+    "Tiles were the same blue-purple gradient blocks with geometric art; all 12 looked alike and read neither as photos nor as a product",
+    "The reflow had no cause: the layout just morphed on its own, with nothing showing what triggered it",
+    "One smoothstep curve for everything with rotation landing together with position, so B to C never settled; the C state had no type and the last frame was not a composed image"
+  ],
+  "changesEn": [
+    "Sand look (warm beige, terracotta): a summer set in Folio, a fictional photo library, with 12 procedurally drawn warm film-style photos (sunset, dunes, arch, misty ridge, pool, citrus and more)",
+    "Added cause: a Grid / Mosaic / Cascade segmented control top right whose terracotta pill slides first (stretching mid-way) and the tiles follow 4f later",
+    "Layered curves: position uses a decisive bezier(0.75,0,0.15,1), size lands 2f later and rotation 4f later with one light overshoot; tiles lift 3.5% with a softer, larger shadow while moving",
+    "Three states, three tones: in B the hero tile gets an 84px serif caption rising word by word; in C the tiles grow white print borders and are dealt out one by one",
+    "Native 1920 typography: 48px wordmark, 30px control, and in C a 124px serif headline 'Summer, in sequence.' with a 32px subline bottom left, so the last frame is a finished album poster",
+    "214f: 22f build-in, hold A, A to B, 36f hold B, B to C, 34f hold C, with a very slow 2.5% camera push throughout"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

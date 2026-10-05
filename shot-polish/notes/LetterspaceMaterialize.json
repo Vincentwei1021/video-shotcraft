@@ -1,0 +1,31 @@
+{
+  "stem": "LetterspaceMaterialize",
+  "issues": [
+    "字标直接用了真实公司名 SUPERHUMAN，且只有 64px 高、细线发光，在整幅画面里只占一条细带",
+    "底景是三块模糊的紫色色块和一条粉色地平线，读不出\"暮色山景\"，画面灰紫发闷",
+    "画面里除了描画几乎没有任何运动，静置段和 hold 段都是死帧",
+    "结晶完成后没有任何收束，终帧只有一行细字，缺一张完整的落版"
+  ],
+  "changes": [
+    "look 换成 sand（米色 + 赤陶），从暗场暮色改为亮场沙丘破晓：低悬白日与日晕、四层远淡近深的程序沙丘（逆光脊线 + 近景风纹）、地平线薄雾、高空云丝与浮沙",
+    "字标换成虚构品牌「SOLSTICE」：8 个单线骨架字形重绘、从 x=0 起按光学宽度排，字面高 103px、宽占画面 65%，墨色 5px 细线、字距 ≈0.6×字面高",
+    "保留手法命门：全字符同一进度同帧起笔、同帧齐收、连续生长；新增赤陶色\"热墨\"笔尖跟着每一笔走、收笔时冷成墨色",
+    "相机极缓推近 + 横移，四层沙丘按 1.5% / 3% / 5% / 8% 不同速出视差；太阳全程缓升，结晶完成时日晕再亮一档",
+    "收束：44px 衬线斜体副标「Your day, in better light.」由虚到实，hold 30f；时长 105→120f"
+  ],
+  "issuesEn": [
+    "The wordmark used a real company name, SUPERHUMAN, and was only 64px tall with thin glowing lines, a narrow strip across the frame",
+    "The backdrop was three blurred purple blobs and a pink horizon line; it never read as a dusk landscape and the frame felt dull and grey-violet",
+    "Apart from the drawing there was almost no motion: the rest and hold segments were dead frames",
+    "Nothing resolved after the crystallisation; the last frame was a single thin line of text with no complete end card"
+  ],
+  "changesEn": [
+    "Sand look (beige with terracotta), moving from a dark dusk to a bright desert daybreak: a low white sun with halo, four procedural dune layers with atmospheric perspective (backlit ridge lines and near-ground wind ripples), horizon haze, high cloud wisps and drifting sand",
+    "The wordmark becomes a fictional brand, \"SOLSTICE\": eight single-line skeleton glyphs redrawn from x=0 and spaced by optical width, 103px cap height spanning 65% of the frame, 5px ink strokes, tracking about 0.6x cap height",
+    "The core rule is kept: every letter shares one progress value, starting and finishing on the same frame with continuous growth; a terracotta \"hot ink\" tip now rides each stroke and cools to ink as it finishes",
+    "A very slow push plus lateral truck moves the four dune layers at 1.5% / 3% / 5% / 8% for parallax; the sun rises throughout and its halo brightens one step as the word completes",
+    "Resolution: a 44px italic serif tagline \"Your day, in better light.\" sharpens in from blur, then a 30f hold; duration 105 to 120f"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

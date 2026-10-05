@@ -1,0 +1,31 @@
+{
+  "stem": "DatavizLandscapeOpen",
+  "issues": [
+    "纯黑底上一束白色细线，像一张平面线框图，读不出\"地景\"：所谓景深只是三张平面层横移，近景两条斜虚线像镜头上的划痕",
+    "主干和支流同色同粗，没有主角；全片唯一的强调色是淡长春花蓝，画面整体灰白发冷、没有光",
+    "标签 7 枚挤在画面中下部一条横带上，等宽小字和白方块像散落的噪点",
+    "收尾只有汇点一团模糊白光，没有落点、没有字，结尾帧不是一张海报"
+  ],
+  "changes": [
+    "look 换成 lime（石墨暗场 + 荧光黄绿）：主干是唯一的黄绿主角并带泛光，支流是灰绿细线、源头淡汇入处亮",
+    "从平面横移改为真透视地景：线画在针孔投影的地平面上，主干从镜头脚下蜿蜒奔向右 1/3 的消失点；景深/视差/雾全部由投影深度算出（近处逐段进 11px 模糊层、远处雾化），地面点阵随前飞涌来",
+    "相机低空沿河道前飞 + 横向缓移，bezier 减速：开场即在飞、尾段缓停接字，全程不急刹",
+    "6 枚 issue 标签改为「图钉 + 短立杆 + 等宽 ID 胶囊」，按透视近大远小（25px×0.7–1.7），位置逐帧投影核过不重叠，近的遮远的",
+    "收尾：消失点亮起一团黄绿光，天空落 30px 等宽眉题 + 两行 108px 标题「Every thread, / one release.」逐词升起；时长 165→180f"
+  ],
+  "issuesEn": [
+    "A bundle of thin white lines on pure black read as a flat wireframe, not a landscape: the \"depth\" was three flat layers sliding sideways, and the two blurred diagonal foreground lines looked like scratches on the lens",
+    "Trunk and tributaries shared one colour and weight, so there was no hero; the only accent was a pale periwinkle, leaving the frame grey, cold and unlit",
+    "Seven labels crowded one horizontal band in the lower middle; the small mono text and white squares read as scattered noise",
+    "The ending was just a blurry white glow at the merge point, with no landing and no type; the last frame was not a poster"
+  ],
+  "changesEn": [
+    "Lime look (graphite dark with fluorescent yellow-green): the trunk is the single glowing yellow-green hero, while tributaries are thin grey-green lines that brighten toward the merge",
+    "Flat panning is replaced by a true perspective landscape: lines sit on a pinhole-projected ground plane, and the trunk winds from under the lens to a vanishing point on the right third; depth of field, parallax and fog all come from projected depth (near segments go to an 11px blur layer, far ones fade), and a ground dot grid rushes toward camera",
+    "The camera flies low along the river with a slow lateral slide on a decelerating bezier: already moving on frame one, easing to rest for the title, never braking hard",
+    "Six issue labels become pin + short stem + mono ID capsule, scaled by perspective (25px x 0.7 to 1.7), with positions projection-checked per frame so they never overlap and nearer labels occlude farther ones",
+    "Ending: the vanishing point blooms yellow-green, and a 30px mono kicker plus a two-line 108px headline \"Every thread, / one release.\" rises word by word in the sky; duration 165 to 180f"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

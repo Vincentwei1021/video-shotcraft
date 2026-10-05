@@ -1,0 +1,18 @@
+{
+  "stem": "KanadaPerspectiveSnap",
+  "changed": true,
+  "brand": [
+    "流媒体「Hikari」番剧首播卡 → video-shotcraft 发布片首映卡，卡右上加镜刻标志",
+    "片名「Neon Tide」/「NEW EPISODE」→「Launch Film」/「PREMIERE」，信息行 →「Your product, in motion.」「60 SEC · 16:9 · 1080P」",
+    "背景大字「NEON TIDE ✦ SEASON 2」→ 品牌短句「FRAME MOTION ✦ CRAFT THE SHOT」",
+    "字幕「Streams Friday · only on Hikari」→「Premieres Friday · shot with video-shotcraft」"
+  ],
+  "brandEn": [
+    "\"Hikari\" anime premiere card → video-shotcraft launch-film premiere card, Frame Chisel mark added top-right",
+    "Title \"Neon Tide\" / \"NEW EPISODE\" → \"Launch Film\" / \"PREMIERE\"; meta → \"Your product, in motion.\" \"60 SEC · 16:9 · 1080P\"",
+    "Backdrop band \"NEON TIDE ✦ SEASON 2\" → motto \"FRAME MOTION ✦ CRAFT THE SHOT\"",
+    "Caption \"Streams Friday · only on Hikari\" → \"Premieres Friday · shot with video-shotcraft\""
+  ],
+  "styleKey": "kanada-perspective-snap",
+  "mdChanged": true
+}

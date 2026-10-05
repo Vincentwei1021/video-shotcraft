@@ -1,0 +1,31 @@
+{
+  "stem": "CardFlockTumble",
+  "issues": [
+    "背景三行黄 / 品红 / 紫 / 蓝四色彩虹描边字墙抢戏，和粉紫烟雾环、彩虹描边巨字不是一套色",
+    "卡片群重心偏左上，收束点、环心和巨字不在一条视线上",
+    "收束到点后有约 14f 只剩小环的黑场空档，高潮在这里断气",
+    "巨字是细描边霓虹，0.72→1 慢慢放大，读作淡入而不是爆点；收尾只有一个词，没有完整锁版"
+  ],
+  "changes": [
+    "look 换成 aurora：卡片辉光、字墙、烟雾环、巨字统一到紫 → 粉 → 奶桃一条色带；彩虹字墙换成两行 300px 单色淡紫描边「SHIP FASTER」反向缓移，卡后一团极光主光托起卡片群",
+    "构图收拢：卡片群、收束点、环心、巨字共用一个中心（画面中心下移 30px）；卡片 UI 换皮成虚构产品 Pulse，仍按 CARD_ZOOM 布局级放大保证清晰",
+    "补上能量断档：吸入到点同一帧中心一团白热闪核 + 全屏微曝（6f 衰减，只用径向光，不画描边环、不加粒子），烟雾环从闪核里长出",
+    "巨字改成实心白热芯 → 淡紫渐变 + 粉紫双层泛光，收束后 4f 就砸进来（14f snappy 1.22→1 + 字距收拢），之后极缓长大不停",
+    "环心里加「PULSE 3.0」眉题与 44px 标语错峰升起，尾帧是完整发布海报；用户历次裁决全部保留（三卡零模糊、单个湍流环、站定不停转、10f 快收束）"
+  ],
+  "issuesEn": [
+    "Three rows of yellow, magenta, violet and blue rainbow-outlined words fought for attention and didn't share a palette with the pink-violet smoke ring or the rainbow-outlined headline",
+    "The card cluster sat up and to the left, so the collapse point, ring centre and headline weren't on one line of sight",
+    "After the collapse there were about 14 frames of near-black with only a small ring: the climax ran out of breath right there",
+    "The headline was a thin neon outline that grew slowly from 0.72 to 1, reading as a fade-in rather than a hit; the end had a single word and no full lockup"
+  ],
+  "changesEn": [
+    "Aurora look: card glow, type wall, smoke ring and headline all sit on one violet → pink → peach band; the rainbow wall became two rows of 300px single-colour lavender outline 'SHIP FASTER' drifting in opposite directions, with an aurora key light lifting the cards",
+    "Tighter composition: cards, collapse point, ring centre and headline share one centre (30px below frame centre); the card UI is reskinned as a fictional product, Pulse, still rasterised at layout zoom for sharpness",
+    "The energy gap is filled: on the collapse frame a white-hot core flash plus a light full-frame lift decays over 6f (radial light only, no outline ring, no particles) and the smoke ring grows out of it",
+    "The headline is now solid, a white-hot core fading to lavender with a two-layer pink-violet glow; it slams in 4f after the collapse (14f snappy 1.22→1 with tracking tightening) and then keeps growing very slowly",
+    "A 'PULSE 3.0' kicker and a 44px tagline rise inside the ring for a full launch-poster end frame; every earlier user ruling is kept (no blur on the cards, one turbulent ring, continuous slow spin, a fast 10f collapse)"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

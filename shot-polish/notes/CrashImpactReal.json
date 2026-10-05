@@ -1,0 +1,31 @@
+{
+  "stem": "CrashImpactReal",
+  "issues": [
+    "截图直接平铺白底画面，全景没有舞台、光和主体，看不出要看哪张卡",
+    "撞停的\"重量\"只靠震屏和暗角一沉，到位瞬间没有冲击感",
+    "落定后周边只压暗 8%，目标卡和邻卡几乎一样亮",
+    "震屏收干后 70 帧画面完全不变，没有配套信息，尾帧不成海报"
+  ],
+  "changes": [
+    "换 lime look 的\"战术 HUD\"语言（与同卡回弹款的 ember 编辑风拉开）：真实页面裁成一块正视监视屏，舞台铺淡网格 + LIVE / SCANNING 等宽角标",
+    "急推前加扫描拍：荧光取景框带十字线在全景里跳格 card1 → card5 → card4（各 8f snappy），28f 收紧锁定、标签翻成实心 LOCK 04，预备回拉时外扩一呼吸",
+    "撞停加重量：到位帧卡外 1f 荧光冲击帧 → 1f 余辉 → 压成近黑（全片唯一一处整画面冲击），两道冲击波环从卡缘外扩，震屏 14px·e^(−t/1.8)；卡不浮起不发光",
+    "落定后一道荧光扫描线扫过卡面一次，左右两栏 HUD 读数错峰落位（TARGET 04/10 · OWNER · STATE，右栏 250px 等宽「P0」+ 说明）",
+    "时长 120→126f，急推 0.76→2.35 log 空间强 ease-in，子帧间距 ≤8px；尾段 42f hold 极缓推近 1.2%"
+  ],
+  "issuesEn": [
+    "The screenshot just filled a white frame: no stage, light or subject in the wide shot, and nothing said which card mattered",
+    "The 'weight' of the stop relied only on shake and a vignette dip; the hit itself had no impact",
+    "After landing the surroundings dimmed only 8%, so the target card was barely brighter than its neighbours",
+    "After the shake settled the frame didn't change for 70 frames and had no supporting information, so the last frame wasn't a poster"
+  ],
+  "changesEn": [
+    "Lime look in a 'tactical HUD' language (distinct from the ember editorial style of the bounce variant on the same card): the real page is cropped into a face-on monitor on a faint grid stage with LIVE / SCANNING mono labels",
+    "A scan beat before the push: a neon reticle with crosshairs hops card1 → card5 → card4 (8f snappy each), tightens and flips its tag to a solid LOCK 04 at 28f, and breathes outward during the wind-up",
+    "Weight on the hit: one neon impact frame outside the card → one afterglow frame → crushed to near-black (the single full-frame hit in the shot), two shockwave rings expand from the card edge, shake 14px·e^(−t/1.8); the card neither lifts nor glows",
+    "After landing a neon scan line sweeps the card once, and two HUD columns land in stagger (TARGET 04/10 · OWNER · STATE; right column a 250px mono “P0” with copy)",
+    "Duration 120→126f; push 0.76→2.35 on a log-space strong ease-in with sub-frames ≤8px apart; 42f tail hold with a 1.2% creep"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

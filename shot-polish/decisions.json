@@ -1,0 +1,1524 @@
+{
+  "savedAt": "2026-10-02T19:25:11.000Z",
+  "summary": {
+    "before": 8,
+    "v1": 50,
+    "after": 92,
+    "drop": 66,
+    "undecided": 0
+  },
+  "decisions": [
+    {
+      "stem": "CraneRiseReveal",
+      "path": "demos/opening/crane-rise-reveal/CraneRiseReveal.tsx",
+      "name": "吊臂升起揭示",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DatavizLandscapeOpen",
+      "path": "demos/opening/dataviz-landscape-open/DatavizLandscapeOpen.tsx",
+      "name": "数据景观开场",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "Fracture",
+      "path": "demos/opening/fracture/Fracture.tsx",
+      "name": "碎片聚合飞散",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "IconFieldColorize",
+      "path": "demos/opening/icon-field-colorize/IconFieldColorize.tsx",
+      "name": "图标点阵翻色",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LetterspaceMaterialize",
+      "path": "demos/opening/letterspace-materialize/LetterspaceMaterialize.tsx",
+      "name": "字距结晶字标",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "MagicianCardFlourish",
+      "path": "demos/opening/magician-card-flourish/MagicianCardFlourish.tsx",
+      "name": "魔术卡弹射",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "OrbitRingTitleOpen",
+      "path": "demos/opening/orbit-ring-title-open/OrbitRingTitleOpen.tsx",
+      "name": "环形卡阵标题开场",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SpotlightHeroCard",
+      "path": "demos/opening/spotlight-hero-card/SpotlightHeroCard.tsx",
+      "name": "聚光主角卡",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "StrokeSegmentBuild",
+      "path": "demos/opening/stroke-segment-build/StrokeSegmentBuild.tsx",
+      "name": "描边分段构建",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "TextAsMask",
+      "path": "demos/opening/text-as-mask/TextAsMask.tsx",
+      "name": "文字蒙版",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "Basic3DScene",
+      "path": "demos/camera/basic-3d-scene/Basic3DScene.tsx",
+      "name": "空间步进演示",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CrashImpactReal",
+      "path": "demos/camera/crash-zoom-punch/CrashImpactReal.tsx",
+      "name": "冲撞变焦 · CrashImpactReal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CrashZoomReal",
+      "path": "demos/camera/crash-zoom-punch/CrashZoomReal.tsx",
+      "name": "冲撞变焦 · CrashZoomReal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CursorFlyover",
+      "path": "demos/camera/cursor-flyover/CursorFlyover.tsx",
+      "name": "四角巡览指点",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DollyZoomReal",
+      "path": "demos/camera/depth-layer-moves/DollyZoomReal.tsx",
+      "name": "分层深度运镜 · DollyZoomReal",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "MultiplaneReal",
+      "path": "demos/camera/depth-layer-moves/MultiplaneReal.tsx",
+      "name": "分层深度运镜 · MultiplaneReal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "GrazeFaceTour",
+      "path": "demos/camera/graze-face-tour/GrazeFaceTour.tsx",
+      "name": "贴面游走",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "OverheadTabletopDrop",
+      "path": "demos/camera/overhead-camera-moves/OverheadTabletopDrop.tsx",
+      "name": "俯视桌面扎落",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "TiltReveal",
+      "path": "demos/camera/overhead-camera-moves/TiltReveal.tsx",
+      "name": "俯仰揭示",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DroneDiveLanding",
+      "path": "demos/camera/space-camera-moves/DroneDiveLanding.tsx",
+      "name": "无人机俯冲落点",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "ExplodedView",
+      "path": "demos/camera/space-camera-moves/ExplodedView.tsx",
+      "name": "爆炸分层视图",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SteepTiltGlide",
+      "path": "demos/camera/steep-tilt-glide/SteepTiltGlide.tsx",
+      "name": "侧立透视滑行",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "BulletTimeFreezeOrbit",
+      "path": "demos/camera/tension-camera-moves/BulletTimeFreezeOrbit.tsx",
+      "name": "冻结环绕",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DutchRollToLevel",
+      "path": "demos/camera/tension-camera-moves/DutchRollToLevel.tsx",
+      "name": "斜角滚正",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PullBackIsolation",
+      "path": "demos/camera/tension-camera-moves/PullBackIsolation.tsx",
+      "name": "拉远孤立",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "SlowPushIn",
+      "path": "demos/camera/tension-camera-moves/SlowPushIn.tsx",
+      "name": "慢推压迫",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "Terminal3D",
+      "path": "demos/camera/terminal-3d/Terminal3D.tsx",
+      "name": "终端空间飞行",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BottomPushStackWipe",
+      "path": "demos/transition/bottom-push-stack-wipe/BottomPushStackWipe.tsx",
+      "name": "底推换章",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BubbleSwarmTakeover",
+      "path": "demos/transition/bubble-swarm-takeover/BubbleSwarmTakeover.tsx",
+      "name": "气泡群幕布",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CardFlipReveal",
+      "path": "demos/transition/card-flip-reveal/CardFlipReveal.tsx",
+      "name": "卡片翻面揭示",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CardFlockTumble",
+      "path": "demos/transition/card-flock-tumble/CardFlockTumble.tsx",
+      "name": "卡片翻飞收束",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CircleMatchIris",
+      "path": "demos/transition/circle-match-iris/CircleMatchIris.tsx",
+      "name": "圆心匹配光圈切",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ColorBlockStepWipe",
+      "path": "demos/transition/color-block-step-wipe/ColorBlockStepWipe.tsx",
+      "name": "色块阶跃吞屏",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CubeNavigation",
+      "path": "demos/transition/cube-navigation/CubeNavigation.tsx",
+      "name": "立方体逐面导航",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "GradientTransition",
+      "path": "demos/transition/gradient-transition/GradientTransition.tsx",
+      "name": "渐变参数变奏",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LineCarryTransition",
+      "path": "demos/transition/line-carry-transition/LineCarryTransition.tsx",
+      "name": "线条接力转场",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "MosaicReframe",
+      "path": "demos/transition/mosaic-reframe/MosaicReframe.tsx",
+      "name": "三段布局重排",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BarnDoorSplit",
+      "path": "demos/transition/page-turn-transitions/BarnDoorSplit.tsx",
+      "name": "双门裂开",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CubeRotate",
+      "path": "demos/transition/page-turn-transitions/CubeRotate.tsx",
+      "name": "立方体旋页",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PaperPlaneMessenger",
+      "path": "demos/transition/paper-plane-messenger/PaperPlaneMessenger.tsx",
+      "name": "纸飞机信使",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "InkBleedReveal",
+      "path": "demos/transition/print-texture-transitions/InkBleedReveal.tsx",
+      "name": "墨渗揭示",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "BlackCardTransition",
+      "path": "demos/transition/shot-transitions/BlackCardTransition.tsx",
+      "name": "镜头交棒转场 · BlackCardTransition",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "DarkTunnelTransition",
+      "path": "demos/transition/shot-transitions/DarkTunnelTransition.tsx",
+      "name": "镜头交棒转场 · DarkTunnelTransition",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "FocusHandoffTransition",
+      "path": "demos/transition/shot-transitions/FocusHandoffTransition.tsx",
+      "name": "镜头交棒转场 · FocusHandoffTransition",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "MaskWipeReal",
+      "path": "demos/transition/shot-transitions/MaskWipeReal.tsx",
+      "name": "镜头交棒转场 · MaskWipeReal",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PortalWipeV2",
+      "path": "demos/transition/shot-transitions/PortalWipeV2.tsx",
+      "name": "镜头交棒转场 · PortalWipeV2",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "WhipBrakeReal",
+      "path": "demos/transition/shot-transitions/WhipBrakeReal.tsx",
+      "name": "镜头交棒转场 · WhipBrakeReal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "WhipPanReal",
+      "path": "demos/transition/shot-transitions/WhipPanReal.tsx",
+      "name": "镜头交棒转场 · WhipPanReal",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "GlitchDisplace",
+      "path": "demos/transition/tear-streak-transitions/GlitchDisplace.tsx",
+      "name": "故障条带错位",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "InvisibleCut",
+      "path": "demos/transition/transition-hidden-cut/InvisibleCut.tsx",
+      "name": "前景遮挡隐形切",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LightLeakBurn",
+      "path": "demos/transition/transition-hidden-cut/LightLeakBurn.tsx",
+      "name": "琥珀漏光烧切",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "VersusSlam",
+      "path": "demos/transition/transition-hidden-cut/VersusSlam.tsx",
+      "name": "对撞开屏",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LetterformZoom",
+      "path": "demos/transition/transition-travel/LetterformZoom.tsx",
+      "name": "字腔穿越",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SharedElementMorph",
+      "path": "demos/transition/transition-travel/SharedElementMorph.tsx",
+      "name": "共享元素归位",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "WhiteFlashLogoSimplifyCut",
+      "path": "demos/transition/white-flash-logo-simplify-cut/WhiteFlashLogoSimplifyCut.tsx",
+      "name": "冲白降维切换",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BlindsSlice",
+      "path": "demos/transition/wipe-transitions/BlindsSlice.tsx",
+      "name": "百叶窗切条",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ClockWipe",
+      "path": "demos/transition/wipe-transitions/ClockWipe.tsx",
+      "name": "时钟扫描擦除",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "BlurSlide",
+      "path": "demos/typography/blur-slide/BlurSlide.tsx",
+      "name": "逐词模糊入场",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BraceExpand",
+      "path": "demos/typography/brace-expand/BraceExpand.tsx",
+      "name": "括号拉幕",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BrandInkOpen",
+      "path": "demos/typography/brand-ink-open/BrandInkOpen.tsx",
+      "name": "品牌墨印开场",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "CelFlashStomp",
+      "path": "demos/typography/cel-flash-stomp/CelFlashStomp.tsx",
+      "name": "底色闪砸字",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CountdownArcScatter",
+      "path": "demos/typography/countdown-arc-scatter/CountdownArcScatter.tsx",
+      "name": "表盘数字扫过",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "FlyingWords",
+      "path": "demos/typography/flying-words/FlyingWords.tsx",
+      "name": "词语纵深隧道",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "GlitchCycle",
+      "path": "demos/typography/glitch-cycle/GlitchCycle.tsx",
+      "name": "乱码轮播",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "GradientWordSweep",
+      "path": "demos/typography/gradient-word-sweep/GradientWordSweep.tsx",
+      "name": "渐变充能词",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "LeadWordZoomAssemble",
+      "path": "demos/typography/lead-word-zoom-assemble/LeadWordZoomAssemble.tsx",
+      "name": "首词推近组句",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "MarkerUnderlineTitle",
+      "path": "demos/typography/marker-underline-title/MarkerUnderlineTitle.tsx",
+      "name": "马克笔下划线",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "OutlineWordFill",
+      "path": "demos/typography/outline-word-fill/OutlineWordFill.tsx",
+      "name": "空心字点亮",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "PaperTitleCard",
+      "path": "demos/typography/paper-title-card/PaperTitleCard.tsx",
+      "name": "纸张标题卡",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "PillChipSlotCycleHandled",
+      "path": "demos/typography/pill-chip-slot-cycle-handled/PillChipSlotCycleHandled.tsx",
+      "name": "胶囊滚轮挤开",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "PillSlotCycle",
+      "path": "demos/typography/pill-slot-cycle/PillSlotCycle.tsx",
+      "name": "词槽轮换",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "Scramble",
+      "path": "demos/typography/scramble/Scramble.tsx",
+      "name": "乱码锁定",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SplitFlapFlip",
+      "path": "demos/typography/split-flap-title/SplitFlapFlip.tsx",
+      "name": "翻牌屏标题",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "TextColumnConverge",
+      "path": "demos/typography/text-column-converge/TextColumnConverge.tsx",
+      "name": "双词合拢",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TitleDemoteToLabel",
+      "path": "demos/typography/title-demote-to-label/TitleDemoteToLabel.tsx",
+      "name": "标题降格标签",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LetterformDriftAssembly",
+      "path": "demos/typography/type-assembly-moves/LetterformDriftAssembly.tsx",
+      "name": "文字集结 · LetterformDriftAssembly",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "SplitTextStagger",
+      "path": "demos/typography/type-assembly-moves/SplitTextStagger.tsx",
+      "name": "逐字裂升",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TextOnPath",
+      "path": "demos/typography/type-assembly-moves/TextOnPath.tsx",
+      "name": "沿线流入",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "TrackingExpandReveal",
+      "path": "demos/typography/type-assembly-moves/TrackingExpandReveal.tsx",
+      "name": "文字集结 · TrackingExpandReveal",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "LetterDropPhysics",
+      "path": "demos/typography/type-entrance-moves/LetterDropPhysics.tsx",
+      "name": "字符坠落",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "ScrambleDecode",
+      "path": "demos/typography/type-entrance-moves/ScrambleDecode.tsx",
+      "name": "乱码解码",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "FontWeightPump",
+      "path": "demos/typography/type-rhythm-sync/FontWeightPump.tsx",
+      "name": "字重脉冲",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "KaraokeFillSync",
+      "path": "demos/typography/type-rhythm-sync/KaraokeFillSync.tsx",
+      "name": "填色随读",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TerminalTypewriter",
+      "path": "demos/typography/typewriter-moves/TerminalTypewriter.tsx",
+      "name": "终端打字引爆",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "TypewriterErrorRetype",
+      "path": "demos/typography/typewriter-moves/TypewriterErrorRetype.tsx",
+      "name": "打字机动效 · TypewriterErrorRetype",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TypingCodeBlock",
+      "path": "demos/typography/typing-code-block/TypingCodeBlock.tsx",
+      "name": "代码块揭示",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "VerticalWordRollBlurCycle",
+      "path": "demos/typography/vertical-word-roll-blur-cycle/VerticalWordRollBlurCycle.tsx",
+      "name": "竖向词条滚轮",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "WordRelayFilmstrip",
+      "path": "demos/typography/word-relay-filmstrip/WordRelayFilmstrip.tsx",
+      "name": "胶片词接力",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "WordRelayGeometry",
+      "path": "demos/typography/word-relay-geometry/WordRelayGeometry.tsx",
+      "name": "利益词接力",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "AvatarBracketCarousel",
+      "path": "demos/ui-entrance/avatar-bracket-carousel/AvatarBracketCarousel.tsx",
+      "name": "对焦框轮换",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "BezierSourceConvergeMerge",
+      "path": "demos/ui-entrance/bezier-source-converge-merge/BezierSourceConvergeMerge.tsx",
+      "name": "曲线汇流吞并",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "CardStack",
+      "path": "demos/ui-entrance/card-stack/CardStack.tsx",
+      "name": "牌堆扇展",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "Carousel3D",
+      "path": "demos/ui-entrance/carousel-3d/Carousel3D.tsx",
+      "name": "环形画廊",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ClonerDepthEcho",
+      "path": "demos/ui-entrance/cloner-depth-echo/ClonerDepthEcho.tsx",
+      "name": "克隆纵深回响",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DeckDealFlyin",
+      "path": "demos/ui-entrance/deck-deal-flyin/DeckDealFlyin.tsx",
+      "name": "发牌飞入",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DocParkLeftPillDeal",
+      "path": "demos/ui-entrance/doc-park-left-pill-deal/DocParkLeftPillDeal.tsx",
+      "name": "文档驻留发牌",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "DocumentTypewriterReveal",
+      "path": "demos/ui-entrance/document-typewriter-reveal/DocumentTypewriterReveal.tsx",
+      "name": "文档打字揭示",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DrawSvgTrace",
+      "path": "demos/ui-entrance/draw-svg-trace/DrawSvgTrace.tsx",
+      "name": "SVG 描线追踪",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "AxialStretch",
+      "path": "demos/ui-entrance/element-body-moves/AxialStretch.tsx",
+      "name": "轴向拉伸",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ContactShadowLift",
+      "path": "demos/ui-entrance/element-body-moves/ContactShadowLift.tsx",
+      "name": "接触阴影抬升",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "FloatingGlossyLabelPills",
+      "path": "demos/ui-entrance/floating-glossy-label-pills/FloatingGlossyLabelPills.tsx",
+      "name": "高光胶囊横滑",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "IntegrationHubMap",
+      "path": "demos/ui-entrance/integration-hub-map/IntegrationHubMap.tsx",
+      "name": "集成星图",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "ListReveal",
+      "path": "demos/ui-entrance/list-reveal/ListReveal.tsx",
+      "name": "逐项找位",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ListStackPress",
+      "path": "demos/ui-entrance/list-stack-press/ListStackPress.tsx",
+      "name": "列表堆叠压弹",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "MorphFromPrimitive",
+      "path": "demos/ui-entrance/morph-from-primitive/MorphFromPrimitive.tsx",
+      "name": "原型变形",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "NeonFrameForerun",
+      "path": "demos/ui-entrance/neon-frame-forerun/NeonFrameForerun.tsx",
+      "name": "霓虹框先行",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "NeonFrameForerunOrbit",
+      "path": "demos/ui-entrance/neon-frame-orbit-drop/NeonFrameForerunOrbit.tsx",
+      "name": "霓虹框环绕齐落",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "PageWaterfallWall",
+      "path": "demos/ui-entrance/page-waterfall-wall/PageWaterfallWall.tsx",
+      "name": "页面瀑布墙",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "MaskingTapeSlap",
+      "path": "demos/ui-entrance/paper-craft-moves/MaskingTapeSlap.tsx",
+      "name": "胶带拍贴",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PopupBookRise",
+      "path": "demos/ui-entrance/paper-craft-moves/PopupBookRise.tsx",
+      "name": "立体书升起",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PlatformHingeRise",
+      "path": "demos/ui-entrance/platform-hinge-rise/PlatformHingeRise.tsx",
+      "name": "平台铰接升起",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ProductCardProgressiveAssemble",
+      "path": "demos/ui-entrance/product-card-progressive-assemble/ProductCardProgressiveAssemble.tsx",
+      "name": "字段逐个落位",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "RadialWave",
+      "path": "demos/ui-entrance/radial-wave/RadialWave.tsx",
+      "name": "点阵涟漪",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "ResearchCardStackScroll",
+      "path": "demos/ui-entrance/research-card-stack-scroll/ResearchCardStackScroll.tsx",
+      "name": "论文卡叠压",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "RowEmbed",
+      "path": "demos/ui-entrance/row-embed/RowEmbed.tsx",
+      "name": "行元素嵌入",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "RunwayGroundSkim",
+      "path": "demos/ui-entrance/runway-ground-skim/RunwayGroundSkim.tsx",
+      "name": "跑道掠地贴落",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SkeletonReveal",
+      "path": "demos/ui-entrance/skeleton-reveal/SkeletonReveal.tsx",
+      "name": "骨架显影",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SvgShapeMorph",
+      "path": "demos/ui-entrance/svg-shape-morph/SvgShapeMorph.tsx",
+      "name": "轮廓变形",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ValueStaggerGradient",
+      "path": "demos/ui-entrance/value-stagger-gradient/ValueStaggerGradient.tsx",
+      "name": "数值梯度铺开",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "BentoLightUp",
+      "path": "demos/ui-entrance/wall-reveal-moves/BentoLightUp.tsx",
+      "name": "逐格点亮",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "GridWaveFlip",
+      "path": "demos/ui-entrance/wall-reveal-moves/GridWaveFlip.tsx",
+      "name": "波浪翻面",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "WireframeDrawOn",
+      "path": "demos/ui-entrance/wall-reveal-moves/WireframeDrawOn.tsx",
+      "name": "蓝图描线成形",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "StreamResponse",
+      "path": "demos/interaction/ai-stream-response/StreamResponse.tsx",
+      "name": "AI 响应汇入",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "AutolayoutGapDial",
+      "path": "demos/interaction/autolayout-gap-dial/AutolayoutGapDial.tsx",
+      "name": "间距拨盘布局",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DiagramCascadeBuild",
+      "path": "demos/interaction/canvas-materialize-moves/DiagramCascadeBuild.tsx",
+      "name": "画布物化动效 · DiagramCascadeBuild",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "PanelToCanvasMaterialize",
+      "path": "demos/interaction/canvas-materialize-moves/PanelToCanvasMaterialize.tsx",
+      "name": "画布物化动效 · PanelToCanvasMaterialize",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ChipGridSingleSelectBlackout",
+      "path": "demos/interaction/chip-grid-single-select-blackout/ChipGridSingleSelectBlackout.tsx",
+      "name": "灰闪单选反黑",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ChipLiftToUserPill",
+      "path": "demos/interaction/chip-lift-to-user-pill/ChipLiftToUserPill.tsx",
+      "name": "选中长成药丸",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CursorCastEnsemble",
+      "path": "demos/interaction/collab-cursor-moves/CursorCastEnsemble.tsx",
+      "name": "协作光标演出 · CursorCastEnsemble",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CursorDialogueDuet",
+      "path": "demos/interaction/collab-cursor-moves/CursorDialogueDuet.tsx",
+      "name": "协作光标演出 · CursorDialogueDuet",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CommandPaletteSummon",
+      "path": "demos/interaction/command-palette-summon/CommandPaletteSummon.tsx",
+      "name": "命令面板召唤",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "GlassPillDictationTyping",
+      "path": "demos/interaction/glass-pill-dictation-typing/GlassPillDictationTyping.tsx",
+      "name": "玻璃胶囊听写",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "HashtagToPillMaterialize",
+      "path": "demos/interaction/hashtag-to-pill-materialize/HashtagToPillMaterialize.tsx",
+      "name": "话题词实体化",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "CursorPerformancePunchIn",
+      "path": "demos/interaction/input-trigger-moves/CursorPerformancePunchIn.tsx",
+      "name": "输入触发动效 · CursorPerformancePunchIn",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "KeycapSmashCut",
+      "path": "demos/interaction/input-trigger-moves/KeycapSmashCut.tsx",
+      "name": "键帽砸屏硬切",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PickerCarouselFeatureCycle",
+      "path": "demos/interaction/picker-carousel-feature-cycle/PickerCarouselFeatureCycle.tsx",
+      "name": "药丸吸附轮播",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "SegmentedThumbHero",
+      "path": "demos/interaction/segmented-thumb-hero/SegmentedThumbHero.tsx",
+      "name": "分段控件特写",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "PaletteThemeRipple",
+      "path": "demos/interaction/theme-switch-moves/PaletteThemeRipple.tsx",
+      "name": "调色板主题涟漪",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ThemeSweepToggle",
+      "path": "demos/interaction/theme-switch-moves/ThemeSweepToggle.tsx",
+      "name": "主题斜扫切换",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "TypeAndFilter",
+      "path": "demos/interaction/type-and-filter/TypeAndFilter.tsx",
+      "name": "打字筛选",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "VoiceWaveformLive",
+      "path": "demos/interaction/voice-waveform-live/VoiceWaveformLive.tsx",
+      "name": "实时声纹",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "AvatarGridRadialBuildColorize",
+      "path": "demos/data/avatar-grid-radial-build-colorize/AvatarGridRadialBuildColorize.tsx",
+      "name": "分环生长染色",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "BeforeAfterSliderScrub",
+      "path": "demos/data/before-after-slider-scrub/BeforeAfterSliderScrub.tsx",
+      "name": "前后对比拉杆",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "AxisRescaleShockV2",
+      "path": "demos/data/chart-live-moves/AxisRescaleShockV2.tsx",
+      "name": "活体图表 · AxisRescaleShockV2",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "OscilloscopeStreamV2",
+      "path": "demos/data/chart-live-moves/OscilloscopeStreamV2.tsx",
+      "name": "活体图表 · OscilloscopeStreamV2",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "UnitDotSwarmRegroupV2",
+      "path": "demos/data/chart-live-moves/UnitDotSwarmRegroupV2.tsx",
+      "name": "活体图表 · UnitDotSwarmRegroupV2",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CounterConfetti",
+      "path": "demos/data/counter-confetti/CounterConfetti.tsx",
+      "name": "数字冲刺纸屑",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CycleGlassNodeMorph",
+      "path": "demos/data/cycle-glass-node-morph/CycleGlassNodeMorph.tsx",
+      "name": "循环玻璃节点接管",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "NeedleSweepSelftest",
+      "path": "demos/data/gauge-readout-moves/NeedleSweepSelftest.tsx",
+      "name": "满弧扫针自检",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TapeScrollFixedPointer",
+      "path": "demos/data/gauge-readout-moves/TapeScrollFixedPointer.tsx",
+      "name": "滚带定针",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "HatchDepth",
+      "path": "demos/data/hatch-depth/HatchDepth.tsx",
+      "name": "斜纹变实柱",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "OdometerDigitRoll",
+      "path": "demos/data/odometer-digit-roll/OdometerDigitRoll.tsx",
+      "name": "里程表数字滚动",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ConfettiCrossfire",
+      "path": "demos/data/particle-celebrate-hits/ConfettiCrossfire.tsx",
+      "name": "双侧礼炮",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CounterTickSparks",
+      "path": "demos/data/particle-celebrate-hits/CounterTickSparks.tsx",
+      "name": "数字跳动溅火",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ParticleSandFill",
+      "path": "demos/data/particle-sand-fill/ParticleSandFill.tsx",
+      "name": "粒子落砂成柱",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "RingDiagramAnnotationReveal",
+      "path": "demos/data/ring-diagram-annotation-reveal/RingDiagramAnnotationReveal.tsx",
+      "name": "环图收束标注",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "BrakeReticleLock",
+      "path": "demos/data/scroll-brake-moves/BrakeReticleLock.tsx",
+      "name": "刹停准星锁定",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "ChangelogScrollBrake",
+      "path": "demos/data/scroll-brake-moves/ChangelogScrollBrake.tsx",
+      "name": "更新日志滚动刹停",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "TimelineTravel",
+      "path": "demos/data/timeline-travel/TimelineTravel.tsx",
+      "name": "时间线穿行",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "AssembleThenTypeFlyin",
+      "path": "demos/effects/assemble-then-type-flyin/AssembleThenTypeFlyin.tsx",
+      "name": "骨架装配落字",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "AuroraBloomBgFlip",
+      "path": "demos/effects/aurora-bloom-bg-flip/AuroraBloomBgFlip.tsx",
+      "name": "极光升腾反黑",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "BrandFrameSnap",
+      "path": "demos/effects/brand-frame-snap/BrandFrameSnap.tsx",
+      "name": "品牌画框硬切",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DashboardGlowHighlightPill",
+      "path": "demos/effects/dashboard-glow-highlight-pill/DashboardGlowHighlightPill.tsx",
+      "name": "金色胶囊指引",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "LineUnfoldPanel",
+      "path": "demos/effects/fui-hud-moves/LineUnfoldPanel.tsx",
+      "name": "线条展开面板",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ReticleLockOn",
+      "path": "demos/effects/fui-hud-moves/ReticleLockOn.tsx",
+      "name": "准星锁定",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "FlylineArc",
+      "path": "demos/effects/glow-flyline-moves/FlylineArc.tsx",
+      "name": "飞线连接",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "GlowOrbAmbient",
+      "path": "demos/effects/glow-flyline-moves/GlowOrbAmbient.tsx",
+      "name": "暗场光斑呼吸",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "OrbFlylineRelay",
+      "path": "demos/effects/glow-flyline-moves/OrbFlylineRelay.tsx",
+      "name": "光斑飞线接力",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "AttentionBounce",
+      "path": "demos/effects/icon-performance-moves/AttentionBounce.tsx",
+      "name": "注意力弹跳",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "PopBurstConfirm",
+      "path": "demos/effects/icon-performance-moves/PopBurstConfirm.tsx",
+      "name": "弹跳爆点确认",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "AnimeImpact",
+      "path": "demos/effects/impact-feedback/AnimeImpact.tsx",
+      "name": "动漫打击帧",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "HitCounter",
+      "path": "demos/effects/impact-feedback/HitCounter.tsx",
+      "name": "连招计数",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "HalationBloom",
+      "path": "demos/effects/light-play-moves/HalationBloom.tsx",
+      "name": "光晕绽放",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SheenSweepRetry",
+      "path": "demos/effects/light-play-moves/SheenSweepRetry.tsx",
+      "name": "光影动效 · SheenSweepRetry",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SpotlightSweepReveal",
+      "path": "demos/effects/light-play-moves/SpotlightSweepReveal.tsx",
+      "name": "光影动效 · SpotlightSweepReveal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "LineBoil",
+      "path": "demos/effects/line-boil/LineBoil.tsx",
+      "name": "线条沸腾",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "RadialRipplePhoneChips",
+      "path": "demos/effects/radial-ripple-phone-chips/RadialRipplePhoneChips.tsx",
+      "name": "同心波纹手机",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "RisoBeatPump",
+      "path": "demos/effects/riso-print-hits/RisoBeatPump.tsx",
+      "name": "孔版印刷冲击 · RisoBeatPump",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "RisoMisregistrationHit",
+      "path": "demos/effects/riso-print-hits/RisoMisregistrationHit.tsx",
+      "name": "孔版印刷冲击 · RisoMisregistrationHit",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ScanBracketSweep",
+      "path": "demos/effects/scan-bracket-sweep/ScanBracketSweep.tsx",
+      "name": "取景括号扫描",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "ScanlineAnnotateFocus",
+      "path": "demos/effects/scanline-annotate-focus/ScanlineAnnotateFocus.tsx",
+      "name": "扫描取景标注",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ScanlineAssembleFlyin",
+      "path": "demos/effects/scanline-assemble-flyin/ScanlineAssembleFlyin.tsx",
+      "name": "扫描装配飞入",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ImpactBurstKit",
+      "path": "demos/effects/slam-entrance-moves/ImpactBurstKit.tsx",
+      "name": "冲击爆点套件",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "KanadaPerspectiveSnap",
+      "path": "demos/effects/slam-entrance-moves/KanadaPerspectiveSnap.tsx",
+      "name": "金田式透视甩正",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "ScoreSlam",
+      "path": "demos/effects/slam-entrance-moves/ScoreSlam.tsx",
+      "name": "比分砸入",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "CornerSpotlightReveal",
+      "path": "demos/effects/spotlight-sweep-moves/CornerSpotlightReveal.tsx",
+      "name": "角落匀速显影",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "GlowWakeSleepPanel",
+      "path": "demos/effects/spotlight-sweep-moves/GlowWakeSleepPanel.tsx",
+      "name": "醒睡扫过",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "SlideSpotlightPan",
+      "path": "demos/effects/spotlight-sweep-moves/SlideSpotlightPan.tsx",
+      "name": "贴边泛光横摇",
+      "pick": "before",
+      "note": ""
+    },
+    {
+      "stem": "BeatCutAccelerando",
+      "path": "demos/rhythm/beat-cut-moves/BeatCutAccelerando.tsx",
+      "name": "递进硬切串",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "PaparazziFlash",
+      "path": "demos/rhythm/beat-cut-moves/PaparazziFlash.tsx",
+      "name": "连闪定格",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "BeatStepListThemeCycle",
+      "path": "demos/rhythm/beat-step-list-theme-cycle/BeatStepListThemeCycle.tsx",
+      "name": "节拍列表换色",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "DominoCascade",
+      "path": "demos/rhythm/montage-rhythm-moves/DominoCascade.tsx",
+      "name": "多米诺连锁入场",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "DropBlackoutSlam",
+      "path": "demos/rhythm/montage-rhythm-moves/DropBlackoutSlam.tsx",
+      "name": "黑场蓄爆",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "WrightTripleCut",
+      "path": "demos/rhythm/montage-rhythm-moves/WrightTripleCut.tsx",
+      "name": "三连特写",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "ComicPanelSplit",
+      "path": "demos/rhythm/panel-grid-moves/ComicPanelSplit.tsx",
+      "name": "漫画分镜切屏",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "FlipGridReflow",
+      "path": "demos/rhythm/panel-grid-moves/FlipGridReflow.tsx",
+      "name": "翻转网格重排",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "GridFlashMosaic",
+      "path": "demos/rhythm/panel-grid-moves/GridFlashMosaic.tsx",
+      "name": "网格闪切马赛克",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "QuadSplitParallelScenes",
+      "path": "demos/rhythm/quad-split-parallel-scenes/QuadSplitParallelScenes.tsx",
+      "name": "四宫并行蒙太奇",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "JumpCutPunchIn",
+      "path": "demos/rhythm/rhythm-interrupt-moves/JumpCutPunchIn.tsx",
+      "name": "跳切递进推近",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "StrobeBlackFrames",
+      "path": "demos/rhythm/rhythm-interrupt-moves/StrobeBlackFrames.tsx",
+      "name": "黑帧频闪倒数",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SakugaTimingShift",
+      "path": "demos/rhythm/sakuga-timing-shift/SakugaTimingShift.tsx",
+      "name": "作画式节奏变拍",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SmearMultiples",
+      "path": "demos/rhythm/smear-multiples/SmearMultiples.tsx",
+      "name": "拖影分身",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SpectrumMorphUi",
+      "path": "demos/rhythm/spectrum-morph-ui/SpectrumMorphUi.tsx",
+      "name": "频谱变形界面",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "FreezeAnnotateReal",
+      "path": "demos/rhythm/speed-ramp-freeze/FreezeAnnotateReal.tsx",
+      "name": "变速与定格 · FreezeAnnotateReal",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "SpeedRampReal",
+      "path": "demos/rhythm/speed-ramp-freeze/SpeedRampReal.tsx",
+      "name": "变速与定格 · SpeedRampReal",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "CardFootageCadence",
+      "path": "demos/rhythm/trailer-grammar-moves/CardFootageCadence.tsx",
+      "name": "卡片与画面节奏交替",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "SmashCut",
+      "path": "demos/rhythm/trailer-grammar-moves/SmashCut.tsx",
+      "name": "冲脸硬切",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "TrailerBumper",
+      "path": "demos/rhythm/trailer-grammar-moves/TrailerBumper.tsx",
+      "name": "预告片冷开场",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "LogoStingButton",
+      "path": "demos/outro/edit-hook-moves/LogoStingButton.tsx",
+      "name": "字标彩蛋收尾",
+      "pick": "drop",
+      "note": ""
+    },
+    {
+      "stem": "GrainDissolve",
+      "path": "demos/outro/grain-dissolve/GrainDissolve.tsx",
+      "name": "文字砂化凝聚",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "LogoShrinkWordmarkLockup",
+      "path": "demos/outro/logo-shrink-wordmark-lockup/LogoShrinkWordmarkLockup.tsx",
+      "name": "图标收束落位",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "NeonTripleMarquee",
+      "path": "demos/outro/neon-triple-marquee/NeonTripleMarquee.tsx",
+      "name": "三行霓虹跑马灯",
+      "pick": "after",
+      "note": ""
+    },
+    {
+      "stem": "OutroGroupPhotoLaunch",
+      "path": "demos/outro/outro-group-photo-launch/OutroGroupPhotoLaunch.tsx",
+      "name": "发布会合影收场",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "UiStripAwayOutro",
+      "path": "demos/outro/ui-strip-away-outro/UiStripAwayOutro.tsx",
+      "name": "减法收尾",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "IconFlipBloomLogo",
+      "path": "demos/outro/ui-to-brand-morph/IconFlipBloomLogo.tsx",
+      "name": "UI 变品牌 · IconFlipBloomLogo",
+      "pick": "v1",
+      "note": ""
+    },
+    {
+      "stem": "InputMorphsIntoLogo",
+      "path": "demos/outro/ui-to-brand-morph/InputMorphsIntoLogo.tsx",
+      "name": "UI 变品牌 · InputMorphsIntoLogo",
+      "pick": "after",
+      "note": ""
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "LetterformDriftAssembly",
+  "issues": [
+    "浅灰平底 + 148px 黑色无衬线「ASSEMBLE」，完全没有片头式的仪式感，左上角还打着调试标题",
+    "漂移是平面小幅位移（±300px）+ 8px 模糊，像字散落在纸上而不是从空间里汇聚",
+    "所有字按左到右匀速错峰，节奏单一；锁定的加深脉冲在灰底上几乎不可感",
+    "合体后只有一次 1.04 呼吸，之后 46f 完全静止，结尾帧只有一个词"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 余烬橙 · 金），主角做成 200px 衬线粗体空心描边字「NOCTURNE」，描边沿 drop-shadow 发光——片头式霓虹描边字",
+    "漂移改为从纵深来：每字从镜头前方 scale 1.7–2.7、出画 420–840px、±10° 歪斜、大虚焦漂回字面，位移/缩放/虚焦/不透明度共用一条长尾曲线",
+    "落位顺序改为种子乱序 + 先疏后密错峰（越来越快地合拢）；首帧就是一枚清晰的 T 加四周虚焦大字的景深画面",
+    "锁定脉冲：描边橙→金、加粗、发光冲高再回落（12f），之后字腔灌入暗橙褐填充",
+    "合体后上下两根发光横杠从词心展开 + 一次泛光，副标题字距收拢浮现；余烬浮尘上飘、hold 段 2% 极缓推近；时长 150f → 170f"
+  ],
+  "issuesEn": [
+    "Flat light-grey background with a 148px black sans 'ASSEMBLE': none of the title-sequence ceremony, plus a debug label in the corner",
+    "Drift is a small flat offset (±300px) with 8px blur, reading as letters scattered on paper rather than converging through space",
+    "Letters stagger left-to-right at a uniform rate; the darkening lock pulse is barely perceptible on grey",
+    "After assembly there is a single 1.04 breath and 46f of total stillness; the end frame is just one word"
+  ],
+  "changesEn": [
+    "Switched to the ember look (warm black, ember orange, gold); the hero is a 200px bold serif outline word 'NOCTURNE' with drop-shadow glow following the stroke, a neon title-card look",
+    "Drift now comes from depth: each letter starts in front of the lens (scale 1.7–2.7, 420–840px off, ±10° skew, heavy defocus) and drifts back onto the type plane, with offset/scale/blur/opacity sharing one long-tail curve",
+    "Lock order is seeded and sparse-then-dense (converging faster and faster); frame 0 already shows a sharp T among out-of-focus letterforms",
+    "Lock pulse: stroke goes orange to gold, thickens and its glow spikes then decays (12f), then the counters fill with a dark ember tone",
+    "After assembly two glowing bars extend from the centre with one bloom, the subtitle fades in as its tracking tightens; embers drift upward and the hold has a 2% slow push; 150f to 170f"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

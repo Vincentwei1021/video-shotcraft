@@ -1,0 +1,18 @@
+{
+  "stem": "CardFlockTumble",
+  "changed": true,
+  "brand": [
+    "页卡侧栏虚构产品 Pulse 的渐变方块 logo + 名字 → video-shotcraft 标志 + Shotcraft；导航与页面内容换成工作台世界（Shots / Renders / Gallery、镜头列表、渲染统计、审片消息）",
+    "背景描边字墙「SHIP FASTER」→「CRAFT THE SHOT」",
+    "眉题「PULSE 3.0」→ video-shotcraft 标志（框先描出、斜切后划入）+ 小写字标",
+    "巨字「STRONGER」→「CINEMATIC」；标语「Every team, one rhythm.」→「Frame motion. Craft the shot.」"
+  ],
+  "brandEn": [
+    "Card sidebar: fictional product Pulse (gradient square logo + name) → video-shotcraft mark + Shotcraft; nav and page content now show the workbench world (Shots / Renders / Gallery, shot list, render stats, review messages)",
+    "Outlined background word wall \"SHIP FASTER\" → \"CRAFT THE SHOT\"",
+    "Eyebrow \"PULSE 3.0\" → video-shotcraft mark (frame draws on, cut slides in) + lowercase wordmark",
+    "Giant word \"STRONGER\" → \"CINEMATIC\"; tagline \"Every team, one rhythm.\" → \"Frame motion. Craft the shot.\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

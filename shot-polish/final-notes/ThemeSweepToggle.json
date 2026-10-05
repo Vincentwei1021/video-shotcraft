@@ -1,0 +1,16 @@
+{
+  "stem": "ThemeSweepToggle",
+  "changed": true,
+  "brand": [
+    "顶栏 logo（橙色渐变方块 + 圆环）+「Solstice」→ video-shotcraft「镜刻」标志（昼亮版 / 夜反白版）+ video-shotcraft 字标",
+    "周标题右侧「13 events · 2 free afternoons」→「Launch film · ships Friday」",
+    "13 个日程换成宣传片制作排期：Storyboard crit / Shot list review / Page captures / Voiceover · Theo / Camera moves / Beat-sync pass / SFX design / Render review / Final render / Ship the film 等"
+  ],
+  "brandEn": [
+    "Top-bar logo (orange gradient tile + ring) + \"Solstice\" → video-shotcraft Frame Chisel mark (light by day / reverse by night) + video-shotcraft wordmark",
+    "Week header aside \"13 events · 2 free afternoons\" → \"Launch film · ships Friday\"",
+    "13 calendar events → a promo production schedule: Storyboard crit / Shot list review / Page captures / Voiceover · Theo / Camera moves / Beat-sync pass / SFX design / Render review / Final render / Ship the film, etc."
+  ],
+  "styleKey": "theme-sweep-toggle",
+  "mdChanged": true
+}

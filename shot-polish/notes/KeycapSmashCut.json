@@ -1,0 +1,31 @@
+{
+  "stem": "KeycapSmashCut",
+  "issues": [
+    "引信段是浅灰底上一颗小白键帽，占画面不到 6%，没有物件特写的体积感与环境光",
+    "轰鸣段飞的是灰条占位卡，内容读不出，冲镜方向杂乱，能量在切点前没有堆到顶",
+    "猛切后的全景是灰白占位 dashboard，「定论」画面本身没有信息，键帽嵌在顶栏里几乎看不见",
+    "亮环是一个平面正圆，和台面透视不符"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色暗场）：300px 黑色阳极氧化键帽「⌘K」，上窄下宽的顶面 + 可见裙边厚度 + 轻微俯视，台面顶光光池与随悬浮高度变化的落地影，底部「Press ⌘K to begin」邀请观众按",
+    "按下 3f：裙边 34→6px 压扁 + 顶面下沉 40px 落到台面 + 变暗；地面亮环改成扁 0.3 的透视椭圆（扩散 out-cubic / 消散线性解耦）+ 键底一次溢光",
+    "轰鸣改「曲速」：6 块暗色玻璃面板（命令行、p95 41ms、工单、评审、构建图、分支合并）分两轮从中心径向冲出，ease-in 全程加速 + 0.7→3.2 冲脸 + 径向速度拖影；48 条速度线、中心白光、台面推近 1→1.5 同步 ease-in，切点前一帧最满",
+    "猛切改为暗→亮的骨白静帧：96px 标题「Everything, one keystroke away.」+ 整扇 Quarry 应用窗（侧栏、调出的命令面板首行 Deploy to production ⌘⏎ 高亮），同一颗黑键帽 48px 嵌在顶栏搜索框右端呼应引信",
+    "切后零随帧属性（颗粒也冻结），死寂 82f；总时长 140f 不变"
+  ],
+  "issuesEn": [
+    "The fuse beat was a small white keycap on light grey, under 6% of the frame, with no product-shot volume or environment light",
+    "The roar flew grey-bar placeholder cards in scattered directions; nothing was readable and the energy did not peak before the cut",
+    "The post-cut panorama was a grey placeholder dashboard: the 'verdict' frame said nothing, and the keycap in the top bar was nearly invisible",
+    "The shock ring was a flat circle that ignored the tabletop perspective"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark): a 300px black anodised ⌘K keycap with a tapered top, visible skirt thickness and a slight top-down tilt, a pool of top light on the table, a hover-dependent contact shadow and a 'Press ⌘K to begin' prompt",
+    "The 3f press squashes the skirt from 34 to 6px, drops the top 40px onto the table and darkens it; the ring is now a 0.3-flattened perspective ellipse (out-cubic growth, linear fade, decoupled) with one light spill from under the key",
+    "The roar is a warp: six dark glass panels (command row, p95 41ms, issue, approvals, build chart, merged branch) burst radially from the centre in two passes, ease-in all the way, 0.7 to 3.2 scale, radial speed blur; 48 speed lines, a centre bloom and a 1 to 1.5 table push all ease in, so the frame before the cut is the fullest",
+    "The smash cut goes dark to light: a bone-white still with a 96px headline (Everything, one keystroke away.) and a full Quarry app window with the command palette open and Deploy to production ⌘⏎ highlighted; the same black keycap sits at 48px at the end of the search field, echoing the fuse",
+    "Nothing animates after the cut (grain is frozen too): 82f of silence, 140f total"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

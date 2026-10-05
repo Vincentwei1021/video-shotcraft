@@ -1,0 +1,18 @@
+{
+  "stem": "TitleDemoteToLabel",
+  "changed": true,
+  "brand": [
+    "虚构笔记产品「Margin」→ 产品即 video-shotcraft：右上页眉换成镜刻标志 + 全小写 video-shotcraft，页脚 margin.app / notes → video-shotcraft / storyboard",
+    "两节大标题「Capture.」「Select.」→ 品牌短句「Frame.」「Craft.」",
+    "A 节导语与三张剪藏卡（文章 / 引文 / 语音备忘）→「Pick a shot. Each one comes with a recipe.」+ 镜头配方卡 Crash zoom punch / 用户评价「Camera moves I’d have keyframed for a week.」/ 节拍卡 Launch BGM, 128 BPM",
+    "B 节发布笔记正文与答案卡 → 宣传片分镜脚本（选中句「every cut lands right on the beat.」）+ 匹配镜头卡「Every line of the script becomes a tuned shot.」（beat-cut-moves / crash-zoom-punch）；连线起点随新句宽左移"
+  ],
+  "brandEn": [
+    "Fictional notes app \"Margin\" → the product is video-shotcraft: header shows the Frame Chisel mark + lowercase video-shotcraft; footer margin.app / notes → video-shotcraft / storyboard",
+    "Chapter titles \"Capture.\" / \"Select.\" → brand motto words \"Frame.\" / \"Craft.\"",
+    "Chapter A lead + three clip cards (article / quote / voice memo) → \"Pick a shot. Each one comes with a recipe.\" + recipe card Crash zoom punch / review \"Camera moves I'd have keyframed for a week.\" / beat card Launch BGM, 128 BPM",
+    "Chapter B launch-notes body + answer card → promo storyboard script (selected line \"every cut lands right on the beat.\") + shot-match card \"Every line of the script becomes a tuned shot.\" (beat-cut-moves / crash-zoom-punch); connector start moved left to match the new line width"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

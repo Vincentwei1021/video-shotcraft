@@ -1,0 +1,35 @@
+{
+  "stem": "Terminal3D",
+  "issues": [
+    "终端窗几乎铺满画面且基本正对，三窗的 3D 散布在画面里读不出来，像三张平面截图轮换",
+    "飞行转场段画面只剩半块出画的窗口和大片暗底，看不到「还有更多窗口」的全貌",
+    "背景是近黑平底 + 点阵，窗口暗灰对暗灰，没有主光、没有地面，空间没有锚点",
+    "命令与输出是通用 git/npm/log 占位，三步之间没有叙事，也没有收尾的结果",
+    "打字匀速、输出慢滑入，节奏像 PPT 而不像真实终端"
+  ],
+  "changes": [
+    "look 换成 lime（石墨暗场 · 荧光黄绿）：强调色只给提示符、✓ 和最后的 ● LIVE 地址；舞台主光降饱和，背后背光 + 脚下反光把暗色窗体剥离出来",
+    "内容重编成虚构 CLI forge 的三步上线：01 init 脚手架 → 02 test（进度格 + 0→128 计数）→ 03 deploy，收在 ● LIVE orbit.forge.run（全片唯一泛光）",
+    "窗口 1180×620 按真实屏幕尺寸布局，命令 52px / 输出 38px，落定时 1:1 栅格化不糊；每站留 8–10° 侧视角，有体积又读得清",
+    "空间重做：窗口前后错落 + 各自偏转，按相机矩阵逐线投影的 SVG 透视地面，窗后 560px 描边步骤号做视差层；拉远峰值 1250px，三窗同框",
+    "节奏改成真实终端：每字确定性抖动的人手打字、敲完停 2f 回车、输出 6f 快速打印 + braille 小菊花落成 ✓；飞行 30f 不对称 in-out + 按屏速横向模糊",
+    "时长 180f → 246f：三站各留足读秒，尾段 24f 极缓推近落在「已上线」海报"
+  ],
+  "issuesEn": [
+    "The terminal windows nearly filled the frame and faced the camera, so the 3D layout never read: it looked like three flat screenshots taking turns",
+    "During the flights the frame showed half a window sliding off-screen over a large dark void, so the 'there are more windows' overview never landed",
+    "Near-black flat background with a dot grid; dark grey windows on dark grey, no key light and no floor, nothing anchoring the space",
+    "Commands and output were generic git/npm/log placeholders with no story across the three steps and no payoff at the end",
+    "Even-speed typing and slow slide-in output felt like a slide deck rather than a real terminal"
+  ],
+  "changesEn": [
+    "Lime look (graphite stage, chartreuse accent): the accent is reserved for prompts, check marks and the final LIVE URL; a desaturated key light, a backlight and a floor pool separate the dark windows from the stage",
+    "Content rewritten as a three-step ship with a fictional CLI, forge: 01 init scaffold, 02 test (progress blocks and a 0→128 count), 03 deploy, ending on LIVE orbit.forge.run, the only glow in the shot",
+    "Windows are laid out at true screen size (1180×620, 52px commands, 38px output) and rasterise 1:1 when the camera lands, so text stays sharp; each stop keeps an 8–10° side view for volume without hurting legibility",
+    "Space rebuilt: windows staggered in depth and yaw, an SVG perspective floor projected line by line with the camera matrix, 560px outlined step numbers behind each window for parallax; a 1250px pull-back puts all three in frame",
+    "Real-terminal rhythm: human typing with deterministic jitter, a 2f pause before Enter, 6f snappy line printing and braille spinners resolving to check marks; 30f asymmetric in-out flights with speed-based horizontal blur",
+    "180f → 246f: each stop gets reading time, and a 24f slow push-in settles on the 'it's live' poster"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

@@ -1,0 +1,33 @@
+{
+  "stem": "ResearchCardStackScroll",
+  "issues": [
+    "13 张 × 12 帧超出 144 帧，末两张在最后一帧仍在入场途中，结尾没有落定",
+    "卡片只占画面中间一小块，标题 9.5px 级的逻辑字号放大后仍然偏小，摘要是灰色骨架条",
+    "堆是匀速线性漂移、背景 grid 匀速走，读作传送带而不是“一张压一张”",
+    "浅灰纯色底 + 深色卡，下方糊卡叠成一大块浓黑重影，没有光和空间层次",
+    "只有卡在动，画面没有交代“读了多少”的量级信息"
+  ],
+  "changes": [
+    "look 换成 graphite 石墨暗场 + 暖白纸面文献卡：亮纸在光里、旧卡沉进暗处，最上一张天然成为焦点",
+    "重新构图：左 1/3 读数区（184px 计数器「1,284 papers read」+ 吞吐率），右 2/3 是 940×400 大卡，标题 54px、摘要 34px 可读",
+    "卡堆改为斜向轴线：新卡从右下前方 9f snappy 飞入并带速度模糊，旧卡每被压一格往左上后方退、缩小 5.5%、模糊变暗，只露标题条形成有厚度的索引",
+    "节拍 13→7f 越发越快，计数器与台账横线都由同一发牌累计量驱动，一推一停严格同步",
+    "每张卡落定后关键结论被金色荧光笔划过（“读过了”）；末张落定后计数器弹簧锁定 + 金色泛光，吞吐率换成「Synthesis ready」逐词升起，末卡一次扫光，38f 干净 hold"
+  ],
+  "issuesEn": [
+    "13 cards × 12 frames overran 144 frames, so the last two were still flying in on the final frame; no settle",
+    "The cards were a small block in the middle of the frame; ~9.5px logical type stayed small after scaling and the abstract was grey skeleton bars",
+    "The pile drifted linearly and the grid scrolled at constant speed, reading as a conveyor belt rather than one card pressing another",
+    "Flat light-grey background with dark cards; the blurred cards below piled into a heavy black smear with no light or depth",
+    "Only the cards moved; nothing in the frame stated how much had been read"
+  ],
+  "changesEn": [
+    "Look switched to graphite: a dark stage with warm paper document cards, so the top card sits in the light and older ones sink into the dark",
+    "Recomposed: a readout column on the left third (184px counter '1,284 papers read' + throughput) and 940×400 cards on the right with 54px titles and 34px abstracts",
+    "The pile now runs on a diagonal axis: new cards fly in from the front-right in 9f snappy moves with speed blur, older ones step back up-left, shrinking 5.5% and blurring/darkening per step so only their title strips show",
+    "Deal rhythm accelerates 13→7f; the counter and ledger lines are driven by the same deal accumulator, stepping and stopping with the pile",
+    "Each landed card gets its key finding swept by a gold highlighter; after the last card the counter springs to lock with a gold bloom, throughput swaps to 'Synthesis ready', one sheen on the final card, then a clean 38f hold"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

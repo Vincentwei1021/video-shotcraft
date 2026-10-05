@@ -1,0 +1,31 @@
+{
+  "stem": "RadialRipplePhoneChips",
+  "issues": [
+    "冷灰底 + 灰色骨架条的手机屏，看不出是什么产品，整帧像线框稿",
+    "手机上下都被画框裁掉，主体不完整",
+    "两枚 chip 写的是占位文案「Feature one / Feature detail」，字小、没有图标",
+    "没有品牌与落点，结尾帧不是一张完整的海报"
+  ],
+  "changes": [
+    "look 换成 sand：四层暖沙色同心圆（最外两层出画铺满）带受光上沿与发丝外缘，中心暖白柔光托住手机；错相呼吸参数（±6%、1.7 rad、1.5 周期）保留",
+    "按 1080p 原生尺寸重搭手机：430×900 完整入画（占画高 83%），暖钛边框、灵动岛、侧键、玻璃反光、三层带色相的落地投影；开场 26f 从下方升起落位",
+    "屏内做成为镜头设计的播客 App「Murmur」：大标题、精选大卡、带几何插画封面与收听进度的单集卡、常驻迷你播放条（进度在走、波形在跳），feed 匀速自动滚动",
+    "chip 换成真实功能「Offline listening / Smart chapters」：36px 字 + 赤陶色图标圆，spring（damping 13）一次过冲弹出并从手机侧边外移，落位后才渐入 ±8px 悬浮，左右错开 1s",
+    "左下角加品牌字标「Murmur — Podcasts, unhurried.」在 90f 逐词升起，收尾成一张产品海报"
+  ],
+  "issuesEn": [
+    "Cool grey with grey skeleton bars on the phone screen: you couldn't tell what the product was, and every frame looked like a wireframe",
+    "The phone was cropped at both top and bottom, so the subject was never complete",
+    "The two chips carried placeholder copy (\"Feature one / Feature detail\"), small and without icons",
+    "No brand and no landing point, so the last frame wasn't a finished poster"
+  ],
+  "changesEn": [
+    "Look switched to sand: four warm sand concentric discs (the outer two bleed off-frame) with lit top edges and hairline rims, plus a warm-white glow behind the phone; the out-of-phase breathing (±6%, 1.7 rad, 1.5 cycles) is kept",
+    "The phone is rebuilt at native 1080p size: 430×900, fully in frame (83% of frame height), with a warm titanium frame, dynamic island, side buttons, glass reflection and three tinted contact shadows; it rises into place from below over the first 26f",
+    "The screen is a podcast app designed for the shot, \"Murmur\": large title, featured card, episode cards with geometric cover art and listening progress, and a persistent mini-player whose progress advances and waveform moves; the feed auto-scrolls at constant speed",
+    "The chips now name real features, \"Offline listening / Smart chapters\": 36px text with a terracotta icon disc, a single-overshoot spring pop (damping 13) sliding out from the phone's edge, with the ±8px float easing in only after they land, left and right 1s apart",
+    "A wordmark \"Murmur — Podcasts, unhurried.\" rises word by word bottom-left at 90f, so the shot ends on a product poster"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

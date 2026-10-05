@@ -1,0 +1,14 @@
+{
+  "stem": "CornerSpotlightReveal",
+  "changed": true,
+  "brand": [
+    "界面标题 Inbox → Shots（video-shotcraft 镜头库页）",
+    "分类页签 Tasks / Docs / People / Chat → Camera / Effects / Data / Outro"
+  ],
+  "brandEn": [
+    "Screen heading \"Inbox\" → \"Shots\" (the video-shotcraft shot library)",
+    "Tabs Tasks / Docs / People / Chat → Camera / Effects / Data / Outro"
+  ],
+  "styleKey": "corner-spotlight-reveal",
+  "mdChanged": false
+}

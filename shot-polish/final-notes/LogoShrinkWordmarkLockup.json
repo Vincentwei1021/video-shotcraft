@@ -1,0 +1,16 @@
+{
+  "stem": "LogoShrinkWordmarkLockup",
+  "changed": true,
+  "brand": [
+    "抽象白 O 图标 → 收束刹车时换成 video-shotcraft「镜刻」标志（标志不随环旋转）",
+    "字标「BRAND」→「video-shotcraft」逐字滑入（stagger 按字数反算，lockup 重新居中）",
+    "标语「BUILD. SHIP. REPEAT.」→「FRAME MOTION. CRAFT THE SHOT.」"
+  ],
+  "brandEn": [
+    "Abstract white O icon → swaps to the video-shotcraft Frame Chisel mark at the landing brake (mark never rotates with the ring)",
+    "Wordmark \"BRAND\" → \"video-shotcraft\" letter-by-letter (stagger derived from length, lockup re-centered)",
+    "Tagline \"BUILD. SHIP. REPEAT.\" → \"FRAME MOTION. CRAFT THE SHOT.\""
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

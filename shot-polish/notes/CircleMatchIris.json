@@ -1,0 +1,33 @@
+{
+  "stem": "CircleMatchIris",
+  "issues": [
+    "景 A 是通用浅灰 dashboard，锚点图标只有 44px，在 1080p 画面里很难一眼找到",
+    "光圈和圆环各自插值：圆环先在光圈里长出来，读不出「这个圆变成了那个圆」",
+    "景 B 圆环只占画面一角（r=170），右侧是 18–22px 的小字指标卡，构图空、字读不清",
+    "全片同一个靛蓝，旧页在开圈时一动不动，新景像一张贴上去的圆形贴纸"
+  ],
+  "changes": [
+    "look 换成 lime（石墨底 + 荧光黄绿）：景 A 是虚构跑团 App 的周榜，五行 40/60px 大字，第 3 行「你」的荧光实心头像是全画面唯一的强调色块",
+    "定睛段：其余行压暗到 ~32%，头像两次脉冲 + 两道荧光涟漪，相机以锚点为原点缓推 3%，开圈前头像收缩做预备",
+    "接圆重写成「实心头像镂空成圆环」：描边宽从等于直径收到 44px、半径 36→300（expo-out），光圈 = 圆环外沿 + ease-in 外扩，由圆环把光圈撑开",
+    "旧页以锚点为心放大 1.03→1.22 并压暗，光圈外沿加落影和一次荧光受光环，新景压在旧页之上",
+    "景 B 重排成海报：r=300 圆环 + 同心计时刻度盘 + 200px 计数数字，右侧 120px 标题逐词升起、三组 60px 数据错峰落位，排名胶囊回扣景 A",
+    "时长 140→165f：sweep 改慢起长尾（58f），落定后 47f hold 只留刻度盘慢转和弧光呼吸"
+  ],
+  "issuesEn": [
+    "Scene A was a generic light-grey dashboard and the 44px anchor icon was hard to find at 1080p",
+    "Iris and ring were interpolated separately: the ring simply grew inside the iris, so 'this circle becomes that circle' never read",
+    "Scene B's ring sat in a corner at r=170 next to 18–22px stat cards: an empty composition with unreadable text",
+    "One indigo everywhere, and the old page stood still while the iris opened, so the new scene looked like a round sticker on top"
+  ],
+  "changesEn": [
+    "Lime look (graphite with neon yellow-green): scene A is a fictional running-club leaderboard with five rows of 40/60px type, and the neon 'You' avatar on row 3 is the only accent in frame",
+    "Focus beat: the other rows dim to ~32%, the avatar pulses twice with two neon ripples, the camera pushes 3% around the anchor, and the avatar shrinks slightly to anticipate",
+    "The match is rebuilt as a solid avatar hollowing into a ring: stroke width goes from the full diameter to 44px while the radius grows 36 to 300 (expo-out), and the iris rides the ring's outer edge plus an ease-in blast, so the ring pushes the iris open",
+    "The old page scales 1.03 to 1.22 around the anchor and darkens; the iris edge gets a drop shadow and one neon rim light, so the new scene presses down on the old one",
+    "Scene B is laid out as a poster: r=300 ring, a concentric stopwatch dial, a 200px counting number, a 120px headline rising word by word, three staggered 60px stats and a rank pill that calls back to scene A",
+    "Duration 140 to 165f: the sweep now starts slow with a long tail (58f), followed by a 47f hold with only a slow dial drift and a breathing arc glow"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

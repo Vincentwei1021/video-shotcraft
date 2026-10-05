@@ -1,0 +1,18 @@
+{
+  "stem": "TextAsMask",
+  "changed": true,
+  "brand": [
+    "眉题「MERIDIAN CLOUD」→ video-shotcraft 标志 + 字标",
+    "副题「From one service to ten million requests a second.」→「From one prompt to a finished launch film.」",
+    "字里透出的面板 Meridian（渐变方块 logo）→ Shotcraft 标志 + 名字，内容改为渲染看板（Render throughput / Frames rendered / Avg shot render / Render queue / 各类镜头进度）",
+    "遮罩字 SCALE 按 L 竖笔测量放大原点，保留"
+  ],
+  "brandEn": [
+    "Eyebrow \"MERIDIAN CLOUD\" → video-shotcraft mark + wordmark",
+    "Subtitle \"From one service to ten million requests a second.\" → \"From one prompt to a finished launch film.\"",
+    "In-window dashboard Meridian (gradient-square logo) → Shotcraft mark + name; content became a render dashboard (Render throughput / Frames rendered / Avg shot render / Render queue / per-category progress)",
+    "The mask word SCALE is kept: the zoom origin is measured on the L stem"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

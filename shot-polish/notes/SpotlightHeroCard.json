@@ -1,0 +1,31 @@
+{
+  "stem": "SpotlightHeroCard",
+  "issues": [
+    "米白页面上的\"聚光灯\"只是一团暖白光斑，整页依旧明亮，看不出灯光与暗场的对比",
+    "光池边缘偏硬、中心把白卡打成一片白斑，像贴在页面上的圆盘而不是舞台光",
+    "注记在推进后被裁出画面左缘、压在邻卡文字上，读起来和背景字打架",
+    "注记在卡贴回前就退场，尾帧只剩一张卡的斜特写，没有信息"
+  ],
+  "changes": [
+    "look 换为 graphite：真实页面截图保留，整页关灯压到 6–14% 亮度，只有光池里是页面本色；开灯是亮—回闪—稳的推闸节奏",
+    "光池改成近高斯衰减 + 低强度钨丝暖色，配一道从画面上方远处打下来的体积光柱（柱内有浮尘）；锁定后圆光池过渡成页面空间的卡形光——整页暗场在卡位挖卡形软孔，卡从边到边全亮、文字原生对比、衰减只在卡外，卡边一圈暖白轮廓光",
+    "相机焦点左移让卡偏右、左侧留给注记；注记改成白色粗黑体两行 + 香槟色马克条（字翻成墨色），垫暗色衬底，用同一台相机单独画在灯光层之上",
+    "注记不再提前退场，而是和卡一起落回页面平面；卡投影落向左下与光源一致，落地时一圈香槟色落地光",
+    "轮廓光束改为香槟金 + 白芯两圈；时长 139→172f，锁定到触地 3.6s，最后 1s 相机锁死只剩光的呼吸"
+  ],
+  "issuesEn": [
+    "The \"spotlight\" on the cream page is just a warm blob; the whole page stays bright, so there is no light-versus-dark contrast",
+    "The pool has a fairly hard edge and blows the white card out in the centre, reading as a disc stuck on the page rather than stage light",
+    "After the push-in the annotation is cropped by the left edge and sits on top of the neighbouring card's text",
+    "The annotation exits before the card reseats, so the last frame is just an oblique close-up with no message"
+  ],
+  "changesEn": [
+    "Look switched to graphite: the real page screenshot is kept but the house lights go down to 6-14% brightness, with true colour only inside the pool; the lamp strikes on with an on-dip-steady flicker",
+    "The roaming pool has a near-Gaussian falloff with a gentle tungsten tint and a volumetric shaft from far above frame with dust in the beam; after the lock it hands over to a page-space card-shaped light: the darkened page gets a soft card-shaped hole, so the card is lit edge to edge at native text contrast with falloff only outside it, plus a warm rim around the card",
+    "The camera focus shifts left so the card sits right of centre and the left side is free for the annotation: two lines of bold white sans with a champagne highlighter that flips the words to ink, over a dark scrim, drawn with the same camera on a layer above the lighting",
+    "The annotation no longer exits early; it settles back onto the page plane together with the card. The card's shadow falls lower-left, matching the light, and a champagne ring flashes on touchdown",
+    "Perimeter beam recoloured to champagne gold with a white core for its two laps; duration 139 to 172f, 3.6s from lock to touchdown, and the final second holds a locked camera with only the light breathing"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

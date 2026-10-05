@@ -1,0 +1,31 @@
+{
+  "stem": "RadialWave",
+  "issues": [
+    "正视的 17×9 平面点阵铺满画面，像一张静态图案，没有空间感",
+    "波只是点的放大和变亮，读作「闪」而不是「波」",
+    "全片只有蓝色点和深蓝底，没有主体、没有文字，结尾不知道这一拍在说什么",
+    "第二道波和第一道波颜色接近（蓝 / 青），回执感弱"
+  ],
+  "changes": [
+    "look 换成 aurora（深紫夜 + 紫光 + 粉色点缀），点阵改成一张铺向地平线的透视 LED 地面，约 2,100 个点按真实透视近大远小、远处渐隐",
+    "波变成真的波：波前经过时点被抬起（近处 ~60px crest）+ scale 过冲到 1.5 + 提亮到近白光晕，之后留在常亮紫",
+    "波源是地面中央的能量核：0–8f 先蓄能（预备）再放波，第一道 1.3f/格外扩，第二道粉色脉冲 0.9f/格向内越收越急",
+    "汇聚时核爆亮 + 软边竖向光柱 + 外扩回执环，随后天空区 120px 标题「Every node, online.」逐词由虚到实，等宽副标计数到 2,048",
+    "时长 114f→156f，汇聚后留标题揭示 + 30f 呼吸定格"
+  ],
+  "issuesEn": [
+    "A front-on flat 17x9 dot grid filled the frame like a static pattern with no sense of space",
+    "The wave was just dots growing and brightening, so it read as a flash rather than a wave",
+    "Only blue dots on navy with no subject or text; at the end it was unclear what the beat was saying",
+    "The second wave's colour (cyan) was close to the first (blue), so the 'reply' read weakly"
+  ],
+  "changesEn": [
+    "Aurora look (deep violet night, violet light, pink accent); the grid becomes a perspective LED floor running to the horizon, ~2,100 dots scaled by true perspective and fading in the distance",
+    "The wave is a real wave: passing dots lift (a ~60px crest up close), overshoot to 1.5x and flare to near-white halos, then stay lit violet",
+    "The source is an energy core on the floor: it charges for 0-8f, then fires; wave one expands at 1.3f per cell, wave two (pink) converges at 0.9f per cell, speeding up as it closes",
+    "On convergence the core flares with a soft vertical beam and an expanding echo ring, then the 120px headline 'Every node, online.' resolves word by word with a mono counter running to 2,048",
+    "114f to 156f, leaving room for the headline reveal and a 30f breathing hold"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

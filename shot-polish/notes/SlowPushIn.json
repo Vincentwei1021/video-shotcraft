@@ -1,0 +1,31 @@
+{
+  "stem": "SlowPushIn",
+  "issues": [
+    "景 A 是平灰底上一个孤零零的「10x」，没有光、没有层次，推近读不出张力的来源",
+    "数字和副标同层整体缩放，慢推只是一次普通的缩放",
+    "硬切后的景 B 是一张占位小字 dashboard，承接不住前面积压的注意力，信息不可读",
+    "两景之间没有任何视觉对位，切点只有明暗反差"
+  ],
+  "changes": [
+    "look 换成 sand 的暗 / 亮两面：景 A 暖黑底 + 顶光，景 B 暖白纸面 + 赤陶强调，一套调色板跨切点",
+    "景 A 改成痛点叙事：300px 等宽计时器 14:32 每 30f 跳一秒（新秒位 5f 升起）、进度条卡在 97% 只爬 0.4%、进度头在\"喘\"、背后虚化构建日志上滚",
+    "三层视差推近：日志 1.00→1.03 / 进度与说明 1.10 / 计时器 1.14（Easing.in(quad) 本体不变），暗角同曲线 0→0.62、顶光收窄",
+    "120f 零过渡硬切到景 B：440px「38s」+ 同位置的进度条已满 100%（跨切点对位）+ 60px 结论句，切那一帧信息已完整",
+    "切后只有余波：副句 8f 后逐词升起、整景 1.035→1.00 极缓呼气；时长 150→170f"
+  ],
+  "issuesEn": [
+    "Scene A was a lone '10x' on flat grey with no light or layering, so the push had no source of tension",
+    "Number and subtitle scaled together in one layer, making the slow push a plain zoom",
+    "Scene B after the cut was a placeholder dashboard of tiny text that could not carry the built-up attention",
+    "Nothing linked the two scenes visually; the cut relied on brightness contrast alone"
+  ],
+  "changesEn": [
+    "Sand look used in its dark and light faces: warm-black stage with a top light for A, warm paper with terracotta accent for B, one palette across the cut",
+    "Scene A now tells the pain: a 300px mono timer at 14:32 ticks every 30f (new second rises in 5f), the progress bar is stuck at 97% crawling 0.4%, its head pulses, a blurred build log scrolls behind",
+    "Three-layer parallax push: log 1.00→1.03, progress and caption 1.10, timer 1.14 (the Easing.in(quad) curve is kept); vignette closes 0→0.62 on the same curve while the top light narrows",
+    "Zero-transition hard cut at 120f to scene B: 440px '38s', the same progress bar now full at 100% in the same position, and a 60px conclusion line, all complete on the cut frame",
+    "After the cut only a release: the subtitle rises word by word 8f later and the scene exhales 1.035→1.00; duration 150→170f"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

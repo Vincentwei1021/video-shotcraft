@@ -1,0 +1,31 @@
+{
+  "stem": "OutroGroupPhotoLaunch",
+  "issues": [
+    "奶白纸面背景上铺奶白截图卡，元素和底糊成一片，\"合影\"读不出层次",
+    "所有元素同一景深、同等亮度，字标登场后周围白卡仍然抢眼",
+    "发布会氛围只靠一道 0.12 透明度的扫光和 20 颗金尘，能量远不是全片峰值",
+    "收尾 12f 整画面淡到暖墨色，尾帧是一张灰掉的画面"
+  ],
+  "changes": [
+    "look 换 midnight：深蓝舞台 + 三道缓摆的顶部体积光束 + 地平线光带 + 羽化压暗的 LED 墙远景，白色真实截图卡在暗舞台上发光，合影一眼可读",
+    "合影分三层景深：后排导航条/论文条小而虚暗，中排搜索框/周报/字段卡，前排三张项目卡最大最实、接触影最浓；9 个元素沿离心方向从四面八方飞入，cue 越来越密，带旋转、方向性运动模糊、过冲与落地压实",
+    "字标压轴重排：INTRODUCING 眉题 → 150px 字标逐字从线下升起 → 电光蓝 rule + 延长线射出 → 副标「One console for every experiment.」；登场时全员压暗 22% 退后排，背后舞台光只亮一次",
+    "crane 加大到 rotateX 9° + 下落 46px + scale 1.1→1，之后零速起步缓推 3%；冷白光尘上飘贯穿全段",
+    "时长 145→150f，去掉尾段淡出，落定后 hold 2s+，尾帧是一张完整的发布会海报"
+  ],
+  "issuesEn": [
+    "Cream screenshot cards on a cream paper backdrop blended together, so the group photo had no depth or separation",
+    "Every element sat at the same depth and brightness, and the white cards kept competing with the wordmark after it landed",
+    "The launch atmosphere was one light sweep at 0.12 opacity plus 20 gold motes, nowhere near the film's energy peak",
+    "The last 12f faded the whole frame to warm ink, leaving a greyed-out final frame"
+  ],
+  "changesEn": [
+    "Midnight look: a deep blue stage with three slowly swaying overhead light beams, a horizon glow and a feathered, dimmed LED-wall backdrop; the real white screenshot cards glow against the dark stage, so the group photo reads instantly",
+    "Three depth layers: small, soft, dim nav and paper strips at the back, search, weekly report and field cards in the middle, and three large crisp project cards up front with the heaviest contact shadows; the nine elements fly in from every side along outward vectors, with tightening cues, spin, directional motion blur, overshoot and a landing squash",
+    "Wordmark finale rebuilt: an INTRODUCING kicker, a 150px wordmark rising letter by letter, an electric-blue rule with extension lines, then the subline 'One console for every experiment.'; everything else steps back 22% darker and the stage light behind fires once",
+    "A bigger crane (rotateX 9°, 46px drop, scale 1.1→1) followed by a zero-velocity 3% push; cool white dust drifts upward throughout",
+    "145→150f, the end fade is gone, the wordmark holds 2s+ and the final frame is a complete launch poster"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

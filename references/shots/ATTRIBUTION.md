@@ -1,6 +1,6 @@
-# 镜头卡来源与授权说明（2026-08 新增 48 张）
+# 镜头卡来源与授权说明（2026-08 新增 48 张，2026-10 精简后现存 38 张）
 
-本批 48 张镜头卡的动效手法研究自公开发布的产品宣传片与开源项目主页。
+本批镜头卡的动效手法研究自公开发布的产品宣传片与开源项目主页。
 **所有实现均为从零重写**（re-implemented from scratch）：仓库不包含任何
 原片片段、截图、美术资产或品牌元素；实现中的文案、配色、UI 内容均为
 中性占位模板。原作者未参与本项目，卡片标注来源仅为致敬与研究溯源
@@ -34,7 +34,6 @@
 | x.com/bohdanmotion | X 公开发布的 motion 作品（约 26s） | 同上 | 同上 |
 | x.com/thiswillblossom | X 公开发布的 SaaS 概念广告（约 2.1s 四宫格） | 同上 | 同上 |
 | x.com/tvnxty | Firecrawl 品牌/产品宣传片（约 66s，公开发布） | 商业宣传片（公开发布，未获复刻许可） | 手法参考，重新实现；无原素材 |
-| x.com/shapelayer | X 公开发布的 motion 作品（约 11.6s） | 同上 | 同上 |
 | x.com/aizal_mp4（个别卡） | Willow Voice 产品宣传片（动效设计师 aizal 作品，约 41s） | 商业宣传片（公开发布，未获复刻许可） | 手法参考，重新实现；无原素材 |
 | 抖音 观机社（dy09） | 抖音账号"观机社"发布的荣耀 AI 概念片剪辑（约 22.6s） | 转载剪辑；底层为品牌向概念内容（涉及荣耀/Honor 品牌元素） | 手法参考，重新实现；品牌字标已替换为中性占位词 |
 | 抖音 江经怜（dy08，个别卡） | 抖音账号"江经怜"公开发布的作品（约 19.4s 竖屏） | 个人作品（公开发布，未获复刻许可） | 手法参考，重新实现；无原素材 |
@@ -46,19 +45,17 @@
 
 ## 逐卡来源映射
 
-48 张卡与研究批次的对应关系（来自研究期的原片时段映射记录）：
+现存 38 张卡与研究批次的对应关系（来自研究期的原片时段映射记录）：
 
 | 来源 | 卡片 |
 |---|---|
-| anime.js 官网演示 | `radial-wave`、`scramble`、`svg-shape-morph`、`value-stagger-gradient` |
-| remotion-bits.dev | `basic-3d-scene`、`blur-slide`、`card-stack`、`carousel-3d`、`counter-confetti`、`cube-navigation`、`cursor-flyover`、`flying-words`、`fracture`、`glitch-cycle`、`gradient-transition`、`list-reveal`、`mosaic-reframe`、`terminal-3d`、`typing-code-block` |
-| x.com/1amanly | `avatar-bracket-carousel`、`countdown-arc-scatter`、`floating-glossy-label-pills`、`pill-chip-slot-cycle-handled`、`radial-ripple-phone-chips` |
-| x.com/Jerrythe2d | `avatar-grid-radial-build-colorize`、`bezier-source-converge-merge`、`chip-grid-single-select-blackout`、`chip-lift-to-user-pill`、`doc-park-left-pill-deal`、`picker-carousel-feature-cycle`、`scan-bracket-sweep`、`vertical-word-roll-blur-cycle` |
+| anime.js 官网演示 | `radial-wave`、`value-stagger-gradient` |
+| remotion-bits.dev | `basic-3d-scene`、`blur-slide`、`card-stack`、`carousel-3d`、`cursor-flyover`、`flying-words`、`fracture`、`glitch-cycle`、`gradient-transition`、`list-reveal`、`mosaic-reframe`、`terminal-3d` |
+| x.com/1amanly | `avatar-bracket-carousel`、`countdown-arc-scatter`、`pill-chip-slot-cycle-handled`、`radial-ripple-phone-chips` |
+| x.com/Jerrythe2d | `bezier-source-converge-merge`、`chip-grid-single-select-blackout`、`doc-park-left-pill-deal`、`picker-carousel-feature-cycle`、`scan-bracket-sweep`、`vertical-word-roll-blur-cycle` |
 | x.com/aizal_mp4（Willow Voice） | `aurora-bloom-bg-flip`、`glass-pill-dictation-typing` |
 | x.com/amirdzm（作品 a） | `brace-expand`、`grain-dissolve` |
-| x.com/amirdzm（作品 b） | `hatch-depth` |
 | x.com/bohdanmotion | `outline-word-fill`、`word-relay-geometry` |
-| x.com/shapelayer | `dashboard-glow-highlight-pill` |
 | x.com/thiswillblossom | `quad-split-parallel-scenes` |
 | x.com/tvnxty（Firecrawl 宣传片） | `product-card-progressive-assemble`、`research-card-stack-scroll` |
 | 抖音 观机社 | `logo-shrink-wordmark-lockup`、`white-flash-logo-simplify-cut` |

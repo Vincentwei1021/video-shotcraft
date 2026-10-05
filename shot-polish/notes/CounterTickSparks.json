@@ -1,0 +1,31 @@
+{
+  "stem": "CounterTickSparks",
+  "issues": [
+    "调试标题 COUNTER TICK SPARKS + 灰骨架条 + 2px 灰边白卡，Helvetica 回退，数字只有 168px",
+    "火星沿整行数字顶缘随机散布，看不出是哪一位'跳'了，像装饰撒点",
+    "计数是匀称的 ease-out，tick 节奏没有由密到疏的悬念，终值跳和普通 tick 差别只有数量",
+    "火星直接在半空熄灭，没有落点、没有空间，终值后画面只剩一张卡"
+  ],
+  "changes": [
+    "look 换 graphite：近单色暗场 + 镜面黑台面，300px 拉丝金属数字立在台上，数字与火星都有倒影，台面一道冷光地平线",
+    "内容改为公测候补名单实时计数 42,380 → 60,000（始终 5 位）；千/万位亮金属、百十个位压暗 45% 并按转速虚化，终值一起亮起",
+    "火星有了来源：每破整千，刚跳过的那一位被'敲红'（白热→金属，7f 衰减），8–12 颗火星从该位顶缘扇形喷出，落到台面弹一次（恢复 0.38）再熄灭，色温 白热→金→暗橙",
+    "计数曲线改 power-out 2.3：17 次 tick 由 2–3f 一次逐渐拉开到最后一千用 25f（悬念），终值 64 颗大火星 + 弹簧 pop + 台面冲击光环与暖光池",
+    "LIVE 眉题字距收拢、副标题开场即在，终值后第二句「Doors open Monday.」升起；时长 140→160f，尾段 ≥22f 干净海报"
+  ],
+  "issuesEn": [
+    "Debug title COUNTER TICK SPARKS, gray skeleton bars, a 2px gray-bordered white card, Helvetica fallback, and only a 168px number",
+    "Sparks were scattered randomly along the whole top edge, so you couldn't tell which digit ticked — it read as decoration",
+    "An even ease-out count gave no dense-to-sparse suspense; the final tick differed from the others only in spark count",
+    "Sparks died mid-air with no landing or space, and after the final value only a card remained"
+  ],
+  "changesEn": [
+    "Look switched to graphite: near-monochrome dark stage with a mirror-black floor; 300px brushed-metal digits stand on it, digits and sparks reflected, a cool horizon line on the floor",
+    "Content is now a live public-beta waitlist counting 42,380 → 60,000 (always five digits); thousands/ten-thousands are bright metal, the running tail is dimmed 45% and speed-blurred, then lights up at the end",
+    "Sparks now have a source: on each thousand the digit that just ticked flashes white-hot and cools to metal (7f decay), 8–12 sparks fan out from its top, bounce once on the floor (restitution 0.38) and die, cooling white → gold → dark orange",
+    "Count curve is power-out 2.3: 17 ticks spread from every 2–3f to 25f for the last thousand (suspense); the final value fires 64 large sparks, a spring pop, a floor shock ring and a warm light pool",
+    "LIVE eyebrow tracks in, the caption is present from the start, and a second line 'Doors open Monday.' rises after the final value; 140→160f with ≥22f clean tail"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

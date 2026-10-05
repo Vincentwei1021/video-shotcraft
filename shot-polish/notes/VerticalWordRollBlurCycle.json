@@ -1,0 +1,31 @@
+{
+  "stem": "VerticalWordRollBlurCycle",
+  "issues": [
+    "30px 设计坐标的一句小字漂在浅灰底中间，画面几乎是空的",
+    "滚轮只是平面词条平移 + 压扁，没有机械转筒的体积感",
+    "三次换词等距等长，节奏平均，结论词没有比例子更重",
+    "结尾整组淡出到空白，尾帧什么都没有"
+  ],
+  "changes": [
+    "look 换成 lime（石墨 · 荧光黄绿）：176px / 850 字重一句大字横贯画面，横贯全幅的选取带钉住中心行，左上眉题、右上 mono 计数 01→04",
+    "滚轮做成真 3D 转筒：词贴在半径 ≈343px 的圆柱面上（相邻 32°），按 (i-p)·θ 算 y/z/rotateX 前缩，邻行再按距离叠纵向高斯模糊与转速运动模糊",
+    "保留 0.7·outQuint + 0.3·outBack 换词曲线和 d<0.42 才染色的规则；落定瞬间加一次泛光衰减，结论词留余温",
+    "节奏改成越换越密：开场滚入首词，hold 16f→10f→10f，结论词「everyone.」那段 24f 最长最重",
+    "收尾不再淡出：邻行滚走、选取带收起，只留「Built for everyone.」+ 44px 副标题的海报；句干与转筒共用行盒，基线严格对齐；时长 150→165f"
+  ],
+  "issuesEn": [
+    "A 30px design-space line floated in the middle of a light-grey frame that was almost empty",
+    "The reel was a flat strip of words sliding and squashing, with no sense of a mechanical drum",
+    "The three changes were evenly spaced and equal length, so the conclusion carried no more weight than the examples",
+    "The ending faded everything out to an empty last frame"
+  ],
+  "changesEn": [
+    "Lime look (graphite, neon yellow-green): one 176px / 850-weight sentence across the frame, a full-width selection band locking the centre row, a kicker top-left and a mono 01→04 counter top-right",
+    "A true 3D drum: words sit on a cylinder of radius ≈343px (32° apart) with y/z/rotateX from (i-p)·θ for foreshortening, plus distance-based vertical Gaussian blur and speed-based motion blur",
+    "The 0.7·outQuint + 0.3·outBack step curve and the tint-only-below-d 0.42 rule are kept; each landing gets one decaying glow, and the final word keeps a little warmth",
+    "The rhythm tightens: the first word rolls in, holds go 16f→10f→10f, and the conclusion 'everyone.' gets the longest, heaviest 24f step",
+    "No fade-out: neighbours roll away and the band retracts, leaving a 'Built for everyone.' poster with a 44px subline; stem and reel share one line box so baselines match exactly; 150→165f"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}

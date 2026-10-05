@@ -1,0 +1,31 @@
+{
+  "stem": "VoiceWaveformLive",
+  "issues": [
+    "原版只有一只居中的暗色胶囊，上下大半画面是空的黑底",
+    "声纹条细、灰白低对比，1080p 下起伏读得出但没有视觉重量",
+    "全片没有任何'说了什么'的信息，说/停只能靠波形猜",
+    "提交后只是箭头换对勾，没有'发出去了'的落点，结尾帧不成海报"
+  ],
+  "changes": [
+    "look = sand（米色 · 赤陶）：从 raycast 暗场玻璃改成午后暖光亮场，虚构语音助手 Juniper，暖白实底胶囊 + 两层落地影 + 随音量亮灭的地面暖光",
+    "加 92px 粗体实时转写：每个词在它那一拍的音节起点由虚到实升起，刚说出的词赤陶色、几帧后沉成墨色，停顿段尾光标闪烁——说/停从字和波形两处同时读得到",
+    "声纹机制保留（64 条、1.6 帧/采样滚动、说停包络 × 音节噪声 × 中部权重），条改赤陶纵向渐变、越旧越淡，静默点线用中性弱色；麦克风钮赤陶底 + 随包络外扩两层呼吸环",
+    "提交：按钮压缩回弹、波形 12f 塌缩、箭头上飞对勾落入，转写整体上移缩到 0.72 收进赤陶消息气泡（墨字 → 白字），下方升起 'Sent to Juniper · 0:03'，胶囊退回待机",
+    "开场加 'Ask Juniper anything…' 提示语、计时器 0:00 起跳，时长 150f → 172f，尾段 20f 对话海报 hold"
+  ],
+  "issuesEn": [
+    "The original was a single dark capsule in the middle with most of the frame empty black",
+    "Thin, low-contrast grey-white bars: the rhythm read at 1080p but had no visual weight",
+    "Nothing showed what was being said, so talk and pause could only be guessed from the waveform",
+    "Submitting just swapped an arrow for a check, with no 'it was sent' landing and no poster-like end frame"
+  ],
+  "changesEn": [
+    "Look = sand (beige, terracotta): from a Raycast-style dark glass to warm afternoon light for a fictional voice assistant, Juniper, with a warm-white solid capsule, two-layer floor shadow and a warm floor glow that follows the level",
+    "Added a 92px bold live transcript: each word rises from blur to sharp at its syllable onset, fresh words are terracotta and sink to ink a few frames later, and a caret blinks through the pause, so talk and pause read from both text and waveform",
+    "The waveform mechanics are kept (64 bars, 1.6 frames per sample scroll, talk/pause envelope × syllable noise × centre weight); bars are now a terracotta vertical gradient fading with age, silence dots are neutral, and the terracotta mic button has two breathing rings that grow with the envelope",
+    "Submit: the button compresses and rebounds, the waveform collapses in 12f, the arrow flies up and a check drops in, and the transcript moves up, scales to 0.72 and settles into a terracotta message bubble (ink → white) with 'Sent to Juniper · 0:03' rising below while the capsule returns to idle",
+    "Opens with an 'Ask Juniper anything…' prompt and a 0:00 timer; duration 150f → 172f with a 20f conversation-poster hold"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

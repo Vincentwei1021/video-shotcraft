@@ -1,0 +1,14 @@
+{
+  "stem": "WireframeDrawOn",
+  "changed": true,
+  "brand": [
+    "侧栏 logo 方块的线框里描出 video-shotcraft 镜刻标志（取景框 + 斜切两段先后描线），扫描实体化后对上 FakeDashboard 的真标志",
+    "线框按新的 video-shotcraft 侧栏名 / 面包屑 / 项目名（Launch film 等）的实测字宽重对，面包屑后的 Overview 与分段控件整组右移 30px，扫描线扫过时不跳位"
+  ],
+  "brandEn": [
+    "The sidebar logo box wireframe now draws the video-shotcraft Frame Chisel mark (frame then cut), matching the real mark once the scan solidifies it",
+    "Wireframe lines re-fitted to the measured widths of the new video-shotcraft sidebar name, breadcrumb and project names; Overview and the segmented control shift right 30px so nothing jumps under the scan line"
+  ],
+  "styleKey": "wireframe-draw-on",
+  "mdChanged": true
+}

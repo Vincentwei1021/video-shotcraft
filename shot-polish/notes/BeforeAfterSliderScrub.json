@@ -1,0 +1,31 @@
+{
+  "stem": "BeforeAfterSliderScrub",
+  "issues": [
+    "主体是通用灰色占位 dashboard，before 与 after 只差一层灰罩，看不出“处理”了什么",
+    "整屏浅灰、没有光和舞台，没有任何一处色彩或视觉焦点",
+    "角标是 20px 小胶囊，分割杆和手柄是线框稿级别的白线白钮",
+    "节奏虽有快甩慢扫，但画面没有内容去“证明变在哪”，慢扫段读不出差异"
+  ],
+  "changes": [
+    "look 换 graphite 石墨暗场：画面里唯一的色彩来自照片本身，顶栏是虚构影像产品「Kaleo Enhance」字标 + Super Resolution 4× 徽标",
+    "主体改为 1400×788 的程序化暮色湖景作品图（四层山脊 + 受光描边 + 夕阳 + 星空 + 倒影碎金 + 松林剪影），细节正是 before 会丢的东西",
+    "before 做成可信的低质原片：12px 马赛克（SVG 像素化滤镜）+ 半饱和 + 低对比 + 高感光彩噪；after 为清晰原图，同布局同机位",
+    "时间表重排为 165f：入场画杆 → 6f 预备回拉 → 12f expo-out 快甩到 78% → 14f 回弹 70% → 停 20f → 54f 慢扫到 40% → 定格 43f，全程 2.5% 极缓推镜",
+    "分割杆 2px 白线 + 柔光、84px 白钮按速度拉伸 + 运动模糊，after 侧一条随速度变亮的“显影”光带；32px Before / After 胶囊各自被分割线裁切"
+  ],
+  "issuesEn": [
+    "The subject was a generic grey placeholder dashboard; before and after differed only by a grey wash, so nothing showed what was processed",
+    "The whole frame was flat light grey with no light, stage, colour or focal point",
+    "Labels were tiny 20px pills and the divider/handle looked like a wireframe",
+    "The fling-then-scrub rhythm existed but there was no content to prove what changed, so the slow scrub read as nothing"
+  ],
+  "changesEn": [
+    "Graphite dark stage so the photo is the only colour in frame; header shows the fictional imaging product Kaleo Enhance with a Super Resolution 4× badge",
+    "The subject is now a 1400×788 procedural dusk lake photo (four ridge layers with rim light, setting sun, stars, reflection glitter, pine silhouettes) whose fine detail is exactly what the before loses",
+    "Before is a believable low-quality original: 12px mosaic via an SVG pixelate filter, half saturation, low contrast and high-ISO colour noise; after is the clean image, same layout and framing",
+    "Retimed to 165f: bar draws in, 6f anticipation, 12f expo-out fling to 78%, 14f settle to 70%, 20f hold, 54f slow scrub to 40%, 43f hold, with a 2.5% slow push throughout",
+    "2px glowing white divider and an 84px knob that stretches and motion-blurs with speed, a speed-driven 'developing' light band on the after side, and 32px Before / After pills each clipped by the divider"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

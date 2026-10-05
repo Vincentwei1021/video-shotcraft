@@ -1,0 +1,31 @@
+{
+  "stem": "ClockWipe",
+  "issues": [
+    "前后两页是灰色占位线框 dashboard，没有内容也没有字，看不出\"换了什么\"",
+    "浅灰底上的指针是一根细灰线，四层亮线在白底上仍然很弱，扫描沿读不出光",
+    "指针从屏心直接以全速出现、扫满在 12 点硬停，雷达没有起转和惯性",
+    "构图与擦除圆心无关：屏心落在卡片缝里，扇形扫过只是在切图"
+  ],
+  "changes": [
+    "look 换成 midnight 暗场，前后两页做成同一块网络运维大屏的「过期态」（去饱和、Synced 6 days ago）与「实时态」（电光蓝、绿色利好、Live），擦除读作数据刷新",
+    "构图围绕擦除圆心设计：屏心一只 500px 吞吐量表盘 + 60 格刻度（就是钟面），左右各两块 88px 大字指标卡",
+    "指针从表盘外沿伸出：白核 + 电光蓝多层光晕 + 身后 55° 余辉扇；表盘弧长随指针扫过充能到 78%，端点亮起",
+    "指针运动：前 6f 匀加速起转、恒速 8°/帧扫满 48f，摘罩后惯性再滑 40° 淡出",
+    "两页共用同一舞台底消除起始边接缝，B 页泛光扫满后才通电亮起；余波 Live 信号脉冲、增长标签升起，hold 段实时时钟跳秒"
+  ],
+  "issuesEn": [
+    "Both pages were grey wireframe placeholder dashboards with no content or text, so nothing told you what changed",
+    "On the light grey page the hand was a thin grey line; even four stroke layers barely read as light",
+    "The hand appeared at full speed from the centre and stopped dead at 12 o'clock: no spin-up, no inertia",
+    "The layout ignored the wipe's pivot: the centre fell into a gap between cards, so the sweep just sliced the image"
+  ],
+  "changesEn": [
+    "Dark midnight look; the two pages are the same network-ops screen in a stale state (desaturated, \"Synced 6 days ago\") and a live state (electric blue, green deltas, \"Live\"), so the wipe reads as a data refresh",
+    "Composition built around the pivot: a 500px throughput dial with a 60-tick bezel (the clock face) at centre, two big 88px metric cards on each side",
+    "The hand grows out of the dial rim: white core, layered electric-blue glow and a 55° afterglow fan; the dial arc charges to 78% as the hand passes and its end cap lights up",
+    "Hand motion: 6f spin-up, then a constant 8°/frame for a 48f sweep, and after the clip is removed it coasts another 40° while fading",
+    "Both pages share one stage background so there is no seam at 12 o'clock; the live bloom powers on after the sweep, followed by a Live ping, a rising delta tag and a ticking clock during the hold"
+  ],
+  "mdChanged": true,
+  "look": "midnight"
+}

@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 # Download the motion-preview MP4s from the gallery-media release into
 # gallery/media/ for local preview. They are not tracked in git — the
-# deploy-pages workflow fetches them the same way when publishing.
+# deploy-pages workflow assembles them the same way (assemble-media.py:
+# bulk gallery-media.zip + any single mp4 uploaded after it) when publishing.
 set -euo pipefail
 cd "$(dirname "$0")"
-gh release download gallery-media \
-  --repo Vincentwei1021/video-shotcraft \
-  --dir media \
-  --pattern '*.mp4' \
-  --clobber
+python3 assemble-media.py media --repo Vincentwei1021/video-shotcraft
 echo "done: $(ls media/*.mp4 | wc -l | tr -d ' ') clips in gallery/media/"
 
 # Showcase 用户投稿（存 showcase-media release，同样不进 git）。

@@ -1,0 +1,31 @@
+{
+  "stem": "DarkTunnelTransition",
+  "issues": [
+    "横向平移 + 满屏截图，\"穿暗场\"只是两张页面之间一段灰黑空档，前进感弱",
+    "暗场只有一团冷光和零星尘点，5 帧里几乎看不出在\"航行\"",
+    "两景都是满屏亮页贴图，没有舞台、没有光，和暗场衔接生硬",
+    "后景从 0.62 + 失焦迎入的尺度变化小，迎面放大的冲击力不足"
+  ],
+  "changes": [
+    "look 换成 midnight 午夜蓝；运动改成沿镜头光轴的纵深直航：A 窗口迎面扑过镜头，B 从隧道尽头 0.2× 的小亮窗一路放大到满幅",
+    "只有一台相机：A、5 道闸门、光尘、B 全部按同一条 c(f) 做透视投影 s=F/(z−c)，加速推出 → 暗场峰值 → 长尾减速，中途不回摆",
+    "暗场做成隧道：与窗口同形、逐道同向多转 5° 的发丝闸门连续掠过，外圈光尘按相机速度拉成径向光丝，尽头一团冷光核是 B 的光源",
+    "速度感：A 扑过时叠 3 层递减缩放的变焦残影并淡出；B 远处景深虚化、边放大边收焦去暗",
+    "两景都是浮在蓝夜舞台上的窗口，左下骑缝挂场景标签胶囊（Projects · 10 active / Weekly report · W28）；B 落定后同一相机 0.3/f 极缓前推"
+  ],
+  "issuesEn": [
+    "A lateral slide between full-bleed screenshots made the dark-field pass just a grey gap between two pages, with weak forward motion",
+    "The dark field had only a cool glow and a few specks, so the 5 frames barely read as travel",
+    "Both scenes were bright full-bleed page textures with no stage or light, clashing with the dark field",
+    "The incoming scene only grew from 0.62 with blur, too small a scale change to feel like it was rushing at the camera"
+  ],
+  "changesEn": [
+    "Midnight blue look; the move is now a dolly along the lens axis: window A rushes past the camera and B grows from a 0.2x lit window at the end of the tunnel to full frame",
+    "One camera only: A, five gates, motes and B are all projected with s=F/(z-c) from a single c(f), accelerating out, peaking in the dark, then decelerating with a long tail and no backswing",
+    "The dark field is a tunnel: hairline gates shaped like the window, each rotated a further 5 degrees, fly past while outer motes stretch into radial streaks with camera speed and a cool core marks B's light",
+    "Speed cues: three shrinking zoom-trail copies of A as it passes and fades; B starts depth-blurred and sharpens and brightens as it grows",
+    "Both scenes are windows on the blue stage with a scene-tag pill on the lower-left edge (Projects · 10 active / Weekly report · W28); after B lands the same camera keeps a 0.3/f creep"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

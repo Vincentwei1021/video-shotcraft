@@ -1,0 +1,31 @@
+{
+  "stem": "Fracture",
+  "issues": [
+    "瓦片是 25 块灰蓝渐变纸片，没有海报内容，拼齐后只是一块均匀的灰蓝方格，看不出\"成形\"的是什么",
+    "唯一的字是一行小号衬线 REASSEMBLE 大字距，像占位符，hold 段没有值得读的信息",
+    "瓦片没有厚度、没有受光，翻滚时只是平面变形，碎片感和物理感都弱",
+    "飞散后画面直接空掉，结尾帧是一块空的深色底，没有落点"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色石墨 + 暖金点缀）：25 块切的是同一张 1440×810 发布会主视觉——日蚀暗盘 + 金白细边 + 钻石环亮点与横向光带 + 150px 衬线字标「Mosaic」，版式按瓦片行排，拼缝不切字",
+    "瓦片做成 16px 厚的实体石板（正面切片 + 背面 + 四侧边）：按旋转矩阵算面法线做 Lambert 受光，翻滚时侧边被扫成暖金、景深里的碎片更暗",
+    "聚合改为从景深 z −300~−1800 飞回，曼哈顿波纹每环 6.5f，bezier(0.33,0,0.15,1) 快飞长减速 + 入槽小摆；末块落位时金边点亮、钻石环闪一下、字标逐字升起，hold 段一次扫光",
+    "飞散：中心先走，背离中心 + 冲向镜头 + 大角度翻滚，EASE.exit 加速出画；飞散段运动模糊提到 10 采样避免分层残影",
+    "碎片清空后露出落版（金边小标 + 140px 字标 + AVAILABLE OCTOBER 14），结尾帧是一张完整海报；时长 156→180f"
+  ],
+  "issuesEn": [
+    "The tiles were 25 grey-blue gradient cards with no poster content; once assembled they formed an even grey-blue grid, so nothing actually took shape",
+    "The only text was a small, widely tracked serif REASSEMBLE that read like a placeholder, leaving nothing worth reading in the hold",
+    "Tiles had no thickness or lighting; tumbling was just flat distortion, so the shards felt weightless",
+    "After the explosion the frame was simply empty: the last frame was a blank dark background with no landing"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome with warm gold accents): all 25 tiles slice one 1440x810 launch key visual, an eclipse with dark disc, gold-white rim, diamond-ring highlight and horizontal streak, plus a 150px serif wordmark \"Mosaic\"; the layout follows tile rows so seams never cut letters",
+    "Tiles are now 16px-thick solid slabs (front slice, back and four edges): face normals from the rotation matrix drive Lambert lighting, so edges flash warm gold as they tumble and shards deep in z stay darker",
+    "Assembly flies in from z -300 to -1800 in a Manhattan ripple at 6.5f per ring, with bezier(0.33,0,0.15,1) for a fast flight, a long settle and a small seating wobble; as the last tile lands the rim lights up, the diamond ring flashes, the wordmark rises letter by letter, and one sheen crosses during the hold",
+    "Explosion: the centre goes first, each tile flies outward, toward camera and tumbles hard on EASE.exit; motion blur rises to 10 samples for this segment to avoid stepped ghosting",
+    "Once the shards clear, an end card sits underneath (gold ring mark, 140px wordmark, AVAILABLE OCTOBER 14), so the last frame is a complete poster; duration 156 to 180f"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

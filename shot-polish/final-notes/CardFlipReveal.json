@@ -1,0 +1,16 @@
+{
+  "stem": "CardFlipReveal",
+  "changed": true,
+  "brand": [
+    "眉题「Quill · Launch results」→「video-shotcraft · Launch results」；对照条 With Quill → With Shotcraft",
+    "三张功能卡 Compose / Summaries / Search → Prompt / Recipes / Library：正面改成写片提示词补全、crash zoom 配方要点、配方库搜索 crash zoom",
+    "背面数字 3.2× / −41% / 0.2s 保留，标签改为 faster first cut / time spent keyframing / to find the right move"
+  ],
+  "brandEn": [
+    "Eyebrow \"Quill · Launch results\" → \"video-shotcraft · Launch results\"; comparison bar With Quill → With Shotcraft",
+    "Feature cards Compose / Summaries / Search → Prompt / Recipes / Library: fronts now show a film-prompt autocomplete, crash-zoom recipe notes and a recipe-library search",
+    "Back numbers 3.2× / −41% / 0.2s kept; labels → faster first cut / time spent keyframing / to find the right move"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

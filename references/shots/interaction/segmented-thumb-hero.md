@@ -1,7 +1,7 @@
 ---
 name: segmented-thumb-hero
 一句话: 分段控件 thumb 位移当主角特写——超大胶囊 segmented control 弹簧浮入，描边箭头光标画外滑入按下，白 thumb 8f ease-out 滑到另一段，到位瞬间新图标 spring 弹出、旧图标收起
-适用: "模式切换/二选一"功能的宣告镜头（Ask→Computer、Chat→Agent 式）；一个 UI 微交互撑一整镜的特写拍法
+适用: "模式切换/二选一"功能的宣告镜头（demo 的 video-shotcraft Prompt→Film、Chat→Agent 式）；一个 UI 微交互撑一整镜的特写拍法
 时长: ~3.5s（demo 110f：浮入 18f + 光标 24f + 点击 + 滑动 8f + 图标弹出 + hold）
 能量: 中（微交互特写，精致不轰）
 ---
@@ -23,7 +23,7 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
   这 8f 是全镜的心跳，前后各拍都在为它服务
 - 到位瞬间双动作同帧起：新图标 spring(damping 10, stiffness 220)
   过冲弹出；旧图标 6f Easing.in 塌缩且 width 同步归零让文字自然回流
-- 点击涟漪：4px 描边圆环 12f 从点击点扩散淡出（Easing.out(quad)）
+- 点击涟漪：3px 强调色细环 12f 从点击点（光标尖端）扩散淡出（Easing.out(quad)）
   ——涟漪确认"按下"发生过，无涟漪点击读作光标路过
 
 ## 参数表
@@ -39,7 +39,7 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
 ## 已知坑
 - demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
   首次实战须以真实素材回验
-- 与 input-trigger-moves 分工：cursor-performance 是光标在完整页面里
+- 与 cursor-flyover 分工：那张是光标在完整页面里
   点击推近（有上下文），本卡是控件脱离页面拍无背景特写——同片可共存，
   但同一次点击别既拍页面版又拍特写版
 - 图标塌缩用 width 归零而不是只 scale——只 scale 会留空位，文字不回流，
@@ -49,7 +49,7 @@ control 放大到 1080px 宽拍特写，**thumb 那 8 帧位移本身就是叙�
 - 涟漪圆环要 zIndex 压在 thumb 之上、圆心锁点击点——跟着 thumb 走
   就成了 thumb 的拖尾，语义变错
 - 实战替换素材：段标签/图标换成真功能名即可，但"新段图标带表情"
-  （demo 笑脸 laptop）是奖励感的一半，纯线框图标会淡不少
+  （demo 笑脸场记板）是奖励感的一半，纯线框图标会淡不少
 
 ## 参考实现
 demos/interaction/segmented-thumb-hero/

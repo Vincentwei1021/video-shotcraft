@@ -1,0 +1,31 @@
+{
+  "stem": "PillSlotCycle",
+  "issues": [
+    "灰底 + 96px 句干 + 白色小 pill，句子只占画面上方一条，下面 2/3 空着，没有主视觉",
+    "六拍一律 21f 等长，从头到尾同一个节拍，观众感觉不到\"要停了\"，结论拍和列举拍没有档次差",
+    "pill 白底灰字靛蓝图标，和底色几乎同一明度，强调色无处落脚",
+    "pill 里直接写了真实产品名（Drive / Slack），收束只是一句同色的 do it all."
+  ],
+  "changes": [
+    "look 换成 midnight（深蓝 · 电光蓝 · 青）：两行左对齐大字海报，句干 176px/800 钉死在第 1 行，第 2 行是横贯画面的\"填空线\"槽位，右端 ⌘K 键帽交代这是 AI 命令面板",
+    "pill 重做成深色玻璃胶囊（156px 高、90px 字、108px 电光蓝渐变图标块），按离槽高度变化落地影，绕滚筒翻入翻出 + 按速度竖向运动模糊",
+    "节奏改渐快：6 拍持续 28→16f 递减，像老虎机停下前越转越快；时长 200→205f，完整句 hold 48f",
+    "收束：末 pill 先飞走，\"do it all.\" 同字号同字重从它身后带 back 过冲升起，字面电光蓝→青渐变；填空线随即由左到右点亮、槽位后一次泛光——\"空格被填上了\"",
+    "文案改虚构品牌 Relay 与通用动作短语（14–16 字符，槽宽不甩），删掉真实产品名"
+  ],
+  "issuesEn": [
+    "Grey stage, a 96px stem and small white pills: the sentence was a strip across the top with two thirds of the frame empty and no key visual",
+    "All six beats were an even 21f, one flat metronome; there was no sense of slowing to a stop and the conclusion had no step-up over the list",
+    "White pills with grey text and indigo icons sat at almost the same value as the background, leaving the accent colour nowhere to land",
+    "Real product names (Drive, Slack) were written into the pills, and the payoff was a same-colour 'do it all.'"
+  ],
+  "changesEn": [
+    "Midnight look (navy, electric blue, cyan): a two-line left-aligned poster with a 176px/800 stem pinned on line one and a full-width 'fill in the blank' rule as the slot on line two, a ⌘K keycap at its end marking it as an AI command bar",
+    "Pills rebuilt as dark glass capsules (156px tall, 90px text, 108px electric-blue gradient icon tile) with lift-dependent shadows, drum flips and speed-based vertical motion blur",
+    "Accelerating rhythm: six beats shrinking from 28 to 16f, like a slot machine speeding up before it stops; duration 200 to 205f with a 48f hold on the full sentence",
+    "Payoff: the last pill flies off first and 'do it all.' rises from behind it at the stem's exact size and weight with a back overshoot, in a blue-to-cyan gradient; the blank rule then lights left to right with one bloom behind the slot",
+    "Copy uses a fictional brand, Relay, and generic action phrases of 14 to 16 characters so the slot width stays steady; real product names removed"
+  ],
+  "look": "midnight",
+  "mdChanged": true
+}

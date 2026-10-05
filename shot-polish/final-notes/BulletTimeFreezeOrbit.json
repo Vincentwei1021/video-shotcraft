@@ -1,0 +1,14 @@
+{
+  "stem": "BulletTimeFreezeOrbit",
+  "changed": true,
+  "brand": [
+    "面板眉题「Inference · eu-west」→ video-shotcraft 标志 +「Render farm · promo」",
+    "指标名「Tokens per second」→「Frames rendered」（柱图数值与计数器保持原样，作渲染帧数示意）"
+  ],
+  "brandEn": [
+    "Panel eyebrow \"Inference · eu-west\" → video-shotcraft mark + \"Render farm · promo\"",
+    "Metric title \"Tokens per second\" → \"Frames rendered\" (bar values and odometer unchanged, read as demo render counts)"
+  ],
+  "styleKey": "bullet-time-freeze-orbit",
+  "mdChanged": true
+}

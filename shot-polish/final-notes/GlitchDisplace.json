@@ -1,0 +1,16 @@
+{
+  "stem": "GlitchDisplace",
+  "changed": true,
+  "brand": [
+    "顶栏圆环 logo +「Halo」→ 镜刻标志 + video-shotcraft 字标（撕裂剪影重影里标志随页面单色化）",
+    "主标题「Rolling out / Halo 4.0」→「Rolling out / Shotcraft」，「Halo 4.0 / is live.」→「Shotcraft / is live.」",
+    "页脚「EDGE-RUNNER 4.0.0 · SHA 9F3C2E1」→「video-shotcraft 4.0.0 · SHA 9F3C2E1」（版本号为控制台示意值）"
+  ],
+  "brandEn": [
+    "Top-bar ring logo + \"Halo\" → Frame Chisel mark + video-shotcraft wordmark (the mark goes monochrome in the tear ghost copies like the rest of the page)",
+    "Headline \"Rolling out / Halo 4.0\" → \"Rolling out / Shotcraft\"; \"Halo 4.0 / is live.\" → \"Shotcraft / is live.\"",
+    "Footer \"EDGE-RUNNER 4.0.0 · SHA 9F3C2E1\" → \"video-shotcraft 4.0.0 · SHA 9F3C2E1\" (illustrative console version)"
+  ],
+  "styleKey": "",
+  "mdChanged": false
+}

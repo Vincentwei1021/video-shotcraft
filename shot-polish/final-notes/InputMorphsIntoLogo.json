@@ -1,0 +1,18 @@
+{
+  "stem": "InputMorphsIntoLogo",
+  "changed": true,
+  "brand": [
+    "字母 P 标志（竖胶囊 + 钴蓝碗 + 白字怀 + 琥珀点）→ video-shotcraft 标志：输入框收成取景框竖笔，上横 / 下横 / 琥珀斜切依次落进虚线构造槽位",
+    "字标 Parley → video-shotcraft；口号 Where the team says go. → One prompt to a finished promo.",
+    "频道 #launch-day → #launch-film；消息与输入框文案换成做片场景（Storyboard is locked: twelve shots. / Crash zoom lands right on the beat. / Render the launch film. Ship it.）",
+    "灌色从钴蓝改为标志墨色；拼齐后 mark 让位时收到 0.7，给 15 字符字标腾地方"
+  ],
+  "brandEn": [
+    "Letter-P mark (capsule + cobalt bowl + white counter + amber dot) → video-shotcraft mark: the input box becomes the frame's stem, then top bar / bottom bar / amber cut drop into dashed construction slots",
+    "Wordmark 'Parley' → 'video-shotcraft'; tagline 'Where the team says go.' → 'One prompt to a finished promo.'",
+    "Channel #launch-day → #launch-film; messages and input copy now about making a film (Storyboard is locked: twelve shots. / Crash zoom lands right on the beat. / Render the launch film. Ship it.)",
+    "Flood color cobalt → mark ink; once assembled the mark scales to 0.7 while shifting, to fit the 15-character wordmark"
+  ],
+  "styleKey": "input-morph-assemble",
+  "mdChanged": true
+}

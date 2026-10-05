@@ -1,0 +1,18 @@
+{
+  "stem": "BrakeReticleLock",
+  "changed": true,
+  "brand": [
+    "顶栏渐变方块 logo + 「Acme」→ 镜刻标志 + video-shotcraft 字标",
+    "changelog 条目（Keyboard shortcuts / Slack thread sync…）→ video-shotcraft 的更新记录（Crash zoom shot card / Beat grid from any BGM / JianYing export…），路线图换成 Vertical 9:16 cuts 等",
+    "停点条目「Realtime collaboration · Live cursors and presence in every doc.」→「Motion workbench · Every shot, tuned in one place.」",
+    "条目说明（Rolled out to all workspaces 等）→ Rolled out to every project / Now 3× faster on long films 等"
+  ],
+  "brandEn": [
+    "Gradient-square logo + \"Acme\" in the top bar → Frame Chisel mark + video-shotcraft wordmark",
+    "Changelog entries (Keyboard shortcuts / Slack thread sync…) → video-shotcraft releases (Crash zoom shot card / Beat grid from any BGM / JianYing export…); roadmap rows become Vertical 9:16 cuts etc.",
+    "Locked entry \"Realtime collaboration · Live cursors and presence in every doc.\" → \"Motion workbench · Every shot, tuned in one place.\"",
+    "Entry descriptions (Rolled out to all workspaces…) → Rolled out to every project / Now 3× faster on long films…"
+  ],
+  "styleKey": "brake-reticle-lock",
+  "mdChanged": false
+}

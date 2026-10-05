@@ -3,7 +3,9 @@ name: Deploy gallery to GitHub Pages
 # Publishes gallery/ via the official Pages artifact path whenever it changes
 # on main. Motion-preview MP4s live as assets on the `gallery-media` release
 # (not in git) and are downloaded into place during assembly, so library.json's
-# relative ./media/*.mp4 URLs keep working unchanged.
+# relative ./media/*.mp4 URLs keep working unchanged. The release may hold a
+# bulk gallery-media.zip plus single <key>.mp4 assets; gallery/assemble-media.py
+# unpacks the zip and lets only singles uploaded after it override.
 #
 # NOTE: this deliberately does NOT push to a gh-pages branch. The repo's Pages
 # publishing source must be set to "GitHub Actions" (build_type: workflow) —
@@ -42,6 +44,7 @@ jobs:
             --exclude 'sync-from-cards.py' \
             --exclude 'build-seo.py' \
             --exclude 'fetch-media.sh' \
+            --exclude 'assemble-media.py' \
             --exclude '__pycache__' \
             gallery/ site/
           touch site/.nojekyll
@@ -74,12 +77,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p site/media
-          gh release download gallery-media \
-            --repo "$GITHUB_REPOSITORY" \
-            --dir site/media \
-            --pattern '*.mp4' \
-            --clobber
+          python3 gallery/assemble-media.py site/media
 
       - name: Download showcase submissions from the showcase-media release
         env:

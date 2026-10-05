@@ -1,0 +1,33 @@
+{
+  "stem": "DashboardGlowHighlightPill",
+  "issues": [
+    "整镜头在 480×270 设计坐标里放大，仪表盘文字 5–8px 级，放大后发虚且根本读不清",
+    "弹窗与正文字号过小（3–5 设计 px），内容读不出来，手法只剩一个金框",
+    "K 线用红绿实色，与金色光抢强调色，黑金调不纯",
+    "2s 内塞四段动作，光斑巡游只有十几帧，交棒快到看不清"
+  ],
+  "changes": [
+    "look = graphite 近单色暗场 + 香槟金唯一强调色：K 线改为象牙白实体 / 灰色空心单色蜡烛，画面里只有光和弹窗是金的",
+    "开场改为 150px 衬线金字「Trade with focus.」+ 眉题，逐字由虚到实、字距收拢、泛光呼吸，20f 起上浮让位",
+    "仪表盘按 1600×900 原生像素重做（交易终端「Sextant」：自选 / 64px 价格与单色 K 线 / 下单栏 / 持仓），透视升入后持续 yaw 漂移，58f 起虚化压暗并后拉 0.93",
+    "光斑从顶栏 Focus 按钮被「拾起」，沿贝塞尔弧巡游、按切线与速度拉成彗星再压成水平胶囊；胶囊一分为二双向包抄弹窗轮廓、顶边汇合一闪，描边收敛成金色细框",
+    "弹窗做成出版级：54px 标题 / 25px 正文 / 双选项卡（Focus 金色选中）/ 金色确认按钮，底板先到、内容 3–4f 错峰逐层升起",
+    "时长 60f → 136f：每段有完整的起-承-落，尾段 20f 干净 hold"
+  ],
+  "issuesEn": [
+    "The whole shot was upscaled from a 480×270 design space, so dashboard text was 5–8px and soft and unreadable once enlarged",
+    "Modal and body text were tiny (3–5 design px), so the content could not be read and the technique was reduced to a gold frame",
+    "Candles were solid red and green, fighting the gold light for accent and muddying the black-gold look",
+    "Four actions were crammed into 2s; the light's journey lasted barely a dozen frames and the hand-offs were too fast to read"
+  ],
+  "changesEn": [
+    "Look = graphite (near-monochrome dark) with champagne gold as the only accent: candles are ivory solid / grey hollow, so only the light and the modal are gold",
+    "The opener is a 150px serif gold line, 'Trade with focus.', with an eyebrow; letters resolve from blur as tracking tightens and the glow breathes, then it lifts away from frame 20",
+    "The dashboard is rebuilt at 1600×900 native pixels (fictional trading terminal Sextant: watchlist, 64px price with mono candles, order ticket, positions); it rises in perspective, keeps drifting in yaw, then blurs, dims and pulls back to 0.93 from frame 58",
+    "The light is 'picked up' from the Focus button in the top bar, travels a Bézier arc stretching into a comet by tangent and speed, flattens into a horizontal pill, then splits and wraps the modal in both directions, flashing where it meets at the top before settling into a thin gold frame",
+    "The modal is publication-grade: 54px title, 25px body, two option cards (Focus selected in gold) and a gold confirm button; the panel lands first and content rises in layers 3–4f apart",
+    "Duration 60f → 136f so every phase has a full arc, ending on a clean 20f hold"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

@@ -1,0 +1,31 @@
+{
+  "stem": "ScrambleDecode",
+  "issues": [
+    "132px 灰白等宽字在浅灰底上，乱码与锁定字只是深浅差，没有语境也没有质感",
+    "锁定匀速 6f/字，从头到尾一个速度，节奏平",
+    "解码头只有一道细下划线，\"扫描波前\"读不出来；进度条和计数是 3px 细线 + 小字",
+    "画面只有一行字，上下大片空白，结尾帧不成画面"
+  ],
+  "changes": [
+    "look 换成 porcelain 解密档案（刻意避开终端风）：冷灰桌面上一份带装订孔、错位底页的机密档案页，页眉 CASE FILE No. 0417-K、SUBJECT 栏、字段表，主角是 150px 衬线大标题「Project Nightjar」",
+    "乱码改成\"涂黑揭封\"：标题整行盖着墨色涂黑条，纸白衬线乱码在条上跳并被块裁切；比例字体用隐形真字撑槽宽，整行不抖",
+    "解码波前做成钴蓝扫描读头（细线 + 光带），离波前越近乱码越亮、跳得越快；锁定瞬间涂黑块闪钴蓝 2f，再从中线收拢消失，露出墨色真字（1.12→1）",
+    "节奏「慢起—加速—急停」：锁定间隔 8.3f → 3.4f 越来越快，标题揭完斜体副标题 0.6f/字瀑布解码；急停是一枚钴蓝「DECLASSIFIED」橡皮章加速砸下、做旧墨迹一次到位",
+    "页脚 15 格字段计数随揭封推进（REDACTIONS LIFTED），Handler 一栏永久涂黑作档案细节；时长 140f，整幅 1.00→1.02 极缓推近"
+  ],
+  "issuesEn": [
+    "132px pale mono type on a light grey background; scrambled and locked characters differed only in shade, with no context or texture",
+    "Characters locked at a flat 6f each from start to finish, so the rhythm never changed",
+    "The decode head was a thin underline, so the scanning wavefront did not read; the progress bar and counter were a 3px line and small text",
+    "One line of text with empty space above and below; the end frame was not a composition"
+  ],
+  "changesEn": [
+    "Porcelain declassified-dossier look (deliberately not a terminal): a punched case-file sheet over an offset under-page on a cool grey desk, with a CASE FILE No. 0417-K header, SUBJECT label and field table; the hero is a 150px serif Project Nightjar",
+    "Scramble becomes lifting redactions: the title starts under ink redaction bars with paper-white serif gibberish flickering inside them, clipped to each slot; invisible real glyphs hold the proportional slot widths so the line never jitters",
+    "The decode front is a cobalt scanner head (line plus light band); gibberish near it brightens and flickers faster; on lock the block flashes cobalt for 2f, collapses to its midline and reveals the ink letter (1.12→1)",
+    "Rhythm is slow start, speed-up, hard stop: intervals shrink from 8.3f to 3.4f, an italic subtitle cascades at 0.6f per character, and a cobalt DECLASSIFIED rubber stamp slams down with distressed ink as the hard stop",
+    "A 15-cell REDACTIONS LIFTED counter advances in the footer and the Handler field stays redacted as dossier detail; 140f, with a slow 1.00→1.02 push"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

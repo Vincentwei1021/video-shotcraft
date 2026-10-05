@@ -1,0 +1,12 @@
+{
+  "stem": "PullBackIsolation",
+  "changed": true,
+  "brand": [
+    "主卡指标名「API uptime」→「Render success」（99.9% 与 90 天条带保持原样，读作 video-shotcraft 的渲染成功率；画面无 logo）"
+  ],
+  "brandEn": [
+    "Hero card label \"API uptime\" → \"Render success\" (99.9% and the 90-day strip unchanged, now read as video-shotcraft's render success rate; no logo in frame)"
+  ],
+  "styleKey": "pull-back-isolation",
+  "mdChanged": true
+}

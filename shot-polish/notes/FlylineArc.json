@@ -1,0 +1,29 @@
+{
+  "stem": "FlylineArc",
+  "issues": [
+    "底图是压暗的六格 FakeDashboard，卡片里全是 14–20px 的小字与骨架条，飞线连接的两张卡读不出是什么指标",
+    "飞线从卡中心画到卡中心，盖在内容上面；匀速感的 out-cubic 生长，没有\"打过去\"的速度与重量",
+    "落点只是描边亮一下，数据本身没有任何变化，\"指标关联\"停留在装饰层",
+    "f86 后整段死帧 54f，画面完全静止"
+  ],
+  "changes": [
+    "look 换成 ember（暖黑 · 熔橙 · 金），画面改成为镜头设计的\"归因图\"：三张 560×320 指标卡（活动访问 48.2k → 结账转化 +31% → 周收入 $1.84M）+ 左上 64px 标题，104px 大数字",
+    "飞线改为端口到端口：熔铜白热芯 + 两层橙色辉光、亮头彗尾，头部一路掉落按重力下坠的金色火星；生长曲线不对称（起步蓄力、中段最快、进端口前减速）",
+    "落点三件事同帧：端口冲击环、卡片描边脉冲提亮、卡片被沿来向\"撞\"10px 再弹簧回位；同时数字从旧值滚到新值、增量胶囊弹出——数据真的被点亮",
+    "节奏：0–18 卡片错峰升起 / 20–46 线 1 / 46 B 点亮 / 62–86 线 2 接力 / 86 C 点亮 / 112–150 hold；hold 段连好的暗铜线上有光包缓慢流动，镜头 1→1.035 极缓推进、焦点从 A 漂向 C"
+  ],
+  "issuesEn": [
+    "The backdrop was a darkened six-tile FakeDashboard full of 14–20px text and skeleton bars, so you could not tell which metrics the line connected",
+    "The line ran centre to centre over the card content and grew with a near-uniform out-cubic, with no sense of being fired across",
+    "The landing only flashed a border; the data itself never changed, so the 'metric relationship' stayed decorative",
+    "After f86 there were 54 dead frames with nothing moving"
+  ],
+  "changesEn": [
+    "Ember look (warm black, molten orange, gold) with an attribution map designed for the shot: three 560×320 metric cards (campaign visits 48.2k, checkout conversion +31%, weekly revenue $1.84M) with 104px numbers and a 64px headline top left",
+    "Lines now run port to port: a white-hot core with two orange glow layers, a leading head with a comet tail, and gold embers that shed from the head and fall under gravity; growth is asymmetric (wind-up, fastest mid-flight, braking into the port)",
+    "Three things happen on the landing frame: a shock ring at the port, a border pulse on the card, and a 10px knock along the arrival direction that springs back; at the same time the number rolls to its new value and a delta pill pops, so the data is visibly switched on",
+    "Timing: cards stagger in over 0–18, line 1 20–46, B lights at 46, line 2 relays 62–86, C lights at 86, hold 112–150; during the hold small light packets flow along the settled copper lines and the camera pushes 1 to 1.035 while its focus drifts from A to C"
+  ],
+  "look": "ember",
+  "mdChanged": true
+}

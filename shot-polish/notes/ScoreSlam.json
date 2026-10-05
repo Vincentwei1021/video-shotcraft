@@ -1,0 +1,31 @@
+{
+  "stem": "ScoreSlam",
+  "issues": [
+    "比分卡只有 +247% 一个数加一行小字，放在灰白虚化 dashboard 上，像网页弹窗不像转播重磅",
+    "砸落前 8f 是静止空镜，没有预备；冲击环是细灰线、尘点是几粒黑方块，几乎不可感",
+    "整片灰白低对比，没有光，落定后 100f 只有一张静止卡",
+    "左上角留着调试卡名，信息层级只有一层"
+  ],
+  "changes": [
+    "look 换成 graphite（近单色暗场 + 香槟金点缀），舞台是夜场球场：顶缘四盏泛光灯 0–7f 依次\"啪\"地亮起，远处看台是虚化暖色光点",
+    "主角改为 1240×400 杯赛终场比分卡：两队徽章与队名、220px tabular 比分「3 – 2」、金色「FULL TIME · 90+4′」签、底部赛事信息行",
+    "节奏「悬—砸—炸—落—读」：0–9f 卡悬在镜头前（2.75→2.6、虚化 10px、半透）→ 6f ease-in 加速砸落 → 15f 冲击环（白芯 + 金辉，扩散 / 消散解耦）+ 14 片玻璃金箔碎片 + 16 道火花 + 竖向震屏 5f + 2f 白闪",
+    "跟随：卡片弹簧回弹，两个比分数字晚 3f / 6f 二次落地，FULL TIME 签从卡顶滑出，胜方数字下划金线擦出",
+    "落定后 84px 标题「Norvik lift the Cup.」逐词升起 + 36px 副句，尾帧是完整的终场海报；时长 135f"
+  ],
+  "issuesEn": [
+    "The card held a single +247% and one line of small text over a blurred grey dashboard, reading like a web toast rather than a broadcast moment",
+    "The 8f before the slam were a static empty shot with no wind-up; the shock ring was a thin grey line and the dust a few black squares, barely perceptible",
+    "Grey, low-contrast and unlit throughout, with 100f of a static card after landing",
+    "A debug card name sat in the corner and the information had only one level"
+  ],
+  "changesEn": [
+    "Graphite look (near-monochrome dark with champagne gold): a night stadium where four floodlights snap on one by one over 0–7f above a blurred warm crowd bokeh",
+    "The hero is a 1240×400 cup-final score card: two crests and team names, a 220px tabular '3 – 2', a gold 'FULL TIME · 90+4′' tag and a fixture line",
+    "Rhythm is hover, slam, burst, settle, read: 0–9f the card hangs in front of the lens (2.75→2.6, 10px blur, translucent), a 6f ease-in slam, then on 15f a shock ring (white core, gold glow, expansion and fade decoupled), 14 glass and gold-foil shards, 16 sparks, a vertical 5f shake and a 2f white flash",
+    "Follow-through: the card springs back, the two score digits land a second time 3f and 6f later, the FULL TIME tag slides out of the top edge and a gold underline wipes under the winning score",
+    "After landing an 84px headline 'Norvik lift the Cup.' rises word by word with a 36px subline, ending on a complete full-time poster; 135f total"
+  ],
+  "look": "graphite",
+  "mdChanged": true
+}

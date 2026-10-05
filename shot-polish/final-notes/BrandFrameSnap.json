@@ -1,0 +1,18 @@
+{
+  "stem": "BrandFrameSnap",
+  "changed": true,
+  "brand": [
+    "框带右上角产品字标：方块 logo + 「tessel」→ 单色白版镜刻标志 + video-shotcraft 字标（全小写）",
+    "画布上设计的定价卡 → video-shotcraft 推广卡：标志 + video-shotcraft / Open source / $0 / forever / Your product, in motion.",
+    "卡内卖点 Unlimited projects 等 → Shot recipe cards / 2.5D camera moves / Beat-synced cuts；按钮 Start free trial → Render launch film",
+    "面包屑 Checkout / Pricing card → Landing / Promo card；图层名、原型跳转 Checkout → Render queue 同步"
+  ],
+  "brandEn": [
+    "Top-right product wordmark on the frame band: square logo + \"tessel\" → mono-white Frame Chisel mark + lowercase video-shotcraft wordmark",
+    "Pricing card on the canvas → a video-shotcraft promo card: mark + video-shotcraft / Open source / $0 / forever / Your product, in motion.",
+    "Card features (Unlimited projects…) → Shot recipe cards / 2.5D camera moves / Beat-synced cuts; button Start free trial → Render launch film",
+    "Breadcrumb Checkout / Pricing card → Landing / Promo card; layer names and prototype target Checkout → Render queue updated to match"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

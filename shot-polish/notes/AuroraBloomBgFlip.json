@@ -1,0 +1,31 @@
+{
+  "stem": "AuroraBloomBgFlip",
+  "issues": [
+    "B 句收色排到 t≈1.08，片尾 changed 仍是紫色，定稿态从未出现",
+    "极光只读成一团淡紫雾，橙核被主层盖住几乎看不见，缺少内部流动",
+    "文案是中性占位（For many years / everything changed），居中一行没有层级、没有落款，读不出转折的力量",
+    "反转后的暗场只剩一团压暗的余晖，画面“变黑了”而不是“到了新的一幕”"
+  ],
+  "changes": [
+    "光色整组换成真实极光（自定义 custom）：雾白 #e9edf0 底上升起青绿 / 冷青 / 紫三层柔焦光团，各层不同频漂移，用径向渐变软边代替整屏 blur",
+    "反转命门保留并收紧到 11f（≈0.37s）压到带蓝相的极夜 #05080e，光团压成 0.4 余晖并 overshoot 轻收 6%",
+    "底色落定后显影极夜：18 条摆动明灭的极光帘幕（带亮芯）+ 80 颗星点，让反转读作“天黑了、极光出来了”",
+    "文案改成真正的转折句：A「For years, forecasts were guesses.」92px 逐词 blur-in / blur-out，B「See it coming.」140px 逐词 blur-in，落定后极光青收成白，再接品牌落款字距收拢",
+    "时长 156→172f，B 句与落款在 f156 前全部定稿，留 16f 干净 hold（帘幕仍在缓慢摆动）"
+  ],
+  "issuesEn": [
+    "B's color settle was scheduled at t≈1.08, so 'changed' was still purple at the end and the final state never appeared",
+    "The aurora read as one pale purple haze; the orange core was buried under the main layer and nothing moved inside it",
+    "Copy was a neutral placeholder ('For many years' / 'everything changed') in one centered line with no hierarchy or sign-off, so the turn carried no weight",
+    "After the flip only a dimmed glow remained: the frame simply 'went dark' rather than arriving at a new scene"
+  ],
+  "changesEn": [
+    "The light palette is rebuilt as a real aurora (custom): teal-green, cool cyan and violet soft blooms rise from a misty #e9edf0 ground, drifting at different rates, using soft radial gradients instead of full-frame blur",
+    "The flip stays the key beat and tightens to 11f (≈0.37s) into a blue-tinted polar night #05080e; the blooms compress to a 0.4 afterglow with a 6% overshoot squash",
+    "Once the dark lands, the night develops: 18 swaying, flickering aurora curtains with bright cores plus 80 twinkling stars, so the flip reads as 'night fell and the aurora came out'",
+    "Copy becomes a real turn: A 'For years, forecasts were guesses.' at 92px blurs in and out by word; B 'See it coming.' at 140px blurs in by word, settles from aurora green to white, then a tracked brand line resolves",
+    "Duration 156 to 172f; B and the lockup finish before f156, leaving a clean 16f hold with curtains still drifting"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

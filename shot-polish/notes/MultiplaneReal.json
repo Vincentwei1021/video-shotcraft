@@ -1,0 +1,31 @@
+{
+  "stem": "MultiplaneReal",
+  "issues": [
+    "三层都是同一种白卡截图，前景两块虚化的截图条读起来像脏斑，不像掠过镜头的物体",
+    "横移没有终点也没有主角，匀匀地滑完就结束，尾帧不成海报",
+    "画面里没有任何要读的字，只有截图小字，层次全靠模糊",
+    "浅灰底 + 灰影，没有光和色彩倾向"
+  ],
+  "changes": [
+    "换 sand look（米色 + 赤陶）：暖白截图和暖米舞台一体，像暖光桌面上的产品静物被滑轨相机掠过",
+    "近景改成 5 枚放大的赤陶 / 墨色标签胶囊（取自卡上的真实标签），景深虚化 7px + 按速度横向拖影，落定时只剩两枚压在画框下沿做前景框边",
+    "加一层固定在画框上的字（0x）：眉题 + 120px「Ten bets. One lab.」逐词升起 + 右侧副句——字不动、世界在动，视差更好读",
+    "滑轨有终点：drive 反算到 card4 恰停在屏心，130f 不对称 in-out；落定后主角浮起（elevation 6→26、1.035x）+ 赤陶描边 + 「In focus」角标",
+    "时长 135→165f，中景改 10 张卡、440px 宽，远景加暖色空气薄雾和桌面光带"
+  ],
+  "issuesEn": [
+    "All three layers were the same white screenshot cards; the two blurred screenshot strips in front read as smudges, not objects passing the lens",
+    "The slide had no destination and no hero — it just glided evenly and stopped, so the last frame wasn't a poster",
+    "There was no readable type in frame, only tiny screenshot text, so depth relied on blur alone",
+    "Pale grey background with grey shadows; no light and no colour direction"
+  ],
+  "changesEn": [
+    "Sand look (beige + terracotta): the warm-white screenshots and warm stage feel like one material, as if a slider camera were gliding past products on a sunlit table",
+    "The foreground is now five enlarged terracotta/ink tag pills (taken from the cards' real tags), defocused 7px with velocity smear; at rest only two remain along the bottom edge as framing",
+    "A frame-locked type layer (0x): kicker + a 120px “Ten bets. One lab.” rising word by word + a right-hand subline — the type stays still while the world moves, making the parallax easier to read",
+    "The slide now has a destination: drive is solved so card4 stops dead centre after a 130f asymmetric in-out; it then lifts (elevation 6→26, 1.035×) with a terracotta outline and an “In focus” tag",
+    "Duration 135→165f; the mid layer now carries 10 cards at 440px, and the far layer gets warm atmospheric haze plus a tabletop light band"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

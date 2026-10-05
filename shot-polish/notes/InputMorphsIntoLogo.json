@@ -1,0 +1,29 @@
+{
+  "stem": "InputMorphsIntoLogo",
+  "issues": [
+    "输入框和文字都很小（文案 44px 但框在大面积梅紫底上显得空），没有任何聊天语境",
+    "morph 时白描边框中途变成半透明，最后拼出的是一个意义不明的 L 形单瓣",
+    "三粒图元从画外落下没有落点预示，读作随机掉落",
+    "落定后只靠 ±3% 呼吸撑结尾，没有字标，结尾不是一张品牌海报"
+  ],
+  "changes": [
+    "look 用 custom signal：冷纸白亮场 + 12 栏淡网格（瑞士构造感），墨黑 + 钴蓝 + 一粒琥珀；品牌编为团队聊天产品 Parley，输入框上方加频道名与两条最近消息（34px），发送即退场",
+    "发送后文案 ease-in 加速飞出，钴蓝从发送键位置圆形漫开灌满输入框（全程实色），再由五量同一个 spring 把 1040×132 横条直接挤成 108×330 竖胶囊",
+    "三粒圆形图元（钴蓝碗 / 纸白字怀 / 琥珀消息点）依次落下拼成字母 P 的 mark；每粒落前 10f 槽位先画出虚线构造圆 + 十字线，落地按速度拉伸 / 压扁",
+    "拼好后 mark 左移让位、构造网格退场，Parley 196px 逐字从基线升起、口号逐词升起，尾段极缓推近 2% 代替呼吸，时长 140f → 168f"
+  ],
+  "issuesEn": [
+    "The input and text felt small on a large plum field, with no chat context at all",
+    "During the morph the white-outlined box went semi-transparent, and the pieces assembled into an L-shaped petal with no clear meaning",
+    "The three pieces fell in from off-screen with no hint of where they would land, so the drops read as random",
+    "After landing, only a ±3% breathing pulse held the ending: no wordmark, and the end frame was not a brand poster"
+  ],
+  "changesEn": [
+    "Custom 'signal' look: a cool paper-white stage with a faint 12-column grid for a Swiss construction feel, in ink, cobalt and one amber dot; the brand is a fictional team chat app, Parley, and a channel name plus two recent 34px messages sit above the input until the send",
+    "After send, the text flies off with ease-in, cobalt floods the input in a circle from the send button (solid all the way), and one spring driving all five values squeezes the 1040x132 bar straight into a 108x330 vertical capsule",
+    "Three circles (a cobalt bowl, a paper-white counter and an amber message dot) drop in turn to build a letter-P mark; 10f before each drop its slot is drawn as a dashed construction circle with crosshairs, and each piece stretches and squashes with its speed",
+    "Once built, the mark steps aside, the construction grid clears, 'Parley' at 196px rises letter by letter from the baseline and the tagline rises word by word; a slow 2% push replaces the breathing; 140f to 168f"
+  ],
+  "look": "custom",
+  "mdChanged": true
+}

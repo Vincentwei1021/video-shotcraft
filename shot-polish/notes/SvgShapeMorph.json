@@ -1,0 +1,31 @@
+{
+  "stem": "SvgShapeMorph",
+  "issues": [
+    "主体只是一条细描边 + 低透明填充，形体单薄，像矢量插值演示而不是一个“东西”在变形",
+    "inOutCubic 匀称往返，没有预备和过冲，形变没有重量，整段节奏平",
+    "画面里只有一个居中的形状和角落的调试字幕 morphTo(shapeA)，没有版式与信息",
+    "“同一条线在变形”这个手法要点在画面上看不出来"
+  ],
+  "changes": [
+    "look 换成 aurora：外圈改为玻璃流体（受光渐变 + 辉光 + 渐变描边），内部 5 圈等高线逐圈滞后 3f 并在形变中途扭转，像液体在晃",
+    "形变曲线改为预备收缩 → 冲过 ~3% → 回落（bezier .55,−.22,.3,1.18），A/B 两端各有静置，时长 156→168f",
+    "外圈挂 35 颗采样点，只沿径向滑动，直接把“等点数、无生成无消失”的同一性画出来",
+    "主体居右放大到基半径 300，左下加字标：数字随形态翻牌的 mono 眉题 + 64px「Same 140 points. / A new form.」",
+    "色相 258°→322° 与形态绑定，同时驱动填充、描边、辉光与环境光，配极淡浮尘"
+  ],
+  "issuesEn": [
+    "The subject was a thin outline with a faint fill; it looked like a vector interpolation demo, not a thing changing shape",
+    "Symmetric inOutCubic round trip with no anticipation or overshoot, so the morph had no weight and the rhythm was flat",
+    "The frame held a single centred shape and a debug caption morphTo(shapeA); no layout or information",
+    "The key point of the technique, that one line is reshaping, wasn't visible"
+  ],
+  "changesEn": [
+    "Look switched to aurora: the outer contour is a glassy fluid (lit gradient, bloom, gradient stroke) with five inner contour rings lagging 3f each and twisting mid-morph, like liquid sloshing",
+    "The morph curve now anticipates, overshoots ~3% and settles (bezier .55,−.22,.3,1.18) with holds on A and B; duration 156→168f",
+    "35 sample dots ride the outer contour and only slide radially, making the 'same points, none born or lost' identity visible",
+    "The shape moves right and grows to a 300px base radius; a lower-left lockup adds a mono eyebrow whose lobe count flips 03⇄05 and a 64px 'Same 140 points. / A new form.'",
+    "Hue 258°→322° is bound to the form and drives fill, stroke, bloom and ambient light, with faint drifting dust"
+  ],
+  "look": "aurora",
+  "mdChanged": true
+}

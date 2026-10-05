@@ -1,0 +1,31 @@
+{
+  "stem": "FlipGridReflow",
+  "issues": [
+    "左上角是调试标题「FLIP GRID REFLOW」，6 张卡全是灰色骨架条，没有内容可读",
+    "卡片只做等比放大 1.28，横排和网格是同一张卡，重排没有语义",
+    "浅灰底 + 平面白卡，整屏空、没有强调色和层次",
+    "直线飞行 + 整层亮度脉冲收尾，运动没有预备与重量"
+  ],
+  "changes": [
+    "look 改为 sand：虚构字体厂 Fount 的样张库，6 张卡 = 6 个字族的巨大「Ag」（Didot / Futura / Rockwell / 窄体 / 等宽 / 斜体），赤陶色只给主推字族一张",
+    "重排有界面上的因：光标滑到右上角 Row/Grid 切换器按下，滑块同拍滑到 Grid，页头计数补出「· 38 styles」",
+    "卡片从竖版 262×380 形变成横版 520×300，卡内字形与名称位置一起插值、落定后再浮现样张句——网格视图读作\"看到更多\"",
+    "运动：4f 集体下沉预备 → 每卡错峰 2f、22f 不对称 in-out 飞行（上排上弧、下排下弧）+ 速度方向模糊 + 抬高阴影 → 弹簧落座一次回弹",
+    "飞行期浮出 12 栏版式参考线、落定退去；收尾 1.5% 极缓推近 hold ~59f"
+  ],
+  "issuesEn": [
+    "A debug title 'FLIP GRID REFLOW' sat in the corner and all six cards were grey skeleton bars with nothing to read",
+    "Cards only scaled uniformly by 1.28, so row and grid showed the same card and the reflow meant nothing",
+    "Flat grey background and plain white cards: an empty frame with no accent or depth",
+    "Straight-line flights and a whole-layer brightness pulse, with no anticipation or weight"
+  ],
+  "changesEn": [
+    "Sand look: a specimen library for the fictional foundry Fount; each card is a huge 'Ag' in a different family (Didot, Futura, Rockwell, condensed, mono, italic), terracotta only on the featured one",
+    "The reflow has a cause: a cursor presses the Row/Grid toggle, the thumb slides on the same beat and the header count gains '· 38 styles'",
+    "Cards morph from 262x380 portrait to 520x300 landscape with their inner layout interpolating, and a sample sentence fades in after landing, so grid view reads as 'see more'",
+    "Motion: a 4f collective dip, then 2f-staggered 22f asymmetric in-out flights on upper/lower arcs with directional blur and lifted shadows, settling on a spring with one visible bounce",
+    "A 12-column layout guide surfaces during flight and fades on landing; the end holds about 59f with a 1.5% slow push"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

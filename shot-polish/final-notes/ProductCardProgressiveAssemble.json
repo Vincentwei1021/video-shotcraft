@@ -1,0 +1,18 @@
+{
+  "stem": "ProductCardProgressiveAssemble",
+  "changed": true,
+  "brand": [
+    "虚构商品「SOUNDLAB · AUDIO / Aero Max」头戴耳机 → 商品换成 video-shotcraft 本身：棚拍图里放标志（亮底版 + 地面接触影），眉标 VIDEO-SHOTCRAFT · AGENT SKILL，标题 Shotcraft",
+    "pill Audio / Headphones / Noise-cancelling → Agent skill / Remotion / Shot recipes；三行卖点 → Shot recipes that direct every move. / Built on real page captures and 2.5D, / cut to the beat, rendered in Remotion.",
+    "价格事件保留：$449 划掉后新价 $349 → Free，SAVE 22% → OPEN SOURCE（Apache-2.0）；按钮 Add to bag — $349 → Get the skill — Free",
+    "色卡 Midnight/Fog/Sage/Clay → 品牌四色 Ink/Paper/Amber/Slate（Look · Ink）；价格字段框加宽 600→670 框住新 chip"
+  ],
+  "brandEn": [
+    "Fictional product 'SOUNDLAB · AUDIO / Aero Max' headphones → the product is now video-shotcraft itself: the mark staged in the product photo (light version + floor contact shadow), eyebrow VIDEO-SHOTCRAFT · AGENT SKILL, title Shotcraft",
+    "Pills Audio / Headphones / Noise-cancelling → Agent skill / Remotion / Shot recipes; three body lines → 'Shot recipes that direct every move. / Built on real page captures and 2.5D, / cut to the beat, rendered in Remotion.'",
+    "Price event kept: $449 struck, new price $349 → Free, SAVE 22% → OPEN SOURCE (Apache-2.0); button 'Add to bag — $349' → 'Get the skill — Free'",
+    "Swatches Midnight/Fog/Sage/Clay → brand colors Ink/Paper/Amber/Slate ('Look · Ink'); price field box widened 600→670 to frame the new chip"
+  ],
+  "styleKey": "",
+  "mdChanged": true
+}

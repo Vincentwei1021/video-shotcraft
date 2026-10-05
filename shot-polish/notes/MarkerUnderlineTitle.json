@@ -1,0 +1,31 @@
+{
+  "stem": "MarkerUnderlineTitle",
+  "issues": [
+    "118px 两行居中小标题，画面 80% 是空的浅灰底，像占位幻灯片",
+    "马克笔是一根近黑细线，与黑字同色，'人手一笔'的材质反差弱，远看像下划线样式",
+    "笔形起笔平切、揭示窗是直边矩形，运笔没有笔尖；画完之后再无任何变化",
+    "标题只是整行 blur-slide，划线之外没有排版层级与内容"
+  ],
+  "changes": [
+    "look 换 sand（米色纸 · 赤陶）；粗黑体海报：眉题 → 250px / 800 两行巨字「Meet the new / Lumen AI.」占满画宽 → 40px 正文 + 深色 CTA 胶囊",
+    "马克笔改赤陶色、multiply 叠在字上（墨色字压不掉、纸色处染色），中段宽 ~0.16em，是画面唯一的强调色和唯一手绘元素",
+    "笔形重做：起笔墨团 + 圆头张开、收笔收细上挑；揭示窗 = 矩形 + 沿中轴走的圆头笔尖；画完 8f '墨干'一档（浓度 0.96→0.86）",
+    "标题按词遮罩升起（第二行晚 6f），落定后停 6f 再起笔，10f EASE.out 一笔划过（左低右高跟斜体）",
+    "时间表 84f：2–26 标题 / 32–42 划线 / 42–50 墨干 / 44–62 正文与 CTA（弹簧 damping 16）/ hold 22f，全程推进 1→1.02"
+  ],
+  "issuesEn": [
+    "A 118px two-line centred title; 80% of the frame is empty light grey, like a placeholder slide",
+    "The marker is a thin near-black line the same colour as the type — weak material contrast, it reads like an underline style from afar",
+    "Flat-cut stroke start and a straight-edged reveal window, so the stroke has no pen tip; nothing changes after it's drawn",
+    "The title is a single block blur-slide; apart from the stroke there is no typographic hierarchy or content"
+  ],
+  "changesEn": [
+    "Look switched to sand; bold grotesk poster: eyebrow → 250px / 800 two-line 'Meet the new / Lumen AI.' spanning the width → 40px body copy + a dark CTA pill",
+    "The marker is now terracotta, multiplied over the type (ink stays black, paper takes the colour), ~0.16em wide mid-stroke — the only accent colour and the only hand-made mark on screen",
+    "Rebuilt stroke shape: an ink blob and rounded start, a thinning upward flick at the end; reveal = rectangle + a round pen tip travelling along the stroke axis; the ink 'dries' one step over 8f (0.96→0.86)",
+    "Title rises word by word from a mask (second line 6f later), then a 6f pause before the pen lands; one 10f EASE.out stroke, low-left to high-right following the italic",
+    "84f timeline: 2–26 title / 32–42 stroke / 42–50 drying / 44–62 body and CTA (spring damping 16) / 22f hold, push-in 1→1.02"
+  ],
+  "look": "sand",
+  "mdChanged": true
+}

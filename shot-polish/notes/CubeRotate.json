@@ -1,0 +1,31 @@
+{
+  "stem": "CubeRotate",
+  "issues": [
+    "两面都是灰阶占位 dashboard，灰条无内容，左上角压着调试用的卡名大字 CUBE ROTATE",
+    "两面同色同版式，转过去只像换了一张灰图，体块感只靠一点压暗",
+    "盒子悬在浅灰平底上，没有地面、倒影或空间关系，转完后 70 多帧全静止",
+    "看不出两面是\"并列的两章\"，没有任何章节信息"
+  ],
+  "changes": [
+    "look 换成 porcelain（冷白 · 钴蓝 · 青绿）：虚构协作产品 Tandem 的两章——亮面「01 · Plan」甘特路线图 / 暗面「02 · Ship」发布清单 + 区域环，一明一暗让体块转动自带明暗对切",
+    "每面为镜头重排：140px 大标题 + 46px 副题 + 一个讲清章节的组件，1920 原生排版按 0.76 走 CSS zoom 贴面，3D 里文字不糊",
+    "运动：40f 翻转先回拉再转、过冲回落；转动中相机后退 14% 让凸角不出框；按棱上线速度挂轻运动模糊",
+    "空间：瓷白台面 + 接触影 + 同一 3D 场景镜像的淡倒影；底部「01 Plan — 02 Ship」指示器与盒子同曲线滑动",
+    "跟随：A 面甘特条错峰生长、B 面清单四项依次打勾 + 区域环 0→48/48 + LIVE 徽标弹出，hold 段相机极缓推近"
+  ],
+  "issuesEn": [
+    "Both faces were greyscale placeholder dashboards with empty grey bars and a debug 'CUBE ROTATE' label stamped top left",
+    "The faces shared colour and layout, so the turn just looked like swapping one grey image for another; volume came only from a little darkening",
+    "The box floated over a flat light-grey backdrop with no floor, reflection or sense of space, and stood still for 70+ frames after the turn",
+    "Nothing said the two faces were two parallel chapters"
+  ],
+  "changesEn": [
+    "Porcelain look (cool white, cobalt, teal): two chapters of a fictional collaboration product, Tandem: a light '01 · Plan' face with a Gantt roadmap and a dark '02 · Ship' face with a release checklist and region ring, so the turn carries its own light/dark contrast",
+    "Each face is laid out for camera: 140px headline, 46px subline and a single component that explains the chapter, built at native 1920 and mapped with CSS zoom 0.76 so type stays crisp in 3D",
+    "Motion: a 40f turn that winds back, rotates and overshoots back into place; the camera pulls back 14% mid-turn so the corner never leaves frame; light motion blur from edge velocity",
+    "Space: a porcelain floor with contact shadow and a faint reflection mirrored from the same 3D scene; a '01 Plan — 02 Ship' indicator at the bottom slides on the same curve as the box",
+    "Follow-through: Gantt bars grow in a stagger on face A; on face B four checklist items tick in turn, the region ring fills 0→48/48 and a LIVE badge pops, with a slow camera push in the hold"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

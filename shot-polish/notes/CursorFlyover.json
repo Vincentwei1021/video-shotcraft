@@ -1,0 +1,31 @@
+{
+  "stem": "CursorFlyover",
+  "issues": [
+    "整个 dashboard 画在 480×270 设计坐标里放大，特写时控件文字仍只有 4–6 设计 px，大多读不清",
+    "光标与相机绑在同一插值上同时到位，像录屏回放而不是一只手在操作",
+    "四站停留后画面完全静止，最后停在左下角特写，没有收尾",
+    "暗场灰紫 UI 层次平、强调色发闷，点击后的界面响应幅度很小"
+  ],
+  "changes": [
+    "换 porcelain 亮场（冷白 + 钴蓝），虚构分析台 Paragon 在 2400×1500 世界画布上原生排版，只留四个模块；特写 s=1.3 时要读的字 ≥40px",
+    "四个落点重做成有分量的交互：分段控件 30D→90D（大数字换档 + 12 根柱错峰弹簧）、数据点 tooltip 过冲弹出、开关弹簧滑动 + 灰度进度条、表格行勾选描线",
+    "光标与相机解耦：光标先走 16f 轻弧，相机晚 2f 起步、晚 6f 落定，光标瞄一拍再按下（0.84 过冲回弹）+ 80px 涟漪",
+    "时间表 180→240f：俯瞰 22f、四站各 44f（飞行 20f + 停留 24f）、站间 hop 拉远 8% + 按速度运动模糊",
+    "新增收尾：第 4 站后 smooth 24f 拉回俯瞰，四处状态同框，尾帧是一张完整的产品海报"
+  ],
+  "issuesEn": [
+    "The whole dashboard was drawn in a 480×270 design space and scaled up, so even in close-up control text was 4–6 design px and mostly unreadable",
+    "Cursor and camera shared one interpolation and arrived together, reading like a screen recording rather than a hand at work",
+    "Each stop froze completely, and the shot simply ended on the bottom-left close-up with no resolve",
+    "Flat grey-violet dark UI with a muddy accent; the UI responses to clicks were tiny"
+  ],
+  "changesEn": [
+    "Porcelain light look (cool white + cobalt): a fictional analytics app, Paragon, laid out natively on a 2400×1500 world canvas with only four modules; at the 1.3× close-up every readable label is ≥40px",
+    "The four targets became meaningful interactions: a 30D→90D segmented control (the big number rolls over and 12 bars spring in stagger), a data-point tooltip that pops with overshoot, a spring toggle with a rollout bar, and a table row that checks itself",
+    "Cursor and camera decoupled: the cursor leads on a 16f arc, the camera starts 2f later and lands 6f later, and the cursor aims for a beat before pressing (0.84 with overshoot) plus an 80px ripple",
+    "Timeline 180→240f: 22f overview, four 44f legs (20f flight + 24f dwell), an 8% hop between stops and velocity-based motion blur",
+    "New ending: after the fourth stop the camera eases back to the overview over 24f so all four states share the frame — the last frame is a complete product poster"
+  ],
+  "look": "porcelain",
+  "mdChanged": true
+}

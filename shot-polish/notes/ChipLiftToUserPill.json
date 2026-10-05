@@ -1,0 +1,31 @@
+{
+  "stem": "ChipLiftToUserPill",
+  "issues": [
+    "480×270 设计坐标放大，chip 只有 40×24 设计 px，网格挤在左上角一小块",
+    "药丸、连线、徽标都很细小，字幕灰色小字，结果组没有分量",
+    "全片灰底黑白，没有光、没有强调色，「接上了」这一刻没有情绪",
+    "镜头最后一段几乎静止，结尾不像一张完整画面"
+  ],
+  "changes": [
+    "look 换 lime 石墨暗场 + 荧光黄绿，按 1080p 原生重排：4×3 缩写网格 chip 168×100、40px 字，眉题「Design team · 12 online」（虚构协作产品 Wren）",
+    "入场按到目标距离由中心向外错峰；反色改为暗场里的深灰→近白 3 档台阶（每档 2f），余项按曼哈顿距离扩散退场 + 缩 0.9",
+    "药丸左缘锚定生长到 640px，人名 48px 逐字升起 + 职能副标签；荧光绿在线点 overshoot 弹出带光环与落地泛光",
+    "连接线改为 3px 荧光绿渐变 + 领跑光点，抵达即 Wren 徽标 spring 弹入；60px 字幕逐词加深、末词人名染强调色，32px 副句交代上下文",
+    "机位：生长段静止，定型后 smooth 横移上移到结果组居中并推近 5%，hold 再缓推 1.5%；时长 150→165f"
+  ],
+  "issuesEn": [
+    "Built in 480×270 design units; chips are 40×24 design px and the grid is squeezed into a small top-left patch",
+    "The pill, connector and badge are all thin and small and the caption is small grey text, so the result group has no weight",
+    "Grey and black-and-white throughout, with no light and no accent; the moment of connecting has no emotion",
+    "The final stretch is almost static and the end doesn't read as a finished frame"
+  ],
+  "changesEn": [
+    "Lime graphite dark look with fluorescent yellow-green, re-laid natively at 1080p: a 4×3 grid of 168×100 initials chips with 40px type and a \"Design team · 12 online\" eyebrow (fictional collaboration app Wren)",
+    "Chips enter outward from the target by distance; the inversion is a 3-step dark-grey→near-white hard cut (2f per step) and the rest exit by Manhattan distance while shrinking to 0.9",
+    "The pill grows from its anchored left edge to 640px, the 48px name rises letter by letter with a role tag, and a lime online dot pops with a halo and floor glow",
+    "The connector is a 3px lime gradient with a leading spark; on arrival the Wren badge springs in; the 60px caption deepens word by word with the name in the accent, plus a 32px context line",
+    "Camera stays still while the pill grows, then smoothly pans and lifts to centre the result group with a 5% push and a further 1.5% during the hold; 150→165f"
+  ],
+  "look": "lime",
+  "mdChanged": true
+}
