@@ -61,12 +61,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view gallery-media --repo "$GITHUB_REPOSITORY" \
-            --json assets --jq '.assets[].name' | sort > /tmp/release-assets.txt
+          # 与 deploy-pages 同一套组装（整包 zip + 晚于它的单个 mp4），查的是部署时真正拿到的文件
+          python3 gallery/assemble-media.py /tmp/gallery-media
           python3 - <<'EOF'
-          import json, re, sys
+          import json, os, re, sys
           lib = json.load(open('gallery/api/library.json'))
-          assets = set(open('/tmp/release-assets.txt').read().split())
+          assets = set(os.listdir('/tmp/gallery-media'))
           missing, malformed = [], []
           # app.js interpolates these URLs into innerHTML without escaping,
           # so gate the exact shape here: same-origin relative ./media/ path
