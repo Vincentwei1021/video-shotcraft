@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync, cpSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -98,23 +98,35 @@ const renderExportPlugin = (): Plugin => {
             // 而 public/ 下全是指向成片工程 / 仓库素材库的符号链接——渲染前先解引用同步成
             // 真实文件目录，再用 --public-dir 指过去。cardpreviews 仅 UI 用，排除。
             const renderPublic = path.join(root, ".render-public");
-            const rsync = spawn(
-              "rsync",
-              ["-aL", "--delete", "--exclude=cardpreviews", "public/", `${renderPublic}/`],
-              { cwd: root },
-            );
-            rsync.stderr.on("data", onChunk);
-            rsync.on("close", (rc) => {
-              if (rc !== 0) {
-                dropProps();
-                job.status = "error";
-                job.lastLine = `素材同步失败（rsync 退出码 ${rc}）：${job.lastLine}`;
-                return;
+            // Windows 无 rsync：改用 fs.cpSync 做同等的「解引用同步」（dereference 展开符号链接）
+            const syncErr = (() => {
+              try {
+                rmSync(renderPublic, { recursive: true, force: true });
+                mkdirSync(renderPublic, { recursive: true });
+                cpSync(path.join(root, "public"), renderPublic, {
+                  recursive: true,
+                  dereference: true,
+                  filter: (src: string) => path.basename(src) !== "cardpreviews",
+                });
+                return null;
+              } catch (e) {
+                return e instanceof Error ? e.message : String(e);
               }
-              const bin = path.join(root, "node_modules", ".bin", "remotion");
+            })();
+            if (syncErr) {
+              dropProps();
+              job.status = "error";
+              job.lastLine = `素材同步失败（无法解引用 public/）：${syncErr}`;
+              return;
+            }
+            {
+              // Windows 上 .bin/remotion 是 shell 脚本，直接 spawn 会 ENOENT；
+              // 统一走 node + CLI 的 JS 入口，跨平台可靠。
+              const cliEntry = path.join(root, "node_modules", "@remotion", "cli", "remotion-cli.js");
               const child = spawn(
-                bin,
+                process.execPath,
                 [
+                  cliEntry,
                   "render",
                   "src/remotion/index.ts",
                   "Main",
@@ -124,6 +136,11 @@ const renderExportPlugin = (): Plugin => {
                 ],
                 { cwd: root },
               );
+              child.on("error", (e: Error) => {
+                dropProps();
+                job.status = "error";
+                job.lastLine = `渲染进程启动失败：${e.message}`;
+              });
               child.stdout.on("data", onChunk);
               child.stderr.on("data", onChunk);
               child.on("close", (code) => {
@@ -136,7 +153,7 @@ const renderExportPlugin = (): Plugin => {
                   if (err) job.lastLine = err;
                 }
               });
-            });
+            }
             send(200, { id });
           });
           return;
