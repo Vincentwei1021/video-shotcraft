@@ -188,7 +188,7 @@ const categoryEn = Object.fromEntries(
 const categories = [...new Set(demos.map((d) => meta[d.stem].categoryKey))]
   .sort((a, b) => (catOrder.indexOf(a) + 1 || 99) - (catOrder.indexOf(b) + 1 || 99))
   .map((k) => lib.categories?.[k]?.zh ?? k);
-// 俄文：workbench/i18n/ru/*.json 是平铺的 { 中文原文: 俄文 }（名称 / 分类 / 一句话），只取本次 demo 用到的条目
+// 俄文：workbench/i18n/ru/*.json 是平铺的 { 中文原文: 俄文 }（名称 / 分类 / 一句话），只取当前及旧工程兼容 demo 用到的条目
 const ruAll = {};
 const ruDir = join(wb, "i18n/ru");
 if (existsSync(ruDir))
@@ -199,6 +199,7 @@ for (const m of Object.values(meta)) {
   ruUsed.add(m.name).add(m.card);
   if (m.summary) ruUsed.add(m.summary);
 }
+for (const card of legacy) ruUsed.add(card.name).add(card.category);
 const textRu = Object.fromEntries(Object.entries(ruAll).filter(([zh]) => ruUsed.has(zh)));
 writeFileSync(
   join(wb, "src/cards/demoMeta.ts"),
