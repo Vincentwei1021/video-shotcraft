@@ -10,7 +10,7 @@
 import {
   existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, symlinkSync, unlinkSync, writeFileSync,
 } from "node:fs";
-import { dirname, extname, join, relative } from "node:path";
+import { dirname, extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const wb = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -71,7 +71,7 @@ const walkDemos = (dir) => {
     if (MATERIAL_REQUIRED.has(stem)) continue;
     const src = readFileSync(p, "utf8");
     if (!new RegExp(`export const ${stem}\\s*:\\s*React\\.FC\\s*=`).test(src)) continue;
-    const rel = relative(demosDir, p).replace(/\.tsx$/, "");
+    const rel = relative(demosDir, p).replace(/\.tsx$/, "").split(sep).join("/");
     const [category, slug] = rel.split("/");
     const m = DUR_PAT.exec(src);
     let durExport = m?.[1];

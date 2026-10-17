@@ -11,7 +11,7 @@
 import { bundle } from "@remotion/bundler";
 import { renderStill, selectComposition } from "@remotion/renderer";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, cpSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,11 +25,12 @@ if (!existsSync(join(wb, "proj", "workbench.ts"))) {
   console.error("未链接带清单的成片工程：先 node scripts/open.mjs <工程目录>");
   process.exit(2);
 }
-// 比对依赖先检查，别渲完一堆帧才发现比不了
+// 比对依赖先检查，别渲完一堆帧才发现比不了（Windows 上通常是 python 而非 python3）
 {
-  const r = spawnSync("python3", ["-c", "import PIL"], { encoding: "utf8" });
-  if (r.status !== 0) {
-    console.error("parity 需要 python3 + Pillow 做像素比对：pip install pillow（或 python3 -m pip install pillow）");
+  const py = process.platform === "win32" ? ["python", "python3"] : ["python3", "python"];
+  const ok = py.some((c) => spawnSync(c, ["-c", "import PIL"], { encoding: "utf8" }).status === 0);
+  if (!ok) {
+    console.error("parity 需要 python + Pillow 做像素比对：pip install pillow");
     process.exit(2);
   }
 }
@@ -38,8 +39,18 @@ if (!existsSync(join(wb, "proj", "workbench.ts"))) {
 const out = join(wb, ".parity");
 mkdirSync(out, { recursive: true });
 const renderPublic = join(wb, ".render-public");
-const rs = spawnSync("rsync", ["-aL", "--delete", "--exclude=cardpreviews", "public/", `${renderPublic}/`], { cwd: wb, stdio: "inherit" });
-if (rs.status !== 0) process.exit(2);
+try {
+  rmSync(renderPublic, { recursive: true, force: true });
+  mkdirSync(renderPublic, { recursive: true });
+  cpSync(join(wb, "public"), renderPublic, {
+    recursive: true,
+    dereference: true,
+    filter: (src) => !/[\\/]cardpreviews$/.test(src),
+  });
+} catch (e) {
+  console.error("素材同步失败（无法解引用 public/）：", e);
+  process.exit(2);
+}
 
 console.log("bundling…");
 const serveUrl = await bundle({
