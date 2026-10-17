@@ -570,6 +570,9 @@ const LABELS_ZH_EN: Record<string, string> = {
   "字卡": "Title card",
   "解说字幕条": "Caption strip",
   "暖白闪转场": "Warm flash cut",
+  "衬线大字逐词压印入场，*词* 标琥珀斜体强调，下划线生长；尾 8 帧淡出": "Large serif title presses in word by word, *word* gets amber italic emphasis, underline grows; fades out over the last 8 frames",
+  "底部通栏等宽解说条，琥珀方点引导；透明底，叠在任何镜头上": "Full-width monospace caption bar at the bottom with an amber square bullet; transparent background, layers over any shot",
+  "放在硬切点前 5 帧、跨骑两侧各 5 帧；只盖接缝，不当装饰光效": "Place 5 frames before a hard cut, straddling 5 frames on each side; it only hides the seam, not a decorative light effect",
   // schema 字段 / 选项
   "底色": "Fill color",
   "亮斑强度": "Glow strength",
@@ -689,6 +692,9 @@ const LABELS_ZH_RU: Record<string, string> = {
   "字卡": "Титр",
   "解说字幕条": "Полоса субтитров",
   "暖白闪转场": "Тёплая вспышка-переход",
+  "衬线大字逐词压印入场，*词* 标琥珀斜体强调，下划线生长；尾 8 帧淡出": "Крупный антиквенный титр впечатывается по словам, *слово* выделяется янтарным курсивом, растёт подчёркивание; последние 8 кадров — затухание",
+  "底部通栏等宽解说条，琥珀方点引导；透明底，叠在任何镜头上": "Полоса пояснений моноширинным шрифтом во всю ширину внизу, с янтарным квадратным маркером; прозрачный фон, ложится поверх любого плана",
+  "放在硬切点前 5 帧、跨骑两侧各 5 帧；只盖接缝，不当装饰光效": "Ставится за 5 кадров до жёсткой склейки и захватывает по 5 кадров с каждой стороны; только прячет шов, а не служит декоративным световым эффектом",
   "底色": "Цвет заливки",
   "亮斑强度": "Сила свечения",
   "文字内容": "Текст",
@@ -826,7 +832,7 @@ export const cardName = (card: Pick<CardDef, "name" | "nameEn">): string => {
 export const cardSummary = (card: Pick<CardDef, "summary" | "summaryEn">): string | undefined => {
   const l = useLocale.getState().locale;
   if (l === "en") return card.summaryEn ?? (card.summary ? tx(card.summary) : undefined);
-  if (l === "ru") return card.summary ? (DEMO_TEXT_RU[card.summary] ?? card.summaryEn ?? card.summary) : undefined;
+  if (l === "ru") return card.summary ? (DEMO_TEXT_RU[card.summary] ?? card.summaryEn ?? tx(card.summary)) : undefined;
   return card.summary;
 };
 

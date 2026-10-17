@@ -36,9 +36,9 @@ cd workbench && npm install && npm run dev      # http://localhost:5198
   localStorage `shotcraft-workbench-locale`）。语言只影响展示，不改写工程 JSON 与轨道名。界面 chrome 走 `src/i18n.ts`
   的字符串表；卡片名 / schema 字段名 / 分类 / 轨道名 / 清单里的镜头标签照原文写，展示时按同文件的 zh→en / zh→ru
   词典翻译（中英俄任一写法都能互译），查不到原样显示；demo 卡的英文名与一句话由 gen-index 直接取画廊数据
-  （`nameEn` / `summaryEn`），俄文取 `i18n/ru/*.json`（平铺的「中文原文 → 俄文」，生成 `DEMO_TEXT_RU`）；
+  （`nameEn` / `summaryEn`），俄文取 `i18n/ru/*.json`（平铺的「中文原文 → 俄文」，生成 `DEMO_TEXT_RU`，含 `_legacy/` 兼容卡的名称与分类）；
   主题预设名写成「中文 · English」按语言取半段，俄文按中文半段查词典。加界面文案三种语言都要写；
-  改原生卡或模板清单的中文标签要同步两份词典
+  改原生卡或模板清单的中文标签 / 一句话要同步两份词典；新增或改写 demo 时同步补 `i18n/ru/*.json`
 - **导出成片**：顶栏「导出成片」→ dev server 内起 Remotion CLI 渲当前工程为 MP4 → `exports/`
 - **Remotion Studio**：`npm run studio`（每张卡 Zod schema 自动生成；`ProjImported` / `ProjOriginal` 对照）
 - **无损校验**：`npm run parity`——退出码 0 一致 / 1 有差异 / 2 无法比对（缺 python3+Pillow），不假绿
