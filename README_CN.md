@@ -8,7 +8,7 @@
 
 # video-shotcraft
 
-[English](README.md) | **中文** | [日本語](README_JA.md)
+[English](README.md) | **中文** | [日本語](README_JA.md) | [Русский](README_RU.md)
 
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
 [![Showcase](https://img.shields.io/badge/Showcase-community%20videos-7c3aed)](https://vincentwei1021.github.io/video-shotcraft/showcase.html)
