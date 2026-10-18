@@ -36,10 +36,21 @@ body {
 /* —— 顶栏 —— */
 .topbar {
   display: flex; align-items: center; gap: 8px;
-  height: 50px; padding: 0 16px;
+  height: 52px; padding: 0 14px;
   background: var(--panel); border-bottom: 1px solid var(--line);
   flex: none;
 }
+.brand-mark {
+  display: inline-flex; align-items: center; gap: 8px; padding: 0;
+  color: inherit; background: transparent; border: 0; cursor: pointer;
+}
+.brand-glyph {
+  display: grid; place-items: center; width: 25px; height: 25px;
+  border-radius: 7px; color: #fff; font-size: 15px; font-weight: 800;
+  background: linear-gradient(135deg, #24d1ff, #7b5cff 48%, #ff4d8d);
+  box-shadow: 0 3px 12px rgba(95, 92, 255, .28);
+}
+.topbar-divider { width: 1px; height: 22px; background: var(--line-strong); margin: 0 3px; }
 .logo { font-size: 13px; letter-spacing: 0.2px; color: var(--text-dim); }
 .logo b { color: var(--text); font-weight: 600; }
 .project-name {
@@ -49,6 +60,14 @@ body {
 }
 .project-name:hover, .project-name:focus {
   border-color: var(--line); background: var(--inset); outline: none;
+}
+.save-state {
+  color: #78d6a3; font-size: 11px; white-space: nowrap;
+}
+.save-state::first-letter { font-size: 8px; }
+.workspace-mode {
+  color: var(--text-dim); border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 9px; font-size: 11px; white-space: nowrap;
 }
 
 /* —— 按钮 —— */
@@ -90,6 +109,27 @@ body {
 
 /* —— 主区三栏 —— */
 .main { display: flex; flex: 1; min-height: 0; }
+
+/* CapCut-style tool rail: navigation stays visible while the library changes. */
+.tool-rail {
+  width: 72px; flex: none; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 10px 6px 9px; background: #17171a;
+  border-right: 1px solid var(--line); z-index: 2;
+}
+.tool-rail-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; width: 60px; min-height: 51px; padding: 5px 2px;
+  color: var(--text-dim); background: transparent; border: 0; border-radius: 8px;
+  font-family: inherit; font-size: 10px; font-weight: 500; line-height: 1.1;
+  cursor: pointer; transition: color .15s, background .15s;
+}
+.tool-rail-item:hover { color: var(--text); background: rgba(255,255,255,.07); }
+.tool-rail-item.active {
+  color: #fff; background: linear-gradient(180deg, rgba(123,92,255,.34), rgba(77,65,180,.2));
+  box-shadow: inset 0 0 0 1px rgba(145,129,255,.25);
+}
+.tool-rail-icon { font-size: 19px; line-height: 20px; font-weight: 600; }
+.tool-rail-spacer { flex: 1; }
 
 .panel-title {
   padding: 11px 14px; font-weight: 600; font-size: 13px; letter-spacing: 0.2px;
