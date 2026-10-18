@@ -30,10 +30,10 @@ export const AIFL_TOTAL = 1085;
 // title-card copy: space-separated words, `*word*` = amber italic accent. Single
 // source for the render below and for the workbench manifest (workbench.ts).
 export const TITLE_CARDS = {
-  card1: { text: 'All your team’s research, *one* place to go.' },
-  card2: { text: 'Paper *Radar,* tailored for your morning reading.', sub: 'of 31 fetched today', subDigits: '5' },
-  cardWbr: { text: 'Every project, *linked* to your weekly report.' },
-  card3: { text: 'The whole team, on the *same* page.' },
+  card1: { text: 'Надеждно *плъзгане* за всяка врата.' },
+  card2: { text: 'Комплектите *IronArt* за вашия проект.', sub: 'до 1500 кг', subDigits: '1500' },
+  cardWbr: { text: 'Скорост, *безопасност* и безпроблемен монтаж.' },
+  card3: { text: 'Изберете системата, която *държи*.' },
 } as const;
 
 export const parseWords = (text: string): { text: string; accent?: boolean }[] =>
@@ -55,13 +55,13 @@ export const sfxDuration = (s: { from: number; src: string }) =>
 
 // bottom-strip narration over the live shots (absolute frames; outro stays clean)
 export const CAPTIONS = [
-  { from: 90, duration: 40, text: 'TEN LIVE PROJECTS · FOUR RESEARCHERS' },
+  { from: 90, duration: 40, text: 'ПРОФЕСИОНАЛНИ СИСТЕМИ · НАДЕЖДНА КОНСТРУКЦИЯ' },
   // (the hero-card hover annotation lives inside SceneOpen as a 3D floating note)
-  { from: 318, duration: 44, text: 'NEW WORK LANDS ALL WEEK' },
-  { from: 395, duration: 55, text: 'SEARCH · FILTER · OPEN' },
-  { from: 477, duration: 68, text: 'EVERY QUESTION, TRACKED TO ITS EXPERIMENTS' },
-  { from: 633, duration: 72, text: 'THE DAILY PAPER RADAR' },
-  { from: 789, duration: 78, text: 'FOUR VOICES, ONE WEEKLY BRIEF' },
+  { from: 318, duration: 44, text: 'РЕЛСИ · КОЛИЧКИ · АКСЕСОАРИ' },
+  { from: 395, duration: 55, text: 'БЪРЗО · НАДЕЖДНО · МОНТИРАНЕ' },
+  { from: 477, duration: 68, text: 'ТОВАРОНОСИМИ СИСТЕМИ ЗА ВСЯКА ВРАТА' },
+  { from: 633, duration: 72, text: 'ВИСОКА ТОВАРОНОСИМОСТ' },
+  { from: 789, duration: 78, text: 'ИЗБЕРЕТЕ СИСТЕМАТА ЗА ВАШИЯ ПРОЕКТ' },
 ] as const;
 
 // sound design pinned to animation beats (absolute frames, Mixkit license).

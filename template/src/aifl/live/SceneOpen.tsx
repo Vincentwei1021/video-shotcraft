@@ -8,12 +8,12 @@ import layout from '../live-layout.json';
 /** Context-level defaults (copy / sizes / palette), editable per clip in the
  * workbench. Motion timing below stays fixed. Hex = sRGB of the oklch tokens. */
 export const SCENE_OPEN_DEFAULTS = {
-  wordmark: 'AI Foundation Lab',
+  wordmark: 'IronArt.bg',
   wordmarkSize: 132,
-  kicker: 'TEAM RESEARCH CONSOLE',
+  kicker: 'КОНЗОЛНИ СИСТЕМИ ЗА ВРАТИ И ПОРТАЛИ',
   kickerSize: 26,
-  noteLine1: 'One card,',
-  noteLine2: 'one project.',
+  noteLine1: 'Надеждно',
+  noteLine2: 'плъзгане.',
   noteSize: 37,
   ink: '#13110f',    // oklch(18% 0.006 82)
   amber: '#955905',  // oklch(52% 0.115 65)
