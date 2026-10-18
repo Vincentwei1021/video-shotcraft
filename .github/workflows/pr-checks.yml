@@ -62,7 +62,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # 与 deploy-pages 同一套组装（整包 zip + 晚于它的单个 mp4），查的是部署时真正拿到的文件
-          python3 gallery/assemble-media.py /tmp/gallery-media
+          # Shared demo previews are distributed by the upstream release.
+          # Forks inherit library.json but do not inherit GitHub release assets.
+          python3 gallery/assemble-media.py /tmp/gallery-media --repo Vincentwei1021/video-shotcraft
           python3 - <<'EOF'
           import json, os, re, sys
           lib = json.load(open('gallery/api/library.json'))
