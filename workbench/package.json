@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "test:platform": "node --test scripts/test-platform.mjs",
     "test:themes": "node scripts/test-themes.mjs",
     "test:legacy": "node scripts/gen-index.mjs && node scripts/test-legacy.mjs",
     "gen": "node scripts/gen-index.mjs",

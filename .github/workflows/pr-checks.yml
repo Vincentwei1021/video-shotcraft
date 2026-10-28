@@ -154,6 +154,8 @@ jobs:
           cd template && ../workbench/node_modules/.bin/tsc --noEmit -p tsconfig.json
       - name: Theme and palette regressions
         run: npm --prefix workbench run test:themes
+      - name: Export errors and Python interpreter regressions
+        run: npm --prefix workbench run test:platform
       - name: Retired demos remain compatible with saved projects
         run: npm --prefix workbench run test:legacy
 

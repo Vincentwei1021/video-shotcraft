@@ -117,6 +117,7 @@ const renderExportPlugin = (): Plugin => {
               dropProps();
               job.status = "error";
               job.lastLine = `素材同步失败（无法解引用 public/）：${syncErr}`;
+              send(500, { error: job.lastLine });
               return;
             }
             {
