@@ -8,6 +8,7 @@ tot = int(subprocess.check_output(['ffprobe', '-v', 'error', '-count_frames', '-
 n = min(n, tot)
 picks = [(2 * k + 1) * tot // (2 * n) for k in range(n)]
 sel = '+'.join(f'eq(n\\,{p})' for p in picks)
+# A single output image needs no video sync mode (the flags vary by FFmpeg version).
 subprocess.check_call(['ffmpeg', '-v', 'error', '-y', '-i', src, '-vf',
-    f"select='{sel}',scale=480:-1,tile=4x{(n + 3) // 4}", '-frames:v', '1', '-fps_mode', 'passthrough', dst])
+    f"select='{sel}',scale=480:-1,tile=4x{(n + 3) // 4}", '-frames:v', '1', dst])
 print(f'{tot} frames; sheet frames {",".join(map(str, picks))}')

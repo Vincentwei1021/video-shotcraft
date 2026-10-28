@@ -17,14 +17,19 @@ permissions:
 
 jobs:
   contact-sheet:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - name: Verify sampled frames and contact sheet pixels
-        run: python3 -m unittest discover -s shot-polish -p test_sheet.py -v
+        run: |
+          # Test distro FFmpeg, including Ubuntu 22.04's FFmpeg 4.4.
+          export PATH="/usr/bin:$PATH"
+          ffmpeg -version
+          python3 -m unittest discover -s shot-polish -p test_sheet.py -v
