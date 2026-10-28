@@ -9,5 +9,5 @@ n = min(n, tot)
 picks = [(2 * k + 1) * tot // (2 * n) for k in range(n)]
 sel = '+'.join(f'eq(n\\,{p})' for p in picks)
 subprocess.check_call(['ffmpeg', '-v', 'error', '-y', '-i', src, '-vf',
-    f"select='{sel}',scale=480:-1,tile=4x{(n + 3) // 4}", '-frames:v', '1', '-vsync', '0', dst])
+    f"select='{sel}',scale=480:-1,tile=4x{(n + 3) // 4}", '-frames:v', '1', '-fps_mode', 'passthrough', dst])
 print(f'{tot} frames; sheet frames {",".join(map(str, picks))}')
