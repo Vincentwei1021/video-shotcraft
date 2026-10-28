@@ -5,7 +5,7 @@ Run from repo root after cards or library.json change:
     python3 gallery/build-seo.py
 
 Outputs:
-- static pre-rendered card list injected into library.html between
+- static pre-rendered card list injected into index.html between
   <!-- seo:cards:start --> and <!-- seo:cards:end --> markers
   (replaced by app.js at runtime; exists so crawlers see the full list without JS)
 - sitemap.xml
@@ -56,7 +56,7 @@ static_block = (
     + '\n    <!-- seo:cards:end -->'
 )
 
-index_path = HERE / 'library.html'
+index_path = HERE / 'index.html'
 html = index_path.read_text(encoding='utf-8')
 pattern = re.compile(
     r'(<section class="library" id="library"[^>]*>).*?(</section>)', re.S)
@@ -65,32 +65,24 @@ html_new = pattern.sub(
 index_path.write_text(html_new, encoding='utf-8')
 
 
-# 1b. rewrite hardcoded counts in both pages' head/meta/JSON-LD and the
-# landing hero. Runtime JS corrects the visible stats, but crawlers, social
+# 1b. rewrite hardcoded counts in the library's head/meta/JSON-LD and stats.
+# Runtime JS corrects the visible stats, but crawlers, social
 # cards and no-JS readers see these literals, so they must not drift.
 CARDS = lib['stats']['cardCount']
 STYLES = lib['stats']['styleCount']
 PREVIEWS = lib['stats']['previewCount']
 COUNT_PATTERNS = [
     (r'\b\d+ shot recipe cards\b', f'{CARDS} shot recipe cards'),
-    (r'\b\d+ cinematic shot recipes\b', f'{CARDS} cinematic shot recipes'),
-    (r'\b\d+ 张镜头配方卡', f'{CARDS} 张镜头配方卡'),
     (r'\b\d+ styles\b', f'{STYLES} styles'),
     (r'\b\d+ motion previews\b', f'{PREVIEWS} motion previews'),
 ]
-for page in ('index.html', 'library.html'):
-    path = HERE / page
-    text = path.read_text(encoding='utf-8')
-    for pat, repl in COUNT_PATTERNS:
-        text = re.sub(pat, repl, text)
-    # landing hero h1 and its zh/en L10N strings carry the card count too
-    text = re.sub(r'(<strong id="statCards">)\d+(</strong>)', rf'\g<1>{CARDS}\g<2>', text)
-    text = re.sub(r'(<strong id="statStyles">)\d+(</strong>)', rf'\g<1>{STYLES}\g<2>', text)
-    text = re.sub(r'(<strong id="statSamples">)\d+(</strong>)', rf'\g<1>{PREVIEWS}\g<2>', text)
-    text = re.sub(r'(<dd id="cardCount">)\d+(</dd>)', rf'\g<1>{CARDS}\g<2>', text)
-    text = re.sub(r'(<dd id="styleCount">)\d+(</dd>)', rf'\g<1>{STYLES}\g<2>', text)
-    text = re.sub(r'(<dd id="previewCount">)\d+(</dd>)', rf'\g<1>{PREVIEWS}\g<2>', text)
-    path.write_text(text, encoding='utf-8')
+text = index_path.read_text(encoding='utf-8')
+for pat, repl in COUNT_PATTERNS:
+    text = re.sub(pat, repl, text)
+text = re.sub(r'(<dd id="cardCount">)\d+(</dd>)', rf'\g<1>{CARDS}\g<2>', text)
+text = re.sub(r'(<dd id="styleCount">)\d+(</dd>)', rf'\g<1>{STYLES}\g<2>', text)
+text = re.sub(r'(<dd id="previewCount">)\d+(</dd>)', rf'\g<1>{PREVIEWS}\g<2>', text)
+index_path.write_text(text, encoding='utf-8')
 print(f'normalized counts to {CARDS} cards / {STYLES} styles / {PREVIEWS} previews')
 
 # 2. sitemap.xml
@@ -99,7 +91,6 @@ newest = lib['stats']['newest'][:10]
     '<?xml version="1.0" encoding="UTF-8"?>\n'
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     f'  <url><loc>{SITE}/</loc><lastmod>{newest}</lastmod></url>\n'
-    f'  <url><loc>{SITE}/library.html</loc><lastmod>{newest}</lastmod></url>\n'
     f'  <url><loc>{SITE}/showcase.html</loc><lastmod>{newest}</lastmod></url>\n'
     '</urlset>\n', encoding='utf-8')
 
@@ -124,8 +115,7 @@ lines = [
     f'- [SKILL.md]({REPO}/blob/main/SKILL.md): agent entry point and core production rules',
     f'- [Production pipeline]({REPO}/blob/main/references/pipeline.md): six-stage workflow',
     f'- [Ink Press template]({REPO}/blob/main/template/TEMPLATE.md): complete 36.2s promo template',
-    f'- [Gallery landing]({SITE}/): what the skill is, categories overview',
-    f'- [Shot library]({SITE}/library.html): browse all shot cards and motion previews',
+    f'- [Shot library]({SITE}/): browse all shot cards and motion previews',
     '',
     '## Shot recipe cards',
     '',
@@ -143,9 +133,9 @@ for cat_key in ['opening', 'typography', 'ui-entrance', 'camera', 'data',
     lines.append('')
     for card in by_cat[cat_key]:
         desc = en_desc(card)
-        lines.append(f'- [{card["name"]}]({SITE}/library.html#{card["name"]}): {desc}')
+        lines.append(f'- [{card["name"]}]({SITE}/#{card["name"]}): {desc}')
     lines.append('')
 lines.append('')
 (HERE / 'llms.txt').write_text('\n'.join(lines), encoding='utf-8')
 
-print(f'prerendered {len(items)} cards into library.html; wrote sitemap.xml, llms.txt')
+print(f'prerendered {len(items)} cards into index.html; wrote sitemap.xml, llms.txt')

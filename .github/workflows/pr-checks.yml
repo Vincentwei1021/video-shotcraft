@@ -1,7 +1,7 @@
 name: PR checks
 
 # Catches problems BEFORE merge that deploy-pages.yml would only surface after:
-# generated artifacts (gallery/source, library.json, library.html, sitemap,
+# generated artifacts (gallery/source, library.json, index.html, sitemap,
 # llms.txt) drifting from the shot cards, and library.json referencing preview
 # MP4s that don't exist on the gallery-media release.
 on:
