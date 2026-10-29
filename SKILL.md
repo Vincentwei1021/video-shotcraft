@@ -1,6 +1,6 @@
 ---
 name: video-shotcraft
-description: Create cinematic product videos from shot recipe cards, a validated template, and code/audio assets (Remotion + real page screenshots + 2.5D camera moves + beat-synced cuts + sound design). Use when the user asks to turn a frontend project or webpage into a product video, says "use video-shotcraft to make a video/promo", names the Ink Press template or asks to reproduce its effect, or wants a single shot card's motion. 用镜头配方卡 + 已验收模板 + 代码资产与 Freesound 音效制作电影感产品视频（Remotion + 真实页面截图 + 2.5D 运镜 + 节奏卡点 + 声音设计）。当用户要求"用 video-shotcraft 做视频/宣传片"、把前端项目/网页做成产品视频、点名 Ink Press 模板或要求复刻模板片效果，或要用镜头卡做单个动效镜头时使用。
+description: Create cinematic product videos from frontend projects or webpages with Remotion, real page captures, shot cards, the Ink Press template, beat sync and sound design. Use for full product promos, reproducing Ink Press, single shot-card effects, or finding, adding, replacing and aligning sound effects in an existing product video or shot, including candidate-only SFX searches. 用真实页面、镜头卡与 Ink Press 模板制作产品宣传片；用户要求用 video-shotcraft 做视频、复刻模板、制作单镜头，或给已完成的产品片/镜头找音效候选、加音效、换音效、对齐声音时使用。
 ---
 
 # video-shotcraft：电影感产品视频制作
@@ -10,7 +10,16 @@ description: Create cinematic product videos from shot recipe cards, a validated
 当前 focus 是 web/桌面产品宣传片，但镜头卡本身是通用动效词汇——
 也可以单独抽卡做任意视频里的单个镜头。
 
-## 调用时先判断模式
+## 调用时先判断任务范围
+
+**仅处理已有视频或镜头的音效**：直接读 `references/sound-design.md` 与
+`references/sfx-sourcing.md`，进入声音选材、分析或对齐步骤，无需重新选择整片创作模式。
+只要候选时执行 `sfx-source.py search` 并给出素材页/试听入口，不下载、不改画面、不渲染；
+动作、材质、目标时长和许可要求已足够搜索时，不要求用户先提供完整视频工程。
+用户已指定音频时沿用该文件，需要测量则执行 `analyze`，不自动搜索替代声音。
+单纯调整 BGM 走 sound-design 的 BGM 流程；静音或明确不要音效时不触发 SFX 搜索。
+
+**新制作完整宣传片**时，再按以下模式继续。
 
 完整宣传片有三种互不合并的模式。在开始素材采集、分镜或实现前，先判断用户
 是否已经明确选择；已经选择时直接执行，不重复询问，也不要改成另一种模式。
