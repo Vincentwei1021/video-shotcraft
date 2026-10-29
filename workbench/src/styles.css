@@ -145,6 +145,7 @@ body {
 .lib-foot {
   padding: 10px 14px; font-size: 11px; border-top: 1px solid var(--line); line-height: 1.6;
 }
+.lib-foot a { color: var(--accent); }
 
 /* 分类标题：纯文字行，无框 */
 .lib-cat-toggle {

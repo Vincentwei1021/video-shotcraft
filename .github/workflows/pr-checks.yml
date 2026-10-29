@@ -23,6 +23,16 @@ permissions:
   contents: read
 
 jobs:
+  freesound-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freesound sourcing offline regressions
+        run: python3 -m unittest discover -s assets/scripts -p 'test_sfx_source.py' -v
+
   unit-tests:
     runs-on: ubuntu-latest
     steps:

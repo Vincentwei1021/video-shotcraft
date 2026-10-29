@@ -3,12 +3,12 @@
 //   src/cards/demo-index.ts   demos/ 镜头卡 demo 组件静态索引（webpack/Vite 双兼容——Remotion CLI 不认 import.meta.glob）
 //   src/cards/legacy-index.ts 下架 demo 的旧工程兼容索引（不进入素材库）
 //   src/cards/demoMeta.ts     demo → 中文名 / 画廊分类 / 预览视频（由 gallery/api/library.json + translations.js 生成）
-//   src/mediaManifest.ts      public/ 素材清单（成片工程 public/ 经符号链接接入）+ 仓库音效库 / BGM 库
+//   src/mediaManifest.ts      public/ 素材清单（含项目下载的 Freesound 音效）+ BGM 库
 //   src/projMeta.ts           已链接成片工程的元数据
-// 同时保证 public/ 下的仓库级链接就位：cardpreviews → gallery/media、sfxlib → assets/audio/sfx、
+// 同时保证 public/ 下的仓库级链接就位：cardpreviews → gallery/media、
 // bgmlib → assets/audio/bgm、textures/live（demo 纹理兜底 → demos/_textures）。
 import {
-  existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, symlinkSync, unlinkSync, writeFileSync,
+  existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, statSync, symlinkSync, unlinkSync, writeFileSync,
 } from "node:fs";
 import { dirname, extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,7 +34,12 @@ const ensureLink = (linkPath, target) => {
 const publicDir = join(wb, "public");
 mkdirSync(publicDir, { recursive: true });
 ensureLink(join(publicDir, "cardpreviews"), "../../gallery/media");
-ensureLink(join(publicDir, "sfxlib"), "../../assets/audio/sfx");
+// Remove only the retired repository link, including when its target is gone.
+// Never remove a user-owned directory or a link to another collection.
+try {
+  const oldSfx = join(publicDir, "sfxlib");
+  if (lstatSync(oldSfx).isSymbolicLink() && readlinkSync(oldSfx) === "../../assets/audio/sfx") unlinkSync(oldSfx);
+} catch (error) { if (error.code !== "ENOENT") throw error; }
 ensureLink(join(publicDir, "bgmlib"), "../../assets/audio/bgm");
 // 独立命名空间，绝不往用户链接的 public/textures 写入旧截图。
 ensureLink(join(publicDir, "legacy-textures"), "../../demos/_legacy/_textures");
@@ -212,13 +217,13 @@ writeFileSync(
     `/** 中文原文 → 俄文（demo 卡名 / 分类 / 一句话，来自 workbench/i18n/ru/*.json，俄文界面按此显示） */\nexport const DEMO_TEXT_RU: Record<string, string> = ${JSON.stringify(textRu, null, 2)};\n`,
 );
 
-// —— 素材清单：扫描 public/（成片工程素材经符号链接接入；cardpreviews / sfxlib / bgmlib 单列）——
+// —— 素材清单：扫描 public/（成片工程素材经符号链接接入；cardpreviews / bgmlib 单列）——
 const KIND = {
   ".mp4": "video", ".webm": "video", ".mov": "video",
   ".png": "image", ".jpg": "image", ".jpeg": "image", ".webp": "image", ".gif": "image", ".svg": "image",
   ".wav": "audio", ".mp3": "audio", ".m4a": "audio", ".aac": "audio", ".ogg": "audio", ".flac": "audio",
 };
-const SKIP_TOP = new Set(["cardpreviews", "sfxlib", "bgmlib", "legacy-textures"]);
+const SKIP_TOP = new Set(["cardpreviews", "bgmlib", "legacy-textures"]);
 const media = [];
 const walk = (dir, rel) => {
   let ents;
@@ -255,7 +260,6 @@ const listAudio = (sub) => {
   }
   return out;
 };
-const sfxLib = listAudio("sfxlib");
 const bgmLib = listAudio("bgmlib");
 writeFileSync(
   join(wb, "src/mediaManifest.ts"),
@@ -263,9 +267,7 @@ writeFileSync(
     "// 成片工程 public/ 素材清单：按本机 public/ 下的链接扫描生成（不进库）\n" +
     'export type MediaItem = { file: string; dir: string; name: string; kind: "video" | "image" | "audio" };\n' +
     `export const MEDIA_ITEMS: MediaItem[] = ${JSON.stringify(media, null, 2)};\n\n` +
-    "/** 仓库音效库 assets/audio/sfx/<类别>/（public/sfxlib 链接） */\n" +
     "export type LibAudio = { file: string; cat: string; name: string };\n" +
-    `export const SFX_LIB: LibAudio[] = ${JSON.stringify(sfxLib, null, 2)};\n\n` +
     "/** 仓库 BGM 备选 assets/audio/bgm/（public/bgmlib 链接） */\n" +
     `export const BGM_LIB: LibAudio[] = ${JSON.stringify(bgmLib, null, 2)};\n`,
 );
@@ -291,6 +293,6 @@ writeFileSync(
 const srcCount = demos.reduce((a, d) => ((a[d.durationSource] = (a[d.durationSource] ?? 0) + 1), a), {});
 console.log(
   `gen-index: ${demos.length} 张 demo 卡（${Object.values(meta).filter((m) => m.preview).length} 张有预览视频；时长来源 ${JSON.stringify(srcCount)}）` +
-    `, ${media.length} 个工程素材, 音效库 ${sfxLib.length} / BGM ${bgmLib.length}` +
+    `, ${media.length} 个工程素材（含项目音频）, BGM ${bgmLib.length}` +
     `, 成片工程 ${projLinked ? `${projDir}${hasManifest ? "" : "（无 workbench.ts 清单）"}` : "未链接"}`,
 );

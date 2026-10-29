@@ -1,289 +1,102 @@
 # sound-design — 声音设计
 
-来源：模板片（`template/`）声音设计实战。准则编号 S1–S4 见 `references/aesthetic-rules.md`。
-
-模板片的声音全部集中在一个文件里管理（`template/src/aifl/Main.tsx`：`SFX[]` 钉帧表），场景组件不含任何音频代码——声音是时间线级资产，不是镜头级资产。
-
-## 目录
-
-- 方法
-- BGM 选型
-- SFX 词汇表
-- 对齐技巧
-
----
+声音是时间线级资产：集中管理 SFX 钉帧表，场景组件不内嵌音频。
+新制作与换音统一从 **Freesound** 搜索、下载，操作见 [sfx-sourcing.md](sfx-sourcing.md)。
+仓库不再维护共享 SFX 库；模板的历史音频只用于原样预览与回归验证。
 
 ## 1. 方法
 
-**顺序：画面结构基本锁定 → 先铺 BGM 定能量骨架 → 逐拍钉 SFX。**
+1. 分镜阶段记下动作、材质、时长和音色；画面时间线锁定后再精确钉 SFX。
+   用户已指定 BGM 的卡点片仍先按 [music-beat-sync.md](music-beat-sync.md) 分析再分镜。
+2. 先铺 BGM 定能量骨架，再钉画面独有动作。强鼓点本身已有节拍，不给每拍重复加 impact。
+3. SFX 按片种与真实声源选：whoosh（运镜）、impact（落地）、riser（铺垫）、
+   sparkle（光效）、transition（转场），有辨识度的动作另配真实拟音。
+4. 候选在成片语境中试听。下载量、评分、描述、波形是筛选证据，不能被写成“已经听过”。
+5. 下载到当前工程 `public/audio/sfx/`，随文件保留 `audio-manifest.json` 与
+   `FREESOUND-CREDITS.md`；Remotion 只读这些固定本地文件，渲染时不联网找音。
+6. 声音时间表从 `SHOTS` 派生并供工作台复用；时间线变更后逐条复核，最终按
+   [final-review.md](final-review.md) 的 A 项验收。
 
-1. **BGM 先行，定能量骨架。** 一条 BGM 全片铺底，音量包络用 `interpolate` 做首尾淡入淡出（模板片 `[0, 30, TOTAL-50, TOTAL] → [0, 0.34, 0.34, 0]`，即 1s 淡入、1.7s 淡出）。BGM 音量压在 0.34 左右给 SFX 留 headroom。曲子的能量曲线要和分镜表的能量曲线对得上（低开 → 中段推进 → outro 峰值），候选曲必须垫进成片试听——单听曲子无法判断气质（S1）。BGM 的 `<Audio>` 用布尔 inputProp（如 `bgm`，默认 `true`）包住挂载，SFX 不受该开关影响——配了 BGM 的片子终渲交付固定出两版成片，无 BGM 版从同一时间线渲出：`npx remotion render … --props=props-nobgm.json`（文件内容 `{"bgm":false}`；Windows shell 会剥掉内联 JSON 的双引号，走文件最稳，macOS/Linux 也可内联 `--props='{"bgm":false}'`）。
-2. **词汇表按"片种"选，不按"事件"选（S1）。** 产品宣传片的 SFX 词汇 = whoosh(运镜) / impact(落地) / riser(铺垫) / sparkle(光效，目录 `light/`) / transition(转场)，禁用游戏音包**音色**（合成器 pluck/bloop、卡通弹跳）。模板片第一版按 UI 事件语义选音（click/drop/confirmation），用户一耳朵判死刑"太像游戏了"。
-   **禁的是音色不是动作**：画面真有点击/开关/碎裂就该配它的拟音（模板片自己用 `click-camera.mp3` 并给了全片最高响度 0.6）；但 `sfx/ui/` 需逐个试听——里面既有真实开关拟音也有合成反馈音，后者正属本条排除的质感（取舍表见 3.3）；`sfx/glass/` 是真实碎裂材质音。判别问句见 aesthetic-rules S1。
-3. **SFX 逐拍钉帧、声明式表集中管理（S2）。** SFX 是 `{ from, src, volume }[]` 数组，逐条注释对应的画面动作（"hero card: whoosh up on the pop"），渲染时每条包一个 `<Sequence from={s.from}>`。杜绝凭感觉铺音效。
-4. **通用音之外留"贴画面定制"槽位。** 词汇表定稿后，有辨识度的画面动作仍会要专属拟音（打字揭示配键盘声、逐周落入配 pop）——泛用 swoosh 盖不住这些动作（S4）。
+## 2. BGM 选型与混音
 
-时机教训：模板片的音频工作直到画面改了约 30 轮之后才开始（收尾最后几轮）；有一次把换 BGM 和画面重做混在同一轮改动里，画面随后继续改，SFX 全表报废重钉。**声音永远排在画面锁定之后**（S3），细节见第 4 节。
+Freesound 路线负责 SFX。BGM 保留用户指定音乐或 `assets/audio/bgm/` 的备选，
+授权见 `assets/audio/ATTRIBUTION.md`，不能把 SFX 许可套到音乐上。
 
----
+- 音乐能量应匹配片子结构。产品宣传片可优先试鼓点清楚的电子底；用户的调性要求优先。
+  候选曲垫进成片试听，避免只因“欢快/好听”选择与产品气质不符的音乐。
+- 音量按素材实测给。模板中 0.34 的 BGM、0.2–0.6 的 SFX 只是历史参考，
+  `volume` 是乘法系数，不是目标响度。多轨叠加后检查削波和人声/SFX 是否被掩盖。
+- 用 `interpolate` 做首尾淡入淡出；有配音时在说话段压低音乐。
+- BGM `<Audio>` 单独受 `bgm` inputProp（默认 true）控制；配 BGM 的片子从同一
+  时间线交付带 BGM / 无 BGM（保留 SFX）两版。跨平台无 BGM 渲染使用
+  `--props=props-nobgm.json`，文件内容 `{"bgm":false}`。
 
-## 2. BGM 选型
+## 3. 音色与选材
 
-### 演进：三易其稿（34 分钟）
+### 3.1 从画面组织搜索词
 
-| 稿 | 曲目 | 来源/授权 | 被换原因 |
-|---|---|---|---|
-| v1 | Kevin MacLeod – *Inspired*（暖色 ambient 钢琴底）；同批还下了备选 *Deliberate Thought*，从未引用 | incompetech，CC-BY | 用户："BGM换个更有节奏感，更激情欢快的"——钢琴 ambient 不够激情 |
-| v2 | Kevin MacLeod – *Life of Riley*（欢快 folk-pop） | incompetech，CC-BY | 用户："这个配乐和音效都太像游戏了。你帮我找那种鼓点强的，节奏感强的"——欢快≠宣传片气质 |
-| v3（定稿） | Mixkit tech-house 鼓底（`bgm-tech-house.mp3`），音量升至 0.34 | Mixkit license | 未再被换，沿用至成片 |
+完整选材规则和 CLI 在 [sfx-sourcing.md](sfx-sourcing.md)。先明确声源、质感、
+攻击长度和尾音，再查 Freesound；不要只用 `click` 或 `impact` 这类宽泛词。
 
-v1→v2 只隔 22 分钟就又被否——说明选曲时根本没在成片语境里听。**候选曲必须垫进成片试听后再定**（S1 自检项）。
-
-### 选型判据（从用户原话反推）
-
-- **鼓点强、节奏感强**，优先电子底（tech-house 类）；"好听/欢快"不是判据。
-- 气质基准是"典型的产品宣传视频"——闭眼只听音轨，应像产品发布会预告，不像手机游戏（S1）。
-- 能量曲线能托住全片结构：平稳鼓底适合叠 SFX 层次，旋律太抢的曲子会和拟音打架。
-
-### 免费授权来源清单
-
-| 来源 | 授权 | 适用 | 备注 |
-|---|---|---|---|
-| [Mixkit](https://mixkit.co/) | Mixkit License（免费商用、免署名） | BGM + 电影系 SFX（whoosh/impact/riser/sparkle）+ 各类拟音 | 模板片定稿的 BGM 和 SFX 主力来源；批量下载后 metadata 常被抹掉，**下载时就记录曲名/URL**，否则事后无法反查（模板片 `bgm-tech-house.mp3` 已无法逐曲对回 Mixkit 曲库，商用前需复核） |
-| [incompetech](https://incompetech.com/)（Kevin MacLeod） | CC-BY 4.0（需署名） | BGM，曲库大、按情绪筛选 | 模板片 v1/v2 出处；注意 CC-BY 的署名义务 |
-| [Kenney](https://kenney.nl/assets)（音包） | CC0 | 游戏类项目 | **产品宣传片禁用**（S1）——模板片引入后被整批删除，仅列此供授权档案参考 |
-
----
-
-## 3. SFX 词汇表
-
-### 3.0 目录结构与找音路径
-
-```
-assets/audio/
-  bgm/                5 首  BGM 备选（tech-house 鼓底 + house/hip-hop）
-  sfx/<类别>/       149 个  按场景/材质分 16 类
-```
-
-**找音先定类别，再挑音色**——按要配的画面动作查下表，进对应目录试听。
-
-S1 词汇表的五个词到目录的对应关系（**`sparkle` 的目录名是 `light/`，库里没有 `sparkle/` 目录**）：
-
-| 词汇表 | whoosh | impact | riser | sparkle | transition |
-|---|---|---|---|---|---|
-| 目录 | `transition/` | `impact/` | `riser/` | **`light/`** | `transition/` |
-
-whoosh 与 transition 同在 `transition/`（运镜与转场的音色本就重叠）；其余 11 个类别是词汇表之外的**拟音层**（S4 的"贴画面定制"槽位）。
-
-| 类别 | 数量 | 装什么 | 什么时候进这个目录 |
-|---|---|---|---|
-| `transition/` | 23 | whoosh / sweep / swoosh / 风 | 运镜、场景切换、元素飞入飞走 |
-| `impact/` | 14 | impact / thud / stomp / bass hit | 落地钉点、重拍、slam |
-| `riser/` | 1 | 上升铺垫 | 进 finale / 大镜头前的能量铺垫 |
-| `camera/` | 10 | 快门、镜头、变焦 | 拍照感、crash zoom、对焦、iris |
-| `ui/` | 18 | 点击、开关、通知、pop | UI 反馈、主题切换、列表落入 |
-| `text/` | 13 | 打字机、键盘、书写 | 打字揭示、描线、下划线 |
-| `paper/` | 10 | 纸、翻页、印刷 | 翻页转场、撕裂、纸艺、riso |
-| `film/` | 8 | 放映机、胶片、磁带、黑胶 | 预告片语法、胶片串、回带变速 |
-| `light/` | 10 | sparkle、光效 | 扫光、点亮、余韵闪光 |
-| `data/` | 13 | glitch、电流、数据 | HUD、流式输出、骨架屏、故障 |
-| `scifi/` | 5 | 科技、太空、底噪 | 太空运镜、系统底噪（长样本铺底） |
-| `mech/` | 8 | 机械、工业、锁 | 部件组装、锁定、形变 |
-| `glass/` | 4 | 玻璃、碎裂 | 碎裂转场、硬切冲击 |
-| `fluid/` | 5 | 墨水、水、流体、颗粒 | 墨开场、颗粒填充、气泡 |
-| `crowd/` | 3 | 人群、掌声、呼吸、心跳 | 合影收尾、发布会感、张力 |
-| `counter/` | 4 | 计数器、仪表、钟、倒计时 | 数字滚动、读数、时间轴 |
-
-逐文件的时长 / 峰值 / 建议钉点见 `assets/audio/AUDITION-2026-07-27.md`；授权与 URL 见 `assets/audio/ATTRIBUTION.md`。
-
-注意：类别是**找音的索引，不是配音的判据**。选音仍按第 2 节的片种词汇纪律走——`glass/` `crowd/` `fluid/` 这类材质音是"贴画面定制"槽位（S4），泛用转场仍优先 `transition/` `impact/`。
-
-### 3.1 基础层：模板片实际使用的 14 个
-
-下表是模板片定稿用的一批，**"典型钉帧位置"是本仓库唯一有实战帧号的声音数据**，复用时取其相对语义而非绝对数值（30fps、全片 1085f）。时长来自 ffprobe。路径列给出重构后的位置。
-
-| 文件 | 所在目录 | 时长 | 用途场景 | 典型钉帧位置（模板片） | 来源与授权 |
-|---|---|---|---|---|---|
-| `bgm-tech-house.mp3` | `bgm/` | 288.7s | 整片鼓底 BGM，tech-house 电子 | 全片铺底，音量包络 0→0.34→0.34→0 | Mixkit（无法逐曲反查，商用前复核） |
-| `transition-soft.mp3` | `sfx/transition/` | 1.27s | 柔转场：品牌落定、场景切入 | f12 / f277 / f475 / f623 / f779（每次进新场景一发） | Mixkit |
-| `whoosh-fast.mp3` | `sfx/transition/` | 1.76s | 快速运镜、批量元素飞走 | f78 brand→dashboard、f340/356 发牌加速、f435 筛选网格飞走 | Mixkit |
-| `whoosh-big.mp3` | `sfx/transition/` | 2.32s | 大幅度运镜：弹起、拉远、回摆 | f127 hero 卡弹起、f308 orbit 拉远、f388 swoosh 回搜索栏 | Mixkit |
-| `sparkle.mp3` | `sfx/light/` | 4.55s | 光效 reveal：扫描光束、收尾闪光 | f141 hero 卡光束、f1005 结尾 rule 闪光 | Mixkit |
-| `transition-snap.mp3` | `sfx/transition/` | 0.57s | 短促落定/贴回原位的 snap | f204 hero 卡 impact reseat | Mixkit |
-| `swoosh-quick.mp3` | `sfx/transition/` | 0.78s | 字卡出场统一音、轻推镜 | f220/565/725/885 四张 title card、f455 点击后 push-in | Mixkit |
-| `keyboard.mp3` | `sfx/text/` | 19.6s | 真实键盘打字拟音（长样本，按段落裁剪用） | f401 搜索框输入（截 24f）、f781 周报页"自己写出来"（截 44f） | Mixkit |
-| `click-camera.mp3` | `sfx/camera/` | 0.35s | 点击确认/快门感（全片最响 vol 0.6） | f451 点击卡片进详情、f648 papers 计数落定 | Mixkit |
-| `riser-cine.mp3` | `sfx/riser/` | 4.81s | 电影系上升铺垫，进 finale | f945 outro 合影组装段起 | Mixkit |
-| `impact-cine.mp3` | **已从库中删除** | 4.06s | 电影系重音钉点（vol 0.55 全片 SFX 峰值） | f980 字标 stamp 落地 | Mixkit |
-| `pop.mp3` | `sfx/ui/` | 0.48s | 列表条目逐个落入的短促 pop | f840–865 周报周列表 6 连发，每 5f 一发、音量 0.40→0.25 阶梯递减 | **来源待考** |
-| `impact-transition.mp3` | `sfx/impact/` | 4.87s | **死资产：全片未被引用**，与定稿 SFX 同批下载的备用 impact | 无 | Mixkit（同批），未接线 |
-| `typewriter.mp3` | **已从库中删除** | 0.22s | **死资产：全片未被引用**。文档页揭示实际用的是 `keyboard.mp3` 截 44f，此文件下了没接线 | 无 | **来源待考** |
-
-小结：12/14 在片中实际发声；2 个死资产（`impact-transition.mp3` 保留在库中、`typewriter.mp3` 已删）；来源待考的 `pop.mp3` 仍在库中。
-
-**两个已删文件的处理（2026-07-27 筛选）**：
-
-- `impact-cine.mp3` 已从 `assets/audio/` 删除，但**模板片照常渲染**——Remotion 读的是 `template/public/audio/` 的独立副本（`staticFile('audio/...')`），那份仍在，`Main.tsx:86` 无需改动。新项目要复刻 outro 三拍句式时，用 `sfx/impact/impact-deep-whoosh.mp3` 代替：它与原 `impact-cine.mp3` **字节完全相同**（md5 `ce27fd2f`，见 3.2），是同一个 Mixkit 素材 Cinematic whoosh deep impact。
-- `typewriter.mp3` 已删（本就是死资产，打字揭示实际用 `keyboard.mp3` 截帧）。要单击拟音改用 `sfx/text/typewriter-hit-single.mp3` 或 `typewriter-hit-hard.mp3`。
-
-### 3.2 同素材重名：4 对文件字节完全相同
-
-2026-07-27 全库 md5 比对发现，基础层与第一批扩充里有 4 对是**同一个 Mixkit 素材下了两次、存成两个名字**：
-
-| 一对 | 实际是同一个素材 | 现状 |
+| 画面 | 查询示例 | 筛选重点 |
 |---|---|---|
-| `transition/transition-soft` = `transition/air-zoom-vacuum` | Air zoom vacuum | 两侧都在 |
-| `transition/swoosh-quick` = `transition/sweep-fast-small` | Fast small sweep transition | 两侧都在 |
-| `impact/impact-transition` = `impact/impact-epic-trailer` | Movie trailer epic impact | 两侧都在 |
-| `impact/impact-cine` = `impact/impact-deep-whoosh` | Cinematic whoosh deep impact | `impact-cine` 已删，留 `impact-deep-whoosh` |
+| 卡片飞入 / 运镜 | `short soft whoosh` | 攻击峰位置、无过长拖尾 |
+| 纸卡滑入 / 翻页 | `dry paper slide` / `single page turn` | 真实纸声、单次动作 |
+| 开关 / 轻点 | `mechanical switch click` | 短促物理质感，避免提示音 |
+| 字标落地 | `short cinematic impact` | 重量感、低频不盖住 BGM |
+| 打字 | `computer keyboard typing` | 节奏密度、段落长度、底噪 |
+| 组装与余韵 | `cinematic riser` / `subtle shimmer` | 渐强能否抵达落点、尾音是否自然 |
 
-**这几对不能用来做 4.2 的"双样本交替"**——字节相同，交替等于没换音，机枪感照旧。
-真要双样本，从同类别里挑音色近但不同的文件（如 `text/typewriter-hit-hard` + `text/typewriter-hit-soft`）。
+### 3.2 连发候选先检查重复
 
-教训：库里出现同素材重名，是"批量下载后凭文件名判断有没有重复"的必然结果。**新增音效入库时先跑一遍 md5 去重**，别信名字：
-```bash
-find assets/audio -name '*.mp3' -exec md5 -r {} \; | sort | awk '{print $1}' | uniq -d
-```
+两个名称或两个 Freesound ID 可能对应相同声音。用清单的 SHA-256 发现相同文件，
+再试听确认音色差异；不同编码的同一录音可能哈希不同。不能把同一声音的改名副本
+当成双样本交替。不要下载整库，只取当前动作需要的候选。
 
-比对的副产品是补回了 7 个基础层文件的原始 URL（见 `ATTRIBUTION.md`），这批原本因批量下载丢 metadata 而无法反查。
+### 3.3 UI 动作仍要逐个判断音色
 
-### 3.3 `ui/` 目录必须逐个试听，不能整目录放行
+S1 禁的是游戏式合成提示音质感，不是点击动作。真实开关、快门、玻璃、纸张拟音可用；
+`confirmation tone`、`bleep`、`notification` 往往是合成反馈，不能因为搜索词匹配
+就入选。片子刻意表现“系统提示”时可以使用，在设计记录中说明叙事理由。
 
-`ui/` 是全库唯一**内部质感分裂**的类别：既有真实物件拟音，也有合成 UI 反馈音——而后者正是 S1 要排除的东西。看 Mixkit 原名最省事（`tone` / `bleep` / `alert` / `notification` 是合成音的强信号）：
-
-| 文件 | Mixkit 原名 | 质感 |
-|---|---|---|
-| `switch-light` | Light switch sound | ✅ 真实电灯开关 |
-| `switch-tap` | On or off light switch tap | ✅ 真实电灯开关 |
-| `switch-click-quick` | Quick switch click | ✅ 真实开关 |
-| `pop` | （来源待考） | ✅ 模板片定稿用过（周报周列表 6 连发） |
-| `hitech-touch-magnet` | Hi-tech touch with magnet | ⚠️ 磁吸质感，偏合成但有物理感，按片子调性定 |
-| `chime-crystal` | Crystal chime | ⚠️ 水晶风铃，属光效/装饰音而非 UI 反馈，也可归 `light/` 用法 |
-| `pop-electric` | Electric pop | ⚠️ 电子 pop，连发场景可用，单发略合成 |
-| `ui-select-click` | Select click | ⚠️ 界面点击，比下面几个干净 |
-| `ui-click-tone` | Cool interface click tone | ❌ 合成 tone |
-| `ui-confirm-bleep` | High tech bleep confirmation | ❌ 合成 bleep |
-| `ui-confirm-tone` | Confirmation tone | ❌ 合成 tone |
-| `ui-tone-quick` | Digital quick tone | ❌ 合成 tone |
-| `ui-success-soft` | Success software tone | ❌ 合成 tone（"success" 语义正是 S1 判例否掉的那类） |
-| `ui-notify-tech` | Technology notification | ❌ 通知音 |
-| `ui-message-pop` | Message pop alert | ❌ 通知音 |
-| `ui-popup-dry` | Dry pop up notification alert | ❌ 通知音 |
-| `ui-option-select` | Interface option select | ❌ 合成界面音 |
-| `ui-select-modern` | Modern technology select | ❌ 合成界面音 |
-
-用法：
-- ✅ 一档可直接用作交互动作的拟音（`theme-switch-moves` 的开关、`segmented-thumb-hero` 的档位切换）。
-- ⚠️ 一档**必须在成片语境里试听**再决定，别单听。
-- ❌ 一档默认不用于产品宣传片。**例外**：片子刻意要"系统在说话"的叙事（HUD 播报、AI 确认回执、报错演示），此时它是有意的风格选择——按 aesthetic-rules 使用方式，有意违反准则要写进项目说明文档。
-
-同样的逐个试听纪律适用于 `data/` 与 `scifi/`（合成音天然多），只是那两类的用途本就是"数字/科技质感"，不像 `ui/` 会被误当成通用交互拟音。
+录音描述有明确声源与设备是有用线索；`made with my mouth`、`built-in mic`
+可能不适合干净的产品片。设备名字不能保证质量，仍需结合片中试听。
 
 ## 4. 对齐技巧
 
-### 4.1 钉帧方法
+### 4.1 钉帧、时长和音量
 
-- **声明式中央注册表**：`SFX: { from, src, volume }[]`，每条注释对应的画面动作；渲染层遍历数组，每条包 `<Sequence from={s.from}>`。帧号表与分镜表（`AIFL_SHOTS`）放同一文件对照（S2）。
-- **长样本靠 Sequence 截断，不剪音频文件**：`keyboard.mp3`（19.6s 原素材）按语境给 `durationInFrames` 24f 或 44f；其余统一 90f 让 ≤3s 素材自然播完。音频时长与画面动作严格等长（S4）。**库里 21 个文件长于 5s，必须显式给 `durationInFrames`**，照 90f 默认值会拖到动作结束后还在响（见下表）。
-- **音量分层**：BGM 0.34 打底，SFX 常规区间 0.2–0.6——点击确认 0.6 最响、pop 连发尾音 0.25 最轻，用响度表达"这一拍多重要"（曾出现的 0.14 出自已删除的 v2 pluck 连发串，不属于定稿区间）。**但 0.2–0.6 的前提是素材峰值接近 0dB**：`volume` 是乘法系数不是目标音量，库里 7 个本身录得轻的文件（峰值 <-12dB）即便给到 1.0 仍可能被 BGM 盖住——首选换素材或预归一化，必要时可给 >1 的增益（Remotion 支持，但预览会钳到 1.0，须以渲染产物验峰）。名单与三条出路见下。钉完以渲染产物试听，不要只信数字。
+- 中央注册表保持 `{ from, src, volume }[]`，可扩展 `durationInFrames`；
+  每条注释对应动作，渲染层用 `<Sequence>` 挂载。工作台从同一张表派生轨道。
+- 以下载文件的 `analysis` 为准，不能把网页列出的原文件时长/采样率当成预览文件实测。
+  `get` 自动分析；处理或换文件后再运行 `analyze`，更新清单和哈希。
+- 动作声显式设置播放窗口，特别是 >5s 的键盘、环境与机械长样本。
+  Sequence 裁剪贴动作时长；底噪铺满对应段落；impact 的自然混响可越过落点，避免硬截。
+- 峰值低于 -12dB 的轻音素材先考虑换更干净的候选，或预处理后重新分析。
+  必要时可用 >1 增益，但预览与渲染的行为可能不同，以成片实测防削波。
+- 工具给出 10ms 窗口的 RMS 能量峰、sample peak 和整体 RMS，**不是 LUFS 或 true peak**。
+  多次敲击或渐强素材需人工选择语义落点，不能机械地把全文件最大峰当作每个动作的落点。
 
-#### 需要显式截断的长样本（>5s，21 个）
+### 4.2 连发防机枪感
 
-| 文件 | 时长 | 用法 |
-|---|---|---|
-| `scifi/scifi-computer-ambience` | 23.5s | 底噪，整段铺一个镜头 |
-| `film/projector-spin-antique` | 21.7s | 底噪/循环，按段落截 |
-| `text/keyboard` | 19.6s | 打字段落，模板片截 24f / 44f |
-| `text/write-blackboard` | 13.9s | 描线段落，按笔画时长截 |
-| `mech/mech-robotic-futuristic` | 9.6s | 组装/形变全程 |
-| `camera/camera-autofocus` | 9.6s | 对焦，一般只用前 10–20f |
-| `paper/paper-book-browse-fast` | 9.3s | 连续翻页，按页数截 |
-| `scifi/space-intro-futuristic` | 8.1s | 开场铺垫 |
-| `light/light-spell` | 8.0s | 点亮全程 |
-| `impact/impact-cine-big` | 7.9s | 落地，含长尾混响，截尾会显得干 |
-| `scifi/tech-hum-futuristic` | 6.0s | 底噪 |
-| `transition/wing-flutter` `swoosh-slow` `wind-pass-vibrate` | 5.0–5.7s | 运镜，贴运镜时长 |
-| `paper/paper-wind-blow` | 5.5s | 纸张飞散全程 |
-| `mech/metal-drop-scifi-small` | 5.5s | 落定，含尾音 |
-| `light/light-aura` `light-transition-magic` | 5.1–5.5s | 光效余韵 |
-| `impact/impact-movie-epic` | 5.1s | 落地，含长尾 |
-| `data/power-up-electronic` | 5.0s | 启动/点亮全程 |
-| `crowd/applause-rhythmic-loop` | 5.0s | 可循环掌声 |
+双样本交替、音量阶梯递减（如 0.40→0.25）、间隔跟随动画加速。
+密到无法逐个听清时收成 swoosh 或淡出，不让多个长尾叠成噪声。
 
-判据：**底噪/循环类**（ambience、hum、projector）按镜头时长铺；**动作类**按动作时长截；**带长尾混响的 impact**（`impact-cine-big` `impact-movie-epic` `metal-drop-scifi-small`）让尾音自然衰减，硬截会显得干。
+### 4.3 riser→impact→sparkle：镜头收束句式
 
-#### 本身录得轻的文件（峰值 <-12dB，7 个）
+组装铺垫起 riser，主体落地钉 impact，余韵配 sparkle。按镜头实际落点确定
+三者间隔，从 Freesound 选匹配的三个声源；不沿用模板文件名或绝对帧号。
+是否使用该句式服从分镜，不强行给所有结尾套同一种声音。
 
-**先算清一件事：`volume` 是乘法系数，不是目标音量。** `volume={1}` 只是"原样播放"——素材本身 -24.6dB，给 1.0 之后还是 -24.6dB。而 BGM 峰值贴近 0dB、按 0.34 铺底约 -9.4dB，所以 `data-load-os` 即便给到上限 1.0 仍比 BGM 低 15dB，**照样被鼓底盖住**。把音量"封顶在 1.0"是无效建议。
+### 4.4 画面返工后的复核
 
-| 文件 | 峰值 | 比 BGM(-9.4dB) 低 | 要压过 BGM（约 -6dB）需 |
-|---|---|---|---|
-| `data/data-load-os` | -24.6dB | -15.2dB | ~8.5x |
-| `text/pencil-write-short` | -22.7dB | -13.3dB | ~6.8x |
-| `text/write-fast` | -20.0dB | -10.6dB | ~5.0x |
-| `transition/wing-flutter` | -17.9dB | -8.5dB | ~3.9x |
-| `camera/ui-zoom-in` | -14.3dB | -4.9dB | ~2.6x |
-| `counter/clock-knob-spin` | -14.0dB | -4.6dB | ~2.5x |
-| `counter/clock-tick-single` | -13.9dB | -4.5dB | ~2.5x |
+镜头时长、顺序或动作峰值变了，复核对应声音窗口和其后所有钉点；
+只调整画面而不检查声音会导致错位。选材可以提前，精确钉帧在时间线锁定后做。
 
-三条出路，按优先级：
+### 4.5 相对 shot 起点钉帧
 
-1. **换素材（首选）**。同类别里找峰值贴近 0dB 的替代——`data/` 有 12 个别的选择、`counter/` 有 3 个、`text/` 有 12 个。轻音素材抬增益会同时抬底噪，换一个录得好的比救一个省事。
-2. **预归一化**（要保留这个音色时）。用 ffmpeg 归一化后再入库，一次处理干净，钉帧时就能用常规 0.2–0.6 区间：
-   ```bash
-   ffmpeg -i in.mp3 -af "loudnorm=I=-16:TP=-1.5" out.mp3   # 或 -af "volume=8.5"
-   ```
-3. **`volume` 给大于 1 的增益**。Remotion **允许** `volume>1` 并真实放大——本仓库实测：`data-load-os` 给 `volume={4}` 输出 -12.7dB、给 `{16}` 输出 -0.7dB（即 4x≈+12dB、16x≈+24dB，符合 20·log₁₀ 的换算）。校验过 Remotion 源码：`validateMediaProps` 只拦 `volume<0`，不拦 >1；Web Audio 路径把值直接写进 `gainNode.gain`，不做钳制。
-   两个前提必须知道：
-   - **预览会钳到 1.0**，`Math.min(volume, 1)` 只出现在传统 `<audio>.volume` 回退路径（Safari／禁用 Web Audio 时）。也就是说**预览听到的可能比成片轻**，必须以渲染产物为准判断。
-   - **抬增益会一起抬底噪，且可能削波**。渲染后必查峰值，`max_volume` 逼近 0.0dB 就要回退增益或改走第 1/2 条：
-     ```bash
-     ffmpeg -hide_banner -i out.mp4 -af volumedetect -f null /dev/null 2>&1 | grep max_volume
-     ```
-
-反过来：库里多数文件峰值贴近 0dB，给 0.6 就已经是"全片最响那一拍"的量级。新增音效入库时顺手记一下峰值：
-
-```bash
-ffmpeg -hide_banner -i <file>.mp3 -af volumedetect -f null /dev/null 2>&1 | grep max_volume
-```
-
-### 4.2 变调与防机枪感
-
-**本仓库实证无 playbackRate 变调**（模板片全仓 `grep playbackRate` 零命中）。同类元素连发防机枪感靠三招组合（S2），不靠变调：
-
-1. **双样本交替**：连发用两个近似样本轮流（模板片 deck-deal 8 连发 pluck_002/pluck_001 交替）。
-2. **音量阶梯递减**：沿序列线性衰减做"距离感"——定稿 pop 6 连发 0.40/0.37/0.34/0.31/0.28/0.25。
-3. **间隔跟随动画曲线加速**：连发间隔贴画面加速节拍收缩（8f→3f）；密到糊成一片时**主动让声音淡出成一条 swoosh**，不逐个配音——耳朵和眼睛一样，分辨不出糊掉的个体。
-
-目标听感：连发段落是"数得出来的节奏"，不是机械复读（S2 自检项）。
-
-### 4.3 riser→impact：镜头收束句式
-
-大镜头（尤其 outro）的固定三拍：
-
-```
-riser-cine（组装/铺垫段起） → 约 35f 后 impact-deep-whoosh（主体 stamp 落地，全片响度峰值） → 25f 后 sparkle（余韵光效）
-```
-
-模板片 f945→f980→f1005，是定稿声音方向确立后唯一从未改动的段落句式（模板片里中间那拍的文件名叫 `impact-cine.mp3`，已从库中删除；库里等价文件是字节相同的 `impact-deep-whoosh.mp3`，见 3.1）——能量铺垫、钉点、余韵三件套一次成型。其它可复用的小句式：场景切换 = `transition-soft` 一发；字卡出场 = `swoosh-quick` 统一音；点击确认 = `click-camera`（给全片最高 SFX 响度）。
-
-### 4.4 返工教训：三次重钉的顺序账
-
-模板片 SFX 全表重钉了三次，其中**两次纯属画面返工的连带成本**（S3）：
-
-| 次 | 起因 | 性质 |
-|---|---|---|
-| 1 | 音色方向错误（游戏音包→电影系词汇） | 声音自身的返工，难免 |
-| 2 | 画面时间线变更（总长 1020→1085），全表 from 值平移 | **画面没锁就钉音的连带成本** |
-| 3 | 周报段画面加动画，该段 SFX 重写 | 同上（局部） |
-
-规则化：**声音在画面锁定后做；任何改变镜头时长/顺序的修改，收尾动作固定包含"全表 SFX 帧号重对"**（S3）。反面案例：有一次把换 BGM 和 deck-deal 画面重做塞进同一 commit，画面随后又改，音效白钉。
-
-### 4.5 钉帧一律相对 shot 起点，而非绝对帧（硬规则）
-
-模板片的 SFX 表钉**绝对帧号**，单文件数组便于整表平移（第 2 次重钉一个 diff 完成），但绝对帧意味着零结构复用——任何一个镜头改时长，其后所有条目全部失效。
-
-做法：钉帧写成 `SHOTS.<shot>.from + offset`（相对该镜头起点的偏移；卡点片写 `beatF(n)`，见 music-beat-sync.md）。这样镜头内部节拍不变时，改前面镜头的时长只需分镜表更新一处，SFX 自动跟随——绝大部分重钉可免除。新项目起手即按相对钉帧写，绝不写裸数字帧号。
+写 `SHOTS.<shot>.from + offset`，卡点片写 `beatF(n)`；新项目不写裸绝对帧号。
+镜头起点变化时 SFX 自动跟随，但镜头内部动作变化后仍需复核。
 
 ### 4.6 音画对齐补两项偏移（硬规则）
 

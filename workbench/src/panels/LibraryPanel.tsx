@@ -8,7 +8,7 @@ import { DEMO_CATEGORIES } from "../cards/demoCards";
 import { MANIFEST } from "../cards/projectCards";
 import { importProject, useStore } from "../store";
 import { sfxUsage } from "../projectImport";
-import { BGM_LIB, MEDIA_ITEMS, SFX_LIB } from "../mediaManifest";
+import { BGM_LIB, MEDIA_ITEMS } from "../mediaManifest";
 import { PROJ_DIR, PROJ_HAS_MANIFEST, PROJ_LINKED } from "../projMeta";
 import { setDragPayload } from "../dnd";
 import { ThemePanel } from './ThemePanel';
@@ -348,6 +348,12 @@ export const LibraryPanel: React.FC = () => {
 
         {tab === "sfx" && (
           <>
+            <div className="lib-foot">
+              <a href={'https://freesound.org/search/?f=license%3A%22Creative%20Commons%200%22'} target="_blank" rel="noopener noreferrer">
+                {t("lib.freesound")}
+              </a>
+              <p className="dim">{t("lib.freesoundHint")}</p>
+            </div>
             {projectAudio.length > 0 && (
               <Group id="sfx:proj" label={t("lib.projectAudio")} count={projectAudio.length} defaultOpen>
                 {projectAudio.map((m) => (
@@ -375,19 +381,6 @@ export const LibraryPanel: React.FC = () => {
                 ))}
               </Group>
             )}
-            {groupBy(SFX_LIB, (s) => s.cat).map(([cat, items]) => (
-              <Group key={cat} id={`sfx:${cat}`} label={t("lib.sfxLib", { cat: tx(cat) })} count={items.length}>
-                {items.map((s) => (
-                  <Row
-                    key={s.file}
-                    dot="#ff9f0a"
-                    name={s.name}
-                    onClick={() => setPreview({ kind: "audio", file: s.file, label: s.name })}
-                    payload={audioPayload(s.file, s.name, 0.4, 90)}
-                  />
-                ))}
-              </Group>
-            ))}
           </>
         )}
       </div>
@@ -395,7 +388,7 @@ export const LibraryPanel: React.FC = () => {
       <div className="lib-foot dim">
         {tab === 'themes' ? t("lib.foot.themes") : <>
         {t("lib.foot.cards", { n: motionCards.length, m: motionCards.filter((c) => c.schema.length > 0).length })}
-        {t("lib.foot.sfx", { n: SFX_LIB.length })}
+        {t("lib.foot.sfx", { n: projectAudio.length })}
         {PROJ_LINKED && PROJ_HAS_MANIFEST ? t("lib.foot.units", { n: projectCards.length }) : ""}
         <br />
         {t("lib.foot.hint")}

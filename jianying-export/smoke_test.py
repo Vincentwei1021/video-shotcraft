@@ -4,7 +4,7 @@
 新机器或新剪映版本先跑这个，确认打开无"内容已损坏"、无"媒体丢失"、
 无"暂无访问权限"，再做正片导出（references/jianying-export.md）。
 
-生成一个最小三轨草稿（ffmpeg 合成的 6s 测试视频 + 库内音效 + 一条文字），
+生成一个最小三轨草稿（ffmpeg 合成的 6s 测试视频 + 模板固定测试音频 + 一条文字），
 走 mac_draft 的完整安装链路（macify 适配 / 媒体打包进 Resources/ /
 注册表注册）——测的就是正片会用的那条路径。
 
@@ -26,8 +26,8 @@ DRAFT_NAME = "vs-smoke-test"
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 STAGING = os.path.join(HERE, "staging")
-# 音效用 git 内资产；视频不依赖渲染产物（template/out 不进 git），现场合成
-AUDIO = os.path.join(REPO, "assets/audio/sfx/transition/air-whoosh-powerful.mp3")
+# 音效用模板的固定回归资产；视频不依赖渲染产物（template/out 不进 git），现场合成
+AUDIO = os.path.join(REPO, "template/public/audio/whoosh-fast.mp3")
 TEST_CLIP = os.path.join(STAGING, "smoke-clip.mp4")
 
 

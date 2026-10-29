@@ -102,7 +102,7 @@ lines = [
     'cinematic product promo videos with Remotion. It ships '
     f'{lib["stats"]["cardCount"]} shot recipe cards covering '
     f'{lib["stats"]["styleCount"]} styles with {lib["stats"]["previewCount"]} motion '
-    'previews, reusable Remotion components, SFX assets, a six-stage production '
+    'previews, reusable Remotion components, Freesound SFX sourcing, a six-stage production '
     'methodology, and a production-ready 36.2-second promo template (Ink Press).',
     '',
     'Each shot recipe card documents a motion technique: purpose, energy level, '

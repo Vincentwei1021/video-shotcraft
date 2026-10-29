@@ -169,7 +169,7 @@ Remotion での書き出しができます。プレビューとレンダリン�
 | SNS 投稿 | 任意、依頼があれば：Upload-Post で完成映像を TikTok・Instagram・YouTube・LinkedIn・X などへ投稿。キャプションと投稿先を確認し、dry-run の後に投稿（[ガイド](references/publish-upload-post.md)） |
 
 ほかにも、再利用できる Remotion コンポーネント（2.5D ページカメラ、字幕、フラッシュカット、数字ロール）、
-SFX 149 種と BGM 5 曲、ページキャプチャスクリプト、そして制作手法そのもの（素材キャプチャ、ビジュアルの方向付け、
+Freesound の SFX 検索・ダウンロードツールと BGM 5 曲、ページキャプチャスクリプト、そして制作手法そのもの（素材キャプチャ、ビジュアルの方向付け、
 絵コンテ、サウンドデザイン、ビート同期、最終 QA）を [references/](references/pipeline.md) に収録しています。
 
 ## ショーケース
@@ -218,6 +218,7 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # ビジュアル QA の基準
 │   ├── music-beat-sync.md   # BGM 解析とビート同期の手法
 │   ├── sound-design.md      # サウンドデザインの指針と事例
+│   ├── sfx-sourcing.md      # Freesound 検索・取得・解析・クレジット
 │   ├── jianying-export.md   # 剪映（CapCut 中国版）書き出しガイド
 │   ├── publish-upload-post.md # SNS 投稿（任意、Upload-Post API）
 │   └── workbench.md         # ワークベンチ：マニフェスト契約と編集可能性のルール
@@ -229,10 +230,9 @@ video-shotcraft/
 ├── workbench/               # 納品後のモーションワークベンチ（Vite + Remotion Player）
 └── assets/
     ├── lib/                 # 再利用できる Remotion コンポーネント
-    ├── scripts/             # ページ素材のキャプチャスクリプト
-    └── audio/               # 音声素材
-        ├── bgm/             # BGM 5 曲
-        └── sfx/<category>/  # 16 シーンカテゴリ、149 種の SFX
+    ├── scripts/             # ページ取得 + Freesound CLI とオフラインテスト
+    └── audio/
+        └── bgm/             # BGM 5 曲。SFX はプロジェクトごとに取得
 ```
 
 ワークフロー全体は [SKILL.md](SKILL.md)、[制作パイプライン](references/pipeline.md)、
@@ -242,10 +242,13 @@ video-shotcraft/
 
 ## 音声と素材
 
-SFX はシーン / 素材ごとに 16 カテゴリ（`transition` `impact` `riser` `camera` `ui` `text` `paper` `film` `light`
-`data` `scifi` `mech` `glass` `fluid` `crowd` `counter`）に分かれています。まずカテゴリを決めてから音色を選んでください。
-索引とファイルごとの用途は [sound-design.md](references/sound-design.md)、出典とライセンスは
-[ATTRIBUTION.md](assets/audio/ATTRIBUTION.md) にあります。
+SFX は [Freesound](https://freesound.org) から各映像プロジェクトへ直接ダウンロードします。
+共有 SFX ライブラリは廃止しました。[選材ガイド](references/sfx-sourcing.md) に検索、CC0 / CC BY の選別、
+MP3 プレビュー取得、解析、出典とクレジットの保存手順があります。Python 標準ライブラリを使用し、
+取得・解析には FFmpeg が必要です。API キーは不要です。
+タイミングとミックスは [sound-design.md](references/sound-design.md) を参照してください。
+テンプレートの既存音声は再生・回帰確認用に保持します。新しい製品映像の SFX は Freesound で選び、
+BGM 5 曲は `assets/audio/bgm/` に引き続き収録しています。
 
 テンプレートに同梱のプロダクトスクリーンショットはデモ用素材です。公開前に対象プロダクトのスクリーンショットに
 差し替え、プロダクト・顧客・個人のデータを匿名化する必要がないか確認してください。
@@ -253,7 +256,8 @@ SFX はシーン / 素材ごとに 16 カテゴリ（`transition` `impact` `rise
 ## ライセンス
 
 - コードとドキュメント：[Apache-2.0](LICENSE)。
-- `assets/audio/` の音声：各ファイルのライセンスに従います。[ATTRIBUTION.md](assets/audio/ATTRIBUTION.md) を参照。
+- Freesound 音声：プロジェクトに保存した個別ライセンスに従い、CC BY のクレジットは公開時にも掲載してください。
+- BGM は [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)、テンプレート音声は [出典記録](template/public/audio/ATTRIBUTION.md) を参照。
 - [Remotion](https://www.remotion.dev/) には独自の[ライセンス](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md)があります：
   個人と小規模チームは無料、企業は有料ライセンスが必要な場合があります。
 
@@ -265,8 +269,13 @@ Slack、Notion、Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、L
 アートワーク・ブランド資産はリポジトリに含まれていません。商標はそれぞれの所有者に帰属し、これらの企業は
 本プロジェクトと提携・推薦の関係にありません。
 
-また、すべての demo とテンプレートを支える **[Remotion](https://www.remotion.dev/)**、同梱の SFX と音楽の提供元
-**[Mixkit](https://mixkit.co/)**（無料ライセンス）、いくつものカードに影響を与えたゲームフィールとアニメーションの
+Freesound の検索・選材フローは **[vibe-motion/sound](https://github.com/vibe-motion/sound)** に着想を得ました。
+音源の説明、長さ、ダウンロード数、評価件数、ライセンスを組み合わせて選ぶ方法を共有した作者に感謝します。
+Video Shotcraft の検索・ダウンロード CLI は独自に実装しています。
+
+また、すべての demo とテンプレートを支える **[Remotion](https://www.remotion.dev/)**、**[Freesound](https://freesound.org)** とその投稿者、
+BGM と既存テンプレート音声の提供元
+**[Mixkit](https://mixkit.co/)**、いくつものカードに影響を与えたゲームフィールとアニメーションの
 コミュニティ、そしてこの skill が教えるのと同じワークフローでライブラリの構築・改善・QA を行った
 **Claude Code** に感謝します。
 

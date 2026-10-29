@@ -64,10 +64,11 @@ node workbench/scripts/open.mjs <成片工程目录>     # 首次运行会自动
 
 ### 音效
 
-![音效 tab](docs/library-sfx.png)
+音效页提供 Freesound 搜索入口、本片音频和 BGM 备选。
 
 - **本片音频**：成片工程 `public/` 里的音效，右侧「片中 ×N」是原片里的使用次数。
-- **BGM 备选**与**音效库**（149 条，按 camera / counter / crowd… 分类折叠）来自仓库 `assets/audio/`。
+- **Freesound**：点击入口找音效，让 Agent 按 [选材流程](../references/sfx-sourcing.md) 下载到本片，重新打开工作台后会列入本片音频。
+- **BGM 备选**：保留仓库 `assets/audio/bgm/` 中的 5 首音乐。
 - 音频片段上轨后可裁入、变速（playbackRate）、调音量，不会哑音。
 
 ## 预览与走带

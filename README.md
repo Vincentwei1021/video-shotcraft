@@ -181,7 +181,7 @@ drag in any of the 150 library shots, then export with Remotion. Preview and ren
 | JianYing draft | Optional: an editable JianYing (CapCut CN) project with per-shot clips, captions and audio tracks |
 | Social publishing | Optional, when you ask: publish the finished film via Upload-Post to TikTok, Instagram, YouTube, LinkedIn, X and more. Confirm caption and platforms, then dry-run before posting ([guide](references/publish-upload-post.md)) |
 
-Also in the box: reusable Remotion components (2.5D page camera, captions, flash cuts, digit rolls), 149 SFX and
+Also in the box: reusable Remotion components (2.5D page camera, captions, flash cuts, digit rolls), Freesound SFX search/download tools and
 5 BGM tracks, page-capture scripts, and the production method itself (capture, visual direction, storyboarding,
 sound design, beat sync, final QA) in [references/](references/pipeline.md).
 
@@ -232,6 +232,7 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
+│   ├── sfx-sourcing.md      # Freesound search, download, analysis and credits
 │   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
 │   ├── publish-upload-post.md # Optional social publishing (Upload-Post API)
 │   └── workbench.md         # Motion workbench: manifest contract + editability rules
@@ -243,10 +244,9 @@ video-shotcraft/
 ├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
-    ├── scripts/             # Page-asset capture scripts
-    └── audio/               # Audio assets
-        ├── bgm/             # 5 BGM options
-        └── sfx/<category>/  # 149 SFX across 16 scene categories
+    ├── scripts/             # Page capture + Freesound CLI and offline tests
+    └── audio/
+        └── bgm/             # 5 BGM options; SFX downloaded per project
 ```
 
 For the full workflow see [SKILL.md](SKILL.md), the [production pipeline](references/pipeline.md) and the
@@ -256,10 +256,13 @@ For the full workflow see [SKILL.md](SKILL.md), the [production pipeline](refere
 
 ## Audio and assets
 
-SFX are organized into 16 scene and material categories (`transition` `impact` `riser` `camera` `ui` `text`
-`paper` `film` `light` `data` `scifi` `mech` `glass` `fluid` `crowd` `counter`): pick the category first, then
-the timbre. See [sound-design.md](references/sound-design.md) for the index and per-file usage, and
-[ATTRIBUTION.md](assets/audio/ATTRIBUTION.md) for sources and licenses.
+SFX come directly from [Freesound](https://freesound.org), downloaded into each video's project.
+The shared SFX library has been removed. The [sourcing guide](references/sfx-sourcing.md) covers search,
+CC0 / CC BY filtering, MP3 preview downloads, measurements and source/credit manifests. The Python CLI
+uses the standard library; downloading and analysis require FFmpeg. No API key is needed.
+[Sound design](references/sound-design.md) covers timing and mixing. The template retains its fixed
+historical audio for playback and regression checks; new product videos source their SFX from Freesound.
+BGM options remain in `assets/audio/bgm/`.
 
 Product screenshots bundled with the template are demonstration assets. Replace them with screenshots of your
 product before publishing, and check whether any product, customer or personal data needs to be anonymized.
@@ -267,7 +270,8 @@ product before publishing, and check whether any product, customer or personal d
 ## License
 
 - Code and docs: [Apache-2.0](LICENSE).
-- Audio under `assets/audio/`: each file under its own license, see [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md).
+- Freesound audio: each file under its recorded license; retain the project manifest and publish required CC BY credits.
+- BGM: see [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md). Historical template audio: see [template credits](template/public/audio/ATTRIBUTION.md).
 - [Remotion](https://www.remotion.dev/) has its own
   [license](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md): free for individuals and small
   teams, companies may need a paid license.
@@ -280,8 +284,13 @@ Loom**. The cards document techniques (timing, easing, choreography) re-implemen
 artwork or brand assets from these films are included. All trademarks belong to their owners, and none of these
 companies are affiliated with or endorse this project.
 
+The Freesound sourcing workflow was inspired by **[vibe-motion/sound](https://github.com/vibe-motion/sound)**.
+Thanks to its authors for sharing the approach of selecting sounds by source descriptions, duration,
+download counts, rating counts and licenses. Video Shotcraft's search/download CLI is independently implemented.
+
 Thanks also to **[Remotion](https://www.remotion.dev/)**, which powers every demo and template here;
-**[Mixkit](https://mixkit.co/)**, the source of the bundled SFX and music under its free license; the game-feel
+**[Freesound](https://freesound.org)** and its contributors for project SFX;
+**[Mixkit](https://mixkit.co/)** for BGM and historical template audio; the game-feel
 and animation communities whose published principles inform several cards; and **Claude Code**, with which this
 library was built, iterated and QA'd using the same workflow the skill teaches.
 

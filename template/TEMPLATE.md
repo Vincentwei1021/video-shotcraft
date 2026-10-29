@@ -53,7 +53,7 @@ import，动效工作台据此把成片拆成多轨，见 ../references/workbenc
 - `textures/live/*.png` — 整页 2x 截图（projects-full / detail-full / papers-full /
   wbr-full）、元素切片（card1–10、paper1–5、float-*、nav）、空板
   （projects-empty）、高清特写卡（card4-hires，4x 单独截）
-- `audio/*.mp3` — 本片用到的 11 个 SFX（Mixkit，授权见 ../assets/audio/ATTRIBUTION.md）
+- `audio/*.mp3` — 本片用到的 11 个 SFX（历史固定依赖，来源与未核实项见 `public/audio/ATTRIBUTION.md`）
 
 > 注意：本模板的截图素材来自一个内部研究管理工具（数据为虚构演示数据）。
 > 对外分发成片前，务必整套替换为目标产品自己的截图。
@@ -76,10 +76,14 @@ import，动效工作台据此把成片拆成多轨，见 ../references/workbenc
 4. **文案**：`TITLE_CARDS` 表（字卡，`*词*` 标强调）、CAPTIONS 表、outro 品牌名/tagline。
    镜头结构变了同步改 `src/workbench.ts`（新镜头加一行 `scene(...)`；字卡照 `title(...)`），
    然后 `cd ../workbench && npm run parity` 确认拆解无损。
-5. **验收**：每改完一个镜头 `npx remotion still` 出静帧自检（每镜头至少
+5. **音效换源**：新产品按 `../references/sfx-sourcing.md` 从 Freesound 选材，下载到
+   本工程 `public/audio/sfx/` 并保留来源/署名清单。沿用 SFX 的动作语义与钉帧结构，
+   更新 `src`、时长和增益，按新文件峰值重对。历史音频保留供模板原样预览/回归，
+   用户点名复现原声音时遵守其要求并核实原许可。
+6. **验收**：每改完一个镜头 `npx remotion still` 出静帧自检（每镜头至少
    入场中/动作峰值/落定后三帧）；全改完整片渲染 + ffmpeg 抽帧回看；
    最后对照 ../references/aesthetic-rules.md 过 checklist。
-6. **时长伸缩**：加/删镜头时整体平移 AIFL_SHOTS 的 from（它是单一事实源），
+7. **时长伸缩**：加/删镜头时整体平移 AIFL_SHOTS 的 from（它是单一事实源），
    CAPTIONS/SFX/FlashCut 的绝对帧号表跟着平移——建议先把新时间线定稿再动
    SFX 表（画面每动一次钉帧表全体重排）。
 
