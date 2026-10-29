@@ -181,7 +181,7 @@ ln -s "$(pwd)" ~/.codex/skills/video-shotcraft    # Codex
 | Черновик JianYing | По желанию: редактируемый проект JianYing (CapCut CN) с отдельными клипами для каждого плана, субтитрами и аудиодорожками |
 | Публикация в соцсетях | По запросу: публикация готового ролика через Upload-Post в TikTok, Instagram, YouTube, LinkedIn, X и других сервисах. Подтвердите подпись и платформы, затем выполните пробный запуск без публикации ([руководство](references/publish-upload-post.md)) |
 
-Также в комплекте: переиспользуемые компоненты Remotion (2.5D-камера для страниц, субтитры, переходы-вспышки, прокрутка цифр), 149 звуковых эффектов и
+Также в комплекте: переиспользуемые компоненты Remotion (2.5D-камера для страниц, субтитры, переходы-вспышки, прокрутка цифр), инструменты поиска и загрузки звуков Freesound и
 5 музыкальных треков, скрипты захвата страниц и сам производственный процесс (захват, визуальная концепция, раскадровка,
 звуковое оформление, синхронизация с музыкой, финальная проверка качества) в [references/](references/pipeline.md).
 
@@ -232,6 +232,7 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # Visual QA criteria
 │   ├── music-beat-sync.md   # BGM analysis and beat-sync methodology
 │   ├── sound-design.md      # Sound-design guidance and examples
+│   ├── sfx-sourcing.md      # Freesound search, download, analysis and credits
 │   ├── jianying-export.md   # JianYing (CapCut CN) project-export guide
 │   ├── publish-upload-post.md # Optional social publishing (Upload-Post API)
 │   └── workbench.md         # Motion workbench: manifest contract + editability rules
@@ -243,10 +244,9 @@ video-shotcraft/
 ├── workbench/               # Post-delivery motion workbench (Vite + Remotion Player)
 └── assets/
     ├── lib/                 # Reusable Remotion components
-    ├── scripts/             # Page-asset capture scripts
-    └── audio/               # Audio assets
-        ├── bgm/             # 5 BGM options
-        └── sfx/<category>/  # 149 SFX across 16 scene categories
+    ├── scripts/             # Page capture + Freesound CLI and offline tests
+    └── audio/
+        └── bgm/             # 5 BGM options; SFX downloaded per project
 ```
 
 Полный процесс описан в [SKILL.md](SKILL.md), [производственном процессе](references/pipeline.md) и
@@ -256,10 +256,13 @@ video-shotcraft/
 
 ## Аудио и ресурсы
 
-Звуковые эффекты распределены по 16 категориям сцен и материалов (`transition` `impact` `riser` `camera` `ui` `text`
-`paper` `film` `light` `data` `scifi` `mech` `glass` `fluid` `crowd` `counter`): сначала выберите категорию, затем
-тембр. Каталог и рекомендации по каждому файлу — в [sound-design.md](references/sound-design.md),
-источники и лицензии — в [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md).
+Звуковые эффекты загружаются напрямую с [Freesound](https://freesound.org) в проект каждого ролика.
+Общая локальная библиотека SFX удалена. [Руководство по подбору](references/sfx-sourcing.md) описывает поиск,
+фильтрацию CC0 / CC BY, загрузку MP3-превью, измерения и сохранение источников и атрибуции.
+CLI использует стандартную библиотеку Python; для загрузки и анализа нужен FFmpeg. API-ключ не требуется.
+Тайминг и сведение описаны в [sound-design.md](references/sound-design.md). Звуки шаблона сохранены для его
+воспроизведения и регрессионных проверок; для новых продуктовых роликов SFX подбираются на Freesound.
+Пять вариантов BGM остаются в `assets/audio/bgm/`.
 
 Скриншоты продукта в шаблоне — демонстрационные материалы. Перед публикацией замените их скриншотами своего
 продукта и проверьте, нужно ли обезличить данные продукта, клиентов или персональные данные.
@@ -267,7 +270,8 @@ video-shotcraft/
 ## Лицензия
 
 - Код и документация: [Apache-2.0](LICENSE).
-- Аудио в `assets/audio/`: у каждого файла своя лицензия, см. [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md).
+- Звуки Freesound: лицензия каждого файла записана в манифесте проекта; атрибуция CC BY должна быть опубликована вместе с роликом.
+- BGM: см. [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md). Звуки шаблона: [источники](template/public/audio/ATTRIBUTION.md).
 - У [Remotion](https://www.remotion.dev/) своя
   [лицензия](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md): бесплатно для частных лиц и небольших
   команд; компаниям может потребоваться платная лицензия.
@@ -280,8 +284,12 @@ Loom**. Карточки описывают техники (тайминг, сг
 графика и фирменные ресурсы из этих роликов не включены. Все товарные знаки принадлежат их владельцам; ни одна из этих
 компаний не связана с проектом и не заявляла о его поддержке.
 
+Процесс подбора звуков Freesound вдохновлён **[vibe-motion/sound](https://github.com/vibe-motion/sound)**.
+Спасибо авторам за подход, сочетающий описание источника, длительность, число загрузок и оценок, а также лицензии.
+CLI поиска и загрузки Video Shotcraft реализован независимо.
+
 Также спасибо **[Remotion](https://www.remotion.dev/)**, на котором работают все демо и шаблоны проекта;
-**[Mixkit](https://mixkit.co/)** — источнику звуковых эффектов и музыки, включённых по его бесплатной лицензии; сообществам разработчиков игровой обратной связи
+**[Freesound](https://freesound.org)** и авторам звуков; **[Mixkit](https://mixkit.co/)** — за BGM и звуки исходного шаблона; сообществам разработчиков игровой обратной связи
 и анимации, чьи опубликованные принципы легли в основу ряда карточек; и **Claude Code**, с помощью которого
 эту библиотеку создавали, дорабатывали и проверяли тем же способом, которому учит навык.
 
