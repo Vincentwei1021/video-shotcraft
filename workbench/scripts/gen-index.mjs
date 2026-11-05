@@ -8,10 +8,11 @@
 // 同时保证 public/ 下的仓库级链接就位：cardpreviews → gallery/media、
 // bgmlib → assets/audio/bgm、textures/live（demo 纹理兜底 → demos/_textures）。
 import {
-  existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, statSync, symlinkSync, unlinkSync, writeFileSync,
+  existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, statSync, unlinkSync, writeFileSync,
 } from "node:fs";
 import { dirname, extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { linkDir, restoreGitSymlink } from "./link.mjs";
 
 const wb = join(dirname(fileURLToPath(import.meta.url)), "..");
 const repo = join(wb, "..");
@@ -28,7 +29,7 @@ const ensureLink = (linkPath, target) => {
     else return true; // 真实文件/目录（成片工程链接进来的）：不动
   } catch { /* 不存在 */ }
   mkdirSync(dirname(linkPath), { recursive: true });
-  symlinkSync(target, linkPath);
+  linkDir(target, linkPath);
   return true;
 };
 const publicDir = join(wb, "public");
@@ -58,6 +59,10 @@ ensureLink(join(publicDir, "legacy-textures"), "../../demos/_legacy/_textures");
 const DUR_PAT = /export const (\w+_DURATION|\w+_DUR)\s*=/;
 const MATERIAL_REQUIRED = new Set(["ClipCardLooping"]); // 需要真实 mp4 素材，无法自动生成
 const demosDir = join(wb, "demosrc");
+if (restoreGitSymlink(demosDir)) {
+  console.log("demosrc 被 git 签出成了普通文件（core.symlinks=false），已重建为目录链接。");
+  console.log("git status 会显示 workbench/demosrc 已删除，不要提交；可用 git update-index --skip-worktree workbench/demosrc 隐藏。");
+}
 const framesIn = (text) => { const m = text && /(\d{2,4})\s*f\b/.exec(text); return m ? Number(m[1]) : 0; };
 const cardMdFrames = (category, slug) => {
   try { const md = readFileSync(join(repo, "references/shots", category, `${slug}.md`), "utf8"); const m = /^时长:\s*(.*)$/m.exec(md); return framesIn(m?.[1]); } catch { return 0; }

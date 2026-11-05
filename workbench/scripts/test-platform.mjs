@@ -36,7 +36,12 @@ function fixture(t) {
 test("failed asset copy ends the export response, cleans props and permits a retry", t => {
   const dir = fixture(t);
   const broken = path.join(dir, "public/broken.png");
-  fs.symlinkSync(path.join(dir, "missing.png"), broken);
+  try {
+    fs.symlinkSync(path.join(dir, "missing.png"), broken);
+  } catch (error) {
+    if (process.platform === "win32" && error.code === "EPERM") return t.skip("file symlinks need Developer Mode on Windows");
+    throw error;
+  }
   let launches = 0;
   const mocks = {
     vite: { defineConfig: config => config },
@@ -83,6 +88,37 @@ test("failed asset copy ends the export response, cleans props and permits a ret
   assert.equal(retry.statusCode, 200);
   assert.match(retry.body.id, /^[a-z0-9]+$/);
   assert.equal(launches, 1);
+});
+
+for (const [platform, type] of [["win32", "junction"], ["darwin", undefined], ["linux", undefined]]) {
+  test(`linkDir creates a ${type ?? "default"} link on ${platform}`, t => {
+    const dir = fixture(t);
+    const calls = [];
+    const mod = { exports: {} };
+    new Function("require", "module", "exports", "process", compile("scripts/link.mjs", dir))(
+      id => id === "node:fs" ? { ...fs, symlinkSync: (...args) => calls.push(args) } : require(id), mod, mod.exports, { platform },
+    );
+    mod.exports.linkDir("../target", "link");
+    assert.deepEqual(calls, [["../target", "link", type]]);
+  });
+}
+
+test("a demosrc checked out as a plain file becomes a working directory link", async t => {
+  const dir = fixture(t);
+  fs.mkdirSync(path.join(dir, "demos/intro"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "demos/intro/Card.tsx"), "export {};");
+  fs.mkdirSync(path.join(dir, "wb"));
+  const demosrc = path.join(dir, "wb/demosrc");
+  fs.writeFileSync(demosrc, "../demos");
+  const { restoreGitSymlink } = await import(pathToFileURL(path.join(wb, "scripts/link.mjs")).href);
+  assert.equal(restoreGitSymlink(demosrc), true);
+  assert.ok(fs.lstatSync(demosrc).isSymbolicLink());
+  assert.deepEqual(fs.readdirSync(path.join(demosrc, "intro")), ["Card.tsx"]);
+  assert.equal(restoreGitSymlink(demosrc), false, "an existing link is left alone");
+  fs.unlinkSync(demosrc);
+  fs.writeFileSync(demosrc, "../missing");
+  assert.equal(restoreGitSymlink(demosrc), false, "a file that does not name a directory is left alone");
+  assert.ok(fs.lstatSync(demosrc).isFile());
 });
 
 for (const [platform, available] of [["win32", "python"], ["win32", "python3"], ["linux", "python"]]) {
