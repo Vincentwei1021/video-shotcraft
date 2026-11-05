@@ -89,7 +89,10 @@ if (!relink) {
 // —— 3. 依赖与索引 ——
 if (!existsSync(join(wb, "node_modules"))) {
   log("首次使用，安装依赖…");
-  const r = spawnSync("npm", ["install", "--ignore-scripts"], { cwd: wb, stdio: "inherit" });
+  // Windows 上 npm 是 npm.cmd，要经 shell 启动
+  const r = process.platform === "win32"
+    ? spawnSync("npm install --ignore-scripts", { cwd: wb, stdio: "inherit", shell: true })
+    : spawnSync("npm", ["install", "--ignore-scripts"], { cwd: wb, stdio: "inherit" });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 {
