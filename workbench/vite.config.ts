@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import type { ExportError } from "./src/export-errors";
 
 // @proj = 外部成片工程源码（本机经 workbench/proj 符号链接接入，不进库；scripts/open.mjs 负责链接）。
 // 未链接时自动落到 proj-stub 降级实现：工程可构建可运行，素材 tab 显示接入提示。
@@ -22,6 +23,7 @@ type ExportJob = {
   output: string; // 相对 workbench 的输出路径
   lastLine: string;
   logTail: string[];
+  error?: ExportError;
 };
 
 const renderExportPlugin = (): Plugin => {
@@ -49,7 +51,7 @@ const renderExportPlugin = (): Plugin => {
         // POST /api/export —— 提交渲染
         if (req.method === "POST" && (sub === "/" || sub === "")) {
           if ([...jobs.values()].some((j) => j.status === "running")) {
-            send(409, { error: "已有渲染在进行中" });
+            send(409, { error: { code: "alreadyRunning" } satisfies ExportError });
             return;
           }
           let raw = "";
@@ -60,7 +62,7 @@ const renderExportPlugin = (): Plugin => {
               project = JSON.parse(raw).project;
               if (!project) throw new Error("no project");
             } catch {
-              send(400, { error: "缺少工程 JSON" });
+              send(400, { error: { code: "invalidProject" } satisfies ExportError });
               return;
             }
             const id = Date.now().toString(36);
@@ -78,7 +80,7 @@ const renderExportPlugin = (): Plugin => {
               status: "running",
               progress: 0,
               output,
-              lastLine: "同步素材…",
+              lastLine: "",
               logTail: [],
             };
             jobs.set(id, job);
@@ -116,8 +118,9 @@ const renderExportPlugin = (): Plugin => {
             if (syncErr) {
               dropProps();
               job.status = "error";
-              job.lastLine = `素材同步失败（无法解引用 public/）：${syncErr}`;
-              send(500, { error: job.lastLine });
+              job.lastLine = syncErr;
+              job.error = { code: "syncFailed", details: syncErr };
+              send(500, { error: job.error });
               return;
             }
             {
@@ -140,18 +143,21 @@ const renderExportPlugin = (): Plugin => {
               child.on("error", (e: Error) => {
                 dropProps();
                 job.status = "error";
-                job.lastLine = `渲染进程启动失败：${e.message}`;
+                job.lastLine = e.message;
+                job.error = { code: "spawnFailed", details: e.message };
               });
               child.stdout.on("data", onChunk);
               child.stderr.on("data", onChunk);
               child.on("close", (code) => {
                 dropProps(); // Remotion CLI 启动时已读完 props，成功失败都不再需要
+                if (job.error?.code === "spawnFailed") return;
                 job.status = code === 0 ? "done" : "error";
                 if (code === 0) job.progress = 1;
                 else {
                   // 把最有信息量的错误行顶到 UI（否则 lastLine 常是堆栈尾行）
                   const err = job.logTail.find((l) => l.includes("Error"));
                   if (err) job.lastLine = err;
+                  job.error = { code: "renderFailed", details: job.lastLine || undefined };
                 }
               });
             }
@@ -164,7 +170,7 @@ const renderExportPlugin = (): Plugin => {
         const m = sub.match(/^\/([a-z0-9]+)(\/reveal)?$/);
         const job = m ? jobs.get(m[1]) : undefined;
         if (!job) {
-          send(404, { error: "任务不存在" });
+          send(404, { error: { code: "notFound" } satisfies ExportError });
           return;
         }
         // POST /api/export/:id/reveal —— Finder 里显示成片

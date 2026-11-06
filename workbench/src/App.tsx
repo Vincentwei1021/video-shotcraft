@@ -7,6 +7,7 @@ import { resetProject, useStore } from "./store";
 import { seekTo, togglePlay } from "./playerRef";
 import type { ProjectData } from "./types";
 import { applyLocaleToDocument, LOCALES, useLocale, useT, type Locale } from "./i18n";
+import type { ExportError } from "./export-errors";
 
 const isEditable = (el: EventTarget | null) =>
   el instanceof HTMLElement &&
@@ -48,6 +49,7 @@ const ExportButton: React.FC = () => {
     status: "running" | "done" | "error";
     progress: number;
     lastLine?: string;
+    error?: ExportError;
   } | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
@@ -66,7 +68,10 @@ const ExportButton: React.FC = () => {
     const r = await fetch("/api/export", { method: "POST", body: JSON.stringify({ project }) });
     const j = await r.json();
     if (!r.ok) {
-      window.alert(j.error ?? t("export.startFailed"));
+      const error: ExportError | undefined = j.error;
+      window.alert(error
+        ? t(`export.${error.code}`) + (error.details ? `\n${error.details}` : "")
+        : t("export.startFailed"));
       return;
     }
     setJob({ id: j.id, status: "running", progress: 0 });
@@ -96,12 +101,18 @@ const ExportButton: React.FC = () => {
         </button>
       </>
     );
-  if (job?.status === "error")
+  if (job?.status === "error") {
+    const error = job.error ?? { code: "renderFailed" as const, details: job.lastLine };
     return (
-      <button className="btn danger" title={job.lastLine} onClick={start}>
+      <button
+        className="btn danger"
+        title={t(`export.${error.code}`) + (error.details ? `\n${error.details}` : "")}
+        onClick={start}
+      >
         {t("export.failedRetry")}
       </button>
     );
+  }
   return (
     <button
       className="btn primary"

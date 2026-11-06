@@ -33,19 +33,17 @@ function fixture(t) {
   return dir;
 }
 
-test("failed asset copy ends the export response, cleans props and permits a retry", t => {
+function exportHarness(t) {
   const dir = fixture(t);
-  const broken = path.join(dir, "public/broken.png");
-  fs.symlinkSync(path.join(dir, "missing.png"), broken);
-  let launches = 0;
+  const children = [];
   const mocks = {
     vite: { defineConfig: config => config },
     "@vitejs/plugin-react": () => ({}),
     "node:child_process": { spawn: () => {
-      launches++;
       const child = new EventEmitter();
       child.stdout = new EventEmitter();
       child.stderr = new EventEmitter();
+      children.push(child);
       return child;
     } },
   };
@@ -59,21 +57,34 @@ test("failed asset copy ends the export response, cleans props and permits a ret
     assert.equal(route, "/api/export");
     middleware = handler;
   } } });
-  const request = () => {
-    const req = Object.assign(new EventEmitter(), { method: "POST", url: "/" });
+  const request = (method = "POST", url = "/", raw = JSON.stringify({ project: { name: "Retry export" } })) => {
+    const req = Object.assign(new EventEmitter(), { method, url });
     const res = { ends: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; },
       end(body) { this.ends++; this.body = JSON.parse(body); } };
     middleware(req, res);
-    req.emit("data", JSON.stringify({ project: { name: "Retry export" } }));
-    req.emit("end");
+    if (method === "POST") {
+      req.emit("data", raw);
+      req.emit("end");
+    }
     return res;
   };
+  const props = () => fs.existsSync(path.join(dir, "exports"))
+    ? fs.readdirSync(path.join(dir, "exports")).filter(name => name.startsWith(".props-"))
+    : [];
+  return { dir, children, request, props };
+}
+
+test("failed asset copy ends the export response, cleans props and permits a retry", t => {
+  const { dir, children, request } = exportHarness(t);
+  const broken = path.join(dir, "public/broken.png");
+  fs.symlinkSync(path.join(dir, "missing.png"), broken);
   const failed = request();
   assert.equal(failed.ends, 1, "the failed POST must finish instead of hanging");
   assert.equal(failed.statusCode, 500);
   assert.equal(failed.headers["Content-Type"], "application/json");
-  assert.match(failed.body.error, /素材同步失败/);
-  assert.equal(launches, 0);
+  assert.equal(failed.body.error.code, "syncFailed");
+  assert.match(failed.body.error.details, /ENOENT.*broken\.png/);
+  assert.equal(children.length, 0);
   assert.deepEqual(fs.readdirSync(path.join(dir, "exports")), []);
 
   fs.unlinkSync(broken);
@@ -82,7 +93,90 @@ test("failed asset copy ends the export response, cleans props and permits a ret
   assert.equal(retry.ends, 1);
   assert.equal(retry.statusCode, 200);
   assert.match(retry.body.id, /^[a-z0-9]+$/);
-  assert.equal(launches, 1);
+  assert.equal(children.length, 1);
+});
+
+test("export rejects missing or malformed JSON and unknown jobs", t => {
+  const { request, children, props } = exportHarness(t);
+  for (const raw of ["", "{}", '{"project":']) {
+    const response = request("POST", "/", raw);
+    assert.equal(response.ends, 1);
+    assert.equal(response.statusCode, 400);
+    assert.deepEqual(response.body, { error: { code: "invalidProject" } });
+  }
+  const missing = request("GET", "/unknown");
+  assert.equal(missing.ends, 1);
+  assert.equal(missing.statusCode, 404);
+  assert.deepEqual(missing.body, { error: { code: "notFound" } });
+  assert.equal(children.length, 0);
+  assert.deepEqual(props(), []);
+});
+
+test("a running render rejects another export without launching it", t => {
+  const { request, children, props } = exportHarness(t);
+  const started = request();
+  assert.equal(started.statusCode, 200);
+  assert.equal(props().length, 1);
+  const conflict = request();
+  assert.equal(conflict.ends, 1);
+  assert.equal(conflict.statusCode, 409);
+  assert.deepEqual(conflict.body, { error: { code: "alreadyRunning" } });
+  assert.equal(children.length, 1);
+  assert.equal(request("GET", `/${started.body.id}`).body.status, "running");
+});
+
+test("spawn error survives close, cleans props and permits a retry", t => {
+  const { request, children, props } = exportHarness(t);
+  const started = request();
+  assert.equal(started.statusCode, 200);
+  assert.equal(props().length, 1);
+  const message = "spawn node ENOENT";
+  children[0].emit("error", Object.assign(new Error(message), { code: "ENOENT" }));
+  const failed = request("GET", `/${started.body.id}`);
+  assert.equal(failed.statusCode, 200);
+  assert.equal(failed.body.status, "error");
+  assert.deepEqual(failed.body.error, { code: "spawnFailed", details: message });
+  assert.equal(failed.body.lastLine, message);
+  assert.deepEqual(props(), []);
+  children[0].emit("close", -2);
+  assert.deepEqual(request("GET", `/${started.body.id}`).body, failed.body);
+  assert.deepEqual(props(), []);
+  const retry = request();
+  assert.equal(retry.statusCode, 200);
+  assert.equal(children.length, 2);
+  assert.equal(props().length, 1);
+  children[1].emit("close", 0);
+  assert.deepEqual(props(), []);
+});
+
+test("nonzero render exit keeps the informative Error line instead of later stack lines", t => {
+  const { request, children, props } = exportHarness(t);
+  const started = request();
+  const diagnostic = "Error: Could not load missing.png";
+  children[0].stdout.emit("data", Buffer.from("Rendered 2/10\n"));
+  children[0].stderr.emit("data", Buffer.from(`\x1b[31m${diagnostic}\x1b[0m\n`));
+  children[0].stderr.emit("data", Buffer.from("    at render (renderer.js:12:3)\n    at main (cli.js:7:2)\n"));
+  children[0].emit("close", 1);
+  const failed = request("GET", `/${started.body.id}`);
+  assert.equal(failed.statusCode, 200);
+  assert.equal(failed.body.status, "error");
+  assert.equal(failed.body.progress, 0.2);
+  assert.equal(failed.body.lastLine, diagnostic);
+  assert.deepEqual(failed.body.error, { code: "renderFailed", details: diagnostic });
+  assert.deepEqual(props(), []);
+});
+
+test("zero render exit completes progress without an error and cleans props", t => {
+  const { request, children, props } = exportHarness(t);
+  const started = request();
+  children[0].stdout.emit("data", Buffer.from("Rendered 2/10\n"));
+  children[0].emit("close", 0);
+  const done = request("GET", `/${started.body.id}`);
+  assert.equal(done.statusCode, 200);
+  assert.equal(done.body.status, "done");
+  assert.equal(done.body.progress, 1);
+  assert.equal(Object.hasOwn(done.body, "error"), false);
+  assert.deepEqual(props(), []);
 });
 
 for (const [platform, available] of [["win32", "python"], ["win32", "python3"], ["linux", "python"]]) {
