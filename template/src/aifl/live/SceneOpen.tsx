@@ -484,7 +484,7 @@ export const SceneOpen: React.FC<SceneOpenProps> = (props) => {
               }}
             >
               {WORDMARK.split('').map((ch, i) => {
-                const delay = 10 + i * (paperStyle ? 3 : 1.5);
+                const delay = 10 + i * 1.5;
                 const t = interpolate(frame, [delay, delay + 12], [0, 1], {
                   extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
                   easing: Easing.bezier(0.2, 0.7, 0.25, 1),
