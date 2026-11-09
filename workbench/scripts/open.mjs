@@ -14,10 +14,11 @@
 // server（如手动 npm run dev）占着时直接报错，不会假装"刷新即可"。
 import { spawn, spawnSync } from "node:child_process";
 import {
-  existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readlinkSync, rmdirSync, symlinkSync, unlinkSync, writeFileSync,
+  existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readlinkSync, rmdirSync, statSync, symlinkSync, unlinkSync, writeFileSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { linkDir } from "./link.mjs";
 
 const wb = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -51,7 +52,7 @@ if (!relink) {
 
   // —— 2. 链接 src → proj，public/* → public/* ——
   rmLink(projLink);
-  symlinkSync(srcDir, projLink);
+  linkDir(srcDir, projLink);
   const pub = join(wb, "public");
   mkdirSync(pub, { recursive: true });
   // 清掉上一部片留下的链接（只删符号链接和我们建的 textures/ 兜底目录，不碰真实文件）
@@ -67,7 +68,16 @@ if (!relink) {
   if (existsSync(publicSrc)) {
     for (const e of readdirSync(publicSrc)) {
       if (e.startsWith(".")) continue;
-      symlinkSync(join(publicSrc, e), join(pub, e));
+      const from = join(publicSrc, e);
+      if (statSync(from, { throwIfNoEntry: false })?.isDirectory()) linkDir(from, join(pub, e));
+      else {
+        try { symlinkSync(from, join(pub, e)); } catch (err) {
+          // Windows 无开发者模式时文件符号链接 EPERM：跳过并提示
+          if (process.platform !== "win32" || err.code !== "EPERM") throw err;
+          log(`⚠ 跳过 public/${e}：Windows 未开启开发者模式，不能建文件符号链接（开启开发者模式，或把它放进 public/ 下的子目录）`);
+          continue;
+        }
+      }
       n++;
     }
   }
@@ -79,7 +89,10 @@ if (!relink) {
 // —— 3. 依赖与索引 ——
 if (!existsSync(join(wb, "node_modules"))) {
   log("首次使用，安装依赖…");
-  const r = spawnSync("npm", ["install", "--ignore-scripts"], { cwd: wb, stdio: "inherit" });
+  // Windows 上 npm 是 npm.cmd，要经 shell 启动
+  const r = process.platform === "win32"
+    ? spawnSync("npm install --ignore-scripts", { cwd: wb, stdio: "inherit", shell: true })
+    : spawnSync("npm", ["install", "--ignore-scripts"], { cwd: wb, stdio: "inherit" });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 {
@@ -96,8 +109,11 @@ const readPid = () => { try { const n = Number(readFileSync(pidFile, "utf8").tri
 const pidAlive = (pid) => { try { process.kill(pid, 0); return true; } catch { return false; } };
 /** 进程身份核实：命令行必须是本工作台的 vite 且带同一端口——pid 会被系统复用，光"活着"不算 */
 const isOurVite = (pid) => {
-  if (process.platform === "win32") return false; // 无 ps；宁可不杀
-  const r = spawnSync("ps", ["-o", "command=", "-p", String(pid)], { encoding: "utf8" });
+  // Windows 无 ps：用 PowerShell 查进程命令行
+  const r = process.platform === "win32"
+    ? spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command",
+      `(Get-CimInstance Win32_Process -Filter "ProcessId=${pid}").CommandLine`], { encoding: "utf8" })
+    : spawnSync("ps", ["-o", "command=", "-p", String(pid)], { encoding: "utf8" });
   if (r.status !== 0) return false;
   const cmd = r.stdout.trim();
   return cmd.includes(viteBin) && cmd.includes(`--port ${PORT}`);
