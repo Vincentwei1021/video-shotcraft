@@ -39,6 +39,7 @@ cd workbench && npm install && npm run dev      # http://localhost:5198
   主题预设名写成「中文 · English」按语言取半段，俄文按中文半段查词典。加界面文案三种语言都要写；
   改原生卡或模板清单的中文标签 / 一句话要同步两份词典；新增或改写 demo 时同步补 `i18n/ru/*.json`
 - **导出成片**：顶栏「导出成片」→ dev server 内起 Remotion CLI 渲当前工程为 MP4 → `exports/`
+  错误提示随界面语言切换（English / 中文 / Русский），同时保留文件系统和渲染器的原始诊断信息。
 - **Remotion Studio**：`npm run studio`（每张卡 Zod schema 自动生成；`ProjImported` / `ProjOriginal` 对照）
 - **无损校验**：`npm run parity`——退出码 0 一致 / 1 有差异 / 2 无法比对（缺 python3+Pillow），不假绿
 
