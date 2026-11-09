@@ -131,6 +131,10 @@ demo 全部 schema 为空（时间/图层可编辑，属性不可编辑）——
 - **导出成片**：顶栏「导出成片」→ dev server 内起 Remotion CLI 渲当前工程（`workbench/exports/`）。
   渲染前会把 `public/` 解引用同步到 `.render-public/`（Remotion 静态服务器拒绝服务符号链接）。
   `remotion.config.ts` 与 template 同口径：jpeg 帧、ANGLE GL、并发 4。
+  导出 API 的错误格式为 `{ error: { code, details? } }`；失败任务的轮询结果也包含 `error`。
+  `code` 为 `alreadyRunning`、`invalidProject`、`syncFailed`、`spawnFailed`、`notFound` 或
+  `renderFailed`（见 `workbench/src/export-errors.ts`）。客户端按当前 English / 中文 / Русский
+  翻译提示，保留原始技术详情；`lastLine` / `logTail` 仍为原始渲染日志。
 - **Remotion Studio**：`cd workbench && npm run studio`——`Main`（贴工程 JSON）、`ProjImported`
   （刚导入的成片）、`ProjOriginal`（原合成）+ 每张卡一个合成（schema 自动转 Zod，官方 Inspector 调参）。
 - **无损校验**：`npm run parity -- --frames 150,240,470,1000` 渲 `ProjImported` 与 `ProjOriginal`
