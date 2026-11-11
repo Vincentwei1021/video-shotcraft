@@ -66,17 +66,6 @@
 </tr>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="PackyCode 標誌"></a><br>
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
-</td>
-<td>
-  <p>PackyCode 是一家穩定、高效的 API 中轉服務商，通過統一域名、統一金鑰接入主流大模型，支援智慧容災切換，並提供專屬 Codex / Claude Code 高速通道。</p>
-  <p>新使用者可獲 $1 免費體驗額度，首充享折扣，多分組折扣低至 2 折起。支援人民幣 1:1 充值，無匯率加價及額外充值手續費。</p>
-  <p><a href="https://www.packyapi.ai/register?aff=l9IZ">註冊並開始使用 PackyCode →</a></p>
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS 標誌"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>

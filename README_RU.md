@@ -70,17 +70,6 @@
 </tr>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="Логотип PackyCode"></a><br>
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
-</td>
-<td>
-  <p>Получите доступ к ведущим ИИ-моделям через PackyCode с единой точкой доступа API и одним API-ключом. Быстрый и надёжный доступ с автоматическим переключением при сбоях и выделенными высокоскоростными маршрутами для Codex и Claude Code.</p>
-  <p>Начните с $1 бесплатных средств, скидки на первое пополнение и экономии до 80% на доступных по акции маршрутах. Платите в RMB без наценок за конвертацию валюты и дополнительных комиссий за пополнение.</p>
-  <p><a href="https://www.packyapi.ai/register?aff=l9IZ">Начать работу с PackyCode →</a></p>
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="Логотип AWS"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>
