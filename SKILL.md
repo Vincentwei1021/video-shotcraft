@@ -118,6 +118,11 @@ SFX；只有完整分镜确认后才进入最终素材采集。用户从 Gallery
    镜头结构、运动语法、节奏和已调参数；字体、排版、配色与材质必须按
    目标产品重新蒙皮。若因叙事需要偏离产品视觉，共同创作先说明理由并让用户
    确认；自主自由创作把理由与取舍写入设计 spec 后继续。
+   只有网站链接、拿不到源码时，可选先跑 `npx easybrandkit@latest <url> --out brand`
+   （需要 Node 22+ 和本机的 Chrome、Chromium、Edge 或 Brave）：它从渲染后的页面
+   读出字体家族、按用途区分的颜色（按钮、标题、背景等）和 logo 的 PNG 与 SVG，
+   写进 `brand/BRAND.md`。字号、行高、间距和圆角它不提供，仍按上面的方法从
+   computed styles 中提取。
 
 3. **电影感来自运镜、光影、节奏与声音的配合，不来自炫技动画。**
    被反复认可的是：单主角完整动作弧（聚光→推近→悬浮→归位）、
@@ -226,6 +231,7 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
 | 自主自由创作 | pipeline.md（Agent 自主完成阶段 0–7，不逐阶段等待确认） |
 | 共同创作 | guided-free-creation.md（确认阶段 0–3），再从 pipeline.md 阶段 4 继续 |
 | 用户已选 BGM | music-beat-sync.md（先分析再分镜） |
+| 只有网站链接，需要品牌字体、颜色和 logo | 可选：`npx easybrandkit@latest <url> --out brand`，再读 `brand/BRAND.md`（见核心理念第 2 条） |
 | 走模板路线 | template/TEMPLATE.md 全文 |
 | 分镜设计 | sequences/ 桥段模板（全片骨架先填空）；shots/ 全部 frontmatter；选中的卡读全文 |
 | 逐镜头实现 | 该镜头卡全文 + 按“参考实现”定位的准确 demo 源码全文 + assets/lib/ 对应组件 |
