@@ -12,6 +12,181 @@ const wb = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const require = createRequire(import.meta.url);
 const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
 
+function publicHarness(t, platform = "win32", symlinkError = "EPERM", copyFailure = null) {
+  const dir = fixture(t);
+  const pub = path.join(dir, "public");
+  const manifest = path.join(dir, ".public-copies.json");
+  const mod = { exports: {} };
+  let copies = 0;
+  const symlinkCalls = [];
+  const io = { ...fs,
+    symlinkSync: (...args) => {
+      symlinkCalls.push(args);
+      if (symlinkError === "record") return;
+      if (args[2] === "junction" || !symlinkError) return fs.symlinkSync(...args);
+      throw Object.assign(new Error("simulated file symlink error"), { code: symlinkError });
+    },
+    copyFileSync: (...args) => {
+      if (path.basename(args[0]) === copyFailure) throw Object.assign(new Error("copy failed"), { code: "EIO" });
+      copies++;
+      return fs.copyFileSync(...args);
+    },
+  };
+  const link = { linkDir: (from, to) => fs.symlinkSync(from, to, "junction") };
+  new Function("require", "module", "exports", "process", compile("scripts/public-assets.mjs", dir))(
+    id => id === "node:fs" ? io : id === "./link.mjs" ? link : require(id),
+    mod, mod.exports, { platform },
+  );
+  const source = (name, files) => {
+    const src = path.join(dir, name, "public");
+    fs.mkdirSync(src, { recursive: true });
+    for (const [file, content] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(src, file)), { recursive: true });
+      fs.writeFileSync(path.join(src, file), content);
+    }
+    return src;
+  };
+  return { dir, pub, manifest, source, symlinkCalls, module: mod.exports, copies: () => copies,
+    sync: src => mod.exports.syncProjectPublic(src, pub, manifest) };
+}
+
+test("Windows EPERM copies root images/audio, links directories and tracks ownership", t => {
+  const h = publicHarness(t);
+  const src = h.source("first", { "logo.png": "logo", "click.mp3": "click", "audio/nested.mp3": "nested" });
+  assert.equal(h.sync(src), 3);
+  for (const [name, content] of [["logo.png", "logo"], ["click.mp3", "click"], ["audio/nested.mp3", "nested"]])
+    assert.equal(fs.readFileSync(path.join(h.pub, name), "utf8"), content);
+  assert.equal(fs.lstatSync(path.join(h.pub, "logo.png")).isSymbolicLink(), false);
+  assert.ok(fs.lstatSync(path.join(h.pub, "audio")).isSymbolicLink());
+  assert.equal(h.copies(), 2);
+  assert.deepEqual(JSON.parse(fs.readFileSync(h.manifest, "utf8")).copies.map(c => c.name).sort(), ["click.mp3", "logo.png"]);
+});
+
+test("switching projects removes only unchanged managed copies and never source assets", t => {
+  const h = publicHarness(t);
+  const first = h.source("first", { "logo.png": "old", "click.mp3": "click", "edited.txt": "original", "replaced.txt": "same" });
+  h.sync(first);
+  fs.writeFileSync(path.join(h.pub, "user.txt"), "user-owned");
+  fs.writeFileSync(path.join(h.pub, "edited.txt"), "user edit");
+  // Same bytes but a different inode: it is no longer our managed copy.
+  fs.renameSync(path.join(h.pub, "replaced.txt"), path.join(h.pub, "replaced-backup.txt"));
+  fs.writeFileSync(path.join(h.pub, "replaced.txt"), "same");
+  const second = h.source("second", { "logo.png": "new" });
+  h.sync(second);
+  assert.equal(fs.existsSync(path.join(h.pub, "click.mp3")), false);
+  for (const [name, content] of [["logo.png", "new"], ["user.txt", "user-owned"], ["edited.txt", "user edit"], ["replaced.txt", "same"]])
+    assert.equal(fs.readFileSync(path.join(h.pub, name), "utf8"), content);
+  assert.equal(fs.readFileSync(path.join(first, "click.mp3"), "utf8"), "click");
+  assert.equal(fs.readFileSync(path.join(first, "logo.png"), "utf8"), "old");
+  fs.writeFileSync(path.join(second, "logo.png"), "updated source");
+  h.sync(second);
+  assert.equal(fs.readFileSync(path.join(h.pub, "logo.png"), "utf8"), "updated source");
+});
+
+test("a real local asset collision fails before cleanup or overwrite", t => {
+  const h = publicHarness(t);
+  h.sync(h.source("first", { "old.mp3": "managed" }));
+  fs.writeFileSync(path.join(h.pub, "logo.png"), "user-owned");
+  assert.throws(() => h.sync(h.source("second", { "logo.png": "project" })), /Preserving existing public\/logo.png/);
+  assert.equal(fs.readFileSync(path.join(h.pub, "logo.png"), "utf8"), "user-owned");
+  assert.equal(fs.readFileSync(path.join(h.pub, "old.mp3"), "utf8"), "managed");
+});
+
+test("a changed copy that collides with the next project is preserved", t => {
+  const h = publicHarness(t);
+  h.sync(h.source("first", { "logo.png": "managed" }));
+  fs.writeFileSync(path.join(h.pub, "logo.png"), "edited");
+  assert.throws(() => h.sync(h.source("second", { "logo.png": "project" })), /Preserving existing/);
+  assert.equal(fs.readFileSync(path.join(h.pub, "logo.png"), "utf8"), "edited");
+});
+
+test("replacing a copy with a symlink preserves the link target", t => {
+  const h = publicHarness(t);
+  h.sync(h.source("first", { "logo.png": "managed" }));
+  const target = path.join(h.pub, "private");
+  fs.mkdirSync(target);
+  fs.writeFileSync(path.join(target, "keep.txt"), "user source");
+  fs.unlinkSync(path.join(h.pub, "logo.png"));
+  fs.symlinkSync(target, path.join(h.pub, "logo.png"), "junction");
+  h.sync(h.source("second", {}));
+  assert.equal(fs.readFileSync(path.join(target, "keep.txt"), "utf8"), "user source");
+});
+
+for (const [platform, code] of [["win32", "EACCES"], ["linux", "EPERM"]]) {
+  test("unexpected file link errors do not silently copy on " + platform + "/" + code, t => {
+    const h = publicHarness(t, platform, code);
+    assert.throws(() => h.sync(h.source("first", { "logo.png": "logo" })), { code });
+    assert.equal(h.copies(), 0);
+    assert.equal(fs.existsSync(path.join(h.pub, "logo.png")), false);
+  });
+}
+
+test("cleanup rejects invalid manifest paths and preserves assets", t => {
+  const h = publicHarness(t);
+  const src = h.source("first", { "logo.png": "logo" });
+  fs.writeFileSync(h.manifest, JSON.stringify({ version: 1, copies: [{ name: "../outside", fingerprint: {} }] }));
+  assert.throws(() => h.sync(src), /Invalid public copy manifest/);
+  assert.equal(fs.readFileSync(path.join(src, "logo.png"), "utf8"), "logo");
+});
+
+test("ordinary file symlinks remain the default and do not claim copy ownership", t => {
+  const h = publicHarness(t, "darwin", "record");
+  const src = h.source("project", { "logo.png": "logo" });
+  assert.equal(h.sync(src), 1);
+  assert.deepEqual(h.symlinkCalls, [[path.join(src, "logo.png"), path.join(h.pub, "logo.png")]]);
+  assert.equal(h.copies(), 0);
+  assert.deepEqual(JSON.parse(fs.readFileSync(h.manifest, "utf8")).copies, []);
+});
+
+test("a later copy failure leaves earlier copies tracked for safe retry", t => {
+  const h = publicHarness(t, "win32", "EPERM", "z.png");
+  const src = h.source("project", { "a.png": "first", "z.png": "fails" });
+  assert.throws(() => h.sync(src), { code: "EIO" });
+  assert.deepEqual(JSON.parse(fs.readFileSync(h.manifest, "utf8")).copies.map(c => c.name), ["a.png"]);
+  fs.unlinkSync(path.join(src, "z.png"));
+  assert.equal(h.sync(src), 1);
+  assert.equal(fs.readFileSync(path.join(h.pub, "a.png"), "utf8"), "first");
+});
+
+test("open.mjs uses the public-asset fallback before generating the index", async t => {
+  const h = publicHarness(t);
+  const src = h.source("project", { "logo.png": "logo", "click.mp3": "click" });
+  const project = path.dirname(src);
+  fs.mkdirSync(path.join(project, "src"));
+  fs.writeFileSync(path.join(project, "src", "workbench.ts"), "export const WORKBENCH = {};");
+  fs.rmSync(path.join(h.dir, "proj"), { recursive: true });
+  fs.mkdirSync(path.join(h.dir, "node_modules"));
+  const stop = new Error("stopped before index/server launch");
+  const mocks = {
+    "./public-assets.mjs": h.module,
+    "./link.mjs": { linkDir: (from, to) => fs.symlinkSync(from, to, "junction") },
+    "node:child_process": { spawnSync: () => { throw stop; } },
+  };
+  await assert.rejects(new AsyncFunction("require", "module", "exports", "process", "console", compile("scripts/open.mjs", h.dir))(
+    id => Object.hasOwn(mocks, id) ? mocks[id] : require(id), { exports: {} }, {},
+    { platform: "win32", execPath: process.execPath, argv: ["node", "open.mjs", project, "--no-open"] },
+    { log() {}, error() {} },
+  ), error => error === stop);
+  assert.equal(fs.readFileSync(path.join(h.pub, "logo.png"), "utf8"), "logo");
+  assert.equal(fs.readFileSync(path.join(h.pub, "click.mp3"), "utf8"), "click");
+  assert.equal(fs.realpathSync(path.join(h.dir, "proj")), fs.realpathSync(path.join(project, "src")));
+});
+
+test("project textures replace only the generated fallback, not its source", t => {
+  const h = publicHarness(t);
+  // Keep this fixture target inside our temp directory.
+  const pub = path.join(h.dir, "wb/public");
+  fs.mkdirSync(path.join(pub, "textures"), { recursive: true });
+  const actualFallback = path.resolve(pub, "../../demos/_textures");
+  fs.mkdirSync(actualFallback, { recursive: true });
+  fs.writeFileSync(path.join(actualFallback, "keep.png"), "demo source");
+  fs.symlinkSync(actualFallback, path.join(pub, "textures/live"), "junction");
+  const src = h.source("project", { "textures/new.png": "project" });
+  h.module.syncProjectPublic(src, pub, h.manifest);
+  assert.equal(fs.readFileSync(path.join(pub, "textures/new.png"), "utf8"), "project");
+  assert.equal(fs.readFileSync(path.join(actualFallback, "keep.png"), "utf8"), "demo source");
+});
+
 // Execute the actual CLI/plugin with the project's compiler. Only expensive
 // rendering/process launches and Vite registration are stubbed; file operations
 // use isolated real directories so cleanup and failed asset copies are exercised.

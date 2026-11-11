@@ -175,7 +175,7 @@ ln -s "$(pwd)" ~/.codex/skills/video-shotcraft    # Codex
 | 剪映工程 | 可選：可編輯的剪映草稿，鏡頭分段、字幕和音軌都能改 |
 | 社交平臺釋出 | 可選，使用者要求時：通過 Upload-Post 把成片發到 TikTok / Instagram / YouTube / LinkedIn / X 等；先確認文案與平臺、dry-run 後再發（[說明](references/publish-upload-post.md)） |
 
-另外還附帶：可複用的 Remotion 元件（2.5D 頁面相機、字幕、閃切、數字滾動）、149 個音效和 5 首 BGM、
+另外還附帶：可複用的 Remotion 元件（2.5D 頁面相機、字幕、閃切、數字滾動）、Freesound 音效搜尋下載工具和 5 首 BGM、
 頁面素材採集指令碼，以及整套製作方法（素材採集、風格定調、分鏡、聲音設計、節奏卡點、最終驗收），
 見 [references/](references/pipeline.md)。
 
@@ -224,6 +224,7 @@ video-shotcraft/
 │   ├── aesthetic-rules.md   # 视觉验收准则
 │   ├── music-beat-sync.md   # BGM 节奏分析与卡点方法
 │   ├── sound-design.md      # 声音设计方法与判例
+│   ├── sfx-sourcing.md      # Freesound 搜尋、下載、分析與署名
 │   ├── jianying-export.md   # 剪映工程导出方法
 │   ├── publish-upload-post.md # 社交平台发布（可选，Upload-Post API）
 │   └── workbench.md         # 动效工作台：成片接入契约 + 可编辑性规则
@@ -235,10 +236,9 @@ video-shotcraft/
 ├── workbench/               # 交付后的动效工作台（Vite + Remotion Player）
 └── assets/
     ├── lib/                 # 可复制使用的 Remotion 组件
-    ├── scripts/             # 页面素材采集脚本
-    └── audio/               # 音频资产
-        ├── bgm/             # 5 首 BGM 备选
-        └── sfx/<类别>/      # 149 个音效，按场景分 16 类
+    ├── scripts/             # 頁面採集 + Freesound CLI 與離線測試
+    └── audio/
+        └── bgm/             # 5 首 BGM 備選；SFX 按專案下載
 ```
 
 完整工作流和實現要求見 [SKILL.md](SKILL.md)、[製作流水線](references/pipeline.md) 與
@@ -248,9 +248,11 @@ video-shotcraft/
 
 ## 音訊與素材
 
-音效按場景 / 材質分 16 類（`transition` `impact` `riser` `camera` `ui` `text` `paper` `film` `light` `data`
-`scifi` `mech` `glass` `fluid` `crowd` `counter`），找音先定類別再挑音色。類別索引與逐檔案用途見
-[sound-design.md](references/sound-design.md)，來源與許可見 [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)。
+音效直接從 [Freesound](https://freesound.org) 按需下載到目前的影片專案，共用本地音效庫已移除。
+[選材指南](references/sfx-sourcing.md) 包含搜尋、CC0 / CC BY 篩選、MP3 預覽下載、測量與來源/署名清單。
+CLI 使用 Python 標準函式庫，下載與分析另需 FFmpeg，無需 API key。
+釘幀和混音見 [sound-design.md](references/sound-design.md)。模板保留歷史固定音訊供原樣預覽與回歸驗證，
+為新產品製作時從 Freesound 選音。5 首 BGM 備選繼續保留在 `assets/audio/bgm/`。
 
 模板內的產品截圖為演示素材。對外發布成片前，請替換為你自己產品的截圖，並確認其中的資料、客戶資訊和個人資訊
 是否需要脫敏。
@@ -258,7 +260,8 @@ video-shotcraft/
 ## 許可
 
 - 程式碼與文件：[Apache-2.0](LICENSE)。
-- `assets/audio/` 下的音訊：各自按其授權使用，見 [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)。
+- Freesound 音效：逐檔案授權記在專案來源清單中，CC BY 署名需隨發布保留。
+- BGM：見 [ATTRIBUTION.md](assets/audio/ATTRIBUTION.md)；模板歷史音訊見 [模板來源記錄](template/public/audio/ATTRIBUTION.md)。
 - [Remotion](https://www.remotion.dev/) 有自己的[許可協議](https://github.com/remotion-dev/remotion/blob/main/LICENSE.md)：
   個人與小團隊免費，公司可能需要付費許可。
 
@@ -269,8 +272,13 @@ Figma、Framer、Bear、Raycast、Pitch、Miro、Superhuman、Loom** 等產品�
 動效技法（時序、緩動、編排），倉庫中不包含上述影片的任何素材、畫面或品牌資產。所有商標歸各自所有者所有，
 上述公司與本專案無關聯，亦未對本專案背書。
 
+Freesound 音效搜尋與選材流程受到 **[vibe-motion/sound](https://github.com/vibe-motion/sound)** 的啟發。
+感謝作者分享結合聲源描述、時長、下載量、評分人數與授權篩選音效的方法。
+Video Shotcraft 的搜尋與下載 CLI 為獨立實現。
+
 也感謝 **[Remotion](https://www.remotion.dev/)**——驅動本庫全部 demo 與模板的 React 影片框架；
-**[Mixkit](https://mixkit.co/)**——庫內音效與音樂素材的來源（免費授權）；遊戲手感與動畫社群的公開方法論，
+**[Freesound](https://freesound.org)** 與音效貢獻者；
+**[Mixkit](https://mixkit.co/)** 提供的 BGM 與模板歷史音訊；遊戲手感與動畫社群的公開方法論，
 多張鏡頭卡受其啟發；以及 **Claude Code**——本庫自身的構建、迭代與驗收都由它完成，用的正是這個 skill 教的工作流。
 
 ## 關注我

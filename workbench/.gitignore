@@ -5,6 +5,7 @@ exports/
 .render-public/
 .dev.pid
 .dev.log
+.public-copies.json
 
 # 按本机链接生成（scripts/gen-index.mjs：prepare / predev / prebuild / prestudio 都会跑）
 src/cards/demo-index.ts
