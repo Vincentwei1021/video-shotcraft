@@ -7,18 +7,19 @@
 // 成片工程目录 = 含 package.json / remotion.config.ts 的那一层，源码在 <目录>/src（或 <目录>/remotion/src）。
 // 工程要提供 src/workbench.ts 清单（结构见 references/workbench.md）才能拆解导入；没有清单也能打开，
 // 只是素材 tab 没有「导入成片」按钮。
-// 链接全是机器本地符号链接（workbench/proj、workbench/public/*），不进库。
+// 链接与 Windows 文件复制兜底都是机器本地产物，不进库。
 //
 // dev server 管理：本脚本起的 server 记 pid 到 .dev.pid。@proj 别名在 vite 配置加载时定死，
 // 所以「给了工程目录 = 重新链接」必须重启 server——只重启身份核实过的自家进程；端口被别的
 // server（如手动 npm run dev）占着时直接报错，不会假装"刷新即可"。
 import { spawn, spawnSync } from "node:child_process";
 import {
-  existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readlinkSync, rmdirSync, statSync, symlinkSync, unlinkSync, writeFileSync,
+  existsSync, lstatSync, openSync, readFileSync, readdirSync, readlinkSync, unlinkSync, writeFileSync,
 } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { linkDir } from "./link.mjs";
+import { syncProjectPublic } from "./public-assets.mjs";
 
 const wb = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -51,36 +52,10 @@ if (!relink) {
   const publicSrc = join(projRoot, "public");
 
   // —— 2. 链接 src → proj，public/* → public/* ——
+  if (existsSync(projLink) && !isLink(projLink)) die("proj 是真实文件/目录，保留不覆盖；请先移走它再链接工程。", 2);
+  const n = syncProjectPublic(publicSrc, join(wb, "public"), join(wb, ".public-copies.json"), log);
   rmLink(projLink);
   linkDir(srcDir, projLink);
-  const pub = join(wb, "public");
-  mkdirSync(pub, { recursive: true });
-  // 清掉上一部片留下的链接（只删符号链接和我们建的 textures/ 兜底目录，不碰真实文件）
-  for (const e of readdirSync(pub)) {
-    const p = join(pub, e);
-    if (isLink(p)) unlinkSync(p);
-    else if (e === "textures" && !isLink(p)) {
-      const inner = readdirSync(p);
-      if (inner.every((f) => isLink(join(p, f)))) { for (const f of inner) unlinkSync(join(p, f)); rmdirSync(p); }
-    }
-  }
-  let n = 0;
-  if (existsSync(publicSrc)) {
-    for (const e of readdirSync(publicSrc)) {
-      if (e.startsWith(".")) continue;
-      const from = join(publicSrc, e);
-      if (statSync(from, { throwIfNoEntry: false })?.isDirectory()) linkDir(from, join(pub, e));
-      else {
-        try { symlinkSync(from, join(pub, e)); } catch (err) {
-          // Windows 无开发者模式时文件符号链接 EPERM：跳过并提示
-          if (process.platform !== "win32" || err.code !== "EPERM") throw err;
-          log(`⚠ 跳过 public/${e}：Windows 未开启开发者模式，不能建文件符号链接（开启开发者模式，或把它放进 public/ 下的子目录）`);
-          continue;
-        }
-      }
-      n++;
-    }
-  }
   log(`已链接 ${srcDir} → proj，public/ ${n} 项`);
   const manifest = ["workbench.ts", "workbench.tsx"].some((f) => existsSync(join(srcDir, f)));
   if (!manifest) log("⚠ 工程没有 src/workbench.ts 清单：能打开工作台，但无法拆解导入这部片（写法见 references/workbench.md）");
