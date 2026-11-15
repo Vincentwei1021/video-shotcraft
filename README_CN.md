@@ -8,6 +8,8 @@
 
 # video-shotcraft
 
+<a href="#support"><img src="https://img.shields.io/badge/%E2%98%95%20%E6%94%AF%E6%8C%81%E4%BD%9C%E8%80%85-16803C?style=for-the-badge" alt="☕ 支持作者" height="32"></a>
+
 [English](README.md) | **中文** | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md)
 
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
@@ -18,8 +20,6 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-d97757)](SKILL.md)
 [![Codex](https://img.shields.io/badge/Codex-skill-10a37f)](SKILL.md)
 [![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
-
-[☕ 支持作者](#support)
 
 <a href="https://trendshift.io/repositories/88911?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/88911" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
