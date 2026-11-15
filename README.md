@@ -19,6 +19,8 @@
 [![Codex](https://img.shields.io/badge/Codex-skill-10a37f)](SKILL.md)
 [![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
 
+[☕ Support this project](#support)
+
 <a href="https://trendshift.io/repositories/88911?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/88911" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
 <img src="./assets/readme/cover.webp" width="100%" alt="Six Gallery shots, left to right, top to bottom: graze-face-tour, logo-shrink-wordmark-lockup, panel-grid-moves, product-card-progressive-assemble, space-camera-moves · exploded-view, spotlight-hero-card">
@@ -282,6 +284,18 @@ Thanks also to **[Remotion](https://www.remotion.dev/)**, which powers every dem
 **[Mixkit](https://mixkit.co/)** for BGM and historical template audio; the game-feel
 and animation communities whose published principles inform several cards; and **Claude Code**, with which this
 library was built, iterated and QA'd using the same workflow the skill teaches.
+
+<a id="support"></a>
+
+## ☕ Support this project
+
+If this project helped you, you're welcome to buy me a coffee and support its continued development and maintenance.
+
+<img src="assets/wechat-sponsor.jpg" alt="WeChat sponsorship QR code" width="280">
+
+Scan with WeChat; any amount is appreciated. On a phone, save the image and select it from your album in WeChat's Scan feature.
+
+Sponsorship is entirely optional. Stars, feedback, and sharing are just as welcome. Sponsorship does not change this project's license terms.
 
 ## Follow me
 
