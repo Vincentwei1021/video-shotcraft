@@ -19,6 +19,8 @@
 [![Codex](https://img.shields.io/badge/Codex-skill-10a37f)](SKILL.md)
 [![AtomGit Star](https://atomgit.com/VincentWei/video-shotcraft/star/badge.svg)](https://atomgit.com/VincentWei/video-shotcraft)
 
+[☕ 支持作者](#support)
+
 <a href="https://trendshift.io/repositories/88911?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-88911" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/88911" alt="Vincentwei1021%2Fvideo-shotcraft | Trendshift" width="250" height="55"/></a>
 
 <img src="./assets/readme/cover.webp" width="100%" alt="六个 Gallery 镜头，从左到右、从上到下：graze-face-tour、logo-shrink-wordmark-lockup、panel-grid-moves、product-card-progressive-assemble、space-camera-moves · exploded-view、spotlight-hero-card">
@@ -269,6 +271,18 @@ Video Shotcraft 的搜索与下载 CLI 为独立实现。
 **[Freesound](https://freesound.org)** 与音效贡献者；
 **[Mixkit](https://mixkit.co/)** 提供的 BGM 与模板历史音频；游戏手感与动画社区的公开方法论，
 多张镜头卡受其启发；以及 **Claude Code**——本库自身的构建、迭代与验收都由它完成，用的正是这个 skill 教的工作流。
+
+<a id="support"></a>
+
+## ☕ 支持作者
+
+如果这个项目帮到了你，欢迎请我喝杯咖啡，支持后续开发与维护。
+
+<img src="assets/wechat-sponsor.jpg" alt="微信赞助收款码" width="280">
+
+微信扫一扫，金额随意。手机查看时，可保存图片，再在微信「扫一扫」中从相册选择。
+
+赞助完全自愿，Star、反馈和分享同样感谢。赞助不改变本项目现有的许可条款。
 
 ## 关注我
 
