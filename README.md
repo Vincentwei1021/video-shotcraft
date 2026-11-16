@@ -8,6 +8,8 @@
 
 # video-shotcraft
 
+<a href="#support"><img src="https://img.shields.io/badge/%E2%98%95%20Support%20author-16803C?style=for-the-badge" alt="☕ Support author" height="32"></a>
+
 **English** | [中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md)
 
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
@@ -59,17 +61,6 @@ sharp, on-brand and fully editable.
 ## ❤️ Sponsors
 
 <table>
-<tr>
-<td align="center" valign="middle" width="25%">
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="PackyCode logo"></a><br>
-  <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
-</td>
-<td>
-  <p>Access leading AI models through PackyCode with one API endpoint and one API key. Enjoy fast, reliable access with automatic failover and dedicated high-speed routes for Codex and Claude Code.</p>
-  <p>Get started with $1 in free credits, a discount on your first top-up, and savings of up to 80% on eligible routes. Pay in RMB with no currency conversion markups or extra top-up fees.</p>
-  <p><a href="https://www.packyapi.ai/register?aff=l9IZ">Get started with PackyCode →</a></p>
-</td>
-</tr>
 <tr>
 <td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS logo"></a><br>
@@ -284,6 +275,18 @@ Thanks also to **[Remotion](https://www.remotion.dev/)**, which powers every dem
 **[Mixkit](https://mixkit.co/)** for BGM and historical template audio; the game-feel
 and animation communities whose published principles inform several cards; and **Claude Code**, with which this
 library was built, iterated and QA'd using the same workflow the skill teaches.
+
+<a id="support"></a>
+
+## ☕ Support this project
+
+If this project helped you, you're welcome to buy me a coffee and support its continued development and maintenance.
+
+<img src="assets/wechat-sponsor.jpg" alt="WeChat sponsorship QR code" width="280">
+
+Scan with WeChat; any amount is appreciated. On a phone, save the image and select it from your album in WeChat's Scan feature.
+
+Sponsorship is entirely optional. Stars, feedback, and sharing are just as welcome. Sponsorship does not change this project's license terms.
 
 ## Follow me
 
