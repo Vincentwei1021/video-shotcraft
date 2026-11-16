@@ -57,15 +57,6 @@
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><img src="./assets/readme/sponsors/apimart.png" width="200" alt="APIMart 標誌"></a><br>
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><b>APIMart</b></a>
-</td>
-<td>
-  <p>感謝 APIMart 贊助了本專案！APIMart 是專注 AI 圖片/影片生成的低價 API 平臺，GPT-Image-2 低至 $0.006/張，1 美元可出圖 160+ 張。圖片、影片一套非同步 API 通吃，提交任務拿 ID、回撥取結果，跑批萬張不超時、換模型不改程式碼。按量付費、無月費，通過此<a href="https://go.apimart.ai/tw-video-shotcraft">註冊連結</a>註冊即可開用。</p>
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" width="25%">
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="PackyCode 標誌"></a><br>
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
 </td>

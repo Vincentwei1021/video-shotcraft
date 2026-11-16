@@ -61,15 +61,6 @@ sharp, on-brand and fully editable.
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><img src="./assets/readme/sponsors/apimart.png" width="200" alt="APIMart logo"></a><br>
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><b>APIMart</b></a>
-</td>
-<td>
-  <p>Thanks to APIMart for sponsoring this project! APIMart is a low-cost API platform for AI image &amp; video generation — GPT-Image-2 from $0.006/image, 160+ images per dollar. One async API covers both image and video: submit a task, get an ID, fetch results via polling or callback. Batch tens of thousands of images without timeouts, switch models without changing code. Pay-as-you-go with no monthly fee — <a href="https://go.apimart.ai/tw-video-shotcraft">sign up here</a> to get started.</p>
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" width="25%">
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="PackyCode logo"></a><br>
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
 </td>

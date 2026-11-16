@@ -61,15 +61,6 @@
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><img src="./assets/readme/sponsors/apimart.png" width="200" alt="Логотип APIMart"></a><br>
-  <a href="https://go.apimart.ai/tw-video-shotcraft"><b>APIMart</b></a>
-</td>
-<td>
-  <p>Спасибо APIMart за поддержку проекта! APIMart — доступная API-платформа для генерации изображений и видео с ИИ: GPT-Image-2 от $0.006 за изображение, 160+ изображений за доллар. Один асинхронный API для изображений и видео: отправьте задачу, получите ID и заберите результат опросом или через обратный вызов. Генерируйте десятки тысяч изображений пакетами без тайм-аутов, меняйте модели без изменения кода. Оплата по использованию, без абонентской платы — <a href="https://go.apimart.ai/tw-video-shotcraft">зарегистрируйтесь здесь</a>, чтобы начать.</p>
-</td>
-</tr>
-<tr>
-<td align="center" valign="middle" width="25%">
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><img src="./assets/readme/sponsors/packycode.png" width="200" alt="Логотип PackyCode"></a><br>
   <a href="https://www.packyapi.ai/register?aff=l9IZ"><b>PackyCode</b></a>
 </td>
