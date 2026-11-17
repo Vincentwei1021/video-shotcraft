@@ -296,6 +296,10 @@ If this project helped you, you're welcome to buy me a coffee and support its co
 
 Scan with WeChat; any amount is appreciated. On a phone, save the image and select it from your album in WeChat's Scan feature.
 
+Outside mainland China? You can also leave a one-time tip on Ko-fi with a card or PayPal:
+
+<a href="https://ko-fi.com/vincentwei"><img src="https://img.shields.io/badge/Support%20on%20Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi" height="32"></a>
+
 Sponsorship is entirely optional. Stars, feedback, and sharing are just as welcome. Sponsorship does not change this project's license terms.
 
 ## Follow me

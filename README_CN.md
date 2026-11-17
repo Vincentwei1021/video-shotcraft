@@ -283,6 +283,10 @@ Video Shotcraft 的搜索与下载 CLI 为独立实现。
 
 微信扫一扫，金额随意。手机查看时，可保存图片，再在微信「扫一扫」中从相册选择。
 
+海外用户也可以通过 Ko-fi 用银行卡或 PayPal 一次性支持：
+
+<a href="https://ko-fi.com/vincentwei"><img src="https://img.shields.io/badge/%E5%9C%A8%20Ko--fi%20%E6%94%AF%E6%8C%81-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="在 Ko-fi 支持作者" height="32"></a>
+
 赞助完全自愿，Star、反馈和分享同样感谢。赞助不改变本项目现有的许可条款。
 
 ## 关注我
