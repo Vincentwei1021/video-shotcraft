@@ -61,6 +61,16 @@
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://apinebula.ai/ref/HLROcb4p"><img src="./assets/readme/sponsors/apinebula.png" width="200" alt="Логотип APINEBULA"></a><br>
+  <a href="https://apinebula.ai/ref/HLROcb4p"><b>APINEBULA</b></a>
+</td>
+<td>
+  <p>Спасибо APINEBULA за поддержку проекта! APINEBULA — корпоративная платформа агрегации ИИ от 银河录像局. Используя ресурсы материнской платформы, она предоставляет разработчикам, командам и компаниям стабильный и экономичный доступ к API больших языковых моделей. Один API объединяет полнофункциональные Claude, GPT, Gemini и другие ведущие модели; цены на модели начинаются от 6% стандартной стоимости. Для компаний доступны высокая параллельность запросов, официальные договоры, оплата с расчётного счёта и выставление счетов.</p>
+  <p><a href="https://apinebula.ai/ref/HLROcb4p">Зарегистрируйтесь по этой ссылке</a> и введите промокод <b>video</b> при пополнении, чтобы получить <b>скидку 10%</b>.</p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="Логотип AWS"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>

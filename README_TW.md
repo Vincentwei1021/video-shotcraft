@@ -57,6 +57,16 @@
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://apinebula.ai/ref/HLROcb4p"><img src="./assets/readme/sponsors/apinebula.png" width="200" alt="APINEBULA 標誌"></a><br>
+  <a href="https://apinebula.ai/ref/HLROcb4p"><b>APINEBULA</b></a>
+</td>
+<td>
+  <p>感謝 APINEBULA 贊助本專案！APINEBULA 是銀河錄像局旗下的企業級 AI 聚合平臺，背靠大平臺資源，為開發者、團隊與企業使用者提供穩定、高性價比的大型語言模型 API 串接服務。平臺聚合 Claude、GPT、Gemini 等主流完整能力模型，透過單一介面串接全球頂尖 AI 大模型，各大模型價格低至 0.6 折起，支援企業級高併發、正式合約、公司帳戶匯款與發票服務！</p>
+  <p>透過<a href="https://apinebula.ai/ref/HLROcb4p">此連結</a>註冊，並在儲值時輸入 <b>video</b> 優惠碼，即可享<b>九折優惠</b>！</p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS 標誌"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>

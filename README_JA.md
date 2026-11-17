@@ -60,6 +60,16 @@ Claude Code や Codex に「プロダクトのプロモーション動画を作�
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://apinebula.ai/ref/HLROcb4p"><img src="./assets/readme/sponsors/apinebula.png" width="200" alt="APINEBULA ロゴ"></a><br>
+  <a href="https://apinebula.ai/ref/HLROcb4p"><b>APINEBULA</b></a>
+</td>
+<td>
+  <p>本プロジェクトをご支援いただいた APINEBULA に感謝します！APINEBULA は、银河录像局が運営するエンタープライズ向け AI 統合プラットフォームです。親プラットフォームのリソースを活用し、開発者、チーム、企業に安定した費用対効果の高い大規模言語モデル API を提供します。Claude、GPT、Gemini など主要モデルのフル機能版に単一の API でアクセスでき、モデル料金は通常価格の 6% から。企業向けの高い同時処理能力、正式な契約、法人名義の銀行振込、請求書発行にも対応しています。</p>
+  <p><a href="https://apinebula.ai/ref/HLROcb4p">こちらのリンクから登録</a>し、チャージ時にクーポンコード <b>video</b> を入力すると、<b>10% オフ</b>になります。</p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS ロゴ"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>

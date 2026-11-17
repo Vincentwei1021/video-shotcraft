@@ -63,6 +63,16 @@ sharp, on-brand and fully editable.
 <table>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://apinebula.ai/ref/HLROcb4p"><img src="./assets/readme/sponsors/apinebula.png" width="200" alt="APINEBULA logo"></a><br>
+  <a href="https://apinebula.ai/ref/HLROcb4p"><b>APINEBULA</b></a>
+</td>
+<td>
+  <p>Thanks to APINEBULA for sponsoring this project! APINEBULA is an enterprise-grade AI aggregation platform operated by 银河录像局. Backed by its parent platform's resources, it provides stable, cost-effective access to large language model APIs for developers, teams and enterprises. Access full-capability Claude, GPT, Gemini and other leading models through one API, with model pricing starting at 6% of the regular price. Enterprise services include high concurrency, formal contracts, corporate bank transfers and invoicing.</p>
+  <p><a href="https://apinebula.ai/ref/HLROcb4p">Register through this link</a> and enter the promo code <b>video</b> when topping up to get <b>10% off</b>.</p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS logo"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>
