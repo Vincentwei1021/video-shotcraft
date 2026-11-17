@@ -292,13 +292,13 @@ library was built, iterated and QA'd using the same workflow the skill teaches.
 
 If this project helped you, you're welcome to buy me a coffee and support its continued development and maintenance.
 
+<a href="https://ko-fi.com/vincentwei"><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="Buy me a coffee on Ko-fi" height="40"></a>
+
+One-time tip on Ko-fi with a card or PayPal. In mainland China? Use WeChat below:
+
 <img src="assets/wechat-sponsor.jpg" alt="WeChat sponsorship QR code" width="280">
 
 Scan with WeChat; any amount is appreciated. On a phone, save the image and select it from your album in WeChat's Scan feature.
-
-Outside mainland China? You can also leave a one-time tip on Ko-fi with a card or PayPal:
-
-<a href="https://ko-fi.com/vincentwei"><img src="https://img.shields.io/badge/Support%20on%20Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi" height="32"></a>
 
 Sponsorship is entirely optional. Stars, feedback, and sharing are just as welcome. Sponsorship does not change this project's license terms.
 

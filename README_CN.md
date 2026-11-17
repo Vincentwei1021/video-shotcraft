@@ -279,13 +279,13 @@ Video Shotcraft 的搜索与下载 CLI 为独立实现。
 
 如果这个项目帮到了你，欢迎请我喝杯咖啡，支持后续开发与维护。
 
+<a href="https://ko-fi.com/vincentwei"><img src="https://storage.ko-fi.com/cdn/kofi2.png?v=6" alt="在 Ko-fi 请我喝杯咖啡" height="40"></a>
+
+海外用户可通过 Ko-fi 用银行卡或 PayPal 一次性支持；国内用户可用下方微信：
+
 <img src="assets/wechat-sponsor.jpg" alt="微信赞助收款码" width="280">
 
 微信扫一扫，金额随意。手机查看时，可保存图片，再在微信「扫一扫」中从相册选择。
-
-海外用户也可以通过 Ko-fi 用银行卡或 PayPal 一次性支持：
-
-<a href="https://ko-fi.com/vincentwei"><img src="https://img.shields.io/badge/%E5%9C%A8%20Ko--fi%20%E6%94%AF%E6%8C%81-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="在 Ko-fi 支持作者" height="32"></a>
 
 赞助完全自愿，Star、反馈和分享同样感谢。赞助不改变本项目现有的许可条款。
 
