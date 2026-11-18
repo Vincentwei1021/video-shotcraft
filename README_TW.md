@@ -8,6 +8,8 @@
 
 # video-shotcraft
 
+<a href="#wechat-community"><img src="https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1%E7%BE%A4-07C160?style=for-the-badge&amp;logo=wechat&amp;logoColor=white" alt="微信群" height="32"></a>
+
 [English](README.md) | [简体中文](README_CN.md) | **繁體中文** | [日本語](README_JA.md) | [Русский](README_RU.md)
 
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
@@ -288,3 +290,15 @@ Video Shotcraft 的搜尋與下載 CLI 為獨立實現。
     <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Vincentwei1021/video-shotcraft&type=date&legend=top-left&sealed_token=DQ8_yn0k8in6tP80CRd9Ghuk1fcdEW7poFh9ticGB3wMNO-E_i6g51sUiQWCAQYP0u0bjRweuIfGoRS8FnrIz86oFp1lcl5zu2vrEJrQOoNvwdUSwmm8XNPkAiln1o-EBAX0uU8k6ReIlSRufGLqpoxsWshMSZ9mmok6ox5XXIUO77b7zOgp2yRIH6yR" />
   </picture>
 </a>
+
+<a id="wechat-community"></a>
+
+## 💬 微信群
+
+歡迎加入「Vincent 的 AI 交流群 1」，一起交流 AI 應用、程式開發和影片創作。
+
+<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent 的 AI 交流群 1 微信入群 QR code" width="400"></a>
+
+用微信掃碼加入。使用手機瀏覽時，可先儲存圖片，再在微信「掃一掃」中從相簿選取。
+
+此 QR code 在 **2026-11-25 前**有效，以微信提示為準。若已失效，可[透過 X 聯絡 Vincent](https://x.com/VincentWei93)取得最新入群方式。

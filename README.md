@@ -8,6 +8,8 @@
 
 # video-shotcraft
 
+<a href="#wechat-community"><img src="https://img.shields.io/badge/WeChat%20community-07C160?style=for-the-badge&amp;logo=wechat&amp;logoColor=white" alt="WeChat community" height="32"></a>
+
 <a href="#support"><img src="https://img.shields.io/badge/%E2%98%95%20Support%20author-16803C?style=for-the-badge" alt="☕ Support author" height="32"></a>
 
 **English** | [中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md)
@@ -319,3 +321,15 @@ Sponsorship is entirely optional. Stars, feedback, and sharing are just as welco
     <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Vincentwei1021/video-shotcraft&type=date&legend=top-left&sealed_token=DQ8_yn0k8in6tP80CRd9Ghuk1fcdEW7poFh9ticGB3wMNO-E_i6g51sUiQWCAQYP0u0bjRweuIfGoRS8FnrIz86oFp1lcl5zu2vrEJrQOoNvwdUSwmm8XNPkAiln1o-EBAX0uU8k6ReIlSRufGLqpoxsWshMSZ9mmok6ox5XXIUO77b7zOgp2yRIH6yR" />
   </picture>
 </a>
+
+<a id="wechat-community"></a>
+
+## 💬 WeChat community
+
+Join “Vincent 的 AI 交流群 1” to chat about AI applications, coding, and video creation.
+
+<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent’s AI WeChat community QR code" width="400"></a>
+
+Scan with WeChat to join. On a phone, save the image, then open WeChat’s Scan feature and select it from your album.
+
+This QR code is valid before **2026-11-25**, subject to WeChat’s notice. If it has expired, [contact Vincent on X](https://x.com/VincentWei93) for the latest way to join.
