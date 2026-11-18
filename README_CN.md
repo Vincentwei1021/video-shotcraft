@@ -12,7 +12,7 @@
 
 [English](README.md) | **中文** | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md)
 
-[![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
+[![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/) <a href="#wechat-community"><img src="https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1%E7%BE%A4-07C160?style=flat&amp;logo=wechat&amp;logoColor=white" alt="微信群" height="20"></a>
 [![Showcase](https://img.shields.io/badge/Showcase-community%20videos-7c3aed)](https://vincentwei1021.github.io/video-shotcraft/showcase.html)
 
 [![GitHub stars](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
@@ -306,3 +306,15 @@ Video Shotcraft 的搜索与下载 CLI 为独立实现。
     <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Vincentwei1021/video-shotcraft&type=date&legend=top-left&sealed_token=DQ8_yn0k8in6tP80CRd9Ghuk1fcdEW7poFh9ticGB3wMNO-E_i6g51sUiQWCAQYP0u0bjRweuIfGoRS8FnrIz86oFp1lcl5zu2vrEJrQOoNvwdUSwmm8XNPkAiln1o-EBAX0uU8k6ReIlSRufGLqpoxsWshMSZ9mmok6ox5XXIUO77b7zOgp2yRIH6yR" />
   </picture>
 </a>
+
+<a id="wechat-community"></a>
+
+## 💬 微信群
+
+欢迎加入「Vincent 的 AI 交流群 1」，一起交流 AI 应用、编程和视频创作。
+
+<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent 的 AI 交流群 1 微信入群二维码" width="400"></a>
+
+用微信扫一扫加入。手机查看时，可保存图片，再在微信「扫一扫」中从相册选择。
+
+此二维码在 **2026-11-25 前**有效，以微信提示为准。若已失效，可[通过 X 联系 Vincent](https://x.com/VincentWei93)获取最新入群方式。

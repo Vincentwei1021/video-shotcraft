@@ -10,7 +10,7 @@
 
 [English](README.md) | [中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JA.md) | **Русский**
 
-[![Галерея](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/)
+[![Галерея](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/) <a href="#wechat-community"><img src="https://img.shields.io/badge/%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE%20WeChat-07C160?style=flat&amp;logo=wechat&amp;logoColor=white" alt="Сообщество WeChat" height="20"></a>
 [![Витрина](https://img.shields.io/badge/Showcase-community%20videos-7c3aed)](https://vincentwei1021.github.io/video-shotcraft/showcase.html)
 
 [![Звёзды GitHub](https://img.shields.io/github/stars/Vincentwei1021/video-shotcraft)](https://github.com/Vincentwei1021/video-shotcraft/stargazers)
@@ -300,3 +300,15 @@ CLI поиска и загрузки Video Shotcraft реализован нез
     <img alt="График истории звёзд" src="https://api.star-history.com/chart?repos=Vincentwei1021/video-shotcraft&type=date&legend=top-left&sealed_token=DQ8_yn0k8in6tP80CRd9Ghuk1fcdEW7poFh9ticGB3wMNO-E_i6g51sUiQWCAQYP0u0bjRweuIfGoRS8FnrIz86oFp1lcl5zu2vrEJrQOoNvwdUSwmm8XNPkAiln1o-EBAX0uU8k6ReIlSRufGLqpoxsWshMSZ9mmok6ox5XXIUO77b7zOgp2yRIH6yR" />
   </picture>
 </a>
+
+<a id="wechat-community"></a>
+
+## 💬 Сообщество WeChat
+
+Присоединяйтесь к «Vincent 的 AI 交流群 1», чтобы обсуждать приложения ИИ, программирование и создание видео.
+
+<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="QR-код AI-сообщества Vincent в WeChat" width="400"></a>
+
+Отсканируйте QR-код в WeChat. На телефоне сохраните изображение и выберите его из альбома в функции сканирования WeChat.
+
+QR-код действителен **до 2026-11-25**; ориентируйтесь на уведомление WeChat. Если срок истёк, [свяжитесь с Vincent в X](https://x.com/VincentWei93), чтобы узнать актуальный способ вступить.
