@@ -163,6 +163,12 @@ drag in any of the 150 library shots, then export with Remotion. Preview and ren
 [Workbench guide, every panel with screenshots](workbench/GUIDE.md) (Chinese) ·
 [Integration contract](references/workbench.md)
 
+## YouTube Uploader
+
+The standalone [ShotCraft YouTube Uploader](youtube-uploader/README.md) connects your own YouTube channel with Google OAuth. Enter your OAuth client details in its local settings page, upload a rendered video from any source, browse the channel's 12 most recent videos, and edit titles, descriptions, or visibility without routing uploads through a third-party posting service.
+
+It uses the YouTube Data API v3 and requires your own Google OAuth client configuration. See the [setup guide](youtube-uploader/README.md) for credentials and local startup. The existing [multi-platform publishing workflow](references/publish-upload-post.md) remains available when you explicitly want to publish through Upload-Post.
+
 ## What you get
 
 | Output | Details |

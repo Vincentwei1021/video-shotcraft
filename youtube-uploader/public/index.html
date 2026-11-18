@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#171714" />
+    <title>YouTube Uploader · ShotCraft</title>
+    <link rel="icon" href="/brand-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <!-- THESIS: Turn a finished video file into a deliberate YouTube upload; this is a delivery desk, not another editor.
+    OWN-WORLD: ShotCraft's graphite workbench, paper-toned type, thin cut lines, and restrained lens-amber actions.
+    STORY: Connect the channel, choose any rendered video, set its title, description, and visibility, then upload or update recent videos.
+    FIRST VIEWPORT: Brand and connection status sit above a two-column desk: upload controls on the left, recent channel videos on the right; the upload action closes the left form.
+    FORM: A focused operations surface inherits the existing Workbench's compact dark chrome and stacks its two tasks on narrow screens. -->
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="ShotCraft YouTube Uploader home">
+        <img src="/brand-mark.svg" width="28" height="28" alt="" />
+        <span>ShotCraft <b>Uploader</b></span>
+      </a>
+      <div class="account" id="account-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="account-label">Checking connection</span>
+        <button class="button quiet" id="disconnect-button" type="button" hidden>Disconnect</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="intro">
+        <div>
+          <h1>Send the finished cut to YouTube.</h1>
+          <p>Upload an exported video, then keep the details and visibility in your hands.</p>
+        </div>
+        <a class="help-link" href="https://support.google.com/youtube/answer/57407" target="_blank" rel="noreferrer">
+          YouTube upload help <span aria-hidden="true">↗</span>
+        </a>
+      </section>
+
+      <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="connect-panel" id="connect-panel" hidden>
+        <div class="connect-copy">
+          <h2>Connect your channel</h2>
+          <p>Sign in with Google to upload videos and manage details on your own YouTube channel.</p>
+          <p class="fine-print">Your video goes straight to YouTube. This app does not keep a copy.</p>
+          <p class="oauth-missing" id="oauth-missing">Add your Google OAuth client details below to enable sign-in.</p>
+        </div>
+        <a class="button primary connect-button" id="connect-button" href="/auth/google" hidden>
+          <span class="google-g" aria-hidden="true">G</span>
+          Connect YouTube
+        </a>
+      </section>
+
+      <details class="settings-panel" id="oauth-settings">
+        <summary>
+          <span id="settings-summary">Configure Google OAuth</span>
+          <span class="settings-state" id="settings-state">Credentials stay on this server</span>
+        </summary>
+        <div class="settings-content">
+          <p class="settings-intro">Create a Google OAuth client ID for a web application. Enter its client ID and secret here to enable channel sign-in.</p>
+          <form id="oauth-settings-form" class="settings-form">
+            <label class="field">
+              <span>Google OAuth client ID</span>
+              <input id="google-client-id" name="clientId" type="text" maxlength="512" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="…apps.googleusercontent.com" required />
+            </label>
+            <label class="field">
+              <span>Google OAuth client secret</span>
+              <input id="google-client-secret" name="clientSecret" type="password" maxlength="512" autocomplete="off" spellcheck="false" placeholder="Enter your client secret" required />
+            </label>
+            <div class="settings-actions">
+              <button class="button primary" id="save-credentials-button" type="submit">Save credentials in memory</button>
+              <button class="button quiet" id="clear-credentials-button" type="button" hidden>Clear temporary credentials</button>
+            </div>
+          </form>
+          <p class="settings-security">Both values are held in server memory only, never written to disk, and cleared when the server stops. Credentials entered here apply to the local app process; do not expose this server to other devices.</p>
+          <a class="settings-help" href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer">Google Cloud credentials <span aria-hidden="true">↗</span></a>
+        </div>
+      </details>
+
+      <section class="dashboard" id="dashboard" hidden>
+        <div class="channel-line">
+          <div class="channel-mark" aria-hidden="true">YT</div>
+          <div class="channel-copy">
+            <span class="channel-label">Connected channel</span>
+            <strong id="channel-name">YouTube channel</strong>
+          </div>
+          <span class="channel-email" id="account-email"></span>
+          <button class="button quiet refresh-button" id="refresh-button" type="button">
+            <span aria-hidden="true">↻</span> Refresh videos
+          </button>
+        </div>
+
+        <div class="desk">
+          <section class="upload-column" aria-labelledby="upload-heading">
+            <div class="section-heading">
+              <h2 id="upload-heading">Upload a video</h2>
+              <span class="section-note">Your file stays on this device until upload.</span>
+            </div>
+
+            <form id="upload-form">
+              <input id="video-file" name="video" type="file" accept="video/*,.mp4,.mov,.webm,.avi,.mpeg,.mpg,.3gp,.flv,.wmv,.mkv" hidden />
+              <button class="dropzone" id="dropzone" type="button" aria-describedby="file-guidance">
+                <span class="drop-icon" aria-hidden="true">↑</span>
+                <span class="drop-title" id="file-name">Choose a video file</span>
+                <span class="drop-subtitle" id="file-guidance">MP4, MOV, WebM, and other YouTube-supported formats</span>
+                <span class="file-size" id="file-size"></span>
+              </button>
+
+              <label class="field">
+                <span>Title <span class="required">Required</span></span>
+                <input id="upload-title" name="title" type="text" maxlength="100" autocomplete="off" placeholder="Give your video a title" required />
+                <span class="field-count" id="title-count">0 / 100</span>
+              </label>
+
+              <label class="field">
+                <span>Description <span class="optional">Optional</span></span>
+                <textarea id="upload-description" name="description" rows="4" maxlength="5000" placeholder="Add context or links for viewers"></textarea>
+                <span class="field-count" id="description-count">0 / 5,000</span>
+              </label>
+
+              <label class="field privacy-field">
+                <span>Visibility</span>
+                <select id="upload-privacy" name="privacyStatus">
+                  <option value="private">Private · only you can watch</option>
+                  <option value="unlisted">Unlisted · anyone with the link</option>
+                  <option value="public">Public · anyone can watch</option>
+                </select>
+              </label>
+
+              <div class="upload-progress" id="upload-progress" hidden>
+                <div class="progress-label">
+                  <span id="progress-message">Preparing upload</span>
+                  <span id="progress-percent">0%</span>
+                </div>
+                <progress id="progress-bar" max="100" value="0">0%</progress>
+              </div>
+              <button class="button primary upload-button" id="upload-button" type="submit" disabled>
+                Upload to YouTube <span aria-hidden="true">↗</span>
+              </button>
+              <p class="safety-note">New uploads default to private. Check the visibility setting before you publish.</p>
+            </form>
+          </section>
+
+          <section class="videos-column" aria-labelledby="videos-heading">
+            <div class="section-heading video-heading">
+              <div>
+                <h2 id="videos-heading">Recent videos</h2>
+                <p>Change a title, description, or visibility on this channel.</p>
+              </div>
+              <span class="video-count" id="video-count"></span>
+            </div>
+            <div class="video-list" id="video-list" aria-live="polite"></div>
+            <div class="empty-videos" id="empty-videos" hidden>
+              <span class="empty-mark" aria-hidden="true">—</span>
+              <h3>No videos here yet</h3>
+              <p>Your recent uploads will appear here after you publish one.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+      <footer class="footer">
+        <span>ShotCraft YouTube Uploader</span>
+        <span>Powered by YouTube Data API v3</span>
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
