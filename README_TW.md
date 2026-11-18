@@ -293,9 +293,9 @@ Video Shotcraft 的搜尋與下載 CLI 為獨立實現。
 
 ## 💬 微信群
 
-歡迎加入「Vincent 的 AI 交流群 1」，一起交流 AI 應用、程式開發和影片創作。
+歡迎加入「Vincent 的 AI 交流群 2」，一起交流 AI 應用、程式開發和影片創作。
 
-<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent 的 AI 交流群 1 微信入群 QR code" width="400"></a>
+<a href="assets/wechat-group.jpg?v=2"><img src="assets/wechat-group.jpg?v=2" alt="Vincent 的 AI 交流群 2 微信入群 QR code" width="400"></a>
 
 用微信掃碼加入。使用手機瀏覽時，可先儲存圖片，再在微信「掃一掃」中從相簿選取。
 

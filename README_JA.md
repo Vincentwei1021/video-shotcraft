@@ -300,9 +300,9 @@ BGM と既存テンプレート音声の提供元
 
 ## 💬 WeChat グループ
 
-「Vincent 的 AI 交流群 1」で、AI アプリ、プログラミング、動画制作について交流しましょう。
+「Vincent 的 AI 交流群 2」で、AI アプリ、プログラミング、動画制作について交流しましょう。
 
-<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent の AI WeChat グループ参加用 QR コード" width="400"></a>
+<a href="assets/wechat-group.jpg?v=2"><img src="assets/wechat-group.jpg?v=2" alt="Vincent の AI WeChat グループ参加用 QR コード" width="400"></a>
 
 WeChat で QR コードを読み取って参加できます。スマートフォンでは画像を保存し、WeChat のスキャン機能でアルバムから選んでください。
 

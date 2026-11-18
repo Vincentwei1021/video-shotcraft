@@ -311,9 +311,9 @@ Video Shotcraft 的搜索与下载 CLI 为独立实现。
 
 ## 💬 微信群
 
-欢迎加入「Vincent 的 AI 交流群 1」，一起交流 AI 应用、编程和视频创作。
+欢迎加入「Vincent 的 AI 交流群 2」，一起交流 AI 应用、编程和视频创作。
 
-<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent 的 AI 交流群 1 微信入群二维码" width="400"></a>
+<a href="assets/wechat-group.jpg?v=2"><img src="assets/wechat-group.jpg?v=2" alt="Vincent 的 AI 交流群 2 微信入群二维码" width="400"></a>
 
 用微信扫一扫加入。手机查看时，可保存图片，再在微信「扫一扫」中从相册选择。
 
