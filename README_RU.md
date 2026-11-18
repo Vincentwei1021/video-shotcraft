@@ -305,9 +305,9 @@ CLI поиска и загрузки Video Shotcraft реализован нез
 
 ## 💬 Сообщество WeChat
 
-Присоединяйтесь к «Vincent 的 AI 交流群 1», чтобы обсуждать приложения ИИ, программирование и создание видео.
+Присоединяйтесь к «Vincent 的 AI 交流群 2», чтобы обсуждать приложения ИИ, программирование и создание видео.
 
-<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="QR-код AI-сообщества Vincent в WeChat" width="400"></a>
+<a href="assets/wechat-group.jpg?v=2"><img src="assets/wechat-group.jpg?v=2" alt="QR-код AI-сообщества Vincent в WeChat" width="400"></a>
 
 Отсканируйте QR-код в WeChat. На телефоне сохраните изображение и выберите его из альбома в функции сканирования WeChat.
 

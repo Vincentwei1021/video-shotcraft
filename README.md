@@ -324,9 +324,9 @@ Sponsorship is entirely optional. Stars, feedback, and sharing are just as welco
 
 ## 💬 WeChat community
 
-Join “Vincent 的 AI 交流群 1” to chat about AI applications, coding, and video creation.
+Join “Vincent 的 AI 交流群 2” to chat about AI applications, coding, and video creation.
 
-<a href="assets/wechat-group.jpg"><img src="assets/wechat-group.jpg" alt="Vincent’s AI WeChat community QR code" width="400"></a>
+<a href="assets/wechat-group.jpg?v=2"><img src="assets/wechat-group.jpg?v=2" alt="Vincent’s AI WeChat community QR code" width="400"></a>
 
 Scan with WeChat to join. On a phone, save the image, then open WeChat’s Scan feature and select it from your album.
 
