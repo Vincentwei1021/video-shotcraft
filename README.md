@@ -324,10 +324,10 @@ Sponsorship is entirely optional. Stars, feedback, and sharing are just as welco
 
 ## 💬 WeChat community
 
-Join “Vincent 的 AI 交流群 3” to chat about AI applications, coding, and video creation.
+Join “Vincent 的 AI 交流群 4” to chat about AI applications, coding, and video creation.
 
-<a href="assets/wechat-group.jpg?v=3"><img src="assets/wechat-group.jpg?v=3" alt="Vincent’s AI WeChat community QR code" width="400"></a>
+<a href="assets/wechat-group.jpg?v=4"><img src="assets/wechat-group.jpg?v=4" alt="Vincent’s AI WeChat community QR code" width="400"></a>
 
 Scan with WeChat to join. On a phone, save the image, then open WeChat’s Scan feature and select it from your album.
 
-This QR code is valid before **2026-11-26**, subject to WeChat’s notice. If it has expired, [contact Vincent on X](https://x.com/VincentWei93) for the latest way to join.
+This QR code is valid before **2026-11-28**, subject to WeChat’s notice. If it has expired, [contact Vincent on X](https://x.com/VincentWei93) for the latest way to join.
