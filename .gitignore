@@ -1,4 +1,6 @@
 node_modules/
+youtube-uploader/.env
+youtube-uploader/.env.*.local
 out/qa/
 template/out/
 # 发帖用社交封面图等本地素材，不进 skill 安装包
