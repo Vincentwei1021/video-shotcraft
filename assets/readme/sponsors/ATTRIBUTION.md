@@ -16,6 +16,16 @@ promo code offers 10% off, as stated in the supplied copy.
 Brand marks belong to their respective rights holders and are not covered
 by this repository's Apache-2.0 license.
 
+## OpenLux
+
+`openlux.png` is the unmodified logo supplied by the project maintainer.
+The English description uses the supplied sponsor copy, with translations
+in the Simplified Chinese, Traditional Chinese, Japanese, and Russian READMEs.
+All registration links use the supplied [OpenLux referral URL](https://www.openlux.ai/register?channel=c_n68puogw).
+
+The OpenLux logo and trademark are not covered by this repository's
+Apache-2.0 license.
+
 ## APIMart
 
 `apimart.png` is the sponsor image supplied by the project maintainer on
