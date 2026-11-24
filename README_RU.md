@@ -71,7 +71,7 @@
 </tr>
 <tr>
 <td align="center" valign="middle" width="25%">
-  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><img src="./assets/readme/sponsors/openlux.png" width="200" alt="Логотип OpenLux"></a><br>
+  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><img src="./assets/readme/sponsors/openlux.png" width="128" alt="Логотип OpenLux"></a><br>
   <a href="https://www.openlux.ai/register?channel=c_n68puogw"><b>OpenLux</b></a>
 </td>
 <td>

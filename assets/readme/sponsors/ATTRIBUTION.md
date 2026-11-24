@@ -18,7 +18,7 @@ by this repository's Apache-2.0 license.
 
 ## OpenLux
 
-`openlux.png` is the unmodified logo supplied by the project maintainer.
+`openlux.png` is the unmodified, symbol-only logo supplied by the project maintainer.
 The English description uses the supplied sponsor copy, with translations
 in the Simplified Chinese, Traditional Chinese, Japanese, and Russian READMEs.
 All registration links use the supplied [OpenLux referral URL](https://www.openlux.ai/register?channel=c_n68puogw).
