@@ -1,0 +1,57 @@
+---
+name: promo-energy-arc
+一句话: 全片能量骨架——低开品牌 → 单主角立传 → 字卡呼吸间隔的功能爬升段 → 发布会峰值收场
+适用: 30–60s 多功能 web 产品宣传片的默认全片结构（分镜阶段先填骨架再挑卡）
+段数: 4 段位 + 2–4 张呼吸字卡
+---
+
+> **精简版说明**：本文档来自 [video-shotcraft 完整工程](https://github.com/Vincentwei1021/video-shotcraft)
+> （GitCode 镜像：https://gitcode.com/VincentWei/video-shotcraft）。文中位于
+> `demos/`、`assets/`、`template/`、`gallery/`、`workbench/`、`jianying-export/`、`publish/`
+> 的文件、目录与命令均指完整工程中的资源，本方法包不含这些代码与素材，
+> 执行前请先获取完整工程。
+
+
+## 意图
+
+把散落在 R1–R3/Q5/Q8/P4 的节奏规则合成一条可直接填空的全片曲线。
+模板片成片（1085f）与两次独立复现（各 900f）三次成表均收敛到同一
+骨架——它是默认项，不是令：逐项目可有意识偏离，偏离写进项目 spec。
+
+## 段位表
+
+| 段位 | 时长占比 | 能量 | 职责 | 候选配方卡 |
+|------|----------|------|------|------------|
+| ① 品牌开场 | 8–12%（30s 片）；开场+立传合计可达 20%（模板片） | 低 | 字标压印 + hold ≥1s（R1），交棒产品页面 | brand-ink-open |
+| ② 单主角立传 | 12–15% | 中（质感最高、节奏最慢） | 一个主角、一条完整动作弧 ≥3s（Q5/R3），立出产品原子单位 | spotlight-hero-card（+aesthetic-rules.md Q2 高清 rasterize 技法） |
+| ③ 功能爬升段 | 55–65% | 中高⇄低交替 | 每镜绑一个独特功能、一种手法只当一次主角（P4）；镜与镜之间按需插呼吸字卡 | deck-deal-flyin / type-and-filter / list-stack-press / row-embed / document-typewriter-reveal |
+| ④ 发布会收场 | 13–16% | 峰值（全片最高） | 已展示功能各出代表元素合影围住字标（Q8），sign-off hold ≥1s（R1） | outro-group-photo-launch |
+
+呼吸字卡（paper-title-card）规则：每 1–2 个功能镜头后插一张，单张
+50–55f（≈1.8s），全片 2–4 张；重要功能出场前用作引导字卡（C2）。
+模板片 10 镜里字卡占 4 席，两次复现各 2 席——密度按功能镜头数取。
+
+## 填空流程（替代 ad-hoc 推导）
+
+1. 列产品功能清单（P4），数出功能镜头数 N。
+2. 按段位表分配总帧数：先扣 ①②④ 与字卡的预算，剩余给 ③ 均分。
+   每镜预算内**先划走 hold/rest 帧**（R1 落定 ≥30f、批量收尾 15f，R3）
+   再排动效——不是排完动效再找空隙。
+3. ③ 段能量交替：高能量镜（发牌/堆叠）与稳节奏镜（交互/读字段）
+   间隔排列，信息密度最高的镜头（文档/报告类）放在峰值收场之前——
+   模板片与两次复现均把文档/报告类镜头排在倒数第 2–3 位。
+4. 逐槽位扫 shots/ frontmatter 挑卡，选中的卡读全文。
+5. 镜头排定后逐接缝选转场式（shot-transitions 技法卡三式选型），
+   写进分镜表"关键动效"列——转场帧从相邻镜头预算划走。
+
+## 已知坑
+
+- 骨架当风格令全局硬套：段位占比是模板片单例实证（标注：单例判例），
+  15s 短片或单功能产品应大胆合并段位，但 ①hold/④峰值两端不可省。
+- ③ 段只堆高能量镜：连续高能量读作嘈杂，交替与字卡就是节奏本身。
+- 呼吸字卡写成第二遍 tagline：字卡与 outro 文案重复即删（P4 判例：
+  outro tagline 去重）。
+
+## 参考实现
+
+[完整工程 template/src/aifl/Main.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/template/src/aifl/Main.tsx) AIFL_SHOTS 段位表（sum=1085f）。

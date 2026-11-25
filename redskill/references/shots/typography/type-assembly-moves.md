@@ -1,0 +1,45 @@
+---
+name: type-assembly-moves
+一句话: 文字集结三式——split-text-stagger 逐字裂升、letterform-drift-assembly 漂移合拢、text-on-path 沿线流入
+适用: 大标题/标语的入场；与 type-entrance-moves、document-typewriter-reveal 同属标题入场大品类，全片 ≤2 种
+时长: 单式 4–5.5s（动作段 A ~56f / B ~104f / C ~110f；demo 全长含 hold：A 130f / B 150f / C 160f，各自导出 `*_DURATION`）
+能量: A 中 / B 中高 / C 中
+---
+
+## 意图
+标题入场已有"原位变形系"（字符坠落/打字机——字在原地换形态）。本卡补"集结系"：字符从别处**汇聚成**标题，运动轨迹
+本身有戏。A 琴键式——每字从看不见的裁切线下滑升，理性利落，通用度
+最高；B 片头式——字符四散带模糊漂入、逐个锁定加深，Stranger Things
+的仪式感，适合品牌名亮相；C 语义式——字符沿一条上升曲线鱼贯流入
+再摆正，曲线可以正好描着图表增长线走，文字与数据同框叙事。
+
+## 三式选型
+| 式 | 做法 | 适用 |
+|----|------|------|
+| A split-text-stagger 裂升 | 每字 overflow 盒内 translateY(115%→0) 带 10% 过冲，delay i×2f，基线同步生长（demo：亮场 136px 品牌短句「FRAME MOTION.」） | 通用默认；利落理性 |
+| B drift-assembly 漂移合拢 | 字符 seed 方向 ±260–360px + blur 8px + 旋转 ±24° + 纵深 1.22 漂入错峰归位，锁定帧加深脉冲，合体后整词呼吸 1.04（demo：亮场 148px 品牌名「Shotcraft」） | 品牌名/片头级亮相 |
+| C text-on-path 沿线流入 | 整串字按真实步进沿弧长刚性推进（末字领跑、切线角旋转，行进中可读），到达后逐字沿弧线抬升到左上标题位（demo：midnight 暗场营收增长线 + 数值牌） | 曲线有语义时（增长线/流程线） |
+
+## 参数表
+| 参数 | 典型值 | 调节手感 |
+|------|--------|----------|
+| A 过冲 | 10%（14f out-cubic 升到 −10% 再 6f 回落；原案 6% 可测不可感，实渲加码） | 正常速度要看得见回落那一下；升起快段按竖向速度加 y 向模糊 |
+| B 锁定脉冲 | 字色深到 #000 + 描边 0→3px→0 / 8f | 白底上加深+描边，不用发光（判例） |
+| B 漂移绑定 | 位移 (1−p)、旋转、纵深缩放、blur 8(1−p)、opacity 0.35→1 共用一条 p（Easing.out(cubic)，每字 45f、错峰 3f） | 分曲线走，字会"到了还糊着" |
+| C 摆正 | 到达停 8f 再从左到右 1.1f 错峰、18f 抬升：y 用带 ~4% 过冲的快曲线、x 用 in-out、旋转晚 2f 收敛 → 轨迹是弧；终位按实测字宽排版 | 不摆正就永远是"挂在线上"，读不出标题；抬升行程大时过冲 >5% 会顶进眉题 |
+| C 曲线 | evolve（dashoffset 按弧长比例）随车头字符同步生长；demo 做成图表增长线（电光蓝 5px 描边 + 外发光 + 线下渐变面积 + 青色车头光点与到顶脉冲 + 网格刻度 + 季度标记） | 曲线先画完字再走，读作两个动画 |
+| 收尾 | 全员落定真静止 ≥30f | R1 |
+
+## 已知坑
+- demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
+  首次实战须以真实素材回验
+- 标题入场大品类现已五式（本卡三式 + type-entrance-moves + document-typewriter-reveal），
+  **同片 ≤2 种**（P4）铁律不变
+- B 式与 C 式都是高注意力入场，别再叠相机动作——字在飞的时候镜头必须稳
+- C 式别让字符各自起跑：后面的字要追越前面的字，曲线低段必然挤成一团（原版踩过）；
+  按弧长刚性推进、字间距取真实步进才读得出整句；字号 >80px 时曲线拐弯处字会互相啃角，
+  大字改用更平缓的曲线或减字数
+
+## 参考实现
+[完整工程 demos/typography/type-assembly-moves/](https://github.com/Vincentwei1021/video-shotcraft/tree/main/demos/typography/type-assembly-moves)
+（LetterformDriftAssembly.tsx / SplitTextStagger.tsx / TextOnPath.tsx）

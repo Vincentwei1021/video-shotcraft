@@ -1,0 +1,38 @@
+---
+name: rhythm-interrupt-moves
+一句话: 打断节奏——jump-cut-punch-in 三级跳切推近：同构图三次无补间硬跳放大，逐级逼近目标
+适用: 用"打断连续性"本身当节奏器：顿挫推近（A）；与 beat-cut-moves（切点排布）互补
+时长: A 135f ≈4.5s
+能量: A 中
+---
+
+## 意图
+库内节奏卡管的都是"怎么切、切多密"；本卡管**怎么断**——观众预期
+连续，你偏打断，打断方式即表达：A 是空间断——同构图三次无补间跳大
+（1x→1.6x→2.6x），戈达尔跳切的顿挫，比连续推近更有"看这里、再近点、
+就是它"的指令感。适合强制聚焦指标。
+
+## 选型
+| 式 | 做法 | 适用 |
+|----|------|------|
+| A jump-cut-punch-in | transform-origin 钉目标中心，三档 scale 阶梯跳变（零补间），每跳 2f 加深脉冲当 tick | 逐级逼近核心指标；纪录片式盯住 |
+
+## 参数表
+| 参数 | 典型值 | 调节手感 |
+|------|--------|----------|
+| A 跳挡 | 1.0→1.6→2.6，各 hold ≥35f | 挡差 <1.5× 读作画面抖了一下 |
+| A tick | 跳变帧起 2f brightness 0.92 全画面脉冲 | 无 tick 的跳切读作丢帧 |
+| 收尾 | 末挡 ≥45f 真静止 | 打断系事后 hold 从重给 |
+
+## 已知坑
+- demo 在灰阶/占位素材上调校通过——参数是调校起点非实战定稿，
+  首次实战须以真实素材回验
+- 与 speed-ramp-freeze 都动"时间轴"，同一镜头只能有一个时间
+  操纵者
+- 三挡构图必须同 origin（钉死目标中心）——每挡重新构图就是
+  三个镜头，不是跳切
+- 声音强依赖：每跳一声 tick（sound-design §4.5）
+
+## 参考实现
+[完整工程 demos/rhythm/rhythm-interrupt-moves/](https://github.com/Vincentwei1021/video-shotcraft/tree/main/demos/rhythm/rhythm-interrupt-moves)
+（JumpCutPunchIn.tsx）

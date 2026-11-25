@@ -1,0 +1,45 @@
+---
+name: shot-transitions
+一句话: 镜头交棒三式——推进流白、whip-pan 甩镜（急刹款）、mask-wipe 穿窗（纵深款），按能量落差与接缝语义选型
+适用: 任何两镜衔接处（技法卡，分镜阶段排完镜头后逐个接缝选一式）
+时长: n/a（技法卡；各式占用帧数见参数表，从相邻镜头预算里划）
+能量: n/a（技法卡，不占能量位）
+---
+
+## 意图
+库内各镜头卡只管自己的入场和收尾，镜与镜"怎么接"一直没有词汇——
+接缝裸切会把逐镜头攒出的电影感一次漏光。公认优秀的发布片
+（Linear Releases/Agent，2026-07-11 抽帧逆向）全程没有一次裸切：
+换景要么靠深度旅行、要么靠焦点接力、要么靠黑场字卡蓄力。本卡收三式：
+白闪盖切、甩镜借糊帧换景、穿窗点进详情世界。
+
+## 三式选型
+
+| 式 | 做法 | 适用接缝 |
+|----|------|----------|
+| A 推进流白 flash-cut | 前镜相机推进，切点跨骑一层白闪盖住换页 | 交互穿透、能量相近的页面→页面（库内已有，收编）|
+| B whip-pan 甩镜（急刹款） | 机位一拍横甩到下一场景，中段运动模糊糊到不可辨，借糊帧换景；落点前急刹、长尾滑入 | 快节奏功能段连打（高能量→高能量的轻快款）；落点是"要读内容"的镜头 |
+| C mask-wipe 穿窗（纵深款） | 页面内真实元素（卡片）放大成全屏窗口，新场景从窗内长出接管 | 语义化接缝：功能总览→该功能详情（"点开这张卡进入它的世界"）|
+
+## 参数表
+| 参数 | 典型值 | 调节手感 |
+|------|--------|----------|
+| A flash-cut | [完整工程 assets/lib/FlashCut.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/assets/lib/FlashCut.tsx)，from = 切点 − 5，两侧各 5f | 用法详见 type-and-filter 卡；白闪只盖硬切，不当装饰光效（Q4）|
+| B 甩镜急刹款 | 起点 hold ≥20f → 前 70% 路程用 30% 时间（糊段，峰值 ~300px/f）→ 后 30% 路程 ease-out 长尾 ~48f 滑入落位；用一条连续速度曲线（3f 起步 + 指数衰减）积分出位移，别分段各套 ease-out（分段处速度会二次起跳）；按瞬时速度做方向性运动模糊（`_fixtures/Polish` 的 `SpeedBlur`，sd ≈ 0.085×速度、封顶 64px），只在甩动段生效；参考实现把同一条位移曲线接到一只机械滚轮索引计数器（Nº 02→09）和随长廊走的刻度尺 + 固定播放头上，落定后目标卡抬到 1.2× 可读 | 适合落点是"要读内容"的镜头——长尾给观众视线一个追上的坡；长尾 >60f 偷走后镜入场，宁短勿长；跨度按"峰值速度 ≥300px/f"配，不足则糊不透露出换景穿帮；两景同一水平线上拼接（页面空间同 y）；CameraMotionBlur 子帧叠加在 8bit 下会整片偏黄、拖影呈一格格回波，亮场 UI 甩镜别用 |
+| C 穿窗纵深款 portal-wipe | 目标卡先悬浮抬起作预备（−10px、1.03×，邻卡退暗）→ 窗放大 40f 用 bezier(0.7,0,0.3,1) 先慢后快，窗内新景从 ~0.42 缩放反向补偿长到 1（与窗几何同一个 t），卡面在前 ~28% 行程内渐隐（opacity 1−t·3.6，再慢会被拉成满屏巨字残影）；窗内**只 2 层**视差（远景面板系数 0.08 + 近景 2 卡 0.3，不加 blur），穿窗完成后 8f 缓停 → 静止 ≥30f 读清新景；窗内世界最好是被点开卡的封面"长大"（参考实现：video-shotcraft Workspace 里「Premiere Forecast」项目卡的钴蓝波形封面 → 同款波形地貌的观看量预测世界 + 玻璃面板 + 2 枚指标浮卡，曲线随 t 画完）| 窗几何与窗内景必须同步驱动，异步读作穿帮；层数/散开是可读性命门——3 层+0.85 散开+blur 版被裁，收敛后过；穿完必须真停，视差飘着不停偷走后镜阅读 |
+
+## 已知坑
+- 分镜表阶段就逐接缝标注转场式（写进"关键动效"列），逐镜头阶段才补
+  等于全线挪帧——转场占用的帧从相邻镜头预算划走，规矩同 hold 预算（R3）
+- 转场不叠加：一个接缝只用一式；甩镜糊段、穿窗途中再加 flash 白闪读作穿帮
+- B/C 式参数经占位素材调校+真实素材转正，非用户
+  实战判例——单例判例，与判例冲突时判例优先
+- C 式窗内新景语义应是被点开元素的"详情世界"（实战接真实详情页
+  截图）——窗里塞无关场景语义断裂，沦为花哨擦除；被放大元素用高清纹理（Q2，全程被特写）
+- C 纵深款参数系手搓占位 UI（video-shotcraft Workspace / 观看量预测世界）调校起点、未经真实截图验证；
+  参考实现 [完整工程 demos/transition/shot-transitions/PortalWipeV2.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/demos/transition/shot-transitions/PortalWipeV2.tsx)
+
+## 参考实现
+A 式：[完整工程 template/src/aifl/Main.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/template/src/aifl/Main.tsx) flash-cut 层（组件 [完整工程 assets/lib/FlashCut.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/assets/lib/FlashCut.tsx)）；
+B 式（whip 甩镜急刹款）：[完整工程 demos/transition/shot-transitions/WhipBrakeReal.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/demos/transition/shot-transitions/WhipBrakeReal.tsx)；
+C 式（mask-wipe 穿窗纵深款）：[完整工程 demos/transition/shot-transitions/PortalWipeV2.tsx](https://github.com/Vincentwei1021/video-shotcraft/blob/main/demos/transition/shot-transitions/PortalWipeV2.tsx)。
