@@ -67,6 +67,17 @@
 </tr>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><img src="./assets/readme/sponsors/openlux.png" width="168" alt="OpenLux 標誌"></a><br>
+  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><b>OpenLux</b></a>
+</td>
+<td>
+  <p>感謝 OpenLux 贊助本專案！OpenLux 是面向企業的一站式 AI 平臺，匯集全球主要供應商的領先 AI 模型，提供快速、穩定的服務與即時的技術支援。Claude、OpenAI 和 Gemini 模型的基本價格分別低至官方定價的 8.82%、4% 和 8%。</p>
+  <p>video-shotcraft 使用者專屬優惠：透過我們的推薦連結註冊，儲值最高可享 7.5% 折扣！</p>
+  <p><a href="https://www.openlux.ai/register?channel=c_n68puogw">立即註冊 OpenLux →</a></p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS 標誌"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>

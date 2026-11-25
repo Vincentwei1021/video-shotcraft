@@ -73,6 +73,17 @@ sharp, on-brand and fully editable.
 </tr>
 <tr>
 <td align="center" valign="middle" width="25%">
+  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><img src="./assets/readme/sponsors/openlux.png" width="168" alt="OpenLux logo"></a><br>
+  <a href="https://www.openlux.ai/register?channel=c_n68puogw"><b>OpenLux</b></a>
+</td>
+<td>
+  <p>Thank you to OpenLux for sponsoring this project! OpenLux is an all-in-one AI platform for businesses, bringing together leading AI models from major providers worldwide. With fast, reliable service and responsive technical support, OpenLux offers base pricing for Claude, OpenAI, and Gemini models as low as 8.82%, 4%, and 8% of official rates, respectively.</p>
+  <p>Exclusive offer for video-shotcraft users: Sign up through our referral link and enjoy up to 7.5% off credit top-ups!</p>
+  <p><a href="https://www.openlux.ai/register?channel=c_n68puogw">Get started with OpenLux →</a></p>
+</td>
+</tr>
+<tr>
+<td align="center" valign="middle" width="25%">
   <a href="https://aws.amazon.com/"><img src="./assets/readme/sponsors/aws.svg" width="200" alt="AWS logo"></a><br>
   <a href="https://aws.amazon.com/"><b>AWS</b></a>
 </td>
