@@ -8,7 +8,7 @@
 
 # video-shotcraft
 
-[English](README.md) | [中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JA.md) | **Русский**
+[English](README.md) | [中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JA.md) | **Русский** | [Türkçe](README_TR.md)
 
 [![Галерея](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/) <a href="#wechat-community"><img src="https://img.shields.io/badge/%D0%A1%D0%BE%D0%BE%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE%20WeChat-07C160?style=flat&amp;logo=wechat&amp;logoColor=white" alt="Сообщество WeChat" height="20"></a>
 [![Витрина](https://img.shields.io/badge/Showcase-community%20videos-7c3aed)](https://vincentwei1021.github.io/video-shotcraft/showcase.html)
