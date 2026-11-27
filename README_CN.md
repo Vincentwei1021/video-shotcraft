@@ -10,7 +10,7 @@
 
 <a href="#support"><img src="https://img.shields.io/badge/%E2%98%95%20%E6%94%AF%E6%8C%81%E4%BD%9C%E8%80%85-16803C?style=for-the-badge" alt="☕ 支持作者" height="32"></a>
 
-[English](README.md) | **中文** | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md)
+[English](README.md) | **中文** | [繁體中文](README_TW.md) | [日本語](README_JA.md) | [Русский](README_RU.md) | [Türkçe](README_TR.md)
 
 [![Gallery](https://img.shields.io/badge/Gallery-live%20previews-d3923c)](https://vincentwei1021.github.io/video-shotcraft/) <a href="#wechat-community"><img src="https://img.shields.io/badge/%E5%BE%AE%E4%BF%A1%E7%BE%A4-07C160?style=flat&amp;logo=wechat&amp;logoColor=white" alt="微信群" height="20"></a>
 [![Showcase](https://img.shields.io/badge/Showcase-community%20videos-7c3aed)](https://vincentwei1021.github.io/video-shotcraft/showcase.html)
